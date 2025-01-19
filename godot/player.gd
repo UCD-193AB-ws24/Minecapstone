@@ -18,12 +18,14 @@ func _ready():
 	min_y = start_y - 2.0 # arbritary just tp after walking off the ledge
 	max_y = start_y + 15.0 # no point for now but added anyways
 	
-
+# Called on input event
 func _input(event):
+	# Rotate the player and the camera
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
 		camera.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
 		camera.rotation_degrees.x = clamp(camera.rotation_degrees.x, -89.9, 89.9)
+	# Toggle mouse capture with escape
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -60,15 +62,15 @@ func _physics_process(_delta):
 	else:
 		current_acceleration = acceleration
 	
-	# Accelerate or decelerate
+	# Ramp movement speed
 	if direction != Vector3.ZERO:
 		velocity.x = lerp(velocity.x, direction.x * speed, current_acceleration)
 		velocity.z = lerp(velocity.z, direction.z * speed, current_acceleration)
 	else:
 		velocity.x = lerp(velocity.x, 0.0, current_acceleration)
 		velocity.z = lerp(velocity.z, 0.0, current_acceleration)
-		
-	# Move the player
+	
+	# Teleport the player back to the spawn point if they fall off the map
 	if global_position.y < min_y:
 		on_out_of_bounds()
 
