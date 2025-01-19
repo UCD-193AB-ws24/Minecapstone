@@ -6,6 +6,7 @@
 size = Vector3(0.6, 1.85, 0.6)
 
 [node name="Player" type="CharacterBody3D"]
+platform_floor_layers = 4294967041
 script = ExtResource("1_4flbx")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
