@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=4 format=3 uid="uid://0ypfn26rapdv"]
 
 [ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://cs3gf0oekp115" path="res://ai_controller.gd" id="2_onrkg"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -24,3 +25,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66, 0)
 current = true
 fov = 90.0
 size = 0.048
+
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("2_onrkg")
+metadata/_custom_type_script = ExtResource("2_onrkg")

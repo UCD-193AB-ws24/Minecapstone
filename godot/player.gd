@@ -13,15 +13,14 @@ var min_y: float
 
 @onready var camera: Camera3D = $Camera3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
-@onready var spawn_point: Marker3D = $"../SpawnPoint"
-@onready var ai_controller: AIController = AIController.new()
+@onready var spawn_point: Marker3D = $"../SpawnPoint"			# TODO: replace with a proper spawn system
+@onready var ai_controller: AIController = $AIController
 
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	var start_y = global_position.y
 	min_y = start_y - 2.0 	# arbritary just tp after walking off the ledge
-	add_child(ai_controller)
 
 
 # Called on input event

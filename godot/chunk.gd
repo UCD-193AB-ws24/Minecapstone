@@ -4,8 +4,6 @@ var multi_mesh_instance: MultiMeshInstance3D
 var static_body: StaticBody3D
 
 func _ready():
-
-
 	# Create a MultiMeshInstance3D node
 	multi_mesh_instance = MultiMeshInstance3D.new()
 

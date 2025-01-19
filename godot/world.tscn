@@ -55,4 +55,5 @@ shape = SubResource("BoxShape3D_tlwt5")
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.1694, 0.245924, 3.84326)
 
-[node name="Node3D" type="Node3D" parent="."]
+[node name="ChunkSpawner" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
