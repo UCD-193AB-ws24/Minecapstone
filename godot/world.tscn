@@ -56,3 +56,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
 shape = SubResource("BoxShape3D_tlwt5")
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.1694, 0.245924, 3.84326)
