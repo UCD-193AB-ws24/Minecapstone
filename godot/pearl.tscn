@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cw0ht17wpkekc"]
 
-[ext_resource type="Script" path="res://pearl.gd" id="1_e2uul"]
+[ext_resource type="Script" uid="uid://ddmbu56p7lrmj" path="res://pearl.gd" id="1_e2uul"]
 [ext_resource type="Texture2D" uid="uid://dq6yxtkok5lc1" path="res://assets/pearl.png" id="1_gn5f2"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gn5f2"]

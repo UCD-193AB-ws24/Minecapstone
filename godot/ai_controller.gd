@@ -1,16 +1,15 @@
+class_name AIController
 extends Node
 
-@onready var player = $"/root/World/Player"
+# Only works when attached as child to a Player object
 
-func _ready():
-	# Enable AI control
-	player.ai_control_enabled = true
-	print("AI control now enabled")
-	
-func _process(_delta):
-	# test some stuff
-	var ai_direction = Vector2(-1,1) # move forward
-	var ai_jump = true
-	
-	player._set_ai_movement(ai_direction)
-	player._set_ai_jump(ai_jump)
+@onready var player: Player = get_parent()
+@onready var movement_direction: Vector2 = Vector2.ZERO
+@onready var is_jumping: bool = false
+@onready var ai_control_enabled = false
+
+func _physics_process(_delta):
+	if ai_control_enabled:
+		movement_direction = Vector2(-1,-1)
+		is_jumping = true
+		player._move_player(movement_direction.normalized(), is_jumping, _delta)

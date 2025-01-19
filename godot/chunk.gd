@@ -1,18 +1,14 @@
 extends Node3D
 
-
 var multi_mesh_instance: MultiMeshInstance3D
 var static_body: StaticBody3D
 
-
 func _ready():
+
+
 	# Create a MultiMeshInstance3D node
 	multi_mesh_instance = MultiMeshInstance3D.new()
-	# May cause crashes if Show Debug Collisions is on
-	_spawn_chunk()
 
-
-func _spawn_chunk():
 	# Create a MultiMesh
 	var multi_mesh = MultiMesh.new()
 	multi_mesh.mesh = BoxMesh.new()  # Use BoxMesh for the cube

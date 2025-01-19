@@ -9,39 +9,36 @@ extends CharacterBody3D
 
 var current_acceleration = 0.15
 var min_y: float
-var max_y: float
 
 
 @onready var camera: Camera3D = $Camera3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"
+@onready var ai_controller: AIController = AIController.new()
 
-#AI Variables
-var ai_control_enabled: bool = false
-var ai_movement: Vector2 = Vector2.ZERO
-var ai_jump: bool = false
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	var start_y = global_position.y
-	min_y = start_y - 2.0 # arbritary just tp after walking off the ledge
-	max_y = start_y + 15.0 # no point for now but added anyways
+	min_y = start_y - 2.0 	# arbritary just tp after walking off the ledge
+	add_child(ai_controller)
 
 
 # Called on input event
 func _input(event):
-	if not ai_control_enabled:
+	if not ai_controller.ai_control_enabled:
 		if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
 			camera.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
 			camera.rotation_degrees.x = clamp(camera.rotation_degrees.x, -89.9, 89.9)
-		elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-			if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-				Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			else:
-				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			_throw_pearl()
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 
 func _process(_delta):
 	# Moves the player and its children
@@ -50,37 +47,30 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	
-	if ai_control_enabled:
-		_handle_ai_control(_delta)
-	else:
+	if not ai_controller.ai_control_enabled:
 		_handle_player_input(_delta)
-		
+	
+	_apply_gravity(_delta)
+	
 	if global_position.y < min_y:
 		_on_out_of_bounds()
 
-func _handle_player_input(_delta):
 
-	#Get input direction from player controls
+func _handle_player_input(_delta):
+	# Get input direction from player controls
 	var input_vector = Vector2(
 		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
 		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
 	)
 
-	#Transform input to world-relative movement
+	# Transform movement direction to be relative to the camera
 	var right_dir = Vector2(camera.global_transform.basis.x.x, camera.global_transform.basis.x.z)
 	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
 	
-	_apply_gravity(_delta)
 	_move_player(relative_direction, Input.is_action_pressed("jump"), _delta)
 
-func _handle_ai_control(_delta):
-	# Use AI movement inputs directly
-	var relative_direction = ai_movement.normalized()
-	_apply_gravity(_delta)
-	_move_player(relative_direction, ai_jump, _delta)
 
 func _move_player(direction: Vector2, jump: bool, _delta):
 	# Convert 2D direction to 3D movement
@@ -97,8 +87,7 @@ func _move_player(direction: Vector2, jump: bool, _delta):
 	# Handle jumping
 	if is_on_floor() and jump:
 		velocity.y = jump_velocity
-	
-	move_and_slide()
+
 
 func _apply_gravity(_delta):
 	if not is_on_floor():
@@ -107,9 +96,11 @@ func _apply_gravity(_delta):
 	else:
 		current_acceleration = acceleration
 
+
 func _on_out_of_bounds():
 	global_position = spawn_point.global_position
 	velocity = Vector3.ZERO
+
 
 var pearl_scene = preload("res://pearl.tscn")
 func _throw_pearl():
@@ -121,9 +112,3 @@ func _throw_pearl():
 	var spawn_position = camera.global_transform.origin
 	var throw_direction = -camera.global_transform.basis.z
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction)
-
-func _set_ai_movement(direction: Vector2):
-	ai_movement = direction
-	
-func _set_ai_jump(jump: bool):
-	ai_jump = jump
