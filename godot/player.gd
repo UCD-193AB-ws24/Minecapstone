@@ -1,4 +1,6 @@
+class_name Player
 extends CharacterBody3D
+
 
 @export var speed = 5
 @export var jump_velocity = 10.0
@@ -8,16 +10,19 @@ var current_acceleration = 0.15
 var min_y: float
 var max_y: float
 
+
 @onready var camera: Camera3D = $Camera3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	var start_y = global_position.y
 	min_y = start_y - 2.0 # arbritary just tp after walking off the ledge
 	max_y = start_y + 15.0 # no point for now but added anyways
-	
+
+
 # Called on input event
 func _input(event):
 	# Rotate the player and the camera
@@ -31,10 +36,15 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		_throw_pearl()
+
 
 func _process(_delta):
-	# Moves the player and its children, makes the camera motion smooth
+	# Moves the player and its children
+	# Called here instead to ensure smooth camera movement
 	move_and_slide()
+
 
 func _physics_process(_delta):
 	# Get input direction
@@ -72,8 +82,21 @@ func _physics_process(_delta):
 	
 	# Teleport the player back to the spawn point if they fall off the map
 	if global_position.y < min_y:
-		on_out_of_bounds()
+		_on_out_of_bounds()
 
-func on_out_of_bounds():
+
+func _on_out_of_bounds():
 	global_position = spawn_point.global_position
 	velocity = Vector3.ZERO
+
+
+var pearl_scene = preload("res://pearl.tscn")
+func _throw_pearl():
+	var pearl_instance = pearl_scene.instantiate()
+	pearl_instance.global_transform = global_transform
+	get_parent().add_child(pearl_instance)
+	
+	# Launch the pearl in the direction the camera is facing
+	var spawn_position = camera.global_transform.origin
+	var throw_direction = -camera.global_transform.basis.z
+	pearl_instance.throw_in_direction(self, spawn_position, throw_direction)
