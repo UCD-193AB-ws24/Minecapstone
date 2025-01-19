@@ -21,4 +21,5 @@ shape = SubResource("BoxShape3D_sh265")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66, 0)
 current = true
+fov = 90.0
 size = 0.048

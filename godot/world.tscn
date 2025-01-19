@@ -1,6 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://co7hj1mf7o34c"]
+[gd_scene load_steps=9 format=3 uid="uid://co7hj1mf7o34c"]
 
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="1_f3sb7"]
+[ext_resource type="Script" uid="uid://da832iugoh2m2" path="res://chunk.gd" id="1_f3sb7"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://ui.tscn" id="3_tlwt5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f3sb7"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -18,7 +20,7 @@ glow_enabled = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_fj7yv"]
 size = Vector3(100, 1, 100)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_f3sb7"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_tlwt5"]
 
 [node name="World" type="Node3D"]
 
@@ -38,29 +40,19 @@ size = Vector3(100, 1, 100)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/StaticBody3D"]
 shape = SubResource("BoxShape3D_fj7yv")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_f3sb7")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D2"]
+[node name="Player" parent="." instance=ExtResource("2_fj7yv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1, 9)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D2/StaticBody3D"]
-shape = SubResource("BoxShape3D_f3sb7")
+[node name="UI" parent="." instance=ExtResource("3_tlwt5")]
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0)
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D3"]
+[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D3/StaticBody3D"]
-shape = SubResource("BoxShape3D_f3sb7")
-
-[node name="CSGBox3D4" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 0)
-
-[node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D4"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D4/StaticBody3D"]
-shape = SubResource("BoxShape3D_f3sb7")
-
-[node name="Player" parent="." instance=ExtResource("1_f3sb7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0388039, 0.510954, 6.86287)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D"]
+shape = SubResource("BoxShape3D_tlwt5")

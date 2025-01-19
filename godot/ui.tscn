@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://bp2lv8kmupisq"]
+
+[ext_resource type="Script" uid="uid://cpjef4lcjfguy" path="res://ui.gd" id="1_fyqef"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xb563"]
+font_size = 26
+font_color = Color(0, 1, 0, 1)
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fyqef")
+
+[node name="FlowContainer" type="FlowContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="FlowContainer"]
+layout_mode = 2
+text = "FPS:"
+label_settings = SubResource("LabelSettings_xb563")
