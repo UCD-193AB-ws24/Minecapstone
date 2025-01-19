@@ -31,6 +31,7 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _process(_delta):
+	# Moves the player and its children, makes the camera motion smooth
 	move_and_slide()
 
 func _physics_process(_delta):
@@ -41,8 +42,7 @@ func _physics_process(_delta):
 	)
 	var direction = Vector3(input_vector.x, 0, input_vector.y)
 
-	# Transform direction to be relative to the camera
-	
+	# Movement direction as relative to the camera
 	var camera_transform = camera.global_transform
 	direction = camera_transform.basis * direction
 	direction.y = 0
@@ -75,4 +75,3 @@ func _physics_process(_delta):
 func on_out_of_bounds():
 	global_position = spawn_point.global_position
 	velocity = Vector3.ZERO
-	
