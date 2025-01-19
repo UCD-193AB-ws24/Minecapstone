@@ -5,12 +5,19 @@ extends CharacterBody3D
 @export var mouse_sensitivity = 0.1
 @export var acceleration = 0.15
 var current_acceleration = 0.15
+var min_y: float
+var max_y: float
 
 @onready var camera: Camera3D = $Camera3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
+@onready var spawn_point: Marker3D = $"../SpawnPoint"
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	var start_y = global_position.y
+	min_y = start_y - 2.0 # arbritary just tp after walking off the ledge
+	max_y = start_y + 15.0 # no point for now but added anyways
+	
 
 func _input(event):
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -60,5 +67,12 @@ func _physics_process(_delta):
 	else:
 		velocity.x = lerp(velocity.x, 0.0, current_acceleration)
 		velocity.z = lerp(velocity.z, 0.0, current_acceleration)
-
+		
 	# Move the player
+	if global_position.y < min_y:
+		on_out_of_bounds()
+
+func on_out_of_bounds():
+	global_position = spawn_point.global_position
+	velocity = Vector3.ZERO
+	
