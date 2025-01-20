@@ -10,7 +10,7 @@ public partial class Chunk : StaticBody3D
 	[Export]
 	public MeshInstance3D MeshInstance { get; set; }
 
-	private static Vector3I dimensions = new Vector3I(16, 50, 16);
+	public static Vector3I dimensions = new Vector3I(16, 50, 16);
 
 	private static readonly Vector3[] _vertices = [
 		new Vector3I(0,0,0),
@@ -39,11 +39,18 @@ public partial class Chunk : StaticBody3D
 	[Export]
 	public FastNoiseLite Noise { get; set; }
 
-	public override void _Ready() {
-		ChunkPosition = new Vector2I(Mathf.FloorToInt(GlobalPosition.X / dimensions.X), Mathf.FloorToInt(GlobalPosition.Z / dimensions.Z));
-		GD.Print(ChunkPosition);
+	public void SetChunkPosition(Vector2I position) {
+		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
+		ChunkPosition = position;
+		GlobalPosition = new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z);
+
 		Generate();
 		Update();
+	}
+
+	public override void _Ready() {
+		SetChunkPosition(new Vector2I(Mathf.FloorToInt(GlobalPosition.X / dimensions.X), Mathf.FloorToInt(GlobalPosition.Z / dimensions.Z)));
+		SetMeta("is_chunk", true); // Add this line
 	}
 
 	public void Generate() {
@@ -56,10 +63,10 @@ public partial class Chunk : StaticBody3D
 					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
 					
 					if (y < groundHeight / 2) {
-						block = BlockManager.Instance.Dirt;
+						block = BlockManager.Instance.Stone;
 					}
 					else if (y < groundHeight) {
-						block = BlockManager.Instance.Stone;
+						block = BlockManager.Instance.Dirt;
 					}
 					else if (y == groundHeight) {
 						block = BlockManager.Instance.Grass;
@@ -135,8 +142,12 @@ public partial class Chunk : StaticBody3D
 		var triangle1 = new Vector3[] { a, b, c };
 		var triangle2 = new Vector3[] { a, c, d };
 
-		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1);
-		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2);
+		// Normal vector using cross product
+		var normal = ((Vector3)(c-a)).Cross((Vector3)(b-a)).Normalized();
+		var normals = new Vector3[] { normal, normal, normal };
+
+		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1, normals: normals);
+		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals);
 	}
 
 	private bool CheckTransparent(Vector3I blockPosition) {

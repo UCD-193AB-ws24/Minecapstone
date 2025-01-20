@@ -1,5 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://co7hj1mf7o34c"]
+[gd_scene load_steps=17 format=3 uid="uid://co7hj1mf7o34c"]
 
+[ext_resource type="Script" uid="uid://bmjlbi4ommt7u" path="res://ChunkManager.cs" id="1_ioo17"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://ui.tscn" id="3_tlwt5"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://BlockManager.cs" id="4_036b0"]
@@ -8,19 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://bbodruvpqn77s" path="res://assets/stone.png" id="6_ioo17"]
 [ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="7_wse8f"]
 [ext_resource type="Texture2D" uid="uid://dbduamuocf2xg" path="res://assets/grass.png" id="8_ic0uy"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
-sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-
-[sub_resource type="Sky" id="Sky_ioo17"]
-sky_material = SubResource("ProceduralSkyMaterial_gbfbk")
-
-[sub_resource type="Environment" id="Environment_wse8f"]
-background_mode = 2
-sky = SubResource("Sky_ioo17")
-tonemap_mode = 2
-glow_enabled = true
 
 [sub_resource type="Resource" id="Resource_k3n1d"]
 script = ExtResource("5_gbfbk")
@@ -41,7 +29,30 @@ script = ExtResource("5_gbfbk")
 texture = ExtResource("8_ic0uy")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_ioo17"]
+sky_material = SubResource("ProceduralSkyMaterial_gbfbk")
+
+[sub_resource type="Environment" id="Environment_wse8f"]
+background_mode = 2
+sky = SubResource("Sky_ioo17")
+tonemap_mode = 2
+glow_enabled = true
+
 [node name="World" type="Node3D"]
+
+[node name="ChunkManager" type="Node" parent="."]
+script = ExtResource("1_ioo17")
+
+[node name="BlockManager" type="Node" parent="."]
+script = ExtResource("4_036b0")
+Air = SubResource("Resource_k3n1d")
+Stone = SubResource("Resource_2o6r5")
+Dirt = SubResource("Resource_70uel")
+Grass = SubResource("Resource_hiqwa")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_wse8f")
@@ -61,13 +72,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 41, 4)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 42, 2.5)
-
-[node name="BlockManager" type="Node" parent="."]
-script = ExtResource("4_036b0")
-Air = SubResource("Resource_k3n1d")
-Stone = SubResource("Resource_2o6r5")
-Dirt = SubResource("Resource_70uel")
-Grass = SubResource("Resource_hiqwa")
 
 [node name="Chunk" parent="." instance=ExtResource("4_aqk2v")]
 

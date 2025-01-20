@@ -17,6 +17,7 @@ var current_acceleration = 0.15
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @onready var ai_controller: AIController = $AIController
 @onready var block_manager: Node = $"../BlockManager"
+@onready var chunk_manager: Node = $"../ChunkManager"
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -31,7 +32,7 @@ func _input(event):
 			rotate_y(deg_to_rad(deltaY))
 			head.rotate_x(deg_to_rad(deltaX))
 			head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
-		elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		elif event is InputEventKey and event.pressed and event.keycode == KEY_E:
 			_throw_pearl()
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -41,24 +42,24 @@ func _input(event):
 
 
 func _process(_delta):
-	if raycast.is_colliding():
-		print(raycast.get_collider())
+	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
 		block_highlight.visible = true
 		
 		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 
 		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
-		print(block_highlight.global_position)
 
-		# var chunk = raycast.get_collider()
-		# if Input.is_action_just_pressed("place_block"):
-		# 	chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Instance.Air)
-		
-		# if Input.is_action_just_pressed("break_block"):
-		# 	chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position + raycast.get_collision_normal()), block_manager.Instance.Stone)
+		var chunk = raycast.get_collider()
+		if Input.is_action_just_pressed("mouse1"):
+			chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Air)
+		if Input.is_action_just_pressed("mouse2"):
+			# TODO: Prevent player from placing blocks if the block will intersect the player
+			chunk_manager.SetBlock((Vector3i)(int_block_position + raycast.get_collision_normal()), block_manager.Stone)
 	else:
 		block_highlight.visible = false
+
+	block_highlight.global_rotation = Vector3.ZERO
 
 	# Moves the player and its children
 	# Called here instead to ensure smooth camera movement
@@ -129,5 +130,5 @@ func _throw_pearl():
 	
 	# Launch the pearl in the direction the camera is facing
 	var spawn_position = camera.global_transform.origin
-	var throw_direction = -camera.global_transform.basis.z
+	var throw_direction = -raycast.global_transform.basis.z.normalized()
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction)
