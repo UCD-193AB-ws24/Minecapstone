@@ -55,14 +55,14 @@ func _input(event):
 		match view:
 			ViewMode.NORMAL:
 				view = ViewMode.THIRDPERSON
-				camera.global_transform.origin += camera.global_transform.basis.z * 3.5
+				camera.global_position += camera.global_transform.basis.z * 3.5
 			ViewMode.THIRDPERSON:
 				view = ViewMode.SPECTATOR
-				camera.global_transform.origin = global_transform.origin + Vector3(0, 1.66, 0)
+				camera.global_position = global_position + Vector3(0, 1.66, 0)
 			ViewMode.SPECTATOR:
 				view = ViewMode.NORMAL
 				camera.rotation_degrees = Vector3(0, 0, 0)
-				camera.global_transform.origin = global_transform.origin + Vector3(0, 1.66, 0)
+				camera.global_position = global_position + Vector3(0, 1.66, 0)
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
