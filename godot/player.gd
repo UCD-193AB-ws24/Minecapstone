@@ -3,9 +3,19 @@ extends CharacterBody3D
 
 
 @export var _speed = 5
+@export var _sprint_speed = _speed * 1.3
 @export var _jump_velocity = 10.0
 @export var _mouse_sensitivity = 0.1
 @export var _acceleration = 0.15
+
+#Fov and sprinting
+@export var normal_fov = 70.0 # Default Camera3D fov
+@export var sprint_fov = 90.0 
+@export var fov_transition_speed = 5.0
+@export var double_tap_time = 0.3 # Time in between "W" presses
+
+var _is_sprinting = false
+var last_forward_press = 0.0 # Make note and update the time for last "W" press
 
 var current_acceleration = 0.15
 
@@ -65,18 +75,20 @@ func _process(_delta):
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
-
 func _physics_process(_delta):
 	if not ai_controller.ai_control_enabled:
 		_handle_player_input(_delta)
 	
 	_apply_gravity(_delta)
+	_update_fov(_delta)
 	
 	if global_position.y < -64:
 		_on_out_of_bounds()
 
 
 func _handle_player_input(_delta):
+	var current_speed = _handle_sprint()
+
 	# Get input direction from player controls
 	var input_vector = Vector2(
 		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
@@ -89,17 +101,39 @@ func _handle_player_input(_delta):
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
 	
-	_move_player(relative_direction, Input.is_action_pressed("jump"), _delta)
+	_move_player(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
 
 
-func _move_player(direction: Vector2, jump: bool, _delta):
+func _handle_sprint():
+	# Double-tap W Sprint
+	var current_time = Time.get_ticks_msec() / 1000.0 # Milliseconds to seconds
+	if Input.is_action_just_pressed("move_forward"):
+		if current_time - last_forward_press <= double_tap_time:
+			_is_sprinting = true
+		last_forward_press = current_time
+	
+	# Shift sprint
+	if Input.is_action_pressed("sprint"):
+		_is_sprinting = true
+	
+	# Stop sprinting if not moving forward or sprint is released
+	if not Input.is_action_pressed("move_forward") and not Input.is_action_pressed("sprint"):
+		_is_sprinting = false
+		
+	if _is_sprinting:
+		return _sprint_speed
+	else:
+		return _speed
+
+
+func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
 	# Convert 2D direction to 3D movement
 	var movement = Vector3(direction.x, 0, direction.y)
 	
 	# Apply movement
 	if movement != Vector3.ZERO:
-		velocity.x = lerp(velocity.x, movement.x * _speed, _acceleration)
-		velocity.z = lerp(velocity.z, movement.z * _speed, _acceleration)
+		velocity.x = lerp(velocity.x, movement.x * current_speed, _acceleration)
+		velocity.z = lerp(velocity.z, movement.z * current_speed, _acceleration)
 	else:
 		velocity.x = lerp(velocity.x, 0.0, _acceleration)
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
@@ -116,7 +150,13 @@ func _apply_gravity(_delta):
 	else:
 		current_acceleration = _acceleration
 
-
+func _update_fov(_delta):
+	# Update fov based on sprinting or not
+	if _is_sprinting:
+		camera.fov = lerp(camera.fov, sprint_fov, fov_transition_speed * _delta)
+	else:
+		camera.fov = lerp(camera.fov, normal_fov, fov_transition_speed * _delta)
+	
 func _on_out_of_bounds():
 	global_position = spawn_point.global_position
 	velocity = Vector3.ZERO
