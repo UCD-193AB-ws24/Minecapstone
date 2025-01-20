@@ -7,17 +7,19 @@ extends CharacterBody3D
 @export var _jump_velocity = 10.0
 @export var _mouse_sensitivity = 0.1
 @export var _acceleration = 0.15
+var current_acceleration = 0.15
 
 #Fov and sprinting
 @export var normal_fov = 70.0 # Default Camera3D fov
-@export var sprint_fov = 90.0 
+@export var sprint_fov = 90.0
 @export var fov_transition_speed = 5.0
 @export var double_tap_time = 0.3 # Time in between "W" presses
-
 var _is_sprinting = false
 var last_forward_press = 0.0 # Make note and update the time for last "W" press
 
-var current_acceleration = 0.15
+# Alternate views
+enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
+@onready var view:ViewMode = ViewMode.NORMAL
 
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -39,11 +41,28 @@ func _input(event):
 		if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			var deltaX = -event.relative.y * _mouse_sensitivity
 			var deltaY = -event.relative.x * _mouse_sensitivity
-			rotate_y(deg_to_rad(deltaY))
-			head.rotate_x(deg_to_rad(deltaX))
-			head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
+			if view == ViewMode.SPECTATOR:
+				camera.global_rotation_degrees.x = clamp(camera.global_rotation_degrees.x + deltaX, -89.5, 89.5)
+				camera.global_rotation_degrees.y += deltaY
+				camera.global_rotation_degrees.z = 0
+			else:
+				rotate_y(deg_to_rad(deltaY))
+				head.rotate_x(deg_to_rad(deltaX))
+				head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
 		elif event is InputEventKey and event.pressed and event.keycode == KEY_E:
 			_throw_pearl()
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F5:
+		match view:
+			ViewMode.NORMAL:
+				view = ViewMode.THIRDPERSON
+				camera.global_position += camera.global_transform.basis.z * 3.5
+			ViewMode.THIRDPERSON:
+				view = ViewMode.SPECTATOR
+				camera.global_position = global_position + Vector3(0, 1.66, 0)
+			ViewMode.SPECTATOR:
+				view = ViewMode.NORMAL
+				camera.rotation_degrees = Vector3(0, 0, 0)
+				camera.global_position = global_position + Vector3(0, 1.66, 0)
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -51,15 +70,18 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
+
 func _process(_delta):
 	# Moves the player and its children
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
+	if view == ViewMode.SPECTATOR: spectator_movement(_delta);
+
 	# Highlight block player is looking at, and place or remove blocks
 	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
 		block_highlight.visible = true
-		
+
 		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 
@@ -78,13 +100,27 @@ func _process(_delta):
 	block_highlight.global_rotation = Vector3.ZERO
 
 
+# TODO: Spectator mode should unchild the camera from the player
+func spectator_movement(_delta):
+	var cameraSpeed = 10;
+	var move_dir = Vector3(
+		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
+		Input.get_action_strength("jump") - Input.get_action_strength("crouch"),
+		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+	)
+
+	# Move the camera in the direction it's facing
+	var move_vector = camera.global_transform.basis.x * move_dir.x + camera.global_transform.basis.y * move_dir.y + camera.global_transform.basis.z * move_dir.z
+	camera.global_position += move_vector * cameraSpeed * _delta
+
+
 func _physics_process(_delta):
 	if not ai_controller.ai_control_enabled:
 		_handle_player_input(_delta)
-	
+
 	_apply_gravity(_delta)
 	_update_fov(_delta)
-	
+
 	if global_position.y < -64:
 		_on_out_of_bounds()
 
@@ -101,9 +137,11 @@ func _handle_player_input(_delta):
 	# Transform movement direction to be relative to the camera
 	var right_dir = Vector2(camera.global_transform.basis.x.x, camera.global_transform.basis.x.z)
 	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
+	# if god_view:
+	# 	forward_dir = -forward_dir
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
-	
+
 	_move_player(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
 
 
@@ -114,13 +152,13 @@ func _handle_sprint():
 		if current_time - last_forward_press <= double_tap_time:
 			_is_sprinting = true
 		last_forward_press = current_time
-	
+
 	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
 		_is_sprinting = true
 	# Stop sprinting if not moving forward or sprint is released
 	elif not Input.is_action_pressed("move_forward") and not Input.is_action_pressed("sprint"):
 		_is_sprinting = false
-		
+
 	if _is_sprinting:
 		return _sprint_speed
 	else:
@@ -128,9 +166,12 @@ func _handle_sprint():
 
 
 func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
+	# Disable movement if spectator mode
+	if view == ViewMode.SPECTATOR: direction = Vector2.ZERO
+
 	# Convert 2D direction to 3D movement
 	var movement = Vector3(direction.x, 0, direction.y)
-	
+
 	# Apply movement
 	if movement != Vector3.ZERO:
 		velocity.x = lerp(velocity.x, movement.x * current_speed, _acceleration)
@@ -138,7 +179,7 @@ func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
 	else:
 		velocity.x = lerp(velocity.x, 0.0, _acceleration)
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
-	
+
 	# Handle jumping
 	if is_on_floor() and jump:
 		velocity.y = _jump_velocity
@@ -157,7 +198,7 @@ func _update_fov(_delta):
 		camera.fov = lerp(camera.fov, sprint_fov, fov_transition_speed * _delta)
 	else:
 		camera.fov = lerp(camera.fov, normal_fov, fov_transition_speed * _delta)
-	
+
 func _on_out_of_bounds():
 	global_position = spawn_point.global_position
 	velocity = Vector3.ZERO
@@ -168,10 +209,10 @@ func _throw_pearl():
 	var pearl_instance = pearl_scene.instantiate()
 	pearl_instance.global_transform = global_transform
 	get_parent().add_child(pearl_instance)
-	
+
 	# Launch the pearl in the direction the camera is facing
-	var facing_direction = -head.global_transform.basis.z 
+	var facing_direction = -head.global_transform.basis.z
 	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.1
 	var spawn_position = head.global_transform.origin
-	
+
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
