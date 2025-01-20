@@ -70,9 +70,8 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
-
 func _process(_delta):
-	# Moves the player and its children
+	# Moves the player and child nodes
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
@@ -156,7 +155,7 @@ func _handle_sprint():
 	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
 		_is_sprinting = true
 	# Stop sprinting if not moving forward or sprint is released
-	elif not Input.is_action_pressed("move_forward") and not Input.is_action_pressed("sprint"):
+	elif not Input.is_action_pressed("move_forward"):
 		_is_sprinting = false
 
 	if _is_sprinting:
@@ -192,12 +191,14 @@ func _apply_gravity(_delta):
 	else:
 		current_acceleration = _acceleration
 
+
 func _update_fov(_delta):
 	# Update fov based on sprinting or not
 	if _is_sprinting:
 		camera.fov = lerp(camera.fov, sprint_fov, fov_transition_speed * _delta)
 	else:
 		camera.fov = lerp(camera.fov, normal_fov, fov_transition_speed * _delta)
+
 
 func _on_out_of_bounds():
 	global_position = spawn_point.global_position
