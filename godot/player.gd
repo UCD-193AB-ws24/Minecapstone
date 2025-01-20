@@ -15,7 +15,7 @@ var min_y: float
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"			# TODO: replace with a proper spawn system
 @onready var ai_controller: AIController = $AIController
-
+@onready var ray_cast: RayCast3D = $Camera3D/RayCast3D
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -67,9 +67,14 @@ func _handle_player_input(_delta):
 	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
-	
 	_move_player(relative_direction, Input.is_action_pressed("jump"), _delta)
-
+	
+	if Input.is_action_just_pressed("left_click"):
+		if ray_cast.is_colliding():
+			# TODO: change to actual function associated with block breaking
+			if ray_cast.get_collider().has_method("break_block"):
+				ray_cast.get_collider().break_block()
+			
 
 func _move_player(direction: Vector2, jump: bool, _delta):
 	# Convert 2D direction to 3D movement
@@ -111,3 +116,4 @@ func _throw_pearl():
 	var spawn_position = camera.global_transform.origin
 	var throw_direction = -camera.global_transform.basis.z
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction)
+	

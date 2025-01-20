@@ -26,6 +26,9 @@ current = true
 fov = 90.0
 size = 0.048
 
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
+target_position = Vector3(0, 0, -5)
+
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("2_onrkg")
 metadata/_custom_type_script = ExtResource("2_onrkg")
