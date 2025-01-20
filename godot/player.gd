@@ -52,6 +52,11 @@ func _input(event):
 
 
 func _process(_delta):
+	# Moves the player and its children
+	# Called here instead to ensure smooth camera movement
+	move_and_slide()
+
+	# Highlight block player is looking at, and place or remove blocks
 	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
 		block_highlight.visible = true
 		
@@ -69,11 +74,9 @@ func _process(_delta):
 	else:
 		block_highlight.visible = false
 
+	# Lock the block highlight to the grid
 	block_highlight.global_rotation = Vector3.ZERO
 
-	# Moves the player and its children
-	# Called here instead to ensure smooth camera movement
-	move_and_slide()
 
 func _physics_process(_delta):
 	if not ai_controller.ai_control_enabled:
@@ -112,11 +115,10 @@ func _handle_sprint():
 			_is_sprinting = true
 		last_forward_press = current_time
 	
-	if Input.is_action_pressed("sprint") and velocity.length() > 0 and Input.is_action_pressed("move_forward"):
+	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
 		_is_sprinting = true
-	
 	# Stop sprinting if not moving forward or sprint is released
-	if not Input.is_action_pressed("move_forward") and not Input.is_action_pressed("sprint"):
+	elif not Input.is_action_pressed("move_forward") and not Input.is_action_pressed("sprint"):
 		_is_sprinting = false
 		
 	if _is_sprinting:
@@ -168,6 +170,8 @@ func _throw_pearl():
 	get_parent().add_child(pearl_instance)
 	
 	# Launch the pearl in the direction the camera is facing
-	var spawn_position = camera.global_transform.origin
-	var throw_direction = -raycast.global_transform.basis.z.normalized()
-	pearl_instance.throw_in_direction(self, spawn_position, throw_direction)
+	var facing_direction = -head.global_transform.basis.z 
+	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.1
+	var spawn_position = head.global_transform.origin
+	
+	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())

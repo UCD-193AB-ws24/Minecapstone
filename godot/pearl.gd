@@ -13,13 +13,8 @@ func throw_in_direction(thrower:Player, throw_position:Vector3, throw_direction:
 	player_audio.stream = load("res://assets/throw.mp3")
 	player_audio.play()
 
-	global_position = throw_position + Vector3(0, 0, -0.1) + throw_direction.normalized() * 0.5
-	linear_velocity = throw_direction.normalized() * 20 # Adjust the speed as needed
-
-
-func _physics_process(_delta):
-	rotation_degrees.x = 0
-	rotation_degrees.z = 0
+	global_position = throw_position + throw_direction.normalized()
+	linear_velocity = throw_direction.normalized() * 20
 
 
 # Called on collision
