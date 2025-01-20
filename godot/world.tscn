@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://co7hj1mf7o34c"]
+[gd_scene load_steps=18 format=3 uid="uid://co7hj1mf7o34c"]
 
 [ext_resource type="Script" uid="uid://bmjlbi4ommt7u" path="res://ChunkManager.cs" id="1_ioo17"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
@@ -7,26 +7,29 @@
 [ext_resource type="PackedScene" uid="uid://c7m3rrvvx3cg6" path="res://chunk.tscn" id="4_aqk2v"]
 [ext_resource type="Script" uid="uid://cfcs76sa6g0rl" path="res://Block.cs" id="5_gbfbk"]
 [ext_resource type="Texture2D" uid="uid://bbodruvpqn77s" path="res://assets/stone.png" id="6_ioo17"]
+[ext_resource type="Texture2D" uid="uid://cji88xvb8pvsu" path="res://assets/side_grass.png" id="6_wse8f"]
 [ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="7_wse8f"]
 [ext_resource type="Texture2D" uid="uid://dbduamuocf2xg" path="res://assets/grass.png" id="8_ic0uy"]
 
+[sub_resource type="Resource" id="Resource_wse8f"]
+script = ExtResource("5_gbfbk")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
+[sub_resource type="Resource" id="Resource_ic0uy"]
+script = ExtResource("5_gbfbk")
+Texture = ExtResource("6_ioo17")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
 [sub_resource type="Resource" id="Resource_k3n1d"]
 script = ExtResource("5_gbfbk")
+Texture = ExtResource("7_wse8f")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="Resource" id="Resource_2o6r5"]
 script = ExtResource("5_gbfbk")
-texture = ExtResource("6_ioo17")
-metadata/_custom_type_script = ExtResource("5_gbfbk")
-
-[sub_resource type="Resource" id="Resource_70uel"]
-script = ExtResource("5_gbfbk")
-texture = ExtResource("7_wse8f")
-metadata/_custom_type_script = ExtResource("5_gbfbk")
-
-[sub_resource type="Resource" id="Resource_hiqwa"]
-script = ExtResource("5_gbfbk")
-texture = ExtResource("8_ic0uy")
+Texture = ExtResource("6_wse8f")
+TopTexture = ExtResource("8_ic0uy")
+BottomTexture = ExtResource("7_wse8f")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
@@ -44,15 +47,15 @@ glow_enabled = true
 
 [node name="World" type="Node3D"]
 
-[node name="ChunkManager" type="Node" parent="."]
-script = ExtResource("1_ioo17")
-
 [node name="BlockManager" type="Node" parent="."]
 script = ExtResource("4_036b0")
-Air = SubResource("Resource_k3n1d")
-Stone = SubResource("Resource_2o6r5")
-Dirt = SubResource("Resource_70uel")
-Grass = SubResource("Resource_hiqwa")
+Air = SubResource("Resource_wse8f")
+Stone = SubResource("Resource_ic0uy")
+Dirt = SubResource("Resource_k3n1d")
+Grass = SubResource("Resource_2o6r5")
+
+[node name="ChunkManager" type="Node" parent="."]
+script = ExtResource("1_ioo17")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_wse8f")
