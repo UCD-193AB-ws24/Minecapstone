@@ -2,34 +2,35 @@ class_name Player
 extends CharacterBody3D
 
 
-@export var speed = 5
-@export var jump_velocity = 10.0
-@export var mouse_sensitivity = 0.1
-@export var acceleration = 0.15
+@export var _speed = 5
+@export var _jump_velocity = 10.0
+@export var _mouse_sensitivity = 0.1
+@export var _acceleration = 0.15
 
 var current_acceleration = 0.15
-var min_y: float
 
-
-@onready var camera: Camera3D = $Camera3D
+@onready var head:Node3D = $Head
+@onready var camera: Camera3D = $Head/Camera3D
+@onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
+@onready var block_highlight: CSGBox3D = $BlockHighlight
 @onready var collision: CollisionShape3D = $CollisionShape3D
-@onready var spawn_point: Marker3D = $"../SpawnPoint"			# TODO: replace with a proper spawn system
+@onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @onready var ai_controller: AIController = $AIController
-
+@onready var block_manager: Node = $"../BlockManager"
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	var start_y = global_position.y
-	min_y = start_y - 2.0 	# arbritary just tp after walking off the ledge
 
 
 # Called on input event
 func _input(event):
 	if not ai_controller.ai_control_enabled:
 		if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
-			camera.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
-			camera.rotation_degrees.x = clamp(camera.rotation_degrees.x, -89.9, 89.9)
+			var deltaX = -event.relative.y * _mouse_sensitivity
+			var deltaY = -event.relative.x * _mouse_sensitivity
+			rotate_y(deg_to_rad(deltaY))
+			head.rotate_x(deg_to_rad(deltaX))
+			head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
 		elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			_throw_pearl()
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
@@ -40,6 +41,25 @@ func _input(event):
 
 
 func _process(_delta):
+	if raycast.is_colliding():
+		print(raycast.get_collider())
+		block_highlight.visible = true
+		
+		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
+
+		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
+		print(block_highlight.global_position)
+
+		# var chunk = raycast.get_collider()
+		# if Input.is_action_just_pressed("place_block"):
+		# 	chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Instance.Air)
+		
+		# if Input.is_action_just_pressed("break_block"):
+		# 	chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position + raycast.get_collision_normal()), block_manager.Instance.Stone)
+	else:
+		block_highlight.visible = false
+
 	# Moves the player and its children
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
@@ -51,7 +71,7 @@ func _physics_process(_delta):
 	
 	_apply_gravity(_delta)
 	
-	if global_position.y < min_y:
+	if global_position.y < -64:
 		_on_out_of_bounds()
 
 
@@ -77,23 +97,23 @@ func _move_player(direction: Vector2, jump: bool, _delta):
 	
 	# Apply movement
 	if movement != Vector3.ZERO:
-		velocity.x = lerp(velocity.x, movement.x * speed, acceleration)
-		velocity.z = lerp(velocity.z, movement.z * speed, acceleration)
+		velocity.x = lerp(velocity.x, movement.x * _speed, _acceleration)
+		velocity.z = lerp(velocity.z, movement.z * _speed, _acceleration)
 	else:
-		velocity.x = lerp(velocity.x, 0.0, acceleration)
-		velocity.z = lerp(velocity.z, 0.0, acceleration)
+		velocity.x = lerp(velocity.x, 0.0, _acceleration)
+		velocity.z = lerp(velocity.z, 0.0, _acceleration)
 	
 	# Handle jumping
 	if is_on_floor() and jump:
-		velocity.y = jump_velocity
+		velocity.y = _jump_velocity
 
 
 func _apply_gravity(_delta):
 	if not is_on_floor():
 		velocity.y -= 35 * _delta
-		current_acceleration = acceleration * 0.25
+		current_acceleration = _acceleration * 0.25
 	else:
-		current_acceleration = acceleration
+		current_acceleration = _acceleration
 
 
 func _on_out_of_bounds():
