@@ -1,8 +1,6 @@
 using Godot;
 using System;
 
-// Sourced from: https://www.youtube.com/watch?v=TM3r2V4980k
-
 [Tool]
 public partial class Chunk : StaticBody3D
 {
