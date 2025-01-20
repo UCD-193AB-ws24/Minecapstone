@@ -3,7 +3,7 @@ extends CharacterBody3D
 
 
 @export var _speed = 5
-@export var _sprint_speed = _speed * 1.3
+@export var _sprint_speed = _speed * 1.5
 @export var _jump_velocity = 10.0
 @export var _mouse_sensitivity = 0.1
 @export var _acceleration = 0.15
@@ -112,8 +112,7 @@ func _handle_sprint():
 			_is_sprinting = true
 		last_forward_press = current_time
 	
-	# Shift sprint
-	if Input.is_action_pressed("sprint"):
+	if Input.is_action_pressed("sprint") and velocity.length() > 0 and Input.is_action_pressed("move_forward"):
 		_is_sprinting = true
 	
 	# Stop sprinting if not moving forward or sprint is released
