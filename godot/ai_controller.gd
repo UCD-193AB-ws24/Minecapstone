@@ -12,4 +12,5 @@ func _physics_process(_delta):
 	if ai_control_enabled:
 		movement_direction = Vector2(-1,-1)
 		is_jumping = true
-		player._move_player(movement_direction.normalized(), is_jumping, _delta)
+		var current_speed = player.speed
+		player._move_player(movement_direction.normalized(), is_jumping, current_speed, _delta)
