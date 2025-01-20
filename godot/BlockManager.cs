@@ -31,12 +31,10 @@ public partial class BlockManager : Node
 
 	public StandardMaterial3D ChunkMaterial { get; set; }
 
-	public override void _Ready()
-	{
-		Instance  = this;
-
+	public override void _Ready() {
+		Instance = this;
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.Select(block => block.texture).Where(texture => texture != null).Distinct().ToArray();
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
 		for (int i = 0; i < blockTextures.Length; i++) {
@@ -49,10 +47,11 @@ public partial class BlockManager : Node
 
 		// Create the texture atlas
 		var image = Image.CreateEmpty(_gridWidth * BlockTextureSize.X, _gridHeight * BlockTextureSize.Y, false, Image.Format.Rgba8);
+
 		for (var x = 0; x < _gridWidth; x++) {
 			for (var y = 0; y < _gridHeight; y++) {
 				var imgIndex = x + y * _gridWidth;
-				
+
 				if (imgIndex >= blockTextures.Length) continue;
 
 				var currentImage = blockTextures[imgIndex].GetImage();
@@ -71,7 +70,7 @@ public partial class BlockManager : Node
 
 		TextureAtlasSize = new Vector2(_gridWidth, _gridHeight);
 
-		GD.Print($"Done loading {blockTextures.Length} textures into the texture atlas to make a {_gridWidth}x{_gridHeight} grid.");
+		GD.Print($"Done loading {blockTextures.Length} images to make {_gridWidth} x {_gridHeight} atlas");
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)
