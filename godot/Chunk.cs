@@ -39,29 +39,33 @@ public partial class Chunk : StaticBody3D
 	[Export]
 	public FastNoiseLite Noise { get; set; }
 
+	// Sets the chunk position and generate and update the chunk at that position
 	public void SetChunkPosition(Vector2I position) {
+		// Set chunk position as deferred to ensure the Chunk exists before setting its position
 		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
-		GlobalPosition = new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z);
+		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 
 		Generate();
 		Update();
 	}
 
 	public override void _Ready() {
-		SetChunkPosition(new Vector2I(Mathf.FloorToInt(GlobalPosition.X / dimensions.X), Mathf.FloorToInt(GlobalPosition.Z / dimensions.Z)));
-		SetMeta("is_chunk", true); // Add this line
+		SetMeta("is_chunk", true);
 	}
 
+	// Create and set block in the chunk
 	public void Generate() {
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
 					Block block;
 
+					// Set layer heights based on random noise
 					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
 					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
 					
+					// Super basic terrain generation
 					if (y < groundHeight / 2) {
 						block = BlockManager.Instance.Stone;
 					}
@@ -81,6 +85,7 @@ public partial class Chunk : StaticBody3D
 		}
 	}
 
+	// Update the mesh and collision shape of the chunk
 	public void Update() {
 		_surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
@@ -99,13 +104,14 @@ public partial class Chunk : StaticBody3D
 		CollisionShape.Shape = mesh.CreateTrimeshShape();
 	}
 
+	// Create the mesh for a block
 	private void CreateBlockMesh(Vector3I blockPosition) {
 		// Temporary fix for air blocks
 		var block = _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 
 		if (block == BlockManager.Instance.Air) return;
 
-			// Use the appropriate textures for each face
+		// Use the appropriate textures for each face
 		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture);
 		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture);
 		if (CheckTransparent(blockPosition + Vector3I.Left)) CreateFaceMesh(_left, blockPosition, block.Texture);
@@ -114,6 +120,7 @@ public partial class Chunk : StaticBody3D
 		if (CheckTransparent(blockPosition + Vector3I.Back)) CreateFaceMesh(_back, blockPosition, block.Texture);
 	}
 
+	// Create the mesh for a face
 	private void CreateFaceMesh(int[] face, Vector3I blockPosition, Texture2D texture) {
 		var texturePosition = BlockManager.Instance.GetTextureAtlasCoordinates(texture);
 		var textureAtlasSize = BlockManager.Instance.TextureAtlasSize;
@@ -150,6 +157,7 @@ public partial class Chunk : StaticBody3D
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals);
 	}
 
+	// Check if a block is transparent
 	private bool CheckTransparent(Vector3I blockPosition) {
 		if (blockPosition.X < 0 || blockPosition.X >= dimensions.X) return true;
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
@@ -159,6 +167,7 @@ public partial class Chunk : StaticBody3D
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] == BlockManager.Instance.Air;
 	}
 	
+	// Set a block in the chunk
 	public void SetBlock(Vector3I blockPosition, Block block) {
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
 		Update();

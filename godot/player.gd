@@ -2,37 +2,38 @@ class_name Player
 extends CharacterBody3D
 
 
-@export var _speed = 5
-@export var _sprint_speed = _speed * 1.5
+@onready var ai_controller: AIController = $AIController
+
+# ======================= Movement and camera settings =======================
+@export var _speed = 4.317
+var _sprint_speed = _speed * 1.3
 @export var _jump_velocity = 10.0
-@export var _mouse_sensitivity = 0.1
 @export var _acceleration = 0.15
 var current_acceleration = 0.15
 
-#Fov and sprinting
-@export var normal_fov = 70.0 # Default Camera3D fov
-@export var sprint_fov = 90.0
-@export var fov_transition_speed = 5.0
-@export var double_tap_time = 0.3 # Time in between "W" presses
+# ============================ FOV and sprinting ============================
 var _is_sprinting = false
-var last_forward_press = 0.0 # Make note and update the time for last "W" press
+@export var normal_fov = 70.0
+var sprint_fov = normal_fov + 20
+@export var fov_transition_speed = 10.0
+var last_forward_press = 0.0 			# Make note and update the time for last "W" press
+@export var double_tap_time = 0.3 		# Time in between "W" presses
 
-# Alternate views
+# ============================= Alternate views ============================
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 @onready var view:ViewMode = ViewMode.NORMAL
 
+# ========================= Camera and player head =========================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
-@onready var block_highlight: CSGBox3D = $BlockHighlight
-@onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
-@onready var ai_controller: AIController = $AIController
-@onready var block_manager: Node = $"../BlockManager"
-@onready var chunk_manager: Node = $"../ChunkManager"
+@export var _mouse_sensitivity = 0.1
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	global_position = spawn_point.global_position
 
 
 # Called on input event
@@ -78,6 +79,14 @@ func _process(_delta):
 	if view == ViewMode.SPECTATOR: spectator_movement(_delta);
 
 	# Highlight block player is looking at, and place or remove blocks
+	if not ai_controller.ai_control_enabled:
+		_handle_block_interaction()
+
+
+func _handle_block_interaction():
+	var block_highlight: CSGBox3D = $BlockHighlight
+	var block_manager: Node = $"../BlockManager"
+	var chunk_manager: Node = $"../ChunkManager"
 	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
 		block_highlight.visible = true
 
@@ -94,7 +103,6 @@ func _process(_delta):
 			chunk_manager.SetBlock((Vector3i)(int_block_position + raycast.get_collision_normal()), block_manager.Stone)
 	else:
 		block_highlight.visible = false
-
 	# Lock the block highlight to the grid
 	block_highlight.global_rotation = Vector3.ZERO
 
@@ -136,8 +144,6 @@ func _handle_player_input(_delta):
 	# Transform movement direction to be relative to the camera
 	var right_dir = Vector2(camera.global_transform.basis.x.x, camera.global_transform.basis.x.z)
 	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
-	# if god_view:
-	# 	forward_dir = -forward_dir
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
 
@@ -145,17 +151,18 @@ func _handle_player_input(_delta):
 
 
 func _handle_sprint():
-	# Double-tap W Sprint
-	var current_time = Time.get_ticks_msec() / 1000.0 # Milliseconds to seconds
+	# Double-tap to sprint
+	var current_time = Time.get_ticks_msec() / 1000.0
 	if Input.is_action_just_pressed("move_forward"):
 		if current_time - last_forward_press <= double_tap_time:
 			_is_sprinting = true
 		last_forward_press = current_time
 
+	# Shift to sprint
 	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
 		_is_sprinting = true
-	# Stop sprinting if not moving forward or sprint is released
-	elif not Input.is_action_pressed("move_forward"):
+	elif not Input.is_action_pressed("move_forward") or Vector2(velocity.x, velocity.z).length() < 0.1:
+		# Stop sprinting if not moving forward or sprint is released
 		_is_sprinting = false
 
 	if _is_sprinting:
@@ -164,7 +171,7 @@ func _handle_sprint():
 		return _speed
 
 
-func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
+func _move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
 	if view == ViewMode.SPECTATOR: direction = Vector2.ZERO
 
@@ -173,8 +180,8 @@ func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
 
 	# Apply movement
 	if movement != Vector3.ZERO:
-		velocity.x = lerp(velocity.x, movement.x * current_speed, _acceleration)
-		velocity.z = lerp(velocity.z, movement.z * current_speed, _acceleration)
+		velocity.x = lerp(velocity.x, movement.x * speed, _acceleration)
+		velocity.z = lerp(velocity.z, movement.z * speed, _acceleration)
 	else:
 		velocity.x = lerp(velocity.x, 0.0, _acceleration)
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
@@ -182,6 +189,12 @@ func _move_player(direction: Vector2, jump: bool, current_speed: float, _delta):
 	# Handle jumping
 	if is_on_floor() and jump:
 		velocity.y = _jump_velocity
+
+		# Apply horizontal impulse if jumping while sprinting
+		if _is_sprinting:
+			var horizontal_velocity = Vector3(velocity.x, 0, velocity.z)
+			var impulse = horizontal_velocity.normalized() * 0 * horizontal_velocity.length()
+			velocity += impulse
 
 
 func _apply_gravity(_delta):
