@@ -125,7 +125,7 @@ public partial class ChunkManager : Node
 				}
 			}
 			// This sleep didn't do much
-			// Thread.Sleep(1000);
+			Thread.Sleep(1000);
 		}
 	}
 

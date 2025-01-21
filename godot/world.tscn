@@ -34,7 +34,9 @@ TopTexture = ExtResource("8_ic0uy")
 BottomTexture = ExtResource("7_wse8f")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_ic0uy"]
+[sub_resource type="NavigationMesh" id="NavigationMesh_k3n1d"]
+agent_max_climb = 10.0
+agent_max_slope = 90.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
 sky_top_color = Color(0.478431, 0.658824, 0.992157, 1)
@@ -66,7 +68,8 @@ script = ExtResource("1_ioo17")
 ChunkScene = ExtResource("4_aqk2v")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_ic0uy")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+navigation_mesh = SubResource("NavigationMesh_k3n1d")
 script = ExtResource("9_k3n1d")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -88,10 +91,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 41.5, 2.5)
 use_collision = true
 
 [node name="Player" parent="." instance=ExtResource("2_fj7yv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 41, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 26, 4)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 42.5, 2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 26.5, 8.5)
 
 [node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 26.5, 5.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 26, 5.5)

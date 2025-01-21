@@ -42,6 +42,7 @@ script = ExtResource("2_kh24r")
 metadata/_custom_type_script = ExtResource("2_kh24r")
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
 
