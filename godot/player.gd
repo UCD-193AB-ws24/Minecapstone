@@ -159,6 +159,11 @@ func break_block():
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 	
+	if not raycast.is_colliding():
+		_block_breaking = null
+		_is_breaking = false
+		return
+	
 	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
 		_block_breaking = null
 		_is_breaking = false
