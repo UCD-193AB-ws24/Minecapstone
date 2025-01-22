@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=5 format=3 uid="uid://le6846223p6p"]
 
-[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://player.gd" id="1_4flbx"]
-[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://cd5ptaglu0xxs" path="res://npc.gd" id="1_xxcha"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_kh24r"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -10,9 +10,9 @@ size = Vector3(0.6, 1.85, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="NPC" type="CharacterBody3D"]
 platform_floor_layers = 4294967041
-script = ExtResource("1_4flbx")
+script = ExtResource("1_xxcha")
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
@@ -27,7 +27,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 size = Vector3(0.6, 0.6, 0.6)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
-current = true
 fov = 90.0
 size = 0.048
 
@@ -39,9 +38,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_sh265")
 
 [node name="AIController" type="Node" parent="."]
-script = ExtResource("2_onrkg")
-metadata/_custom_type_script = ExtResource("2_onrkg")
+script = ExtResource("2_kh24r")
+metadata/_custom_type_script = ExtResource("2_kh24r")
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]

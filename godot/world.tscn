@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://co7hj1mf7o34c"]
+[gd_scene load_steps=21 format=3 uid="uid://co7hj1mf7o34c"]
 
 [ext_resource type="Script" uid="uid://bmjlbi4ommt7u" path="res://ChunkManager.cs" id="1_ioo17"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://cji88xvb8pvsu" path="res://assets/side_grass.png" id="6_wse8f"]
 [ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="7_wse8f"]
 [ext_resource type="Texture2D" uid="uid://dbduamuocf2xg" path="res://assets/grass.png" id="8_ic0uy"]
+[ext_resource type="Script" uid="uid://b87jusqrcpf7y" path="res://navmesher.gd" id="9_k3n1d"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://npc.tscn" id="11_ic0uy"]
 
 [sub_resource type="Resource" id="Resource_wse8f"]
 script = ExtResource("5_gbfbk")
@@ -32,18 +34,25 @@ TopTexture = ExtResource("8_ic0uy")
 BottomTexture = ExtResource("7_wse8f")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_k3n1d"]
+agent_max_climb = 10.0
+agent_max_slope = 90.0
+
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
-sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+sky_top_color = Color(0.478431, 0.658824, 0.992157, 1)
+sky_horizon_color = Color(0.752941, 0.839216, 1, 1)
+sky_curve = 0.0652915
+ground_bottom_color = Color(0.0871543, 0.0697184, 0.0494625, 1)
+ground_horizon_color = Color(0.752941, 0.839216, 1, 1)
+sun_curve = 0.35
 
 [sub_resource type="Sky" id="Sky_ioo17"]
 sky_material = SubResource("ProceduralSkyMaterial_gbfbk")
+radiance_size = 4
 
 [sub_resource type="Environment" id="Environment_wse8f"]
 background_mode = 2
 sky = SubResource("Sky_ioo17")
-tonemap_mode = 2
-glow_enabled = true
 
 [node name="World" type="Node3D"]
 
@@ -56,13 +65,24 @@ Grass = SubResource("Resource_2o6r5")
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("1_ioo17")
+ChunkScene = ExtResource("4_aqk2v")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+navigation_mesh = SubResource("NavigationMesh_k3n1d")
+script = ExtResource("9_k3n1d")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_wse8f")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.866023, -0.433016, 0.250001, 0.433016, -0.39952, 0.808011, -0.250002, 0.808011, 0.533496, 0, 48.5, 0)
+transform = Transform3D(1, 0, 0, 0, 0.559193, 0.829038, 0, -0.829038, 0.559193, 0, 0, 0)
+light_angular_distance = 2.27
 shadow_enabled = true
+shadow_blur = 0.0
+directional_shadow_mode = 0
+directional_shadow_split_1 = 0.0
+directional_shadow_split_2 = 0.0
 
 [node name="UI" parent="." instance=ExtResource("3_tlwt5")]
 
@@ -71,18 +91,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 41.5, 2.5)
 use_collision = true
 
 [node name="Player" parent="." instance=ExtResource("2_fj7yv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 41, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 26, 4)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 42, 2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 26.5, 8.5)
 
-[node name="Chunk" parent="." instance=ExtResource("4_aqk2v")]
-
-[node name="Chunk2" parent="." instance=ExtResource("4_aqk2v")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 0)
-
-[node name="Chunk3" parent="." instance=ExtResource("4_aqk2v")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
-
-[node name="Chunk4" parent="." instance=ExtResource("4_aqk2v")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -16)
+[node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 26, 5.5)
