@@ -158,13 +158,13 @@ func _handle_block_interaction():
 			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
 			
 			# Prevent player from placing blocks if the block will intersect the player
-			if not block_position_intersect_player(new_block_position):
+			if not _block_position_intersect_player(new_block_position):
 				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
 	else:
 		block_highlight.visible = false
 
 
-func block_position_intersect_player(new_block_position:Vector3) -> bool:
+func _block_position_intersect_player(new_block_position:Vector3) -> bool:
 	# Creates a collision box to check if the new block position would intersects the player
 	var collision_box = BoxShape3D.new()
 	collision_box.extents = Vector3(0.5, 0.5, 0.5)
