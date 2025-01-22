@@ -173,4 +173,8 @@ public partial class Chunk : StaticBody3D
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
 		Update();
 	}
+	
+	public Block GetBlock(Vector3I blockPosition) {
+		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
+	}
 }

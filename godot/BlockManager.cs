@@ -30,6 +30,8 @@ public partial class BlockManager : Node
 	public static BlockManager Instance { get; private set; }
 
 	public StandardMaterial3D ChunkMaterial { get; set; }
+	
+	public Dictionary<Block, float> time_dictionary;
 
 	public override void _Ready() {
 		Instance = this;
@@ -71,6 +73,14 @@ public partial class BlockManager : Node
 		TextureAtlasSize = new Vector2(_gridWidth, _gridHeight);
 
 		GD.Print($"Done loading {blockTextures.Length} images to make {_gridWidth} x {_gridHeight} atlas");
+		
+		time_dictionary = new Dictionary<Block, float>{
+			{Air, 0.0f},
+			{Stone, 2.0f},
+			{Dirt, 1.0f},
+			{Grass, 1.0f}
+		};
+		
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)
@@ -80,5 +90,10 @@ public partial class BlockManager : Node
 		}
 
 		return Vector2I.Zero;
+	}
+	
+	public float GetTime(Block block) 
+	{
+		return time_dictionary[block];
 	}
 }

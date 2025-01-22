@@ -23,10 +23,16 @@ var last_forward_press = 0.0 			# Make note and update the time for last "W" pre
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 @onready var view:ViewMode = ViewMode.NORMAL
 
+
+# ========================= Block Breaking =================================
+var _is_breaking : bool = false
+var _break_timer : Timer
+var _block_breaking
 # ========================= Camera and player head =========================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
+@onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
 
@@ -81,7 +87,9 @@ func _process(_delta):
 	# Highlight block player is looking at, and place or remove blocks
 	if not ai_controller.ai_control_enabled:
 		_handle_block_interaction()
-
+		
+	if _is_breaking:
+		break_block()
 
 func _handle_block_interaction():
 	var block_highlight: CSGBox3D = $BlockHighlight
@@ -96,8 +104,8 @@ func _handle_block_interaction():
 		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
 
 		var chunk = raycast.get_collider()
-		if Input.is_action_just_pressed("mouse1"):
-			chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Air)
+		if Input.is_action_just_pressed("mouse1") and not _is_breaking:
+			begin_block_break((Vector3i)(int_block_position - chunk.global_position))
 		if Input.is_action_just_pressed("mouse2"):
 			# Prevent player from placing blocks if the block will intersect the player
 			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
@@ -126,6 +134,37 @@ func block_position_intersect_player(new_block_position:Vector3) -> bool:
 
 	return result.size() > 0
 
+func begin_block_break(pos:Vector3i):
+	_is_breaking = true
+	_block_breaking = pos
+	var block_manager: Node = $"../BlockManager"
+	var chunk = raycast.get_collider()
+	var block = chunk.GetBlock(_block_breaking)
+	var time = block_manager.GetTime(block)
+	_break_timer = Timer.new()
+	_break_timer.one_shot = true
+	add_child(_break_timer)
+	_break_timer.start(time)
+
+func break_block():
+	
+	var block_manager: Node = $"../BlockManager"
+	var chunk = raycast.get_collider()
+	
+	if _break_timer.is_stopped():
+		chunk.SetBlock(_block_breaking, block_manager.Air)
+		_block_breaking = null
+		_is_breaking = false
+	
+	if _block_breaking == null:
+		_is_breaking = false
+		return
+	
+	if Input.is_action_just_released("mouse1"):
+		_block_breaking = null
+		_is_breaking = false
+	
+	
 
 # TODO: Spectator mode should unchild the camera from the player
 func spectator_movement(_delta):
