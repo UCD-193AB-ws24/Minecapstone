@@ -76,9 +76,9 @@ public partial class BlockManager : Node
 		
 		time_dictionary = new Dictionary<Block, float>{
 			{Air, 0.0f},
-			{Stone, 2.0f},
-			{Dirt, 1.0f},
-			{Grass, 1.0f}
+			{Stone, 1.5f},
+			{Dirt, 0.25f},
+			{Grass, 0.25f}
 		};
 		
 	}

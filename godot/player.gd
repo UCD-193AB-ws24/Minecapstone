@@ -28,6 +28,7 @@ enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 var _is_breaking : bool = false
 var _break_timer : Timer
 var _block_breaking
+var _released : bool = true
 # ========================= Camera and player head =========================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -105,7 +106,12 @@ func _handle_block_interaction():
 
 		var chunk = raycast.get_collider()
 		if Input.is_action_just_pressed("mouse1") and not _is_breaking:
+			_released = false
 			begin_block_break((Vector3i)(int_block_position - chunk.global_position))
+		
+		if not _released and not _is_breaking:
+			begin_block_break((Vector3i)(int_block_position - chunk.global_position))
+		
 		if Input.is_action_just_pressed("mouse2"):
 			# Prevent player from placing blocks if the block will intersect the player
 			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
@@ -165,6 +171,7 @@ func break_block():
 	if Input.is_action_just_released("mouse1"):
 		_block_breaking = null
 		_is_breaking = false
+		_released = true
 	
 	if _break_timer.is_stopped():
 		chunk.SetBlock(_block_breaking, block_manager.Air)
