@@ -29,6 +29,9 @@ var _is_breaking : bool = false
 var _break_timer : Timer
 var _block_breaking
 var _released : bool = true
+@onready var block_progress : Label = $"../UI/Control/BlockProgress"
+
+
 # ========================= Camera and player head =========================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -88,7 +91,7 @@ func _process(_delta):
 	# Highlight block player is looking at, and place or remove blocks
 	if not ai_controller.ai_control_enabled:
 		_handle_block_interaction()
-		
+	
 	if _is_breaking:
 		break_block()
 
@@ -96,6 +99,13 @@ func _handle_block_interaction():
 	var block_highlight: CSGBox3D = $BlockHighlight
 	var block_manager: Node = $"../BlockManager"
 	var chunk_manager: Node = $"../ChunkManager"
+	
+	if not Input.is_action_pressed("mouse1"):
+		_released = true
+	
+	if Input.is_action_just_pressed("mouse1"):
+		_released = false
+	
 	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
 		block_highlight.visible = true
 
@@ -105,11 +115,14 @@ func _handle_block_interaction():
 		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
 
 		var chunk = raycast.get_collider()
+		
+		if not Input.is_action_pressed("mouse1"):
+			_released = true
+		
 		if Input.is_action_just_pressed("mouse1") and not _is_breaking:
-			_released = false
 			begin_block_break((Vector3i)(int_block_position - chunk.global_position))
 		
-		if not _released and not _is_breaking:
+		if  not _released and not _is_breaking:
 			begin_block_break((Vector3i)(int_block_position - chunk.global_position))
 		
 		if Input.is_action_just_pressed("mouse2"):
@@ -141,6 +154,7 @@ func block_position_intersect_player(new_block_position:Vector3) -> bool:
 	return result.size() > 0
 
 func begin_block_break(pos:Vector3i):
+	print(block_progress.text)
 	_is_breaking = true
 	_block_breaking = pos
 	var block_manager: Node = $"../BlockManager"
@@ -151,6 +165,8 @@ func begin_block_break(pos:Vector3i):
 	_break_timer.one_shot = true
 	add_child(_break_timer)
 	_break_timer.start(time)
+	block_progress.text = "0%"
+	block_progress.visible = true
 
 func break_block():
 	
@@ -159,29 +175,43 @@ func break_block():
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 	
-	if not raycast.is_colliding():
+	
+	
+	if not raycast.is_colliding() or not chunk.has_method("GetBlock"):
 		_block_breaking = null
 		_is_breaking = false
+		block_progress.visible = false
 		return
+	
+	var block = chunk.GetBlock(_block_breaking)
+	var time = block_manager.GetTime(block)
+	var percentage : float = (time - _break_timer.time_left) / time * 100
+	var percent_string : String = str(round(percentage * 10)/10, "%")
+	block_progress.text = percent_string
 	
 	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
 		_block_breaking = null
 		_is_breaking = false
+		block_progress.visible = false
 
 	
 	if _block_breaking == null:
 		_is_breaking = false
+		block_progress.visible = false
 		return
 	
 	if Input.is_action_just_released("mouse1"):
 		_block_breaking = null
 		_is_breaking = false
-		_released = true
+		block_progress.visible = false
+		
 	
 	if _break_timer.is_stopped():
+		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.Air)
 		_block_breaking = null
 		_is_breaking = false
+		
 	
 
 # TODO: Spectator mode should unchild the camera from the player
