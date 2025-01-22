@@ -245,11 +245,13 @@ func _break_block():
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
+		_break_timer.queue_free()
 	
 	# if not looking at a valid block stop block breaking
 	if _block_breaking == null:
 		_is_breaking = false
 		block_progress.visible = false
+		_break_timer.queue_free()
 		return
 	
 	# if released mouse button cancel block breaking
@@ -257,6 +259,8 @@ func _break_block():
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
+		_break_timer.queue_free()
+		return
 		
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
@@ -264,6 +268,7 @@ func _break_block():
 		chunk.SetBlock(_block_breaking, block_manager.Air)
 		_block_breaking = null
 		_is_breaking = false
+		_break_timer.queue_free()
 	
 
 # TODO: Spectator mode should unchild the camera from the player
