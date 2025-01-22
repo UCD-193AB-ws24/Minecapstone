@@ -150,11 +150,13 @@ func break_block():
 	
 	var block_manager: Node = $"../BlockManager"
 	var chunk = raycast.get_collider()
+	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 	
-	if _break_timer.is_stopped():
-		chunk.SetBlock(_block_breaking, block_manager.Air)
+	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
 		_block_breaking = null
 		_is_breaking = false
+
 	
 	if _block_breaking == null:
 		_is_breaking = false
@@ -164,6 +166,10 @@ func break_block():
 		_block_breaking = null
 		_is_breaking = false
 	
+	if _break_timer.is_stopped():
+		chunk.SetBlock(_block_breaking, block_manager.Air)
+		_block_breaking = null
+		_is_breaking = false
 	
 
 # TODO: Spectator mode should unchild the camera from the player
