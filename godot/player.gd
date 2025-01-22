@@ -26,7 +26,7 @@ enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 # ========================= Block Breaking =================================
 var _is_breaking : bool = false
 var _break_timer : Timer
-var _block_breaking
+var _block_breaking						# position of the block attempting to break or null (not attempted block)
 var _released : bool = true
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
 
@@ -182,66 +182,83 @@ func _block_position_intersect_player(new_block_position:Vector3) -> bool:
 	return result.size() > 0
 
 
-# TODO: This function needs better comments
+# Checks if inputted to break block
 func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	if not Input.is_action_pressed("mouse1"): _released = true
+
+	# if pressed left mouse prepare for block breaking
 	if Input.is_action_just_pressed("mouse1") and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
+	
+	# if holding down left mouse prepare for breaking
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
 
-
-# TODO: This function needs better comments
+# prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
-	# print(block_progress.text)
 	_is_breaking = true
 	_block_breaking = pos
+
+	# get block data, time to break
 	var block_manager: Node = $"../BlockManager"
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
+
+	# setup timer to calculate block breaking
 	_break_timer = Timer.new()
 	_break_timer.one_shot = true
 	add_child(_break_timer)
 	_break_timer.start(time)
+
+	# setup progress label for block breaking
 	block_progress.text = "0%"
 	block_progress.visible = true
 
 
-# TODO: This function needs better comments
+# Determines if looking at the right block and breaks it after timeout
 func _break_block():
+
+	# Get initial raycast data from player
 	var block_manager: Node = $"../BlockManager"
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 	
+
+	# if player isn't looking at a block, cancel the block breaking
 	if not raycast.is_colliding() or not chunk.has_meta("is_chunk"):
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 		return
 	
+	# get block time and update progress label
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
 	var percentage : float = (time - _break_timer.time_left) / time * 100
 	var percent_string : String = str(round(percentage * 10)/10, "%")
 	block_progress.text = percent_string
 	
+	# if player stops looking at the block cancel the block breaking
 	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 	
+	# if not looking at a valid block stop block breaking
 	if _block_breaking == null:
 		_is_breaking = false
 		block_progress.visible = false
 		return
 	
+	# if released mouse button cancel block breaking
 	if Input.is_action_just_released("mouse1"):
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 		
+	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.Air)

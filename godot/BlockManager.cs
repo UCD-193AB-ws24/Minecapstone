@@ -92,6 +92,7 @@ public partial class BlockManager : Node
 		return Vector2I.Zero;
 	}
 	
+	// Gets the time needed to break a block
 	public float GetTime(Block block) 
 	{
 		return time_dictionary[block];
