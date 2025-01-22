@@ -40,6 +40,7 @@ public partial class Chunk : StaticBody3D
 	public FastNoiseLite Noise { get; set; }
 
 	// Sets the chunk position and generate and update the chunk at that position
+	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
 		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);

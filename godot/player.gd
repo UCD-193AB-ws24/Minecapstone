@@ -99,12 +99,32 @@ func _handle_block_interaction():
 		if Input.is_action_just_pressed("mouse1"):
 			chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Air)
 		if Input.is_action_just_pressed("mouse2"):
-			# TODO: Prevent player from placing blocks if the block will intersect the player
-			chunk_manager.SetBlock((Vector3i)(int_block_position + raycast.get_collision_normal()), block_manager.Stone)
+			# Prevent player from placing blocks if the block will intersect the player
+			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
+			
+			if not block_position_intersect_player(new_block_position):
+				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
 	else:
 		block_highlight.visible = false
 	# Lock the block highlight to the grid
 	block_highlight.global_rotation = Vector3.ZERO
+
+
+func block_position_intersect_player(new_block_position:Vector3) -> bool:
+	var collision_box = BoxShape3D.new()
+	collision_box.extents = Vector3(0.5, 0.5, 0.5)
+
+	var collision_box_transform = Transform3D()
+	collision_box_transform.origin = new_block_position + Vector3(0.5, 0.5, 0.5)
+
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsShapeQueryParameters3D.new()
+	query.shape = collision_box
+	query.transform = collision_box_transform
+
+	var result = space_state.intersect_shape(query)
+
+	return result.size() > 0
 
 
 # TODO: Spectator mode should unchild the camera from the player

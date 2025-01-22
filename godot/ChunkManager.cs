@@ -18,7 +18,7 @@ public partial class ChunkManager : Node
 
 	[Export] public PackedScene ChunkScene { get; set; }
 
-	private int _viewDistance = 4;
+	private int _viewDistance = 8;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -98,34 +98,34 @@ public partial class ChunkManager : Node
 				playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
 				playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
 			}
-			foreach (var chunk in _chunks) {
-				var chunkPosition = _chunkToPosition[chunk];
-				var chunkX = chunkPosition.X;
-				var chunkZ = chunkPosition.Y;
+			// foreach (var chunk in _chunks) {
+			// 	var chunkPosition = _chunkToPosition[chunk];
+			// 	var chunkX = chunkPosition.X;
+			// 	var chunkZ = chunkPosition.Y;
 
-				var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + _viewDistance / 2, _viewDistance) + playerChunkX - _viewDistance / 2);
-				var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + _viewDistance / 2, _viewDistance) + playerChunkZ - _viewDistance / 2);
+			// 	var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + _viewDistance / 2, _viewDistance) + playerChunkX - _viewDistance / 2);
+			// 	var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + _viewDistance / 2, _viewDistance) + playerChunkZ - _viewDistance / 2);
 
-				// Move the chunk position, moving all chunks, if player is in a new chunk
-				if (newChunkX != chunkX || newChunkZ != chunkZ) {
-					lock (_positionToChunk){
-						if (_positionToChunk.ContainsKey(chunkPosition)) {
-							_positionToChunk.Remove(chunkPosition);
-						}
-						var newPosition = new Vector2I(newChunkX, newChunkZ);
-						_chunkToPosition[chunk] = newPosition;
-						_positionToChunk[newPosition] = chunk;
+			// 	// Move the chunk position, moving all chunks, if player is in a new chunk
+			// 	if (newChunkX != chunkX || newChunkZ != chunkZ) {
+			// 		lock (_positionToChunk){
+			// 			if (_positionToChunk.ContainsKey(chunkPosition)) {
+			// 				_positionToChunk.Remove(chunkPosition);
+			// 			}
+			// 			var newPosition = new Vector2I(newChunkX, newChunkZ);
+			// 			_chunkToPosition[chunk] = newPosition;
+			// 			_positionToChunk[newPosition] = chunk;
 
-						// Move an already existing chunk to the new posiiton
-						chunk.CallDeferred(nameof(Chunk.SetChunkPosition), newPosition);
+			// 			// Move an already existing chunk to the new posiiton
+			// 			chunk.CallDeferred(nameof(Chunk.SetChunkPosition), newPosition);
 						
-						// Do not update chunk positons as fast as possible to reduce frame drops
-						Thread.Sleep(10);
-					}
-				}
-			}
-			// This sleep didn't do much
-			Thread.Sleep(1000);
+			// 			// Do not update chunk positons as fast as possible to reduce frame drops
+			// 			Thread.Sleep(10);
+			// 		}
+			// 	}
+			// }
+			// // This sleep didn't do much
+			// Thread.Sleep(1000);
 		}
 	}
 
