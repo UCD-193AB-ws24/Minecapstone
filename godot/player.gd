@@ -12,12 +12,12 @@ var _sprint_speed = _speed * 1.3
 var current_acceleration = 0.15
 
 # ============================ FOV and sprinting ============================
-var _is_sprinting = false
 @export var normal_fov = 70.0
-var sprint_fov = normal_fov + 20
-@export var fov_transition_speed = 10.0
-var last_forward_press = 0.0 			# Make note and update the time for last "W" press
+@export var fov_transition_speed = 7.5
 @export var double_tap_time = 0.3 		# Time in between "W" presses
+var sprint_fov = normal_fov + 20
+var _is_sprinting = false
+var last_forward_press = 0.0 			# Make note and update the time for last "W" press
 
 # ============================= Alternate views ============================
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
