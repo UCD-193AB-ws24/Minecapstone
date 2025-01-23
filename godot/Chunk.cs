@@ -2,6 +2,7 @@ using Godot;
 using System;
 
 [Tool]
+[GlobalClass]
 public partial class Chunk : StaticBody3D
 {
 	[Export]
@@ -172,5 +173,10 @@ public partial class Chunk : StaticBody3D
 	public void SetBlock(Vector3I blockPosition, Block block) {
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
 		Update();
+	}
+	
+	// Get a block in the chunk
+	public Block GetBlock(Vector3I blockPosition) {
+		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
 }

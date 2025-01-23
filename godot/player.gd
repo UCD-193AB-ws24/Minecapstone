@@ -23,10 +23,18 @@ var last_forward_press = 0.0 			# Make note and update the time for last "W" pre
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 @onready var view:ViewMode = ViewMode.NORMAL
 
-# ========================= Camera and player head =========================
+# ========================= Block Breaking =================================
+var _is_breaking : bool = false
+var _break_timer : Timer
+var _block_breaking						# position of the block attempting to break or null (not attempted block)
+var _released : bool = true
+@onready var block_progress : Label = $"../UI/Control/BlockProgress"
+
+# ============================ Important stuff ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
+@onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
 
@@ -76,68 +84,14 @@ func _process(_delta):
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
-	if view == ViewMode.SPECTATOR: spectator_movement(_delta);
+	if view == ViewMode.SPECTATOR: _spectator_movement(_delta);
 
 	# Highlight block player is looking at, and place or remove blocks
 	if not ai_controller.ai_control_enabled:
 		_handle_block_interaction()
-
-
-func _handle_block_interaction():
-	var block_highlight: CSGBox3D = $BlockHighlight
-	var block_manager: Node = $"../BlockManager"
-	var chunk_manager: Node = $"../ChunkManager"
-	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
-		block_highlight.visible = true
-
-		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
-		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
-
-		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
-
-		var chunk = raycast.get_collider()
-		if Input.is_action_just_pressed("mouse1"):
-			chunk.SetBlock((Vector3i)(int_block_position - chunk.global_position), block_manager.Air)
-		if Input.is_action_just_pressed("mouse2"):
-			# Prevent player from placing blocks if the block will intersect the player
-			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
-			
-			if not block_position_intersect_player(new_block_position):
-				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
-	else:
-		block_highlight.visible = false
-	# Lock the block highlight to the grid
-	block_highlight.global_rotation = Vector3.ZERO
-
-
-func block_position_intersect_player(new_block_position:Vector3) -> bool:
-	var collision_box = BoxShape3D.new()
-	collision_box.extents = Vector3(0.5, 0.5, 0.5)
-
-	var collision_box_transform = Transform3D()
-	collision_box_transform.origin = new_block_position + Vector3(0.5, 0.5, 0.5)
-
-	var space_state = get_world_3d().direct_space_state
-	var query = PhysicsShapeQueryParameters3D.new()
-	query.shape = collision_box
-	query.transform = collision_box_transform
-
-	var result = space_state.intersect_shape(query)
-
-	return result.size() > 0
-
-
-func spectator_movement(_delta):
-	var cameraSpeed = 10;
-	var move_dir = Vector3(
-		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
-		Input.get_action_strength("jump") - Input.get_action_strength("crouch"),
-		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
-	)
-
-	# Move the camera in the direction it's facing
-	var move_vector = camera.global_transform.basis.x * move_dir.x + camera.global_transform.basis.y * move_dir.y + camera.global_transform.basis.z * move_dir.z
-	camera.global_position += move_vector * cameraSpeed * _delta
+	
+	if _is_breaking:
+		_break_block()
 
 
 func _physics_process(_delta):
@@ -151,46 +105,7 @@ func _physics_process(_delta):
 		_on_out_of_bounds()
 
 
-func _handle_player_input(_delta):
-	var current_speed = _handle_sprint()
-
-	# Get input direction from player controls
-	var input_vector = Vector2(
-		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
-		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
-	)
-
-	# Transform movement direction to be relative to the camera
-	var right_dir = Vector2(camera.global_transform.basis.x.x, camera.global_transform.basis.x.z)
-	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
-	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
-	relative_direction = relative_direction.normalized()
-
-	_move_player(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
-
-
-func _handle_sprint():
-	# Double-tap to sprint
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if Input.is_action_just_pressed("move_forward"):
-		if current_time - last_forward_press <= double_tap_time:
-			_is_sprinting = true
-		last_forward_press = current_time
-
-	# Shift to sprint
-	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
-		_is_sprinting = true
-	elif not Input.is_action_pressed("move_forward") or Vector2(velocity.x, velocity.z).length() < 0.1:
-		# Stop sprinting if not moving forward or sprint is released
-		_is_sprinting = false
-
-	if _is_sprinting:
-		return _sprint_speed
-	else:
-		return _speed
-
-
-func _move_player(direction: Vector2, jump: bool, speed: float, _delta):
+func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
 	if view == ViewMode.SPECTATOR: direction = Vector2.ZERO
 
@@ -214,6 +129,198 @@ func _move_player(direction: Vector2, jump: bool, speed: float, _delta):
 			var horizontal_velocity = Vector3(velocity.x, 0, velocity.z)
 			var impulse = horizontal_velocity.normalized() * 0 * horizontal_velocity.length()
 			velocity += impulse
+
+
+func _handle_block_interaction():
+	var block_highlight: CSGBox3D = $BlockHighlight
+	var block_manager: Node = $"../BlockManager"
+	var chunk_manager: Node = $"../ChunkManager"
+	
+	# Allows for multiple blocks to be broken while mouse1 is held down
+	if not Input.is_action_pressed("mouse1"): _released = true
+	if Input.is_action_just_pressed("mouse1"): _released = false
+
+	# Lock the block highlight rotation to prevent it from rotating with the player
+	block_highlight.global_rotation = Vector3.ZERO
+	
+	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
+		var chunk = raycast.get_collider()
+
+		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
+		
+		block_highlight.visible = true
+		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
+
+		_handle_block_breaking(block_position, chunk.global_position)
+		
+		if Input.is_action_just_pressed("mouse2"):
+			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
+			
+			# Prevent player from placing blocks if the block will intersect the player
+			if not _block_position_intersect_player(new_block_position):
+				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
+	else:
+		block_highlight.visible = false
+
+
+func _block_position_intersect_player(new_block_position:Vector3) -> bool:
+	# Creates a collision box to check if the new block position would intersects the player
+	var collision_box = BoxShape3D.new()
+	collision_box.extents = Vector3(0.5, 0.5, 0.5)
+
+	var collision_box_transform = Transform3D()
+	collision_box_transform.origin = new_block_position + Vector3(0.5, 0.5, 0.5)
+
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsShapeQueryParameters3D.new()
+	query.shape = collision_box
+	query.transform = collision_box_transform
+
+	var result = space_state.intersect_shape(query)
+
+	return result.size() > 0
+
+
+# Checks if inputted to break block
+func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
+	if not Input.is_action_pressed("mouse1"): _released = true
+
+	# if pressed left mouse prepare for block breaking
+	if Input.is_action_just_pressed("mouse1") and not _is_breaking:
+		_begin_block_break((Vector3i)(block_position - chunk_offset))
+	
+	# if holding down left mouse prepare for breaking
+	if not _released and not _is_breaking:
+		_begin_block_break((Vector3i)(block_position - chunk_offset))
+
+# prepares timer for block breaking
+func _begin_block_break(pos:Vector3i):
+	_is_breaking = true
+	_block_breaking = pos
+
+	# get block data, time to break
+	var block_manager: Node = $"../BlockManager"
+	var chunk = raycast.get_collider()
+	var block = chunk.GetBlock(_block_breaking)
+	var time = block_manager.GetTime(block)
+
+	# setup timer to calculate block breaking
+	_break_timer = Timer.new()
+	_break_timer.one_shot = true
+	add_child(_break_timer)
+	_break_timer.start(time)
+
+	# setup progress label for block breaking
+	block_progress.text = "0%"
+	block_progress.visible = true
+
+
+# Determines if looking at the right block and breaks it after timeout
+func _break_block():
+
+	# Get initial raycast data from player
+	var block_manager: Node = $"../BlockManager"
+	var chunk = raycast.get_collider()
+	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
+	
+
+	# if player isn't looking at a block, cancel the block breaking
+	if not raycast.is_colliding() or not chunk.has_meta("is_chunk"):
+		_block_breaking = null
+		_is_breaking = false
+		block_progress.visible = false
+		return
+	
+	# get block time and update progress label
+	var block = chunk.GetBlock(_block_breaking)
+	var time = block_manager.GetTime(block)
+	var percentage : float = (time - _break_timer.time_left) / time * 100
+	var percent_string : String = str(round(percentage * 10)/10, "%")
+	block_progress.text = percent_string
+	
+	# if player stops looking at the block cancel the block breaking
+	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
+		_block_breaking = null
+		_is_breaking = false
+		block_progress.visible = false
+		_break_timer.queue_free()
+	
+	# if not looking at a valid block stop block breaking
+	if _block_breaking == null:
+		_is_breaking = false
+		block_progress.visible = false
+		_break_timer.queue_free()
+		return
+	
+	# if released mouse button cancel block breaking
+	if Input.is_action_just_released("mouse1"):
+		_block_breaking = null
+		_is_breaking = false
+		block_progress.visible = false
+		_break_timer.queue_free()
+		return
+		
+	# when timer stops break the block (set it to air)
+	if _break_timer.is_stopped():
+		block_progress.visible = false
+		chunk.SetBlock(_block_breaking, block_manager.Air)
+		_block_breaking = null
+		_is_breaking = false
+		_break_timer.queue_free()
+	
+
+func _spectator_movement(_delta):
+	var cameraSpeed = 10;
+	var move_dir = Vector3(
+		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
+		Input.get_action_strength("jump") - Input.get_action_strength("crouch"),
+		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+	)
+
+	# Move the camera in the direction it's facing
+	var move_vector = camera.global_transform.basis.x * move_dir.x + camera.global_transform.basis.y * move_dir.y + camera.global_transform.basis.z * move_dir.z
+	camera.global_position += move_vector * cameraSpeed * _delta
+
+
+func _handle_player_input(_delta):
+	var current_speed = _handle_sprint()
+
+	# Get input direction from player controls
+	var input_vector = Vector2(
+		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
+		Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+	)
+
+	# Transform movement direction to be relative to the camera
+	var right_dir = Vector2(camera.global_transform.basis.x.x, camera.global_transform.basis.x.z)
+	var forward_dir = Vector2(camera.global_transform.basis.z.x, camera.global_transform.basis.z.z)
+	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
+	relative_direction = relative_direction.normalized()
+
+	move_player(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
+
+
+func _handle_sprint():
+	# Double-tap to sprint
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if Input.is_action_just_pressed("move_forward"):
+		if current_time - last_forward_press <= double_tap_time:
+			_is_sprinting = true
+		last_forward_press = current_time
+
+	# Shift to sprint
+	if Input.is_action_pressed("sprint") and Input.is_action_pressed("move_forward"):
+		_is_sprinting = true
+	elif not Input.is_action_pressed("move_forward") or Vector2(velocity.x, velocity.z).length() < 0.1:
+		# Stop sprinting if not moving forward or sprint is released
+		_is_sprinting = false
+
+	if _is_sprinting:
+		return _sprint_speed
+	else:
+		return _speed
 
 
 func _apply_gravity(_delta):
