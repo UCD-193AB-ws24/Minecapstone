@@ -127,7 +127,6 @@ func block_position_intersect_player(new_block_position:Vector3) -> bool:
 	return result.size() > 0
 
 
-# TODO: Spectator mode should unchild the camera from the player
 func spectator_movement(_delta):
 	var cameraSpeed = 10;
 	var move_dir = Vector3(
