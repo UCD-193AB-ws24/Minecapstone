@@ -4,12 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://ui.tscn" id="3_tlwt5"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://BlockManager.cs" id="4_036b0"]
-[ext_resource type="PackedScene" uid="uid://c7m3rrvvx3cg6" path="res://chunk.tscn" id="4_aqk2v"]
 [ext_resource type="Script" uid="uid://cfcs76sa6g0rl" path="res://Block.cs" id="5_gbfbk"]
 [ext_resource type="Texture2D" uid="uid://bbodruvpqn77s" path="res://assets/stone.png" id="6_ioo17"]
 [ext_resource type="Texture2D" uid="uid://cji88xvb8pvsu" path="res://assets/side_grass.png" id="6_wse8f"]
 [ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="7_wse8f"]
 [ext_resource type="Texture2D" uid="uid://dbduamuocf2xg" path="res://assets/grass.png" id="8_ic0uy"]
+[ext_resource type="PackedScene" uid="uid://c7m3rrvvx3cg6" path="res://chunk.tscn" id="8_k3n1d"]
 [ext_resource type="Script" uid="uid://b87jusqrcpf7y" path="res://navmesher.gd" id="9_k3n1d"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://npc.tscn" id="11_ic0uy"]
 
@@ -65,7 +65,7 @@ Grass = SubResource("Resource_2o6r5")
 
 [node name="ChunkManager" type="Node" parent="."]
 script = ExtResource("1_ioo17")
-ChunkScene = ExtResource("4_aqk2v")
+ChunkScene = ExtResource("8_k3n1d")
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_k3n1d")

@@ -38,9 +38,9 @@ func _physics_process(delta):
 	var movement = current_agent_position.direction_to(next_path_position).normalized()
 
 	if velocity.length() < 0.5:
-		_move_player(Vector2(movement.x, movement.z), true, _speed, delta)
+		move_player(Vector2(movement.x, movement.z), true, _speed, delta)
 	else:
-		_move_player(Vector2(movement.x, movement.z), false, _speed, delta)
+		move_player(Vector2(movement.x, movement.z), false, _speed, delta)
 
 	# if movement.length() > 0.1:
 	# 	head.look_at(global_position + movement, Vector3.UP)
