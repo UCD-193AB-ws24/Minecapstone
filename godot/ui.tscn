@@ -1,10 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://bp2lv8kmupisq"]
+[gd_scene load_steps=4 format=3 uid="uid://bp2lv8kmupisq"]
 
 [ext_resource type="Script" uid="uid://cpjef4lcjfguy" path="res://ui.gd" id="1_fyqef"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_xb563"]
 font_size = 26
 font_color = Color(0, 1, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fyqef"]
+font_size = 50
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -15,15 +18,59 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_fyqef")
 
-[node name="FlowContainer" type="FlowContainer" parent="."]
+[node name="GridContainer" type="FlowContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = -1101.0
+offset_bottom = -612.0
+vertical = true
 
-[node name="Label" type="Label" parent="FlowContainer"]
+[node name="Label" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "FPS:"
 label_settings = SubResource("LabelSettings_xb563")
+
+[node name="Health" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 154.0
+offset_right = 354.0
+offset_bottom = 181.0
+
+[node name="Hunger" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 181.0
+offset_right = 354.0
+offset_bottom = 208.0
+
+[node name="Thirst" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 208.0
+offset_right = 354.0
+offset_bottom = 235.0
+
+[node name="Control" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_right = 1149.0
+offset_bottom = 647.0
+
+[node name="BlockProgress" type="Label" parent="Control"]
+visible = false
+layout_mode = 2
+offset_left = 4.0
+offset_top = 250.0
+offset_right = 103.0
+offset_bottom = 349.0
+text = "0%"
+label_settings = SubResource("LabelSettings_fyqef")

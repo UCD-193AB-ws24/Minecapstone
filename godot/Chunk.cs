@@ -1,4 +1,5 @@
 using Godot;
+using Godot.NativeInterop;
 using System;
 
 [Tool]
@@ -106,6 +107,16 @@ public partial class Chunk : StaticBody3D
 		CollisionShape.Shape = mesh.CreateTrimeshShape();
 	}
 
+	public void UpdateNavMesh() {
+		for (int x = 0; x < dimensions.X; x++) {
+			for (int y = 0; y < dimensions.Y; y++) {
+				for (int z = 0; z < dimensions.Z; z++) {
+					CreateBlockMesh(new Vector3I(x, y, z));
+				}
+			}
+		}
+	}
+
 	// Create the mesh for a block
 	private void CreateBlockMesh(Vector3I blockPosition) {
 		// Temporary fix for air blocks
@@ -113,6 +124,7 @@ public partial class Chunk : StaticBody3D
 
 		if (block == BlockManager.Instance.Air) return;
 
+		// TODO: also check adjacent chunks for transparent blocks
 		// Use the appropriate textures for each face
 		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture);
 		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture);
@@ -155,6 +167,10 @@ public partial class Chunk : StaticBody3D
 		var normal = ((Vector3)(c-a)).Cross((Vector3)(b-a)).Normalized();
 		var normals = new Vector3[] { normal, normal, normal };
 
+		ChunkManager chunkManager = ChunkManager.Instance;
+		chunkManager.UpdateNavMesh(triangle1, Transform);
+		chunkManager.UpdateNavMesh(triangle2, Transform);
+
 		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1, normals: normals);
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals);
 	}
@@ -173,5 +189,10 @@ public partial class Chunk : StaticBody3D
 	public void SetBlock(Vector3I blockPosition, Block block) {
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
 		Update();
+	}
+	
+	// Get a block in the chunk
+	public Block GetBlock(Vector3I blockPosition) {
+		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
 }

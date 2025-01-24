@@ -17,21 +17,23 @@ public partial class ChunkManager : Node
 
 	[Export] public PackedScene ChunkScene { get; set; }
 
-	private int _viewDistance = 8;
+	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
+
+	private int _viewDistance = 3;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
 
-	public override void _Ready()
-	{
+	public override void _Ready() {
 		Instance = this;
+		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
 		// TODO: replace with Player.Instance one day..
 		player = GetNode<CharacterBody3D>("/root/World/Player");
-		_chunks = GetParent().GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
+		_chunks = GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
 
 		for (int i = _chunks.Count; i < _viewDistance * _viewDistance; i++) {
 			var chunk = (Chunk)ChunkScene.Instantiate<Chunk>();
-			GetParent().CallDeferred(Node.MethodName.AddChild, chunk);
+			CallDeferred(Node.MethodName.AddChild, chunk);
 			_chunks.Add(chunk);
 		}
 
@@ -53,10 +55,8 @@ public partial class ChunkManager : Node
 	}
 
 	// Generate the chunk at the desired position
-	public void UpdateChunkPosition(Chunk chunk, Vector2I currentPosition, Vector2I previousPosition)
-	{
-		if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk)
-		{
+	public void UpdateChunkPosition(Chunk chunk, Vector2I currentPosition, Vector2I previousPosition) {
+		if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
 			_positionToChunk.Remove(previousPosition);
 		}
 
@@ -65,8 +65,7 @@ public partial class ChunkManager : Node
 	}
 
 	// Creates and sets the block at the desired position within the current chunk
-	public void SetBlock(Vector3I globalPosition, Block block)
-	{
+	public void SetBlock(Vector3I globalPosition, Block block) {
 		var chunkTilePosition = new Vector2I(Mathf.FloorToInt(globalPosition.X / (float)Chunk.dimensions.X), Mathf.FloorToInt(globalPosition.Z / (float)Chunk.dimensions.Z));
 
 		// Lock the position to the chunk in the event that the chunk is being updated
@@ -129,8 +128,7 @@ public partial class ChunkManager : Node
 	}
 
 	// Debug
-	public Vector2I GetPlayerChunkPosition()
-	{
+	public Vector2I GetPlayerChunkPosition() {
 		lock (_playerPositionlock) {
 			int playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
 			int playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
@@ -138,8 +136,28 @@ public partial class ChunkManager : Node
 		}
 	}
 
-	// public void GetChunks()
-	// {
-	// 	GD.Print("FUCK!");
-	// }
+	public void UpdateNavMesh(Vector3[] triangles, Transform3D Transform) {
+		// // god-awful way i used to check that all the vertices are properly being added to the navmesh
+		// foreach (var vertex in triangles)	
+		// {
+		// 	var sphere = new SphereMesh();
+		// 	sphere.Radius = 0.1f;
+		// 	var random = new Random();
+		// 	var rotation = new Vector3(
+		// 		(float)(random.NextDouble() * Math.PI * 2),
+		// 		(float)(random.NextDouble() * Math.PI * 2),
+		// 		(float)(random.NextDouble() * Math.PI * 2)
+		// 	);
+		// 	var sphereInstance = new MeshInstance3D
+		// 	{
+		// 		Mesh = sphere,
+		// 		Transform = new Transform3D(Basis.Identity, vertex)
+		// 	};
+		// 	sphereInstance.RotateObjectLocal(Vector3.Right, rotation.X);
+		// 	sphereInstance.RotateObjectLocal(Vector3.Up, rotation.Y);
+		// 	sphereInstance.RotateObjectLocal(Vector3.Forward, rotation.Z);
+		// 	AddChild(sphereInstance);
+		// }
+		NavigationMeshSource.AddFaces(faces: triangles, xform: Transform);
+	}
 }
