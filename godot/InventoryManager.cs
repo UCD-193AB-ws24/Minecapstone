@@ -92,7 +92,7 @@ public partial class InventoryManager : Resource
 					{
 						return true;
 					} else {
-						throw new InvalidOperationException("itemCount + 1: " + (itemCount + 1) + " and slotDict[slot].count: " + slotDict[slot].count + " don't match");
+						throw new InvalidOperationException("itemCount + 1: " + (itemCount + 1) + " and slotDict[slot].count: " + slot2ItemsDict[slot].count + " don't match");
 					}
 					
 				}
