@@ -18,20 +18,49 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_fyqef")
 
-[node name="FlowContainer" type="FlowContainer" parent="."]
+[node name="GridContainer" type="FlowContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = -1101.0
+offset_bottom = -612.0
+vertical = true
 
-[node name="Label" type="Label" parent="FlowContainer"]
+[node name="Label" type="Label" parent="GridContainer"]
 layout_mode = 2
 text = "FPS:"
 label_settings = SubResource("LabelSettings_xb563")
 
+[node name="Health" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 154.0
+offset_right = 354.0
+offset_bottom = 181.0
+
+[node name="Hunger" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 181.0
+offset_right = 354.0
+offset_bottom = 208.0
+
+[node name="Thirst" type="ProgressBar" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+offset_left = 4.0
+offset_top = 208.0
+offset_right = 354.0
+offset_bottom = 235.0
+
 [node name="Control" type="Control" parent="."]
+visible = false
 anchors_preset = 0
 offset_right = 1149.0
 offset_bottom = 647.0

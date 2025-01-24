@@ -30,6 +30,25 @@ var _block_breaking						# position of the block attempting to break or null (no
 var _released : bool = true
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
 
+# ============================ Health, Hunger, Thirst =====================
+@export var max_health = 100
+@export var max_hunger = 100
+@export var max_thirst = 100
+var health = max_health
+var hunger = max_hunger
+var thirst = max_thirst
+
+@export var hunger_decrease_rate = 0.01 # Default hunger decrease
+@export var thirst_decrease_rate = 0.015 # Default thirst decrease
+@export var sprint_hunger = 0.09 # Additional hunger decrease when sprinting
+@export var sprint_thirst = 0.035 # Additional thirst decrease when sprinting
+@export var health_decrease_rate = 2.5 # Lose 1 health per second if hunger/thirst is 0
+@export var natural_healing_rate = 5.0 # Health regeneration when hunger and thirst are full
+
+# TODO: investigate using an actual timer rather than delta time (framerate dependent)
+var hunger_timer = 0.0
+var thirst_timer = 0.0
+
 # ============================ Important stuff ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -100,10 +119,10 @@ func _physics_process(_delta):
 
 	_apply_gravity(_delta)
 	_update_fov(_delta)
+	_update_health_hunger_thirst(_delta)
 
 	if global_position.y < -64:
 		_on_out_of_bounds()
-
 
 func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
@@ -363,3 +382,50 @@ func _throw_pearl():
 	var spawn_position = head.global_transform.origin
 
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
+	
+func _update_health_hunger_thirst(_delta):
+	# Decrease health and thirst over time
+	hunger_timer += _delta
+	thirst_timer += _delta
+	
+	# Calculate current decrease rate
+	var current_hunger_rate = hunger_decrease_rate
+	var current_thirst_rate = thirst_decrease_rate
+	
+	if _is_sprinting:
+		current_hunger_rate += sprint_hunger
+		current_thirst_rate += sprint_thirst
+		
+	# Apply a regular decrease per second 
+	if hunger_timer >= 1.0:
+		hunger = max(hunger - current_hunger_rate, 0)
+		hunger_timer = 0.0
+	if thirst_timer >= 1.0:
+		thirst = max(thirst - current_thirst_rate, 0)
+		thirst_timer = 0.0
+		
+	# Lose health if hunger or thirst reaches 0
+	if hunger == 0 or thirst == 0:
+		health = max(health - health_decrease_rate * _delta, 0)
+	
+	if hunger == max_hunger and thirst == max_thirst:
+		health = min(health + natural_healing_rate * _delta, max_health)
+	
+	if health <= 0:
+		_on_player_death()
+		
+func eat_food(amount):
+	hunger = min(hunger + amount, max_hunger)
+
+func drink_water(amount):
+	thirst = min(thirst + amount, max_thirst)
+	
+func healh(amount):
+	health = min(health + amount, max_health)
+
+func _on_player_death():
+	print("Player has died")
+	health = max_health
+	hunger = max_hunger
+	thirst = max_thirst
+	global_position = spawn_point.global_position
