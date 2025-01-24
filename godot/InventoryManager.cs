@@ -7,16 +7,15 @@ using System.Linq;
 public partial class InventoryManager : Resource
 {
 	//[Export] public Item[] Items { get; set; }
-	private Dictionary<String, List<int>> itemDict;
-	private Dictionary<int, InventoryItem> slotDict;
+	private Dictionary<String, List<int>> name2SlotsDict;
+	private Dictionary<int, InventoryItem> slot2ItemsDict;
 	private bool[] inventorySlots;
 	private int availableSlot;
 	public InventoryManager()
 	{
-		itemDict = new Dictionary<string, List<int>>();
-		slotDict = new Dictionary<int, InventoryItem>();
+		name2SlotsDict = new Dictionary<string, List<int>>();
+		slot2ItemsDict = new Dictionary<int, InventoryItem>();
 		inventorySlots = new bool[3];
-		availableSlot = 0;
 		// Items = [
 		// 	new Block {
 		// 		Name = "Stone",
@@ -63,58 +62,69 @@ public partial class InventoryManager : Resource
 	// returns list of slot numbers that have items named itemName
 	private List<int> ItemInInventory(string itemName) 
 	{
-		if(itemDict.ContainsKey(itemName))
+		if(name2SlotsDict.ContainsKey(itemName))
 		{
-			List<int> existSlots = itemDict[itemName];
-			return existSlots;
+			List<int> existingSlots = name2SlotsDict[itemName];
+			return existingSlots;
 			
 		}  else {
 			return null;
 		}
 	}
-	// Returns first slot that has room in its stack
-	private int CanStack(List<int> slots) 
-	{
-		foreach (int slot in slots) 
-		{
-			InventoryItem existingItem = slotDict[slot];
-			if (existingItem.count >= existingItem.item.MaxStackSize) 
-			{
-				return slot; //this slot number has room in its stack
-			}
-		}
-		return -1;
-	}
 	public bool AddItem(Item item) 
 	{
-		int selectedSlot;
+		
 		//check if item is already in inventory
 		List<int> slotNums = ItemInInventory(item.Name);
 		if(slotNums != null) 
 		{
-			//check if there is room in the stack of each slot
-			int stackable = CanStack(slotNums);
-			if(stackable != -1) 
+			//check each slot to see if there is room in the stack
+			foreach (int slot in slotNums) 
 			{
-				selectedSlot = stackable;
-				InventoryItem itemStack = slotDict[selectedSlot];
-				itemStack.count += 1;
-				return true;
-			} else 
-			{
-				selectedSlot = GetSpace();
+				InventoryItem existingItem = slot2ItemsDict[slot];
+				if (existingItem.count < existingItem.item.MaxStackSize) 
+				{
+					//this slot number has room in its stack
+					int itemCount = existingItem.count;
+					existingItem.count += 1;
+					slot2ItemsDict[slot] = existingItem;
+					if(itemCount + 1 == slot2ItemsDict[slot].count) //testing
+					{
+						return true;
+					} else {
+						throw new InvalidOperationException("itemCount + 1: " + (itemCount + 1) + " and slotDict[slot].count: " + slotDict[slot].count + " don't match");
+					}
+					
+				}
 			}
-		} else 
-		{
-			selectedSlot = GetSpace();
+			//At this point, we know there is no room in any of the slots. Find a new slot and add to the slotNums list
+			int selectedSlot = GetSpace();
+
+			//Check if inventory is full
+			if(selectedSlot == -1) 
+			{
+				return false; //inventory is full!
+			}
+			InventoryItem itemStruct = new InventoryItem(item, 1);
+			slotNums.Add(selectedSlot); //add selectedSlot to list of slots that contain item
+			slot2ItemsDict.Add(selectedSlot, itemStruct); // map selectedSlot to itemStruct
+			return true;
+
+		} else {
+			// there are no inventory slots that contain item. Make a new entry in itemDict and slotDict 
+			int selectedSlot = GetSpace();
+			//Check if inventory is full
+			if(selectedSlot == -1) 
+			{
+				return false; //inventory is full!
+			}
+			InventoryItem itemStruct = new InventoryItem(item, 1);
+			List<int> newSlotList = new List<int>();
+			newSlotList.Add(selectedSlot);
+			name2SlotsDict.Add(item.Name, newSlotList);
+			slot2ItemsDict.Add(selectedSlot, itemStruct);
+			return true;
 		}
-		if(selectedSlot == -1) 
-		{
-			return false; //Inventory full!
-		}
-		
-		InventoryItem itemStruct = new InventoryItem(item, 0, selectedSlot);
-		return true;
 
 	}
 	public int GetSpace() 
