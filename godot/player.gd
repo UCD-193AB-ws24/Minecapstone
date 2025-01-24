@@ -151,8 +151,9 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 
 func _handle_block_interaction():
 	var block_highlight: CSGBox3D = $BlockHighlight
-	var block_manager: Node = $"../BlockManager"
-	var chunk_manager: Node = $"../ChunkManager"
+	var block_manager: Node = $"../NavigationMesher/BlockManager"
+	var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
+
 	
 	# Allows for multiple blocks to be broken while mouse1 is held down
 	if not Input.is_action_pressed("mouse1"): _released = true
@@ -170,6 +171,7 @@ func _handle_block_interaction():
 		block_highlight.visible = true
 		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
 
+		# Handles the mouse1 event for breaking blocks
 		_handle_block_breaking(block_position, chunk.global_position)
 		
 		if Input.is_action_just_pressed("mouse2"):
@@ -178,6 +180,7 @@ func _handle_block_interaction():
 			# Prevent player from placing blocks if the block will intersect the player
 			if not _block_position_intersect_player(new_block_position):
 				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
+				_update_navmesh()
 	else:
 		block_highlight.visible = false
 
@@ -200,6 +203,11 @@ func _block_position_intersect_player(new_block_position:Vector3) -> bool:
 	return result.size() > 0
 
 
+func _update_navmesh():
+	var nav_mesher = $"../NavigationMesher"
+	nav_mesher.call_deferred("GenerateNavmesh")
+
+
 # Checks if inputted to break block
 func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	if not Input.is_action_pressed("mouse1"): _released = true
@@ -218,7 +226,7 @@ func _begin_block_break(pos:Vector3i):
 	_block_breaking = pos
 
 	# get block data, time to break
-	var block_manager: Node = $"../BlockManager"
+	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
@@ -236,13 +244,11 @@ func _begin_block_break(pos:Vector3i):
 
 # Determines if looking at the right block and breaks it after timeout
 func _break_block():
-
 	# Get initial raycast data from player
-	var block_manager: Node = $"../BlockManager"
+	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
-	
 
 	# if player isn't looking at a block, cancel the block breaking
 	if not raycast.is_colliding() or not chunk.has_meta("is_chunk"):
@@ -287,9 +293,9 @@ func _break_block():
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
+		_update_navmesh()
 	
 
-# TODO: Spectator mode should unchild the camera from the player
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;
 	var move_dir = Vector3(

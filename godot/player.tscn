@@ -32,6 +32,7 @@ fov = 90.0
 size = 0.048
 
 [node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
+visible = false
 target_position = Vector3(0, 0, -4.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
