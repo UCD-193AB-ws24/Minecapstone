@@ -15,8 +15,10 @@ bake_interval = 0.01
 up_vector_enabled = false
 
 [node name="NPC" type="CharacterBody3D"]
+collision_layer = 8
 platform_floor_layers = 4294967041
 script = ExtResource("1_xxcha")
+_speed = 6.0
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
@@ -51,8 +53,10 @@ size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_height_offset = 0.5
 path_postprocessing = 2
 simplify_path = true
+simplify_epsilon = 0.1
 debug_enabled = true
 debug_path_custom_point_size = 68.2
 

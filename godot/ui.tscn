@@ -60,7 +60,6 @@ offset_right = 354.0
 offset_bottom = 235.0
 
 [node name="Control" type="Control" parent="."]
-visible = false
 anchors_preset = 0
 offset_right = 1149.0
 offset_bottom = 647.0
