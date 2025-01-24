@@ -1,8 +1,10 @@
 class_name NPC
 extends Player
 
+
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 var finished_setup = false
+
 
 func _ready():
 	_speed = 2.28378822
@@ -10,6 +12,7 @@ func _ready():
 
 	ai_controller.ai_control_enabled = true
 	# global_position = spawn_point.global_position
+
 
 func actor_setup():
 	# Wait for the first physics frame so the NavigationServer can sync.
@@ -22,7 +25,7 @@ func actor_setup():
 
 func set_movement_target(movement_target: Vector3):
 	navigation_agent.set_target_position(movement_target)
-	
+
 
 func _physics_process(delta):
 	var player = get_node("/root/World/Player")
