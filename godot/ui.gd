@@ -1,6 +1,6 @@
 extends Control
 
-@onready var label = $FlowContainer/Label
+@onready var label = $GridContainer/Label
 
 func _physics_process(_delta: float) -> void:
 	label.text = "FPS: " + str(Engine.get_frames_per_second())
@@ -13,6 +13,14 @@ func _physics_process(_delta: float) -> void:
 	if player:
 		label.text += "\nPlayer Global Position: " + str(round_vector(player.global_position))
 		label.text += "\nPlayer Velocity: " + str(round(player.velocity.length() * 10) / 10.0)
+		var healthbar:ProgressBar = $Health
+		var hungerbar:ProgressBar = $Hunger
+		var thirstbar:ProgressBar = $Thirst
+
+		if player:
+			healthbar.value = player.health
+			hungerbar.value = player.hunger
+			thirstbar.value = player.thirst
 
 func round_vector(vec: Vector3) -> Vector3:
 	return Vector3(round(vec.x * 10) / 10.0, round(vec.y * 10) / 10.0, round(vec.z * 10) / 10.0)

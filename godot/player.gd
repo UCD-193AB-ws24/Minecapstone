@@ -45,6 +45,7 @@ var thirst = max_thirst
 @export var health_decrease_rate = 2.5 # Lose 1 health per second if hunger/thirst is 0
 @export var natural_healing_rate = 5.0 # Health regeneration when hunger and thirst are full
 
+# TODO: investigate using an actual timer rather than delta time (framerate dependent)
 var hunger_timer = 0.0
 var thirst_timer = 0.0
 
