@@ -1,15 +1,13 @@
 using Godot;
 using System;
 
-public struct InventoryItem
+public class InventoryItem
 {
     public Item item;
     public int count;
-    public int inventoryPos;
 
-    public InventoryItem(Item item, int count, int inventoryPos) {
+    public InventoryItem(Item item, int count) {
         this.item = item;
         this.count = count;
-        this.inventoryPos = inventoryPos;
     } 
 }
