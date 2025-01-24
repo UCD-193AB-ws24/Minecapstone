@@ -47,14 +47,13 @@ func _physics_process(delta):
 
 	var player_position_2d: Vector2 = Vector2(player.global_position.x, player.global_position.z)
 	var current_position_2d: Vector2 = Vector2(global_position.x, global_position.z)
-	var emergency_direction_2d: Vector2 = -player_position_2d.direction_to(current_position_2d)
+	var emergency_direction_2d: Vector2 = current_position_2d.direction_to(player_position_2d)
 	
 	# Make a beeline for the player if the target is unreachable
 	var target_reachable = navigation_agent.is_target_reachable()
 	if target_reachable:
 		# Determine angle of target position relative to NPC off the horizontal plane
-		var target:Vector3 = next_path_position - global_position
-		var target_flat:Vector3 = Vector3(target.x, 0, target.z)
+		var target_flat:Vector3 = Vector3(target_3d.x, 0, target_3d.z)
 		var angle:float = rad_to_deg(acos(target.dot(target_flat) / (target.length() * target_flat.length())))
 
 		# print(angle)
@@ -65,17 +64,6 @@ func _physics_process(delta):
 			move_player(target_2d, false, _speed, delta)
 	else:
 		move_player(emergency_direction_2d, true, _speed, delta)
-
-	# if velocity.is_equal_approx(Vector3.ZERO):
-	# 	if not target_reachable:
-	# 		move_player(emergency_direction_2d, true, _speed, delta)
-	# 	elif target_3d.y > 0.8 and target_reachable:
-	# 		# Jump if the target position is above the NPC
-	# 		move_player(target_2d, true, _speed, delta)
-	# 	else:
-	# 		move_player(emergency_direction_2d, false, _speed, delta)
-	# else:
-	# 	move_player(target_2d, false, _speed, delta)
 
 	# Flatten the target_3d vector to a 2D vector
 	raycast.target_position = Vector3(target_3d.x, target_3d.y, target_3d.z).normalized() * 2
