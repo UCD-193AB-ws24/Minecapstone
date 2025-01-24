@@ -20,7 +20,7 @@ public partial class ChunkManager : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	private int _viewDistance = 3;
+	private int _viewDistance = 5;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads

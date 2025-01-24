@@ -51,11 +51,15 @@ func _physics_process(delta):
 	var emergency_direction_2d: Vector2 = -player_position_2d.direction_to(current_position_2d)
 	
 	# Make a beeline for the player if the target is unreachable
-	if velocity.is_equal_approx(Vector3.ZERO) or !navigation_agent.is_target_reachable():
-		move_player(emergency_direction_2d, true, _speed, delta)
-	elif target_3d.y > 0.8:
-		# Jump if the target position is above the NPC
-		move_player(target_2d, true, _speed, delta)
+	if velocity.is_equal_approx(Vector3.ZERO):
+		var target_reachable = navigation_agent.is_target_reachable()
+		if not target_reachable:
+			move_player(emergency_direction_2d, true, _speed, delta)
+		elif target_3d.y > 0.8 and target_reachable:
+			# Jump if the target position is above the NPC
+			move_player(target_2d, true, _speed, delta)
+		else:
+			move_player(emergency_direction_2d, false, _speed, delta)
 	else:
 		move_player(target_2d, false, _speed, delta)
 

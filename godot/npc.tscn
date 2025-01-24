@@ -51,7 +51,7 @@ size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_postprocessing = 1
+path_postprocessing = 2
 simplify_path = true
 debug_enabled = true
 debug_path_custom_point_size = 68.2
