@@ -22,6 +22,7 @@ agent_radius = 0.25
 agent_max_climb = 1.0
 agent_max_slope = 16.35
 edge_max_length = 50.0
+edge_max_error = 0.1
 
 [sub_resource type="Resource" id="Resource_wse8f"]
 script = ExtResource("5_gbfbk")

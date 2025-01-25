@@ -51,19 +51,20 @@ func _physics_process(delta):
 	
 	# Make a beeline for the player if the target is unreachable
 	var target_reachable = navigation_agent.is_target_reachable()
-	if target_reachable:
+	print(target_reachable)
+	# if target_reachable:
 		# Determine angle of target position relative to NPC off the horizontal plane
-		var target_flat:Vector3 = Vector3(target_3d.x, 0, target_3d.z)
-		var angle:float = rad_to_deg(acos(target_3d.dot(target_flat) / (target_3d.length() * target_flat.length())))
+	var target_flat:Vector3 = Vector3(target_3d.x, 0, target_3d.z)
+	var angle:float = rad_to_deg(acos(target_3d.dot(target_flat) / (target_3d.length() * target_flat.length())))
 
-		# print(angle)
-		if (angle > 30 and target_3d.y > 0) or velocity.length() < 0.1:
-			# Jump if the target position is above the NPC
-			move_player(target_2d, true, _speed, delta)
-		else:
-			move_player(target_2d, false, _speed, delta)
+	# print(angle)
+	if (angle > 30 and target_3d.y > 0) or velocity.length() < 0.1:
+		# Jump if the target position is above the NPC
+		move_player(target_2d, true, _speed, delta)
 	else:
-		move_player(emergency_direction_2d, true, _speed, delta)
+		move_player(target_2d, false, _speed, delta)
+	# else:
+	# 	move_player(emergency_direction_2d, true, _speed, delta)
 
 	# Flatten the target_3d vector to a 2D vector
 	raycast.target_position = Vector3(target_3d.x, target_3d.y, target_3d.z).normalized() * 2
