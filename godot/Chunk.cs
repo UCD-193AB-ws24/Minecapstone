@@ -1,6 +1,7 @@
 using Godot;
 using Godot.NativeInterop;
 using System;
+using System.Collections.Generic;
 
 [Tool]
 [GlobalClass]
@@ -37,6 +38,8 @@ public partial class Chunk : StaticBody3D
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 
 	public Vector2I ChunkPosition { get; private set; }
+	public List<Vector2I> SavedChunks = [];
+	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
 	[Export]
 	public FastNoiseLite Noise { get; set; }
@@ -48,9 +51,12 @@ public partial class Chunk : StaticBody3D
 		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
-
+		
 		Generate();
 		Update();
+		
+		// After making chunks, puts it into a list of already made chunks
+		SavedChunks.Add(ChunkPosition);
 	}
 
 	public override void _Ready() {
@@ -59,6 +65,11 @@ public partial class Chunk : StaticBody3D
 
 	// Create and set block in the chunk
 	public void Generate() {
+		if (SavedChunks.Contains(ChunkPosition)) {
+			LoadChunk();
+			return;
+		}
+
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
@@ -83,10 +94,35 @@ public partial class Chunk : StaticBody3D
 					}
 
 					_blocks[x, y, z] = block;
+
+					// Save blocks
+					if (block != BlockManager.Instance.Air){
+						// Only save non air blocks to save space
+						var globalCoordinates = new Vector3I((int) globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
+						SavedBlocks[globalCoordinates] = block;
+					}
 				}
 			}
 		}
 	}
+
+	private void LoadChunk(){
+		for (int x = 0; x < dimensions.X; x++) {
+			for (int y = 0; y < dimensions.Y; y++) {
+				for (int z = 0; z < dimensions.Z; z++) {
+					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
+					var globalCoordinates = new Vector3I((int)  globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
+					if(SavedBlocks.TryGetValue(globalCoordinates, out Block value)) {
+						_blocks[x, y, z] = value;
+					} 
+					else {
+						_blocks[x, y, z] = BlockManager.Instance.Air;
+					}
+				}
+			}
+		}
+	}
+
 
 	// Update the mesh and collision shape of the chunk
 	public void Update() {
@@ -189,6 +225,13 @@ public partial class Chunk : StaticBody3D
 	public void SetBlock(Vector3I blockPosition, Block block) {
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
 		Update();
+		
+		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
+		if(block == BlockManager.Instance.Air){
+			SavedBlocks.Remove(globalCoordinates);
+		} else {
+			SavedBlocks[globalCoordinates] = block;
+		}
 	}
 	
 	// Get a block in the chunk
