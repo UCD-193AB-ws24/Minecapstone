@@ -54,10 +54,10 @@ func _physics_process(delta):
 	if target_reachable:
 		# Determine angle of target position relative to NPC off the horizontal plane
 		var target_flat:Vector3 = Vector3(target_3d.x, 0, target_3d.z)
-		var angle:float = rad_to_deg(acos(target.dot(target_flat) / (target.length() * target_flat.length())))
+		var angle:float = rad_to_deg(acos(target_3d.dot(target_flat) / (target_3d.length() * target_flat.length())))
 
 		# print(angle)
-		if (angle > 30 and target.y > 0) or velocity.length() < 0.1:
+		if (angle > 30 and target_3d.y > 0) or velocity.length() < 0.1:
 			# Jump if the target position is above the NPC
 			move_player(target_2d, true, _speed, delta)
 		else:
