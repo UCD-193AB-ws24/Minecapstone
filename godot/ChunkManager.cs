@@ -97,6 +97,7 @@ public partial class ChunkManager : Node
 				playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
 				playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
 			}
+			// Uncomment below for infinite generation
 			// foreach (var chunk in _chunks) {
 			// 	var chunkPosition = _chunkToPosition[chunk];
 			// 	var chunkX = chunkPosition.X;

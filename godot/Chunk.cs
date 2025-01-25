@@ -38,8 +38,8 @@ public partial class Chunk : StaticBody3D
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 
 	public Vector2I ChunkPosition { get; private set; }
-	public List<Vector2I> SavedChunks = new List<Vector2I>();
-	public Dictionary<Vector3I, Block> SavedBlocks = new Dictionary<Vector3I, Block>();
+	public List<Vector2I> SavedChunks = [];
+	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
 	[Export]
 	public FastNoiseLite Noise { get; set; }
@@ -66,8 +66,10 @@ public partial class Chunk : StaticBody3D
 	// Create and set block in the chunk
 	public void Generate() {
 		if (SavedChunks.Contains(ChunkPosition)) {
-			LoadSavedChunk();
-		} else {
+			LoadChunk();
+			return;
+		}
+
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
@@ -92,28 +94,28 @@ public partial class Chunk : StaticBody3D
 					}
 
 					_blocks[x, y, z] = block;
+
+					// Save blocks
 					if (block != BlockManager.Instance.Air){
 						// Only save non air blocks to save space
 						var globalCoordinates = new Vector3I((int) globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
 						SavedBlocks[globalCoordinates] = block;
-					}
-					
 					}
 				}
 			}
 		}
 	}
 
-	private void LoadSavedChunk(){
+	private void LoadChunk(){
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
-					
 					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
 					var globalCoordinates = new Vector3I((int)  globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
-					if(SavedBlocks.ContainsKey(globalCoordinates)){
-						_blocks[x, y, z] = SavedBlocks[globalCoordinates];
-					} else {
+					if(SavedBlocks.TryGetValue(globalCoordinates, out Block value)) {
+						_blocks[x, y, z] = value;
+					} 
+					else {
 						_blocks[x, y, z] = BlockManager.Instance.Air;
 					}
 				}
