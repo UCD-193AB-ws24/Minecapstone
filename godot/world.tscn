@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://co7hj1mf7o34c"]
+[gd_scene load_steps=31 format=3 uid="uid://co7hj1mf7o34c"]
 
 [ext_resource type="Script" uid="uid://bmjlbi4ommt7u" path="res://ChunkManager.cs" id="1_ioo17"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://NavigationMesher.cs" id="1_k3n1d"]
@@ -12,7 +12,11 @@
 [ext_resource type="Texture2D" uid="uid://c2rvuxikay8xv" path="res://assets/iron_ore.png" id="8_2o6r5"]
 [ext_resource type="Texture2D" uid="uid://dbduamuocf2xg" path="res://assets/grass.png" id="8_ic0uy"]
 [ext_resource type="PackedScene" uid="uid://c7m3rrvvx3cg6" path="res://chunk.tscn" id="8_k3n1d"]
+[ext_resource type="Texture2D" uid="uid://bwg4in6gm7grh" path="res://assets/copper_ore.png" id="9_udxuc"]
+[ext_resource type="Texture2D" uid="uid://dcnc81trek3g" path="res://assets/coal_ore.png" id="10_ikiii"]
+[ext_resource type="Texture2D" uid="uid://bx42yb171jyi3" path="res://assets/gold_ore.png" id="11_cbp6q"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://npc.tscn" id="11_ic0uy"]
+[ext_resource type="Texture2D" uid="uid://htid4i30jlkk" path="res://assets/diamond_ore.png" id="12_26xuy"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_k3n1d"]
 geometry_parsed_geometry_type = 1
@@ -46,6 +50,26 @@ metadata/_custom_type_script = ExtResource("5_gbfbk")
 [sub_resource type="Resource" id="Resource_70uel"]
 script = ExtResource("5_gbfbk")
 Texture = ExtResource("8_2o6r5")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
+[sub_resource type="Resource" id="Resource_bc84e"]
+script = ExtResource("5_gbfbk")
+Texture = ExtResource("9_udxuc")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
+[sub_resource type="Resource" id="Resource_wukud"]
+script = ExtResource("5_gbfbk")
+Texture = ExtResource("10_ikiii")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
+[sub_resource type="Resource" id="Resource_il2jm"]
+script = ExtResource("5_gbfbk")
+Texture = ExtResource("11_cbp6q")
+metadata/_custom_type_script = ExtResource("5_gbfbk")
+
+[sub_resource type="Resource" id="Resource_wjb0r"]
+script = ExtResource("5_gbfbk")
+Texture = ExtResource("12_26xuy")
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
@@ -82,6 +106,10 @@ Stone = SubResource("Resource_ic0uy")
 Dirt = SubResource("Resource_k3n1d")
 Grass = SubResource("Resource_2o6r5")
 IronOre = SubResource("Resource_70uel")
+CopperOre = SubResource("Resource_bc84e")
+CoalOre = SubResource("Resource_wukud")
+GoldOre = SubResource("Resource_il2jm")
+DiamondOre = SubResource("Resource_wjb0r")
 
 [node name="ChunkManager" type="Node" parent="NavigationMesher"]
 script = ExtResource("1_ioo17")

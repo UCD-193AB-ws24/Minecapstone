@@ -21,6 +21,18 @@ public partial class BlockManager : Node
 	[Export]
 	public Block IronOre {get; set;}
 
+	[Export]
+	public Block CopperOre {get; set;}
+
+	[Export]
+	public Block CoalOre {get; set;}
+
+	[Export]
+	public Block GoldOre {get; set;}
+
+	[Export]
+	public Block DiamondOre {get; set;}
+
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
 
 	private int _gridWidth = 4;
