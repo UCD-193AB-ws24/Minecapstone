@@ -1,6 +1,5 @@
 using Godot;
 using Godot.NativeInterop;
-using static Godot.GD;
 using System;
 using System.Collections.Generic;
 
@@ -43,6 +42,9 @@ public partial class Chunk : StaticBody3D
 	private Dictionary<Block, float> oreSpawnRate;
 	private List<Vector3I> skippableBlocks = new List<Vector3I>{};
 	
+	// transparency debug
+	private List<Block> transparentBlocks = new List<Block>{};
+
 	public Vector2I ChunkPosition { get; private set; }
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
@@ -67,6 +69,16 @@ public partial class Chunk : StaticBody3D
 
 	public override void _Ready() {
 		SetMeta("is_chunk", true);
+
+		
+		// TODO: Remove and only use air
+		transparentBlocks.Add(BlockManager.Instance.CoalOre);
+		transparentBlocks.Add(BlockManager.Instance.CopperOre);
+		transparentBlocks.Add(BlockManager.Instance.GoldOre);
+		transparentBlocks.Add(BlockManager.Instance.IronOre);
+		transparentBlocks.Add(BlockManager.Instance.DiamondOre);
+
+
 	}
 
 	// Create and set block in the chunk
@@ -125,7 +137,11 @@ public partial class Chunk : StaticBody3D
 							
 						// random vein generation
 						// order based on rarity (diamond -> coal)
-						if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
+						// TODO: find a better way to choose random number
+						if (CheckOreWithin2Block(new Vector3I(x, y, z))) {
+							block = BlockManager.Instance.Stone;
+						}
+						else if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
 							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.DiamondOre, rng.Next(1, maxVeinSize[BlockManager.Instance.DiamondOre]));
 							continue;
 						} 
@@ -212,6 +228,8 @@ public partial class Chunk : StaticBody3D
 	}
 
 	public void UpdateNavMesh() {
+
+
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
@@ -285,8 +303,12 @@ public partial class Chunk : StaticBody3D
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
 		if (blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) return true;
 
+
+		if (!transparentBlocks.Contains(BlockManager.Instance.Air)) {
+			transparentBlocks.Add(BlockManager.Instance.Air);
+		}
 		// TODO: support for other transparent blocks
-		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] == BlockManager.Instance.Air;
+		return transparentBlocks.Contains(_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z]);
 	}
 	
 	// Set a block in the chunk
