@@ -51,7 +51,8 @@ public partial class BlockManager : Node
 	public override void _Ready() {
 		Instance = this;
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, IronOre }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
+		SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
 		for (int i = 0; i < blockTextures.Length; i++) {

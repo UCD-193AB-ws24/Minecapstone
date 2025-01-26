@@ -77,11 +77,15 @@ public partial class Chunk : StaticBody3D
 		
 		// set the max vein size for each type of ore
 		maxVeinSize = new Dictionary<Block, int>{
-			{BlockManager.Instance.IronOre, 8}
+			{BlockManager.Instance.CoalOre, 20},
+			{BlockManager.Instance.CopperOre, 12},
+			{BlockManager.Instance.IronOre, 8},
+			{BlockManager.Instance.GoldOre, 8},
+			{BlockManager.Instance.DiamondOre, 5}
 		};
 
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.IronOre, 0.01f}
+			{BlockManager.Instance.CoalOre, 0.0w5f},
 		};
 		
 		Random rng = new Random();
@@ -102,7 +106,12 @@ public partial class Chunk : StaticBody3D
 					var stoneHeight = groundHeight / 2;
 					
 					// TODO: tweak values
+					var coalHeight = stoneHeight / 1.25;
+					var copperHeight = stoneHeight / 1.5;
 					var ironHeight = stoneHeight / 2;
+					var goldHeight = stoneHeight / 5;
+					var diamondHeight = stoneHeight / 10;
+
 					
 					// Super basic terrain generation
 					if (y < stoneHeight) {
@@ -110,8 +119,25 @@ public partial class Chunk : StaticBody3D
 						float oreRandNum = (float) rng.NextDouble();
 							
 						// random vein generation
-						if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
+						// order based on rarity (diamond -> coal)
+						if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.DiamondOre, rng.Next(1, maxVeinSize[BlockManager.Instance.DiamondOre]));
+							continue;
+						} 
+						else if (y < goldHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GoldOre]) {
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GoldOre, rng.Next(1, maxVeinSize[BlockManager.Instance.GoldOre]));
+							continue;
+						} 
+						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
 							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, maxVeinSize[BlockManager.Instance.IronOre]));
+							continue;
+						} 
+						else if (y < copperHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CopperOre]) {
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CopperOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CopperOre]));
+							continue;
+						}
+						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CoalOre]) {
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CoalOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CoalOre]));
 							continue;
 						} else {
 							block = BlockManager.Instance.Stone;
