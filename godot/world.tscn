@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3 uid="uid://co7hj1mf7o34c"]
 
 [ext_resource type="Script" uid="uid://bmjlbi4ommt7u" path="res://ChunkManager.cs" id="1_ioo17"]
-[ext_resource type="Script" uid="uid://bu3g6wovhxhoo" path="res://NavigationMesher.cs" id="1_k3n1d"]
+[ext_resource type="Script" path="res://NavigationMesher.cs" id="1_k3n1d"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="2_fj7yv"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://ui.tscn" id="3_tlwt5"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://BlockManager.cs" id="4_036b0"]
@@ -21,24 +21,32 @@ agent_max_climb = 1.0
 agent_max_slope = 16.35
 
 [sub_resource type="Resource" id="Resource_wse8f"]
+resource_name = "Air"
 script = ExtResource("5_gbfbk")
+Name = "Air"
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="Resource" id="Resource_ic0uy"]
+resource_name = "Stone"
 script = ExtResource("5_gbfbk")
 Texture = ExtResource("6_ioo17")
+Name = "Stone"
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="Resource" id="Resource_k3n1d"]
+resource_name = "Dirt"
 script = ExtResource("5_gbfbk")
 Texture = ExtResource("7_wse8f")
+Name = "Dirt"
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="Resource" id="Resource_2o6r5"]
+resource_name = "Grass"
 script = ExtResource("5_gbfbk")
 Texture = ExtResource("6_wse8f")
 TopTexture = ExtResource("8_ic0uy")
 BottomTexture = ExtResource("7_wse8f")
+Name = "Grass"
 metadata/_custom_type_script = ExtResource("5_gbfbk")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
