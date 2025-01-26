@@ -75,7 +75,7 @@ public partial class Chunk : StaticBody3D
 		}
 		
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.IronOre, 0.1f}
+			{BlockManager.Instance.IronOre, 0.01f}
 		};
 		
 		Random rng = new Random();
