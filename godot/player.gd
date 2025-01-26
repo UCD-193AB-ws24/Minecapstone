@@ -154,7 +154,6 @@ func _handle_block_interaction():
 	var block_highlight: CSGBox3D = $BlockHighlight
 	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
-
 	
 	# Allows for multiple blocks to be broken while mouse1 is held down
 	if not Input.is_action_pressed("mouse1"): _released = true
@@ -247,6 +246,7 @@ func _begin_block_break(pos:Vector3i):
 func _break_block():
 	# Get initial raycast data from player
 	var block_manager: Node = $"../NavigationMesher/BlockManager"
+	var inventory_manager: Node = $Inventory 
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
@@ -260,6 +260,7 @@ func _break_block():
 	
 	# get block time and update progress label
 	var block = chunk.GetBlock(_block_breaking)
+	
 	var time = block_manager.GetTime(block)
 	var percentage : float = (time - _break_timer.time_left) / time * 100
 	var percent_string : String = str(round(percentage * 10)/10, "%")
@@ -291,6 +292,9 @@ func _break_block():
 	if _break_timer.is_stopped():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.Air)
+		inventory_manager.PrintItem(block);
+		inventory_manager.AddItem(block);
+		inventory_manager.PrintInventory();
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()

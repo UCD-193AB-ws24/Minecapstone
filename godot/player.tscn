@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=6 format=3 uid="uid://0ypfn26rapdv"]
 
 [ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://player.gd" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="3_i3pqv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -46,3 +47,6 @@ metadata/_custom_type_script = ExtResource("2_onrkg")
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("3_i3pqv")
