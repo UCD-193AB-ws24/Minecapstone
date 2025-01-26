@@ -18,6 +18,21 @@ public partial class BlockManager : Node
 	[Export]
 	public Block Grass { get; set; }
 
+	[Export]
+	public Block IronOre {get; set;}
+
+	[Export]
+	public Block CopperOre {get; set;}
+
+	[Export]
+	public Block CoalOre {get; set;}
+
+	[Export]
+	public Block GoldOre {get; set;}
+
+	[Export]
+	public Block DiamondOre {get; set;}
+
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
 
 	private int _gridWidth = 4;
@@ -33,10 +48,13 @@ public partial class BlockManager : Node
 	
 	public Dictionary<Block, float> time_dictionary;
 
+	public List<Block> oreList = new List<Block>{};
+
 	public override void _Ready() {
 		Instance = this;
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
+		SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
 		for (int i = 0; i < blockTextures.Length; i++) {
@@ -78,9 +96,19 @@ public partial class BlockManager : Node
 			{Air, 0.0f},
 			{Stone, 1.5f},
 			{Dirt, 0.25f},
-			{Grass, 0.25f}
+			{Grass, 0.25f},
+			{CoalOre, 2.5f}, // in real minecraft coal is annoying and takes long to mine
+			{CopperOre, 1.75f},
+			{IronOre, 2.0f},
+			{GoldOre, 2.5f},
+			{DiamondOre, 5.0f}
 		};
 		
+		oreList.Add(CoalOre);
+		oreList.Add(CopperOre);
+		oreList.Add(IronOre);
+		oreList.Add(GoldOre);
+		oreList.Add(DiamondOre);
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)
