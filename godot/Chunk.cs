@@ -36,7 +36,11 @@ public partial class Chunk : StaticBody3D
 	private SurfaceTool _surfaceTool = new();
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
-
+	
+	// ore data
+	private Dictionary<Block, float> oreSpawnRate;
+	private List<Vector3I> skippableBlocks = new List<Vector3I>{};
+	
 	public Vector2I ChunkPosition { get; private set; }
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
@@ -69,19 +73,42 @@ public partial class Chunk : StaticBody3D
 			LoadChunk();
 			return;
 		}
+		
+		oreSpawnRate = new Dictionary<Block, float>{
+			{BlockManager.Instance.IronOre, 0.1f}
+		};
+		
+		Random rng = new Random();
 
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
+					
+					if (skippableBlocks.Contains(new Vector3I(x,y,z))){
+						continue;
+					}
+					
 					Block block;
 
 					// Set layer heights based on random noise
 					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
 					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
+					var stoneHeight = groundHeight / 2;
+					var ironHeight = stoneHeight / 2;
 					
 					// Super basic terrain generation
-					if (y < groundHeight / 2) {
-						block = BlockManager.Instance.Stone;
+					if (y < stoneHeight) {
+						// used to determine whether an ore vein should spawn
+						float oreRandNum = (float) rng.NextDouble();
+							
+						// random vein generation
+						if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, 8));
+							continue;
+						} else {
+							block = BlockManager.Instance.Stone;
+						}
+						
 					}
 					else if (y < groundHeight) {
 						block = BlockManager.Instance.Dirt;
@@ -104,6 +131,8 @@ public partial class Chunk : StaticBody3D
 				}
 			}
 		}
+
+		skippableBlocks.Clear();
 	}
 
 	private void LoadChunk(){
@@ -237,5 +266,64 @@ public partial class Chunk : StaticBody3D
 	// Get a block in the chunk
 	public Block GetBlock(Vector3I blockPosition) {
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
+	}
+	
+	// Generates an Ore Vein
+	public void GenerateVein(Vector3I position, Block ore, int veinSize) {
+		skippableBlocks.Add(position);
+		_blocks[position.X, position.Y, position.Z] = ore;
+
+		Random rng = new Random();
+		var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(position.X, position.Z);
+		
+		// add rest of vein in random directions
+		for (int i = 1; i < veinSize; i++) {
+			int next_x = rng.Next(-1, 1);
+			int next_y = rng.Next(-1, 1);
+			int next_z = rng.Next(-1, 1);
+
+			if (next_x == 0 && next_z == 0 && next_y == 0) {
+				next_y = 1;
+			}
+
+			Vector3I next_pos = new Vector3I(position.X + next_x, position.Y + next_y, position.Z + next_z);
+			
+						
+			if (next_pos.X < 0) {
+				next_pos.X = 0; 
+			} else if (next_pos.X > dimensions.X) {
+				next_pos.X = dimensions.X;
+			}
+
+			
+			if (next_pos.Y < 0) {
+				next_pos.Y = 0; 
+			} else if (next_pos.Y > dimensions.Y) {
+				next_pos.Y = dimensions.Y;
+			}
+
+			
+			if (next_pos.Z < 0) {
+				next_pos.Z = 0; 
+			} else if (next_pos.Z > dimensions.Z) {
+				next_pos.Z = dimensions.Z;
+			}
+
+
+
+			if (skippableBlocks.Contains(next_pos)) {
+				continue;
+			}
+
+			_blocks[next_pos.X, next_pos.Y, next_pos.Z] = ore;
+
+			// Save blocks
+			if (ore != BlockManager.Instance.Air){
+				// Only save non air blocks to save space
+				var globalCoordinates = new Vector3I((int) globalBlockPosition.X, next_pos.Y, (int)  globalBlockPosition.Y);
+				SavedBlocks[globalCoordinates] = ore;
+			}
+		}
+		
 	}
 }
