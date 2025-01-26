@@ -415,7 +415,7 @@ public partial class Chunk : StaticBody3D
 				continue;
 			}
 
-			if (CheckOreWithinXBlock(next_pos, ore, 1)) {
+			if (CheckOreWithinXBlock(next_pos, ore, 5)) {
 				// try again
 				if (againCount < 3) {
 					i--;
