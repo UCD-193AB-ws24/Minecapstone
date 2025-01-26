@@ -18,6 +18,9 @@ public partial class BlockManager : Node
 	[Export]
 	public Block Grass { get; set; }
 
+	[Export]
+	public Block IronOre {get; set;}
+
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
 
 	private int _gridWidth = 4;
