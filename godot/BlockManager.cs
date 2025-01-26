@@ -19,7 +19,7 @@ public partial class BlockManager : Node
 	public Block Grass { get; set; }
 
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
-
+	private ItemDictionary ItemDict;
 	private int _gridWidth = 4;
 	private int _gridHeight = 4;
 
@@ -35,6 +35,11 @@ public partial class BlockManager : Node
 
 	public override void _Ready() {
 		Instance = this;
+		ItemDict = new ItemDictionary();
+		Air = (Block) ItemDict.Get("Air");
+		Stone = (Block) ItemDict.Get("Stone");
+		Dirt = (Block) ItemDict.Get("Dirt");
+		Grass = (Block) ItemDict.Get("Grass");
 		// Array of all block textures
 		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 

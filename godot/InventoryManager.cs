@@ -78,6 +78,7 @@ public partial class InventoryManager : Node
 		List<int> slotNums = ItemInInventory(item.Name);
 		if(slotNums != null) 
 		{
+			
 			//check each slot to see if there is room in the stack
 			foreach (int slot in slotNums) 
 			{
@@ -97,6 +98,7 @@ public partial class InventoryManager : Node
 					
 				}
 			}
+			GD.Print("no room in stack");
 			//At this point, we know there is no room in any of the slots. Find a new slot and add to the slotNums list
 			int selectedSlot = GetSpace();
 
@@ -150,7 +152,7 @@ public partial class InventoryManager : Node
 		{
 			if(inventorySlots[i])
 			{
-				GD.Print(slot2ItemsDict[i]);
+				GD.Print(slot2ItemsDict[i].PrintInventoryItem());
 			} else {
 				GD.Print("Nothing");
 			}

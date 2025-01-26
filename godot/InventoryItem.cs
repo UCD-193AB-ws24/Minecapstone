@@ -10,4 +10,7 @@ public class InventoryItem
         this.item = item;
         this.count = count;
     } 
+    public string PrintInventoryItem() {
+        return item.PrintItem();
+    }
 }
