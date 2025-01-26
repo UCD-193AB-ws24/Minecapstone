@@ -38,6 +38,7 @@ public partial class Chunk : StaticBody3D
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 	
 	// ore data
+	private Dictionary<Block, int> maxVeinSize;
 	private Dictionary<Block, float> oreSpawnRate;
 	private List<Vector3I> skippableBlocks = new List<Vector3I>{};
 	
@@ -74,6 +75,11 @@ public partial class Chunk : StaticBody3D
 			return;
 		}
 		
+		// set the max vein size for each type of ore
+		maxVeinSize = new Dictionary<Block, int>{
+			{BlockManager.Instance.IronOre, 8}
+		};
+
 		oreSpawnRate = new Dictionary<Block, float>{
 			{BlockManager.Instance.IronOre, 0.01f}
 		};
@@ -94,6 +100,8 @@ public partial class Chunk : StaticBody3D
 					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
 					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
 					var stoneHeight = groundHeight / 2;
+					
+					// TODO: tweak values
 					var ironHeight = stoneHeight / 2;
 					
 					// Super basic terrain generation
@@ -103,7 +111,7 @@ public partial class Chunk : StaticBody3D
 							
 						// random vein generation
 						if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, 8));
+							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, maxVeinSize[BlockManager.Instance.IronOre]));
 							continue;
 						} else {
 							block = BlockManager.Instance.Stone;
