@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [GlobalClass]
-public partial class InventoryManager : Resource
+public partial class InventoryManager : Node
 {
 	//[Export] public Item[] Items { get; set; }
 	private Dictionary<String, List<int>> name2SlotsDict;
@@ -108,6 +108,7 @@ public partial class InventoryManager : Resource
 			InventoryItem itemStruct = new InventoryItem(item, 1);
 			slotNums.Add(selectedSlot); //add selectedSlot to list of slots that contain item
 			slot2ItemsDict.Add(selectedSlot, itemStruct); // map selectedSlot to itemStruct
+			inventorySlots[selectedSlot] = true;
 			return true;
 
 		} else {
@@ -123,6 +124,7 @@ public partial class InventoryManager : Resource
 			newSlotList.Add(selectedSlot);
 			name2SlotsDict.Add(item.Name, newSlotList);
 			slot2ItemsDict.Add(selectedSlot, itemStruct);
+			inventorySlots[selectedSlot] = true;
 			return true;
 		}
 
@@ -137,5 +139,21 @@ public partial class InventoryManager : Resource
 			}
 		}
 		return -1; // -1 means all slots are filled
+	}
+	public void PrintItem(Item item)
+	{
+		GD.Print(item.Name);
+	}
+	public void PrintInventory() 
+	{
+		for(int i =0; i < inventorySlots.Length; i++) 
+		{
+			if(inventorySlots[i])
+			{
+				GD.Print(slot2ItemsDict[i]);
+			} else {
+				GD.Print("Nothing");
+			}
+		}
 	}
 }
