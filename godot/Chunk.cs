@@ -85,8 +85,8 @@ public partial class Chunk : StaticBody3D
 		};
 
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.CoalOre, 0.01f},
-			{BlockManager.Instance.CopperOre, 0.05f},
+			{BlockManager.Instance.CoalOre, 0.05f},
+			{BlockManager.Instance.CopperOre, 0.01f},
 			{BlockManager.Instance.IronOre, 0.025f},
 			{BlockManager.Instance.GoldOre, 0.001f},
 			{BlockManager.Instance.DiamondOre, 0.0005f},
