@@ -48,6 +48,8 @@ public partial class BlockManager : Node
 	
 	public Dictionary<Block, float> time_dictionary;
 
+	public List<Block> oreList = new List<Block>{};
+
 	public override void _Ready() {
 		Instance = this;
 		// Array of all block textures
@@ -102,6 +104,11 @@ public partial class BlockManager : Node
 			{DiamondOre, 5.0f}
 		};
 		
+		oreList.Add(CoalOre);
+		oreList.Add(CopperOre);
+		oreList.Add(IronOre);
+		oreList.Add(GoldOre);
+		oreList.Add(DiamondOre);
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)

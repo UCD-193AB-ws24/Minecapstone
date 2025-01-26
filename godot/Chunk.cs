@@ -138,28 +138,45 @@ public partial class Chunk : StaticBody3D
 						// random vein generation
 						// order based on rarity (diamond -> coal)
 						// TODO: find a better way to choose random number
-						if (CheckOreWithin2Block(new Vector3I(x, y, z))) {
-							block = BlockManager.Instance.Stone;
-						}
-						else if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.DiamondOre, rng.Next(1, maxVeinSize[BlockManager.Instance.DiamondOre]));
-							continue;
+						if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
+							if (CheckOreWithinBlock(new Vector3I(x,y,z), BlockManager.Instance.DiamondOre)) {
+								block = BlockManager.Instance.Stone;
+							} else {
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.DiamondOre, rng.Next(1, maxVeinSize[BlockManager.Instance.	DiamondOre]));
+								continue;	
+							}
 						} 
 						else if (y < goldHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GoldOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GoldOre, rng.Next(1, maxVeinSize[BlockManager.Instance.GoldOre]));
-							continue;
+							if (CheckOreWithinBlock(new Vector3I(x,y,z), BlockManager.Instance.GoldOre)) {
+								block = BlockManager.Instance.Stone;
+							} else {
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GoldOre, rng.Next(1, maxVeinSize[BlockManager.Instance.GoldOre]));
+								continue;
+							}
 						} 
 						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, maxVeinSize[BlockManager.Instance.IronOre]));
-							continue;
+							if (CheckOreWithinBlock(new Vector3I(x,y,z), BlockManager.Instance.IronOre)) {
+								block = BlockManager.Instance.Stone;
+							} else {
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, maxVeinSize[BlockManager.Instance.IronOre]));
+								continue;
+							}
 						} 
 						else if (y < copperHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CopperOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CopperOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CopperOre]));
-							continue;
+							if (CheckOreWithinBlock(new Vector3I(x,y,z), BlockManager.Instance.CopperOre)) {
+								block = BlockManager.Instance.Stone;
+							} else {
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CopperOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CopperOre]));
+								continue;
+							}
 						}
 						else if (y < coalHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CoalOre]) {
-							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CoalOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CoalOre]));
-							continue;
+							if (CheckOreWithinBlock(new Vector3I(x,y,z), BlockManager.Instance.DiamondOre)) {
+								block = BlockManager.Instance.Stone;
+							} else {
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CoalOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CoalOre]));
+								continue;
+							}
 						} else {
 							block = BlockManager.Instance.Stone;
 						}
@@ -337,6 +354,10 @@ public partial class Chunk : StaticBody3D
 		Random rng = new Random();
 		var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(position.X, position.Z);
 		
+		// try again counter for generation (specifically for ore checking), max 3 tries
+		var againCount = 0;
+
+		
 		// add rest of vein in random directions
 		for (int i = 1; i < veinSize; i++) {
 			int next_x = rng.Next(-1, 1);
@@ -376,6 +397,18 @@ public partial class Chunk : StaticBody3D
 				continue;
 			}
 
+			if (CheckOreWithinBlock(next_pos, ore)) {
+				// try again
+				if (againCount < 3) {
+					i--;
+					againCount++;
+				} else {
+					//skipping so we reset counter
+					againCount = 0;
+				}
+				continue;
+			}
+
 			_blocks[next_pos.X, next_pos.Y, next_pos.Z] = ore;
 
 			// Save blocks
@@ -384,6 +417,9 @@ public partial class Chunk : StaticBody3D
 				var globalCoordinates = new Vector3I((int) globalBlockPosition.X, next_pos.Y, (int)  globalBlockPosition.Y);
 				SavedBlocks[globalCoordinates] = ore;
 			}
+
+			// reset counter, was a successful generation
+			againCount = 0;
 			
 		}
 		
@@ -393,6 +429,36 @@ public partial class Chunk : StaticBody3D
 		for (int i = 0; i < skippableBlocks.Count; i++) {
 			if (skippableBlocks[i].X == pos.X && skippableBlocks[i].Y == pos.Y && skippableBlocks[i].Z == pos.Z) {
 				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// checks if theres an ore within 1 block on the x, y, or z
+	// this is to help spread out ore vein generation 
+	public bool CheckOreWithinBlock(Vector3I pos, Block ore) {
+		for (int x = -1; x < 1; x++) {
+			for (int y = -1; y < 1; y++) {
+				for (int z = -1; z < 1; z++){
+					if (pos.X + x < 0 || pos.X + x >= dimensions.X) {
+						continue;
+					}
+					if (pos.Y + y < 0 || pos.Y + y >= dimensions.Y) {
+						continue;
+					}
+					if (pos.Z + z < 0 || pos.Z + z >= dimensions.Z) {
+						continue;
+					}
+					
+					
+					if (BlockManager.Instance.oreList.Contains(_blocks[pos.X + x, pos.Y + y, pos.Z + z])){
+						if (_blocks[pos.X + x, pos.Y + y, pos.Z + z] == ore) {
+							continue;
+						}
+						return true;
+					}
+				}
 			}
 		}
 
