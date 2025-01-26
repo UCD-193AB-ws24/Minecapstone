@@ -4,7 +4,7 @@ using System;
 [Tool]
 [GlobalClass]
 public partial class Item : Resource {
-	public string Name { get; set; }
+	[Export] public string Name { get; set; }
 
 	// This is separate from the Item's 3D model, if any
 	public Texture2D Icon { get; set; }
@@ -16,4 +16,9 @@ public partial class Item : Resource {
 	// Item type
 	public bool IsBlock { get; set; }
 	public bool IsTool { get; set; }
+
+	public string PrintItem()
+	{
+		
+	}
 }
