@@ -1,5 +1,6 @@
 using Godot;
 using Godot.NativeInterop;
+using static Godot.GD;
 using System;
 using System.Collections.Generic;
 
@@ -77,7 +78,7 @@ public partial class Chunk : StaticBody3D
 		
 		// set the max vein size for each type of ore
 		maxVeinSize = new Dictionary<Block, int>{
-			{BlockManager.Instance.CoalOre, 12},
+			{BlockManager.Instance.CoalOre, 8},
 			{BlockManager.Instance.CopperOre, 8},
 			{BlockManager.Instance.IronOre, 6},
 			{BlockManager.Instance.GoldOre, 6},
@@ -85,11 +86,11 @@ public partial class Chunk : StaticBody3D
 		};
 
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.CoalOre, 0.025f},
-			{BlockManager.Instance.CopperOre, 0.01f},
-			{BlockManager.Instance.IronOre, 0.0025f},
-			{BlockManager.Instance.GoldOre, 0.001f},
-			{BlockManager.Instance.DiamondOre, 0.0005f},
+			{BlockManager.Instance.CoalOre, 0.05f},
+			{BlockManager.Instance.CopperOre, 0.025f},
+			{BlockManager.Instance.IronOre, 0.01f},
+			{BlockManager.Instance.GoldOre, 0.005f},
+			{BlockManager.Instance.DiamondOre, 0.001f},
 		};
 		
 		Random rng = new Random();
@@ -98,7 +99,7 @@ public partial class Chunk : StaticBody3D
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
 					
-					if (skippableBlocks.Contains(new Vector3I(x,y,z))){
+					if (IsSkippable(new Vector3I(x,y,z))){
 						continue;
 					}
 					
@@ -349,7 +350,7 @@ public partial class Chunk : StaticBody3D
 
 
 
-			if (skippableBlocks.Contains(next_pos)) {
+			if (IsSkippable(next_pos)) {
 				continue;
 			}
 
@@ -361,7 +362,18 @@ public partial class Chunk : StaticBody3D
 				var globalCoordinates = new Vector3I((int) globalBlockPosition.X, next_pos.Y, (int)  globalBlockPosition.Y);
 				SavedBlocks[globalCoordinates] = ore;
 			}
+			
 		}
 		
+	}
+
+	public bool IsSkippable(Vector3I pos) {
+		for (int i = 0; i < skippableBlocks.Count; i++) {
+			if (skippableBlocks[i].X == pos.X && skippableBlocks[i].Y == pos.Y && skippableBlocks[i].Z == pos.Z) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
