@@ -292,7 +292,6 @@ func _break_block():
 	if _break_timer.is_stopped():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.Air)
-		inventory_manager.PrintItem(block);
 		inventory_manager.AddItem(block);
 		inventory_manager.PrintInventory();
 		_block_breaking = null
