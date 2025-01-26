@@ -77,15 +77,19 @@ public partial class Chunk : StaticBody3D
 		
 		// set the max vein size for each type of ore
 		maxVeinSize = new Dictionary<Block, int>{
-			{BlockManager.Instance.CoalOre, 20},
-			{BlockManager.Instance.CopperOre, 12},
-			{BlockManager.Instance.IronOre, 8},
-			{BlockManager.Instance.GoldOre, 8},
+			{BlockManager.Instance.CoalOre, 12},
+			{BlockManager.Instance.CopperOre, 8},
+			{BlockManager.Instance.IronOre, 6},
+			{BlockManager.Instance.GoldOre, 6},
 			{BlockManager.Instance.DiamondOre, 5}
 		};
 
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.CoalOre, 0.0w5f},
+			{BlockManager.Instance.CoalOre, 0.01f},
+			{BlockManager.Instance.CopperOre, 0.05f},
+			{BlockManager.Instance.IronOre, 0.025f},
+			{BlockManager.Instance.GoldOre, 0.001f},
+			{BlockManager.Instance.DiamondOre, 0.0005f},
 		};
 		
 		Random rng = new Random();
@@ -136,7 +140,7 @@ public partial class Chunk : StaticBody3D
 							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CopperOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CopperOre]));
 							continue;
 						}
-						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CoalOre]) {
+						else if (y < coalHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CoalOre]) {
 							GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CoalOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CoalOre]));
 							continue;
 						} else {
