@@ -81,7 +81,8 @@ public partial class BlockManager : Node
 			{Air, 0.0f},
 			{Stone, 1.5f},
 			{Dirt, 0.25f},
-			{Grass, 0.25f}
+			{Grass, 0.25f},
+			{IronOre, 2.0f}
 		};
 		
 	}
