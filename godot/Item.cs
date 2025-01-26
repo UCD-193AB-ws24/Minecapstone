@@ -17,8 +17,15 @@ public partial class Item : Resource {
 	public bool IsBlock { get; set; }
 	public bool IsTool { get; set; }
 
+	public Item(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable, bool IsBlock, bool IsTool) {
+		this.Name = Name;
+		this.Icon = Icon;
+		this.MaxStackSize = MaxStackSize;
+		this.IsConsumable = IsConsumable;
+	}
+
 	public string PrintItem()
 	{
-		
+		return Name;
 	}
 }
