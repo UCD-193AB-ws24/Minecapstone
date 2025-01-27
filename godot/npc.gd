@@ -31,7 +31,7 @@ func _physics_process(delta):
 	# Reduces the frequency of pathfinding updates
 	var player_position = player.global_position
 	if navigation_agent.target_position.distance_to(player_position) > 0.01:
-		var update_frequency = randi_range(10,20)
+		var update_frequency = randi_range(30,60)
 		if get_tree().get_frame() % update_frequency == 0:
 			set_movement_target(player.global_position)
 
