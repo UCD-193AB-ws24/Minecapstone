@@ -12,8 +12,6 @@ public partial class Tool : Item {
 		base.Icon = Icon;
 		base.MaxStackSize = MaxStackSize;
 		base.IsConsumable = IsConsumable;
-		base.IsBlock = IsBlock;
-		base.IsTool = IsTool;
 	}
 
 }
