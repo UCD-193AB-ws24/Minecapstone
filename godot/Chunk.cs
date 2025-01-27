@@ -81,22 +81,22 @@ public partial class Chunk : StaticBody3D
 					
 					// Super basic terrain generation
 					if (y < groundHeight / 2) {
-						block = BlockManager.Instance.Stone;
+						block = BlockManager.Instance.GetBlock("Stone");
 					}
 					else if (y < groundHeight) {
-						block = BlockManager.Instance.Dirt;
+						block = BlockManager.Instance.GetBlock("Dirt");
 					}
 					else if (y == groundHeight) {
-						block = BlockManager.Instance.Grass;
+						block = BlockManager.Instance.GetBlock("Grass");
 					}
 					else {
-						block = BlockManager.Instance.Air;
+						block = BlockManager.Instance.GetBlock("Air");
 					}
 
 					_blocks[x, y, z] = block;
 
 					// Save blocks
-					if (block != BlockManager.Instance.Air){
+					if (block != BlockManager.Instance.GetBlock("Air")){
 						// Only save non air blocks to save space
 						var globalCoordinates = new Vector3I((int) globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
 						SavedBlocks[globalCoordinates] = block;
@@ -116,7 +116,7 @@ public partial class Chunk : StaticBody3D
 						_blocks[x, y, z] = value;
 					} 
 					else {
-						_blocks[x, y, z] = BlockManager.Instance.Air;
+						_blocks[x, y, z] = BlockManager.Instance.GetBlock("Air");
 					}
 				}
 			}
@@ -158,7 +158,7 @@ public partial class Chunk : StaticBody3D
 		// Temporary fix for air blocks
 		var block = _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 
-		if (block == BlockManager.Instance.Air) return;
+		if (block == BlockManager.Instance.GetBlock("Air")) return;
 
 		// TODO: also check adjacent chunks for transparent blocks
 		// Use the appropriate textures for each face
@@ -218,7 +218,7 @@ public partial class Chunk : StaticBody3D
 		if (blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) return true;
 
 		// TODO: support for other transparent blocks
-		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] == BlockManager.Instance.Air;
+		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] == BlockManager.Instance.GetBlock("Air");
 	}
 	
 	// Set a block in the chunk
@@ -227,9 +227,10 @@ public partial class Chunk : StaticBody3D
 		Update();
 		
 		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
-		if(block == BlockManager.Instance.Air){
+		if (block == BlockManager.Instance.GetBlock("Air")) {
 			SavedBlocks.Remove(globalCoordinates);
-		} else {
+		} 
+		else {
 			SavedBlocks[globalCoordinates] = block;
 		}
 	}
