@@ -13,4 +13,7 @@ public class InventoryItem
     public string PrintInventoryItem() {
         return item.PrintItem();
     }
+    public int PrintAmount() {
+        return count;
+    }
 }

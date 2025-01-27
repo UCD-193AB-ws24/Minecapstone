@@ -10,54 +10,14 @@ public partial class InventoryManager : Node
 	private Dictionary<String, List<int>> name2SlotsDict;
 	private Dictionary<int, InventoryItem> slot2ItemsDict;
 	private bool[] inventorySlots;
-	private int availableSlot;
+	private int selectedSlot;
 	public InventoryManager()
 	{
+		selectedSlot = 0;
 		name2SlotsDict = new Dictionary<string, List<int>>();
 		slot2ItemsDict = new Dictionary<int, InventoryItem>();
 		inventorySlots = new bool[3];
-		// Items = [
-		// 	new Block {
-		// 		Name = "Stone",
-		// 		Icon = GD.Load<Texture2D>("res://textures/stone.png"),
-		// 		MaxStackSize = 64,
-		// 		IsConsumable = false,
-		// 		IsBlock = true,
-		// 		IsTool = false,
-		// 		Texture = GD.Load<Texture2D>("res://textures/stone.png"),
-		// 	},
-		// 	new Block {
-		// 		Name = "Dirt",
-		// 		Icon = GD.Load<Texture2D>("res://textures/dirt.png"),
-		// 		MaxStackSize = 64,
-		// 		IsConsumable = false,
-		// 		IsBlock = true,
-		// 		IsTool = false,
-		// 		Texture = GD.Load<Texture2D>("res://textures/dirt.png"),
-		// 	},
-		// 	new Tool {
-		// 		Name = "Stone Pickaxe",
-		// 		Icon = GD.Load<Texture2D>("res://textures/stone_pickaxe.png"),
-		// 		MaxStackSize = 1,
-		// 		IsConsumable = false,
-		// 		IsBlock = false,
-		// 		IsTool = true,
-		// 		ToolPower = 2,
-		// 		Durability = 100,
-		// 		Proficency = Proficency.STONE
-		// 	},
-		// 	new Tool {
-		// 		Name = "Wooden Pickaxe",
-		// 		Icon = GD.Load<Texture2D>("res://textures/wooden_pickaxe.png"),
-		// 		MaxStackSize = 1,
-		// 		IsConsumable = false,
-		// 		IsBlock = false,
-		// 		IsTool = true,
-		// 		ToolPower = 1,
-		// 		Durability = 50,
-		// 		Proficency = Proficency.WOOD
-		// 	}
-		// ];
+
 	}
 	// returns list of slot numbers that have items named itemName
 	private List<int> ItemInInventory(string itemName) 
@@ -142,6 +102,34 @@ public partial class InventoryManager : Node
 		}
 		return -1; // -1 means all slots are filled
 	}
+	public void CycleUp() 
+	{
+		selectedSlot -= 1;
+		if(selectedSlot < 0) 
+		{
+			selectedSlot = inventorySlots.Length - 1;
+		}
+	}
+	public void CycleDown() 
+	{
+		selectedSlot += 1;
+		if(selectedSlot > inventorySlots.Length - 1)
+		{
+			selectedSlot = 0;
+		}
+	}
+	public void PrintSelected() {
+		GD.Print("Slot: " + selectedSlot);
+		if(inventorySlots[selectedSlot]) 
+		{
+			
+			GD.Print(slot2ItemsDict[selectedSlot].PrintInventoryItem() + " " + slot2ItemsDict[selectedSlot].PrintAmount());
+		}else
+		{
+			GD.Print("Nothing");
+		}
+		
+	}
 	public void PrintItem(Item item)
 	{
 		GD.Print(item.Name);
@@ -152,8 +140,9 @@ public partial class InventoryManager : Node
 		{
 			if(inventorySlots[i])
 			{
-				GD.Print(slot2ItemsDict[i].PrintInventoryItem());
-			} else {
+				GD.Print(slot2ItemsDict[i].PrintInventoryItem() + " " + slot2ItemsDict[i].PrintAmount());
+			} else 
+			{
 				GD.Print("Nothing");
 			}
 		}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Tool]
 public partial class ItemDictionary : Node
 {
-	Dictionary<string, Item> ItemDict;
+	private Dictionary<string, Item> ItemDict;
 	string Path = "res://assets/icons/placeholder.jpg";
 	
 	public ItemDictionary() 

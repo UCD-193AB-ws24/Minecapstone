@@ -56,7 +56,8 @@ var thirst_timer = 0.0
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
-
+# ======================= Inventory =========================
+@onready var inventory_manager: Node = $Inventory 
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -96,6 +97,14 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if Input.is_action_just_released("inventory_up"):
+		print("scroll up")
+		inventory_manager.CycleUp()
+		inventory_manager.PrintSelected()
+	if Input.is_action_just_released("inventory_down"):
+		print("scroll down")
+		inventory_manager.CycleDown()
+		inventory_manager.PrintSelected()
 
 
 func _process(_delta):
@@ -179,6 +188,7 @@ func _handle_block_interaction():
 			
 			# Prevent player from placing blocks if the block will intersect the player
 			if not _block_position_intersect_player(new_block_position):
+				#replace block_manager.ItemDict.Get with selected block to place from inventory
 				chunk_manager.SetBlock(new_block_position, block_manager.ItemDict.Get("Stone"))
 				_update_navmesh()
 	else:
@@ -246,7 +256,7 @@ func _begin_block_break(pos:Vector3i):
 func _break_block():
 	# Get initial raycast data from player
 	var block_manager: Node = $"../NavigationMesher/BlockManager"
-	var inventory_manager: Node = $Inventory 
+	#var inventory_manager: Node = $Inventory 
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
