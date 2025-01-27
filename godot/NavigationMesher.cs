@@ -19,6 +19,7 @@ public partial class NavigationMesher : NavigationRegion3D {
 		if (!IsBaking()) {
 			BakeNavigationMesh(true);
 		}
+		// otherwise, queue a bake so the bake occurs once IsFInishedBaking signal is emitted
 	}
 
 	private void OnBakeFinished() {

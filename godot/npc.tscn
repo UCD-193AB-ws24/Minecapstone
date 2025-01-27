@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://le6846223p6p"]
+[gd_scene load_steps=7 format=3 uid="uid://le6846223p6p"]
 
 [ext_resource type="Script" uid="uid://cd5ptaglu0xxs" path="res://npc.gd" id="1_xxcha"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_kh24r"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="2_ul7y6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -19,6 +20,15 @@ collision_layer = 8
 platform_floor_layers = 4294967041
 script = ExtResource("1_xxcha")
 _speed = 6.0
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.25
+simplify_path = true
+simplify_epsilon = 0.1
+debug_enabled = true
+
+[node name="InventoryManager" type="Node" parent="."]
+script = ExtResource("2_ul7y6")
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
@@ -51,13 +61,6 @@ metadata/_custom_type_script = ExtResource("2_kh24r")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
-
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_postprocessing = 2
-simplify_path = true
-simplify_epsilon = 0.1
-debug_enabled = true
-debug_path_custom_point_size = 68.2
 
 [node name="Path3D" type="Path3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

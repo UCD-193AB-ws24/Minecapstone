@@ -56,12 +56,18 @@ var thirst_timer = 0.0
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
+
 # ======================= Inventory =========================
-@onready var inventory_manager: Node = $Inventory 
+@onready var inventory_manager: InventoryManager = $InventoryManager
+@onready var block_highlight: CSGBox3D = $BlockHighlight
+@onready var block_manager: Node = $"../NavigationMesher/BlockManager"
+@onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
+	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 64)
 
 
 # Called on input event
@@ -160,10 +166,6 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 
 
 func _handle_block_interaction():
-	var block_highlight: CSGBox3D = $BlockHighlight
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
-	var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
-	
 	# Allows for multiple blocks to be broken while mouse1 is held down
 	if not Input.is_action_pressed("mouse1"): _released = true
 	if Input.is_action_just_pressed("mouse1"): _released = false
@@ -230,13 +232,13 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
 
-# prepares timer for block breaking
+
+# Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
 	_is_breaking = true
 	_block_breaking = pos
 
 	# get block data, time to break
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
@@ -255,8 +257,6 @@ func _begin_block_break(pos:Vector3i):
 # Determines if looking at the right block and breaks it after timeout
 func _break_block():
 	# Get initial raycast data from player
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
-	#var inventory_manager: Node = $Inventory 
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
@@ -302,8 +302,11 @@ func _break_block():
 	if _break_timer.is_stopped():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
-		inventory_manager.AddItem(block);
+		
+		# TODO: Fix this
+		inventory_manager.AddItem(block, 1);
 		inventory_manager.PrintInventory();
+		
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
@@ -395,7 +398,8 @@ func _throw_pearl():
 	var spawn_position = head.global_transform.origin
 
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
-	
+
+
 func _update_health_hunger_thirst(_delta):
 	# Decrease health and thirst over time
 	hunger_timer += _delta
