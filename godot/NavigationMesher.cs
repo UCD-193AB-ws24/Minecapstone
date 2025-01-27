@@ -16,11 +16,13 @@ public partial class NavigationMesher : NavigationRegion3D {
 	}
 
 	public void GenerateNavmesh() {
-		this.BakeNavigationMesh(true);
+		if (!IsBaking()) {
+			BakeNavigationMesh(true);
+		}
 	}
 
 	private void OnBakeFinished() {
-		var navmesh = (NavigationMesh)this.NavigationMesh;
+		var navmesh = NavigationMesh;
 		GD.Print("Navmesh baked --> ", navmesh.GetVertices().Length);
 	}
 

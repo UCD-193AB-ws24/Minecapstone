@@ -179,7 +179,7 @@ func _handle_block_interaction():
 			
 			# Prevent player from placing blocks if the block will intersect the player
 			if not _block_position_intersect_player(new_block_position):
-				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
+				chunk_manager.SetBlock(new_block_position, block_manager.ItemDict.Get("Stone"))
 				_update_navmesh()
 	else:
 		block_highlight.visible = false
@@ -291,7 +291,7 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, block_manager.Air)
+		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
 		inventory_manager.AddItem(block);
 		inventory_manager.PrintInventory();
 		_block_breaking = null

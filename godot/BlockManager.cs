@@ -6,20 +6,9 @@ using System.Linq;
 [Tool]
 public partial class BlockManager : Node
 {
-	[Export]
-	public Block Air { get; set; }
-
-	[Export]
-	public Block Stone { get; set; }
-
-	[Export]
-	public Block Dirt { get; set; }
-
-	[Export]
-	public Block Grass { get; set; }
+	public ItemDictionary ItemDict = new();
 
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
-	private ItemDictionary ItemDict;
 	private int _gridWidth = 4;
 	private int _gridHeight = 4;
 
@@ -35,11 +24,14 @@ public partial class BlockManager : Node
 
 	public override void _Ready() {
 		Instance = this;
-		ItemDict = new ItemDictionary();
-		Air = (Block) ItemDict.Get("Air");
-		Stone = (Block) ItemDict.Get("Stone");
-		Dirt = (Block) ItemDict.Get("Dirt");
-		Grass = (Block) ItemDict.Get("Grass");
+
+		(Block Air, Block Stone, Block Dirt, Block Grass) = (
+			(Block) ItemDict.Get("Air"),
+			(Block) ItemDict.Get("Stone"),
+			(Block) ItemDict.Get("Dirt"),
+			(Block) ItemDict.Get("Grass")
+		);
+
 		// Array of all block textures
 		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
@@ -101,5 +93,9 @@ public partial class BlockManager : Node
 	public float GetTime(Block block) 
 	{
 		return time_dictionary[block];
+	}
+
+	public Block GetBlock(String blockName) {
+		return (Block)ItemDict.Get(blockName);
 	}
 }

@@ -1,33 +1,35 @@
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Reflection.Metadata.Ecma335;
 
+[Tool]
 public partial class ItemDictionary : Node
 {
-    Dictionary<string, Item> ItemDict;
-    string Path = "res://assets/icons/placeholder.jpg";
-    
-    public ItemDictionary() 
-    {
-        Texture2D Placeholder = GD.Load<Texture2D>(Path);
-        ItemDict = new Dictionary<string, Item>()
-        {
-            {"Air", new Block("Air", Placeholder, 0, false, true, false)},
-            {"Dirt", new Block("Dirt", Placeholder, 64, false, true, false)},
-            {"Stone", new Block("Stone", Placeholder, 64, false, true, false)},
-            {"Grass", new Block("Grass", Placeholder, 64, false, true, false)},
-        };
+	Dictionary<string, Item> ItemDict;
+	string Path = "res://assets/icons/placeholder.jpg";
+	
+	public ItemDictionary() 
+	{
+		Texture2D Placeholder = GD.Load<Texture2D>(Path);
+		ItemDict = new Dictionary<string, Item>()
+		{
+			{"Air", new Block("Air", Placeholder, 0, false, null, null, null)},
+			{"Dirt", new Block("Dirt", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/dirt.png"))},
+			{"Stone", new Block("Stone", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/stone.png"))},
+			{"Grass", new Block("Grass", Placeholder, 64, false, 
+				(Texture2D)GD.Load("res://assets/side_grass.png"), 
+				(Texture2D)GD.Load("res://assets/grass.png"),
+				(Texture2D)GD.Load("res://assets/dirt.png"))
+			},
+		};
 
-    }
-    public Item Get(string BlockName) 
-    {
-        return ItemDict[BlockName];
-    }
+	}
+	public Item Get(string BlockName) 
+	{
+		return ItemDict[BlockName];
+	}
 
-    //Block Dirt = new Block(<parameters here>);
-    // instantiate more blocks types
+	//Block Dirt = new Block(<parameters here>);
+	// instantiate more blocks types
 
-    // store in dictionary here
+	// store in dictionary here
 }
