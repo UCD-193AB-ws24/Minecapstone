@@ -28,7 +28,7 @@ public partial class ChunkManager : Node
 		Instance = this;
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
 		// TODO: replace with Player.Instance one day..
-		player = GetNodeOrNull<CharacterBody3D>("/root/World/Player");
+		player = GetNodeOrNull<CharacterBody3D>("../../Player");
 		_chunks = GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
 
 		for (int i = _chunks.Count; i < _viewDistance * _viewDistance; i++) {

@@ -58,7 +58,7 @@ var thirst_timer = 0.0
 @export var _mouse_sensitivity = 0.1
 
 # ======================= Inventory =========================
-@onready var inventory_manager: InventoryManager = $InventoryManager
+@onready var inventory_manager: Node = $InventoryManager
 @onready var block_highlight: CSGBox3D = $BlockHighlight
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"

@@ -4,12 +4,12 @@ extends Control
 
 func _physics_process(_delta: float) -> void:
 	label.text = "FPS: " + str(Engine.get_frames_per_second())
-	var chunk_manager = get_node("/root/World/NavigationMesher/ChunkManager")
+	var chunk_manager = $"../NavigationMesher/ChunkManager"
 	if chunk_manager:
 		var player_chunk_position = chunk_manager.GetPlayerChunkPosition()
 		label.text += "\nPlayer Chunk Position: " + str(player_chunk_position)
 
-	var player = get_node("/root/World/Player")
+	var player = $"../Player"
 	if player:
 		label.text += "\nPlayer Global Position: " + str(round_vector(player.global_position))
 		label.text += "\nPlayer Velocity: " + str(round(player.velocity.length() * 10) / 10.0)
