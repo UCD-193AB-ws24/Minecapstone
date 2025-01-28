@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-[Tool]
+// [Tool]
 public partial class ItemDictionary : Node
 {
 	private Dictionary<string, Item> ItemDict;

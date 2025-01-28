@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-[Tool]
+// [Tool]
 public partial class InventoryManager : Node {
 	private Dictionary<string, List<int>> name_to_slots;
 	private Dictionary<int, InventoryItem> slots_to_items;
@@ -97,6 +97,36 @@ public partial class InventoryManager : Node {
 		// 	}
 		// }
 		// return -1; // -1 means all slots are filled
+	}
+
+	public Item GetSelectedItem() {
+		if (inventorySlots[selectedSlot]) {
+			return slots_to_items[selectedSlot].item;
+		}
+		else {
+			return null;
+		}
+	}
+
+	public int GetSelectedAmount() {
+		if (inventorySlots[selectedSlot]) {
+			return slots_to_items[selectedSlot].count;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	public void ConsumeSelectedItem() {
+		if (!inventorySlots[selectedSlot]) return;
+
+		InventoryItem item = slots_to_items[selectedSlot];
+		item.count -= 1;
+		if (item.count == 0) {
+			inventorySlots[selectedSlot] = false;
+			slots_to_items.Remove(selectedSlot);
+			name_to_slots[item.item.Name].Remove(selectedSlot);
+		}
 	}
 	
 	public void CycleUp() {

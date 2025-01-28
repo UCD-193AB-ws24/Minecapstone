@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://bp2lv8kmupisq"]
+[gd_scene load_steps=5 format=3 uid="uid://bp2lv8kmupisq"]
 
 [ext_resource type="Script" uid="uid://cpjef4lcjfguy" path="res://ui.gd" id="1_fyqef"]
+[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_m6e0p"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_xb563"]
 font_size = 26
-font_color = Color(0, 1, 0, 1)
+font_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_fyqef"]
 font_size = 50
@@ -29,7 +30,8 @@ vertical = true
 
 [node name="Label" type="Label" parent="GridContainer"]
 layout_mode = 2
-text = "FPS:"
+theme_override_colors/font_color = Color(0, 0.552941, 0, 1)
+text = "amt"
 label_settings = SubResource("LabelSettings_xb563")
 
 [node name="Health" type="ProgressBar" parent="."]
@@ -73,3 +75,20 @@ offset_right = 103.0
 offset_bottom = 349.0
 text = "0%"
 label_settings = SubResource("LabelSettings_fyqef")
+
+[node name="ItemTemp" type="AspectRatioContainer" parent="."]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 780.0
+offset_right = 213.0
+offset_bottom = 938.0
+
+[node name="TextureRect" type="TextureRect" parent="ItemTemp"]
+layout_mode = 2
+texture = ExtResource("2_m6e0p")
+expand_mode = 2
+
+[node name="Amount" type="Label" parent="ItemTemp"]
+layout_mode = 2
+text = "amt"
+label_settings = SubResource("LabelSettings_xb563")

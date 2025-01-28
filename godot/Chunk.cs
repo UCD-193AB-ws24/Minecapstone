@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-[GlobalClass]
 public partial class Chunk : StaticBody3D
 {
 	[Export]

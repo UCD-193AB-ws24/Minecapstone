@@ -191,8 +191,10 @@ func _handle_block_interaction():
 			# Prevent player from placing blocks if the block will intersect the player
 			if not _block_position_intersect_player(new_block_position):
 				#replace block_manager.ItemDict.Get with selected block to place from inventory
-				chunk_manager.SetBlock(new_block_position, block_manager.ItemDict.Get("Stone"))
-				_update_navmesh()
+				if inventory_manager.GetSelectedItem() != null and inventory_manager.GetSelectedItem().has_meta("is_block"):
+					chunk_manager.SetBlock(new_block_position, inventory_manager.GetSelectedItem())
+					inventory_manager.ConsumeSelectedItem()
+					_update_navmesh()
 	else:
 		block_highlight.visible = false
 

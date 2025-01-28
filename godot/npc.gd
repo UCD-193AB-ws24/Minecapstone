@@ -33,7 +33,7 @@ func _physics_process(delta):
 	var next_path_position: Vector3 = navigation_agent.get_next_path_position()
 	var path_direction = current_agent_position.direction_to(next_path_position).normalized()
 	# var path_direction_flat = Vector3(path_direction.x, 0, path_direction.z)
-	var path_direction_2d = Vector2(path_direction.x, path_direction.z).normalized() * path_direction.length()
+	var path_direction_2d = Vector2(path_direction.x, path_direction.z).normalized()
 
 
 	if velocity.length() < 0.2:

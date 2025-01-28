@@ -22,5 +22,11 @@ func _physics_process(_delta: float) -> void:
 			hungerbar.value = player.hunger
 			thirstbar.value = player.thirst
 
+	var inventory_manager = $"../Player/InventoryManager"
+	if inventory_manager:
+		var item_amt_label = $"./ItemTemp/Amount"
+		item_amt_label.text = str(inventory_manager.GetSelectedAmount())
+
+
 func round_vector(vec: Vector3) -> Vector3:
 	return Vector3(round(vec.x * 10) / 10.0, round(vec.y * 10) / 10.0, round(vec.z * 10) / 10.0)

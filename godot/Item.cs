@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-[Tool]
+// [Tool]
 [GlobalClass]
 public partial class Item : Resource {
 	[Export] public string Name { get; set; }
