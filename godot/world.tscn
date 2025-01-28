@@ -13,7 +13,9 @@ geometry_parsed_geometry_type = 1
 cell_size = 0.15
 cell_height = 0.5
 agent_radius = 0.3
-agent_max_climb = 1.0
+agent_max_climb = 1.1
+agent_max_slope = 30.0
+vertices_per_polygon = 4.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
 sky_top_color = Color(0.478431, 0.658824, 0.992157, 1)
@@ -41,7 +43,6 @@ volumetric_fog_density = 0.0184
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
 navigation_mesh = SubResource("NavigationMesh_k3n1d")
-travel_cost = 10.0
 script = ExtResource("1_k3n1d")
 
 [node name="BlockManager" type="Node" parent="NavigationMesher"]
@@ -73,6 +74,99 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 39.7352, 8.5)
 
 [node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5307, 32.3573, 10.1012)
+
+[node name="NPC2" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6811, 32.3573, 10.1012)
+
+[node name="NPC3" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8271, 32.3573, 10.1012)
+
+[node name="NPC4" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9775, 32.3573, 10.1012)
+
+[node name="NPC5" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1859, 32.3573, 10.1012)
+
+[node name="NPC6" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.3363, 32.3573, 10.1012)
+
+[node name="NPC7" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4823, 32.3573, 10.1012)
+
+[node name="NPC8" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.6327, 32.3573, 10.1012)
+
+[node name="NPC9" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5307, 32.3573, 12.1051)
+
+[node name="NPC10" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6811, 32.3573, 12.1051)
+
+[node name="NPC11" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8271, 32.3573, 12.1051)
+
+[node name="NPC12" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9775, 32.3573, 12.1051)
+
+[node name="NPC13" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1859, 32.3573, 12.1051)
+
+[node name="NPC14" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.3363, 32.3573, 12.1051)
+
+[node name="NPC15" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4823, 32.3573, 12.1051)
+
+[node name="NPC16" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.6327, 32.3573, 12.1051)
+
+[node name="NPC17" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5307, 32.3573, 10.1012)
+
+[node name="NPC18" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6811, 32.3573, 10.1012)
+
+[node name="NPC19" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8271, 32.3573, 10.1012)
+
+[node name="NPC20" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9775, 32.3573, 10.1012)
+
+[node name="NPC21" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1859, 32.3573, 10.1012)
+
+[node name="NPC22" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.3363, 32.3573, 10.1012)
+
+[node name="NPC23" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4823, 32.3573, 10.1012)
+
+[node name="NPC24" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.6327, 32.3573, 10.1012)
+
+[node name="NPC25" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5307, 32.3573, 12.1051)
+
+[node name="NPC26" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6811, 32.3573, 12.1051)
+
+[node name="NPC27" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8271, 32.3573, 12.1051)
+
+[node name="NPC28" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.9775, 32.3573, 12.1051)
+
+[node name="NPC29" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1859, 32.3573, 12.1051)
+
+[node name="NPC30" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.3363, 32.3573, 12.1051)
+
+[node name="NPC31" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4823, 32.3573, 12.1051)
+
+[node name="NPC32" parent="." instance=ExtResource("11_ic0uy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.6327, 32.3573, 12.1051)
 
 [node name="Path3D" type="Path3D" parent="."]
 curve = SubResource("Curve3D_pkg7o")
