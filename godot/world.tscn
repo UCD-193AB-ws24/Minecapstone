@@ -16,6 +16,7 @@ agent_radius = 0.32
 agent_max_climb = 1.0
 agent_max_slope = 90.0
 edge_max_error = 1.0
+vertices_per_polygon = 5.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gbfbk"]
 sky_top_color = Color(0.478431, 0.658824, 0.992157, 1)

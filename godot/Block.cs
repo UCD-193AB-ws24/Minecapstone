@@ -26,6 +26,7 @@ public partial class Block : Item {
 
 	public Block() : base("Unnamed block", null, 1, false)
 	{
+		// TODO: Investigate where this is getting called
 		GD.Print("This is not supposed to happen.");
 	}
 }
