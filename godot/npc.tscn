@@ -17,9 +17,9 @@ platform_floor_layers = 4294967041
 script = ExtResource("1_xxcha")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_desired_distance = 0.5
-path_postprocessing = 1
-debug_enabled = true
+path_height_offset = 1.0
+simplify_path = true
+simplify_epsilon = 0.571
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_ul7y6")

@@ -396,7 +396,7 @@ func _throw_pearl():
 
 	# Launch the pearl in the direction the camera is facing
 	var facing_direction = -head.global_transform.basis.z
-	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.1
+	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.05
 	var spawn_position = head.global_transform.origin
 
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
