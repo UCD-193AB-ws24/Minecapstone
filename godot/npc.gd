@@ -27,23 +27,26 @@ func set_movement_target(movement_target: Vector3):
 var is_queued_for_jump = false
 func _physics_process(delta):
 	var player = $"../Player"
+	set_movement_target(player.global_position)
 	_speed = 2
+
 
 	var current_agent_position: Vector3 = self.global_position
 	var next_path_position: Vector3 = navigation_agent.get_next_path_position()
-	var path_direction = current_agent_position.direction_to(next_path_position).normalized()
+	var path_direction = current_agent_position.direction_to(next_path_position)
 	# var path_direction_flat = Vector3(path_direction.x, 0, path_direction.z)
-	var path_direction_2d = Vector2(path_direction.x, path_direction.z).normalized()
+	var path_direction_2d = Vector2(path_direction.x, path_direction.z) * _speed
+	velocity = path_direction
 
-
-	if velocity.length() < 0.2:
-		if not is_queued_for_jump:
-			is_queued_for_jump = true
-			move_player(path_direction_2d, true, _speed, delta)
-			# await get_tree().create_timer(1.0).timeout
-			is_queued_for_jump = false
-	else:
-		move_player(path_direction_2d, false, _speed, delta)
+	# print(path_direction_2d.length())
+	# if velocity.length() < 0.2:
+	# 	if not is_queued_for_jump:
+	# 		is_queued_for_jump = true
+	# 		move_player(path_direction_2d, true, _speed, delta)
+	# 		# await get_tree().create_timer(1.0).timeout
+	# 		is_queued_for_jump = false
+	# else:
+	# 	move_player(path_direction_2d, false, _speed, delta)
 
 	# # var angle = acos(path_direction.dot(path_direction_flat) / path_direction.length() * path_direction_flat.length())
 	# var dir = current_agent_position - next_path_position
@@ -65,7 +68,6 @@ func _physics_process(delta):
 	# if navigation_agent.target_position.distance_to(player_position) > 0.01:
 	# 	var update_frequency = randi_range(30, 60)
 	# 	if get_tree().get_frame() % update_frequency == 0:
-	set_movement_target(player.global_position)
 
 
 	super(delta)

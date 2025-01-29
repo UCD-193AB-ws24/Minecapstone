@@ -85,6 +85,10 @@ inventory_down={
 
 limits/message_queue/max_size_mb=32768
 
+[navigation]
+
+3d/default_cell_size=0.15
+
 [rendering]
 
 lights_and_shadows/directional_shadow/size=8192

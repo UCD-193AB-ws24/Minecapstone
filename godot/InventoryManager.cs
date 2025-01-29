@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-// [Tool]
+[Tool]
 public partial class InventoryManager : Node {
 	private Dictionary<string, List<int>> name_to_slots;
 	private Dictionary<int, InventoryItem> slots_to_items;
