@@ -12,12 +12,12 @@ var _sprint_speed = _speed * 1.3
 var current_acceleration = 0.15
 
 # ============================ FOV and sprinting ============================
-var _is_sprinting = false
 @export var normal_fov = 70.0
-var sprint_fov = normal_fov + 20
-@export var fov_transition_speed = 10.0
-var last_forward_press = 0.0 			# Make note and update the time for last "W" press
+@export var fov_transition_speed = 7.5
 @export var double_tap_time = 0.3 		# Time in between "W" presses
+var sprint_fov = normal_fov + 20
+var _is_sprinting = false
+var last_forward_press = 0.0 			# Make note and update the time for last "W" press
 
 # ============================= Alternate views ============================
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
@@ -57,10 +57,17 @@ var thirst_timer = 0.0
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
 
+# ======================= Inventory =========================
+@onready var inventory_manager: Node = $InventoryManager
+@onready var block_highlight: CSGBox3D = $BlockHighlight
+@onready var block_manager: Node = $"../NavigationMesher/BlockManager"
+@onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
+	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 64)
 
 
 # Called on input event
@@ -96,6 +103,14 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if Input.is_action_just_released("inventory_up"):
+		print("scroll up")
+		inventory_manager.CycleUp()
+		inventory_manager.PrintSelected()
+	if Input.is_action_just_released("inventory_down"):
+		print("scroll down")
+		inventory_manager.CycleDown()
+		inventory_manager.PrintSelected()
 
 
 func _process(_delta):
@@ -151,11 +166,6 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 
 
 func _handle_block_interaction():
-	var block_highlight: CSGBox3D = $BlockHighlight
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
-	var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
-
-	
 	# Allows for multiple blocks to be broken while mouse1 is held down
 	if not Input.is_action_pressed("mouse1"): _released = true
 	if Input.is_action_just_pressed("mouse1"): _released = false
@@ -180,8 +190,11 @@ func _handle_block_interaction():
 			
 			# Prevent player from placing blocks if the block will intersect the player
 			if not _block_position_intersect_player(new_block_position):
-				chunk_manager.SetBlock(new_block_position, block_manager.Stone)
-				_update_navmesh()
+				#replace block_manager.ItemDict.Get with selected block to place from inventory
+				if inventory_manager.GetSelectedItem() != null and inventory_manager.GetSelectedItem().has_meta("is_block"):
+					chunk_manager.SetBlock(new_block_position, inventory_manager.GetSelectedItem())
+					inventory_manager.ConsumeSelectedItem()
+					_update_navmesh()
 	else:
 		block_highlight.visible = false
 
@@ -221,13 +234,13 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
 
-# prepares timer for block breaking
+
+# Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
 	_is_breaking = true
 	_block_breaking = pos
 
 	# get block data, time to break
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
@@ -246,7 +259,6 @@ func _begin_block_break(pos:Vector3i):
 # Determines if looking at the right block and breaks it after timeout
 func _break_block():
 	# Get initial raycast data from player
-	var block_manager: Node = $"../NavigationMesher/BlockManager"
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
@@ -260,6 +272,7 @@ func _break_block():
 	
 	# get block time and update progress label
 	var block = chunk.GetBlock(_block_breaking)
+	
 	var time = block_manager.GetTime(block)
 	var percentage : float = (time - _break_timer.time_left) / time * 100
 	var percent_string : String = str(round(percentage * 10)/10, "%")
@@ -290,7 +303,12 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, block_manager.Air)
+		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
+		
+		# TODO: Fix this
+		inventory_manager.AddItem(block, 1);
+		inventory_manager.PrintInventory();
+		
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
@@ -378,11 +396,12 @@ func _throw_pearl():
 
 	# Launch the pearl in the direction the camera is facing
 	var facing_direction = -head.global_transform.basis.z
-	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.1
+	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.05
 	var spawn_position = head.global_transform.origin
 
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
-	
+
+
 func _update_health_hunger_thirst(_delta):
 	# Decrease health and thirst over time
 	hunger_timer += _delta
