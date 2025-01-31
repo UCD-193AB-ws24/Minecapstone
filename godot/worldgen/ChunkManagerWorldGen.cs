@@ -6,20 +6,20 @@ using System.Threading;
 // TODO: Optimize chunk loading to reduce frame drops, e.g. find places to put Thread sleeps
 
 [Tool]
-public partial class ChunkManager : Node
+public partial class ChunkManagerWorldGen : Node
 {
-	public static ChunkManager Instance { get; private set; }
+	public static ChunkManagerWorldGen Instance { get; private set; }
 
-	private Dictionary<Chunk, Vector2I> _chunkToPosition = new();
-	private Dictionary<Vector2I, Chunk> _positionToChunk = new();
+	private Dictionary<ChunkWorldGen, Vector2I> _chunkToPosition = new();
+	private Dictionary<Vector2I, ChunkWorldGen> _positionToChunk = new();
 
-	private List<Chunk> _chunks;
+	private List<ChunkWorldGen> _chunks;
 
 	[Export] public PackedScene ChunkScene { get; set; }
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	private int view_distance = 6;
+	public int view_distance { get; private set; } = 6;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -29,10 +29,10 @@ public partial class ChunkManager : Node
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
 		// TODO: replace with Player.Instance one day..
 		player = GetNodeOrNull<CharacterBody3D>("../../Player");
-		_chunks = GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
+		_chunks = GetChildren().Where(child => child is ChunkWorldGen).Select(child => child as ChunkWorldGen).ToList();
 
 		for (int i = _chunks.Count; i < view_distance * view_distance; i++) {
-			var chunk = (Chunk)ChunkScene.Instantiate<Chunk>();
+			var chunk = (ChunkWorldGen)ChunkScene.Instantiate<ChunkWorldGen>();
 			CallDeferred(Node.MethodName.AddChild, chunk);
 			_chunks.Add(chunk);
 		}
@@ -55,7 +55,7 @@ public partial class ChunkManager : Node
 	}
 
 	// Generate the chunk at the desired position
-	public void UpdateChunkPosition(Chunk chunk, Vector2I currentPosition, Vector2I previousPosition) {
+	public void UpdateChunkPosition(ChunkWorldGen chunk, Vector2I currentPosition, Vector2I previousPosition) {
 		if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
 			_positionToChunk.Remove(previousPosition);
 		}
@@ -66,7 +66,7 @@ public partial class ChunkManager : Node
 
 	// Creates and sets the block at the desired position within the current chunk
 	public void SetBlock(Vector3I globalPosition, Block block) {
-		var chunkTilePosition = new Vector2I(Mathf.FloorToInt(globalPosition.X / (float)Chunk.dimensions.X), Mathf.FloorToInt(globalPosition.Z / (float)Chunk.dimensions.Z));
+		var chunkTilePosition = new Vector2I(Mathf.FloorToInt(globalPosition.X / (float)ChunkWorldGen.dimensions.X), Mathf.FloorToInt(globalPosition.Z / (float)ChunkWorldGen.dimensions.Z));
 
 		// Lock the position to the chunk in the event that the chunk is being updated
 		lock (_positionToChunk) {
@@ -93,8 +93,8 @@ public partial class ChunkManager : Node
 		while (IsInstanceValid(this)) {
 			int playerChunkX, playerChunkZ;
 			lock(_playerPositionlock) {
-				playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
-				playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
+				playerChunkX = Mathf.FloorToInt(_playerPosition.X / ChunkWorldGen.dimensions.X);
+				playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / ChunkWorldGen.dimensions.Z);
 			}
 			// Uncomment below for infinite generation
 			// foreach (var chunk in _chunks) {
@@ -116,7 +116,7 @@ public partial class ChunkManager : Node
 			// 			_positionToChunk[newPosition] = chunk;
 
 			// 			// Move an already existing chunk to the new posiiton
-			// 			chunk.CallDeferred(nameof(Chunk.SetChunkPosition), newPosition);
+			// 			chunk.CallDeferred(nameof(ChunkWorldGen.SetChunkPosition), newPosition);
 						
 			// 			// Do not update chunk positons as fast as possible to reduce frame drops
 			// 			Thread.Sleep(10);
@@ -131,8 +131,8 @@ public partial class ChunkManager : Node
 	// Debug
 	public Vector2I GetPlayerChunkPosition() {
 		lock (_playerPositionlock) {
-			int playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
-			int playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
+			int playerChunkX = Mathf.FloorToInt(_playerPosition.X / ChunkWorldGen.dimensions.X);
+			int playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / ChunkWorldGen.dimensions.Z);
 			return new Vector2I(playerChunkX, playerChunkZ);
 		}
 	}

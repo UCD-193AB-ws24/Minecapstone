@@ -155,7 +155,7 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
 
 	# Handle jumping
-	if is_on_floor() and jump:
+	if is_on_floor() and jump and view != ViewMode.SPECTATOR:
 		velocity.y = _jump_velocity
 
 		# Apply horizontal impulse if jumping while sprinting

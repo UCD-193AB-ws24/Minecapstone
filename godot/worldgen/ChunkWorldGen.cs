@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public partial class Chunk : StaticBody3D
+public partial class ChunkWorldGen : StaticBody3D
 {
 	[Export]
 	public CollisionShape3D CollisionShape { get; set; }
@@ -47,7 +47,7 @@ public partial class Chunk : StaticBody3D
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
-		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
+		ChunkManagerWorldGen.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
@@ -79,14 +79,8 @@ public partial class Chunk : StaticBody3D
 					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
 					
 					// Super basic terrain generation
-					if (y < groundHeight / 2) {
+					if (y == 0) {
 						block = BlockManager.Instance.GetBlock("Stone");
-					}
-					else if (y < groundHeight) {
-						block = BlockManager.Instance.GetBlock("Dirt");
-					}
-					else if (y == groundHeight) {
-						block = BlockManager.Instance.GetBlock("Grass");
 					}
 					else {
 						block = BlockManager.Instance.GetBlock("Air");
@@ -202,7 +196,7 @@ public partial class Chunk : StaticBody3D
 		var normal = ((Vector3)(c-a)).Cross((Vector3)(b-a)).Normalized();
 		var normals = new Vector3[] { normal, normal, normal };
 
-		ChunkManager chunkManager = ChunkManager.Instance;
+		ChunkManagerWorldGen chunkManager = ChunkManagerWorldGen.Instance;
 		chunkManager.UpdateNavMesh(triangle1, Transform);
 		chunkManager.UpdateNavMesh(triangle2, Transform);
 
