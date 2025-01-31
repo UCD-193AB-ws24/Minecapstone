@@ -4,6 +4,7 @@ extends Node3D
 @export var temperature_noise: FastNoiseLite
 @export var precipitation_noise: FastNoiseLite
 @export var height_noise: FastNoiseLite
+@export var smooth_height_noise: FastNoiseLite
 
 const SIZE = 1024
 const BIOME_NAMES = [
@@ -32,6 +33,7 @@ const BIOME_COLORS = [
 var biome_indices = []
 var generation_thread: Thread
 var _threaded_biome_texture: ImageTexture
+var _threaded_normal_map_texture: ImageTexture
 
 func _ready():
 	# Load and process TP_map into biome indices
@@ -88,44 +90,88 @@ func _threaded_generate():
 	display_dict(land_ocean_mask, Vector3(14, 0, 0))
 
 	display_voronoi(Vector3(21, 7, 0))
+
+	var combined_height_image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)
+	for x in SIZE:
+		for y in SIZE:
+			var pos = Vector2(x, y)
+			var is_land = land_ocean_mask[pos]
+			var detailed_value = height_noise.get_noise_2d(x, y)
+			var smooth_value = smooth_height_noise.get_noise_2d(x, y)
+			var combined_value = detailed_value if is_land else smooth_value
+			combined_height_image.set_pixel(x, y, Color(combined_value, combined_value, combined_value))
 	
+	
+	# Normalize to 0-1 range
+	combined_height_image.convert(Image.FORMAT_RF)
+	for x in SIZE:
+		for y in SIZE:
+			var value = combined_height_image.get_pixel(x, y).r
+			var normalized_value = (value + 1.0) / 2.0
+			combined_height_image.set_pixel(x, y, Color(normalized_value, normalized_value, normalized_value))
+
+	# Generate normal map
+	# combined_height_image.bumpmap_to_normal_map(16.0)
+	var normal_map_texture = ImageTexture.create_from_image(combined_height_image)
+
 	# Generate biome map
 	var biome_map_image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	for x in SIZE:
 		for y in SIZE:
 			var pos = Vector2(x, y)
 			var is_land = land_ocean_mask[pos]
-			if not is_land:
-				biome_map_image.set_pixel(x, y, Color(0, 0, 1))  # Ocean color
-				continue
-			
-			var temp = temperature_averages[pos]
-			var precip = precipitation_averages[pos]
-			
-			# Quantize to 0-255
-			var quant_temp = int((temp + 1.0) * 127.5)
-			quant_temp = clamp(quant_temp, 0, 255)
-			var quant_precip = int((precip + 1.0) * 127.5)
-			quant_precip = clamp(quant_precip, 0, 255)
-			quant_precip = 255 - quant_precip  # Invert precipitation axis
-			
-			var biome_index = biome_indices[quant_temp][quant_precip]
-			var color = BIOME_COLORS[biome_index]
-			biome_map_image.set_pixel(x, y, color)
+			if is_land:
+				var temp = temperature_averages[pos]
+				var precip = precipitation_averages[pos]
+				
+				# Quantize to 0-255
+				var quant_temp = int((temp + 1.0) * 127.5)
+				quant_temp = clamp(quant_temp, 0, 255)
+				var quant_precip = int((precip + 1.0) * 127.5)
+				quant_precip = clamp(quant_precip, 0, 255)
+				quant_precip = 255 - quant_precip  # Invert precipitation axis
+				
+				var biome_index = biome_indices[quant_temp][quant_precip]
+				var color = BIOME_COLORS[biome_index]
+
+				# TODO: properly adjust height factor based on biome
+				var height_value = height_noise.get_noise_2d(x, y)
+				var height_factor = clamp((height_value + 1.0) * 0.5, 0.2, 1.0)
+				color.r *= height_factor
+				color.g *= height_factor
+				color.b *= height_factor
+				biome_map_image.set_pixel(x, y, color)
+			else: # Ocean
+				var ocean_color = Color(0.0, 0.0, 1)
+				var smooth_value = smooth_height_noise.get_noise_2d(x, y)
+				var height_factor = clamp((smooth_value + 1.0) * 0.5, 0.2, 1.0)
+				ocean_color.r *= height_factor
+				ocean_color.g *= height_factor
+				ocean_color.b *= height_factor
+				biome_map_image.set_pixel(x, y, ocean_color)
 
 	# TODO: Normal mapping with the height map
 	
+	_threaded_biome_texture = ImageTexture.create_from_image(biome_map_image)
+	_threaded_normal_map_texture = normal_map_texture
 	var biome_texture = ImageTexture.create_from_image(biome_map_image)
 	_threaded_biome_texture = biome_texture
 	call_deferred("_finalize_generation")
 
 func _finalize_generation():
-	# Create new sprite with the generated texture
 	var sprite = Sprite3D.new()
 	sprite.texture = _threaded_biome_texture
 	sprite.pixel_size = 0.006
 	sprite.position = Vector3(21, 0, 0)
-	call_deferred("add_child", sprite)
+
+	# Create material with normal mapping
+	var material = StandardMaterial3D.new()
+	material.albedo_texture = _threaded_biome_texture
+	material.normal_texture = _threaded_normal_map_texture
+	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	sprite.material_override = material
+
+	add_child(sprite)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
@@ -239,7 +285,7 @@ func display_land_ocean(mask, offset: Vector3):
 	for x in range(SIZE):
 		for y in range(SIZE):
 			var is_land = mask[Vector2(x, y)]
-			var color = Color(0, 0, 1, 1) if not is_land else Color(0, 1, 0, 1) # Blue for ocean, green for land
+			var color = Color(0, 0, 1) if not is_land else Color(0, 1, 0) # Blue for ocean, green for land
 			image.set_pixel(x, y, color)
 	var texture = ImageTexture.create_from_image(image)
 	var sprite = Sprite3D.new()
