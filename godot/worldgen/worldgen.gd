@@ -53,16 +53,9 @@ func _ready():
 	
 	generate()
 
-func get_biome_index(color: Color) -> int:
-	var min_dist = INF
-	var best_index = 0
-	for i in BIOME_COLORS.size():
-		var biome_color = BIOME_COLORS[i]
-		var dist = sqrt(pow(color.r - biome_color.r, 2) + pow(color.g - biome_color.g, 2) + pow(color.b - biome_color.b, 2))
-		if dist < min_dist:
-			min_dist = dist
-			best_index = i
-	return best_index
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
+		generate()
 
 func generate():
 	print("Generating world...")
@@ -73,25 +66,37 @@ func generate():
 	generation_thread.start(Callable(self, "_threaded_generate"))
 
 func _threaded_generate():
-	# Compute mask, averages, and final biome map image
-	var land_ocean_mask = create_land_ocean_mask(height_noise)
-	
 	# Compute average temperature and precipitation per Voronoi cell
 	var temperature_averages = average_voronoi(temperature_noise)
 	var precipitation_averages = average_voronoi(precipitation_noise)
+	var land_ocean_mask = create_land_ocean_mask(height_noise)			# Compute mask, averages, and final biome map image
 	
 	display_noise(temperature_noise, Vector3(0, 7, 0))
 	display_dict(temperature_averages, Vector3(0, 0, 0))
-
 	display_noise(precipitation_noise, Vector3(7, 7, 0))
 	display_dict(precipitation_averages, Vector3(7, 0, 0))
-	
 	display_noise(height_noise, Vector3(14, 7, 0))
 	display_dict(land_ocean_mask, Vector3(14, 0, 0))
-
 	display_voronoi(Vector3(21, 7, 0))
 
-	var combined_height_image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)
+	var combined_height_image = create_combined_height_image(land_ocean_mask)
+	var normal_map_texture = ImageTexture.create_from_image(combined_height_image)
+
+	var biome_map_image = create_biome_map_image(
+		land_ocean_mask,
+		temperature_averages,
+		precipitation_averages
+	)
+	_threaded_biome_texture = ImageTexture.create_from_image(biome_map_image)
+	_threaded_normal_map_texture = normal_map_texture
+	var biome_texture = ImageTexture.create_from_image(biome_map_image)
+	_threaded_biome_texture = biome_texture
+	
+	display_biome()
+
+
+func create_combined_height_image(land_ocean_mask: Dictionary) -> Image:
+	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)
 	for x in SIZE:
 		for y in SIZE:
 			var pos = Vector2(x, y)
@@ -99,23 +104,20 @@ func _threaded_generate():
 			var detailed_value = height_noise.get_noise_2d(x, y)
 			var smooth_value = smooth_height_noise.get_noise_2d(x, y)
 			var combined_value = detailed_value if is_land else smooth_value
-			combined_height_image.set_pixel(x, y, Color(combined_value, combined_value, combined_value))
-	
+			image.set_pixel(x, y, Color(combined_value, combined_value, combined_value))
 	
 	# Normalize to 0-1 range
-	combined_height_image.convert(Image.FORMAT_RF)
+	image.convert(Image.FORMAT_RF)
 	for x in SIZE:
 		for y in SIZE:
-			var value = combined_height_image.get_pixel(x, y).r
+			var value = image.get_pixel(x, y).r
 			var normalized_value = (value + 1.0) / 2.0
-			combined_height_image.set_pixel(x, y, Color(normalized_value, normalized_value, normalized_value))
+			image.set_pixel(x, y, Color(normalized_value, normalized_value, normalized_value))
 
-	# Generate normal map
-	# combined_height_image.bumpmap_to_normal_map(16.0)
-	var normal_map_texture = ImageTexture.create_from_image(combined_height_image)
+	return image
 
-	# Generate biome map
-	var biome_map_image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+func create_biome_map_image(land_ocean_mask, temperature_averages, precipitation_averages) -> Image:
+	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	for x in SIZE:
 		for y in SIZE:
 			var pos = Vector2(x, y)
@@ -140,7 +142,7 @@ func _threaded_generate():
 				color.r *= height_factor
 				color.g *= height_factor
 				color.b *= height_factor
-				biome_map_image.set_pixel(x, y, color)
+				image.set_pixel(x, y, color)
 			else: # Ocean
 				var ocean_color = Color(0.0, 0.0, 1)
 				var smooth_value = smooth_height_noise.get_noise_2d(x, y)
@@ -148,34 +150,19 @@ func _threaded_generate():
 				ocean_color.r *= height_factor
 				ocean_color.g *= height_factor
 				ocean_color.b *= height_factor
-				biome_map_image.set_pixel(x, y, ocean_color)
+				image.set_pixel(x, y, ocean_color)
+	return image
 
-	# TODO: Normal mapping with the height map
-	
-	_threaded_biome_texture = ImageTexture.create_from_image(biome_map_image)
-	_threaded_normal_map_texture = normal_map_texture
-	var biome_texture = ImageTexture.create_from_image(biome_map_image)
-	_threaded_biome_texture = biome_texture
-	call_deferred("_finalize_generation")
-
-func _finalize_generation():
-	var sprite = Sprite3D.new()
-	sprite.texture = _threaded_biome_texture
-	sprite.pixel_size = 0.006
-	sprite.position = Vector3(21, 0, 0)
-
-	# Create material with normal mapping
-	var material = StandardMaterial3D.new()
-	material.albedo_texture = _threaded_biome_texture
-	material.normal_texture = _threaded_normal_map_texture
-	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	sprite.material_override = material
-
-	add_child(sprite)
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
-		generate()
+func get_biome_index(color: Color) -> int:
+	var min_dist = INF
+	var best_index = 0
+	for i in BIOME_COLORS.size():
+		var biome_color = BIOME_COLORS[i]
+		var dist = sqrt(pow(color.r - biome_color.r, 2) + pow(color.g - biome_color.g, 2) + pow(color.b - biome_color.b, 2))
+		if dist < min_dist:
+			min_dist = dist
+			best_index = i
+	return best_index
 
 func average_voronoi(data):
 	var voronoi_data = {}
@@ -213,26 +200,6 @@ func average_voronoi(data):
 
 	return averages
 
-
-func display_dict(dict, offset:Vector3):
-	var voronoi_texture = ImageTexture.create_from_image(dict_to_image(dict))
-	var sprite = Sprite3D.new()
-	sprite.texture = voronoi_texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
-
-
-func dict_to_image(data):
-	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
-	for x in range(SIZE):
-		for y in range(SIZE):
-			var value = data[Vector2(x, y)]
-
-			var color_value = (float(value) + 1) * 0.5
-			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
-	return image
-
 func display_noise(data:Noise, offset:Vector3):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 
@@ -250,6 +217,23 @@ func display_noise(data:Noise, offset:Vector3):
 	sprite.position += offset
 	call_deferred("add_child", sprite)
 
+func display_dict(dict, offset:Vector3):
+	var voronoi_texture = ImageTexture.create_from_image(dict_to_image(dict))
+	var sprite = Sprite3D.new()
+	sprite.texture = voronoi_texture
+	sprite.pixel_size = 0.006
+	sprite.position += offset
+	call_deferred("add_child", sprite)
+
+func dict_to_image(data):
+	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	for x in range(SIZE):
+		for y in range(SIZE):
+			var value = data[Vector2(x, y)]
+
+			var color_value = (float(value) + 1) * 0.5
+			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
+	return image
 
 func display_voronoi(offset):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
@@ -271,7 +255,6 @@ func display_voronoi(offset):
 	sprite.position += offset
 	call_deferred("add_child", sprite)
 
-
 func create_land_ocean_mask(data: Noise):
 	var mask = {}
 	for x in range(SIZE):
@@ -292,4 +275,18 @@ func display_land_ocean(mask, offset: Vector3):
 	sprite.texture = texture
 	sprite.pixel_size = 0.006
 	sprite.position += offset
+	call_deferred("add_child", sprite)
+
+func display_biome():
+	var sprite = Sprite3D.new()
+	sprite.texture = _threaded_biome_texture
+	sprite.pixel_size = 0.006
+	sprite.position = Vector3(21, 0, 0)
+
+	var material = StandardMaterial3D.new()
+	material.albedo_texture = _threaded_biome_texture
+	material.normal_texture = _threaded_normal_map_texture
+	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	sprite.material_override = material
+
 	call_deferred("add_child", sprite)
