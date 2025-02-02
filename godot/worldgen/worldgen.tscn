@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=16 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/worldgen.gd" id="1_yvk30"]
@@ -37,12 +37,6 @@ fractal_gain = 0.61
 domain_warp_enabled = true
 domain_warp_amplitude = 5.0
 domain_warp_frequency = 40.0
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_2riqy"]
-frequency = 0.002
-fractal_type = 0
-domain_warp_enabled = true
-domain_warp_amplitude = 0.0
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -83,7 +77,6 @@ voronoi_noise = SubResource("FastNoiseLite_8mp4y")
 temperature_noise = SubResource("FastNoiseLite_yvk30")
 precipitation_noise = SubResource("FastNoiseLite_h7q52")
 height_noise = SubResource("FastNoiseLite_41cxm")
-smooth_height_noise = SubResource("FastNoiseLite_2riqy")
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")

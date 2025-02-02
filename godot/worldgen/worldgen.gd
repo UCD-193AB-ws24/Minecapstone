@@ -4,7 +4,7 @@ extends Node3D
 @export var temperature_noise: FastNoiseLite
 @export var precipitation_noise: FastNoiseLite
 @export var height_noise: FastNoiseLite
-@export var smooth_height_noise: FastNoiseLite
+var smooth_height_noise: FastNoiseLite
 
 const SIZE = 1024
 const BIOME_NAMES = [
@@ -48,6 +48,10 @@ func _ready():
 			var color = tp_image.get_pixel(x, y)
 			var index = get_biome_index(color)
 			biome_indices[x][y] = index
+			
+	smooth_height_noise = height_noise.duplicate()
+	smooth_height_noise.fractal_type = FastNoiseLite.FRACTAL_NONE
+	smooth_height_noise.domain_warp_amplitude = 0.0
 	
 	generate()
 
@@ -73,7 +77,7 @@ func _threaded_generate():
 	var combined_height_image = create_combined_height_image(land_ocean_mask)
 
 	# Debug voronoi noise
-	display_voronoi(Vector3(-7, 3.5, 0))
+	display_voronoi(Vector3(-7, 14/2, 0))
 
 	# Debug temperature to voronoi average
 	display_noise(temperature_noise, Vector3(0, 7, 0))
