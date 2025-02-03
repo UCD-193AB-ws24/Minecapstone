@@ -28,4 +28,23 @@ public partial class Item : Resource {
 	{
 		return Name;
 	}
+
+	public Node GenerateItem() {
+		RigidBody3D droppedItem = new RigidBody3D();
+
+		CollisionShape3D collisionShape = new CollisionShape3D();
+		collisionShape.Shape = new BoxShape3D();
+		droppedItem.AddChild(collisionShape);
+
+		Sprite3D itemSprite = new Sprite3D();
+		itemSprite.Texture = this.Icon;
+		droppedItem.AddChild(itemSprite);	
+
+		Area3D areaBox = new Area3D();
+		collisionShape = new CollisionShape3D();
+		areaBox.AddChild(collisionShape);
+
+
+		return droppedItem;
+	}
 }
