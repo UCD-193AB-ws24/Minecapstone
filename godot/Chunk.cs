@@ -238,4 +238,11 @@ public partial class Chunk : StaticBody3D
 	public Block GetBlock(Vector3I blockPosition) {
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
+
+	//spawn block item at broken block's coordinate
+	public void SpawnBlockItem(Block block, Vector3I blockPosition) 
+	{
+		Node blockItem = block.GenerateItem();
+
+	}
 }
