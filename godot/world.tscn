@@ -118,13 +118,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.02689, 38.226, 5.7693)
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.6745, 33.5854, -10.8691)
 collision_layer = 2
+axis_lock_angular_x = true
+axis_lock_angular_z = true
 script = ExtResource("8_ioo17")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("BoxShape3D_ioo17")
 
 [node name="Sprite3D" type="Sprite3D" parent="RigidBody3D"]
-pixel_size = 0.001
+pixel_size = 0.0008
 texture = ExtResource("8_gbfbk")
 
 [node name="Area3D" type="Area3D" parent="RigidBody3D"]

@@ -27,6 +27,7 @@ enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 var _is_breaking : bool = false
 var _break_timer : Timer
 var _block_breaking						# position of the block attempting to break or null (not attempted block)
+var _global_block_breaking
 var _released : bool = true
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
 
@@ -229,7 +230,7 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	# if pressed left mouse prepare for block breaking
 	if Input.is_action_just_pressed("mouse1") and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
-	
+		_global_block_breaking = block_position
 	# if holding down left mouse prepare for breaking
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
@@ -238,8 +239,7 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 # Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
 	_is_breaking = true
-	_block_breaking = pos
-
+	_block_breaking = pos 
 	# get block data, time to break
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
@@ -266,6 +266,7 @@ func _break_block():
 	# if player isn't looking at a block, cancel the block breaking
 	if not raycast.is_colliding() or not chunk.has_meta("is_chunk"):
 		_block_breaking = null
+		_global_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 		return
@@ -281,6 +282,7 @@ func _break_block():
 	# if player stops looking at the block cancel the block breaking
 	if (Vector3i)(int_block_position - chunk.global_position) != _block_breaking:
 		_block_breaking = null
+		_global_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 		_break_timer.queue_free()
@@ -295,6 +297,7 @@ func _break_block():
 	# if released mouse button cancel block breaking
 	if Input.is_action_just_released("mouse1"):
 		_block_breaking = null
+		_global_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
 		_break_timer.queue_free()
@@ -305,11 +308,16 @@ func _break_block():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
 		
-		# TODO: Fix this
-		inventory_manager.AddItem(block, 1);
-		inventory_manager.PrintInventory();
+		# TODO: Have block dropped instead of it going straight into inventory
+		# inventory_manager.AddItem(block, 1);
+
+		var block_node = block.GenerateItem()
+		get_parent().add_child(block_node)
+		block_node.set_position(_global_block_breaking)
+		inventory_manager.PrintInventory()
 		
 		_block_breaking = null
+		_global_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
 		_update_navmesh()
