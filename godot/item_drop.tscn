@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlo1q4o5o5np"]
+
+[ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://item_collect.gd" id="1_an6nj"]
+[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_g4j5n"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6tdqx"]
+
+[node name="ItemDrop" type="RigidBody3D"]
+collision_layer = 10
+collision_mask = 9
+script = ExtResource("1_an6nj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_6tdqx")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+pixel_size = 0.0008
+texture = ExtResource("2_g4j5n")

@@ -80,40 +80,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 39.7352, 8.5)
 curve = SubResource("Curve3D_pkg7o")
 
 [node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 38.226, 2.4448)
-
-[node name="NPC2" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 38.226, 4.05388)
-
-[node name="NPC3" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 38.226, 5.7693)
-
-[node name="NPC4" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.78264, 38.226, 2.4448)
-
-[node name="NPC5" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.78264, 38.226, 4.05388)
-
-[node name="NPC6" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.78264, 38.226, 5.7693)
-
-[node name="NPC7" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.02689, 38.226, 2.4448)
-
-[node name="NPC8" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.02689, 38.226, 4.05388)
-
-[node name="NPC9" parent="." instance=ExtResource("11_ic0uy")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.02689, 38.226, 5.7693)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.6745, 33.5854, -10.8691)
