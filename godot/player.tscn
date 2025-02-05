@@ -12,8 +12,6 @@ transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
 [node name="Player" type="CharacterBody3D"]
-collision_layer = 10
-collision_mask = 9
 platform_floor_layers = 4294967041
 script = ExtResource("1_4flbx")
 metadata/Name = "agent"

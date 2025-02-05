@@ -38,6 +38,7 @@ _surfaces = [{
 }]
 
 [node name="Chunk" type="StaticBody3D" node_paths=PackedStringArray("CollisionShape", "MeshInstance")]
+collision_layer = 9
 script = ExtResource("1_kdh3y")
 CollisionShape = NodePath("CollisionShape3D")
 MeshInstance = NodePath("MeshInstance3D")
