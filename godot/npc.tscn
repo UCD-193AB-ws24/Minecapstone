@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cd5ptaglu0xxs" path="res://npc.gd" id="1_xxcha"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_kh24r"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="2_ul7y6"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -10,15 +11,18 @@ size = Vector3(0.6, 1.85, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
-[sub_resource type="Curve3D" id="Curve3D_xxcha"]
-bake_interval = 0.01
-up_vector_enabled = false
-
 [node name="NPC" type="CharacterBody3D"]
 collision_layer = 8
 platform_floor_layers = 4294967041
 script = ExtResource("1_xxcha")
-_speed = 6.0
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_height_offset = 1.0
+simplify_path = true
+simplify_epsilon = 0.571
+
+[node name="InventoryManager" type="Node" parent="."]
+script = ExtResource("2_ul7y6")
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
@@ -51,14 +55,3 @@ metadata/_custom_type_script = ExtResource("2_kh24r")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_onrkg")
-
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-path_postprocessing = 2
-simplify_path = true
-simplify_epsilon = 0.1
-debug_enabled = true
-debug_path_custom_point_size = 68.2
-
-[node name="Path3D" type="Path3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-curve = SubResource("Curve3D_xxcha")

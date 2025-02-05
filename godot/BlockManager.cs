@@ -6,35 +6,8 @@ using System.Linq;
 [Tool]
 public partial class BlockManager : Node
 {
-	[Export]
-	public Block Air { get; set; }
-
-	[Export]
-	public Block Stone { get; set; }
-
-	[Export]
-	public Block Dirt { get; set; }
-
-	[Export]
-	public Block Grass { get; set; }
-
-	[Export]
-	public Block IronOre {get; set;}
-
-	[Export]
-	public Block CopperOre {get; set;}
-
-	[Export]
-	public Block CoalOre {get; set;}
-
-	[Export]
-	public Block GoldOre {get; set;}
-
-	[Export]
-	public Block DiamondOre {get; set;}
-
+	public ItemDictionary ItemDict = new();
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
-
 	private int _gridWidth = 4;
 	private int _gridHeight = 4;
 
@@ -52,6 +25,19 @@ public partial class BlockManager : Node
 
 	public override void _Ready() {
 		Instance = this;
+
+		(Block Air, Block Stone, Block Dirt, Block Grass, Block IronOre, Block CopperOre, Block CoalOre, Block GoldOre, Block DiamondOre) = (
+			(Block) ItemDict.Get("Air"),
+			(Block) ItemDict.Get("Stone"),
+			(Block) ItemDict.Get("Dirt"),
+			(Block) ItemDict.Get("Grass"),
+			(Block) ItemDict.Get("IronOre"),
+			(Block) ItemDict.Get("CopperOre"),
+			(Block) ItemDict.Get("CoalOre"),
+			(Block) ItemDict.Get("GoldOre"),
+			(Block) ItemDict.Get("DiamondOre")
+		);
+
 		// Array of all block textures
 		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
 		SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
@@ -124,5 +110,9 @@ public partial class BlockManager : Node
 	public float GetTime(Block block) 
 	{
 		return time_dictionary[block];
+	}
+
+	public Block GetBlock(String blockName) {
+		return (Block)ItemDict.Get(blockName);
 	}
 }

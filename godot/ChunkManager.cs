@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,7 +19,7 @@ public partial class ChunkManager : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	private int _viewDistance = 8;
+	private int _viewDistance = 6;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -29,7 +28,7 @@ public partial class ChunkManager : Node
 		Instance = this;
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
 		// TODO: replace with Player.Instance one day..
-		player = GetNode<CharacterBody3D>("/root/World/Player");
+		player = GetNodeOrNull<CharacterBody3D>("../../Player");
 		_chunks = GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
 
 		for (int i = _chunks.Count; i < _viewDistance * _viewDistance; i++) {

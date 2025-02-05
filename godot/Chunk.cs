@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-[GlobalClass]
 public partial class Chunk : StaticBody3D
 {
 	[Export]
@@ -72,13 +71,11 @@ public partial class Chunk : StaticBody3D
 
 		
 		// TODO: Remove and only use air
-		transparentBlocks.Add(BlockManager.Instance.CoalOre);
-		transparentBlocks.Add(BlockManager.Instance.CopperOre);
-		transparentBlocks.Add(BlockManager.Instance.GoldOre);
-		transparentBlocks.Add(BlockManager.Instance.IronOre);
-		transparentBlocks.Add(BlockManager.Instance.DiamondOre);
-
-
+		transparentBlocks.Add(BlockManager.Instance.GetBlock("CoalOre"));
+		transparentBlocks.Add(BlockManager.Instance.GetBlock("CopperOre"));
+		transparentBlocks.Add(BlockManager.Instance.GetBlock("GoldOre"));
+		transparentBlocks.Add(BlockManager.Instance.GetBlock("IronOre"));
+		transparentBlocks.Add(BlockManager.Instance.GetBlock("DiamondOre"));
 	}
 
 	// Create and set block in the chunk
@@ -90,19 +87,19 @@ public partial class Chunk : StaticBody3D
 		
 		// set the max vein size for each type of ore
 		maxVeinSize = new Dictionary<Block, int>{
-			{BlockManager.Instance.CoalOre, 8},
-			{BlockManager.Instance.CopperOre, 8},
-			{BlockManager.Instance.IronOre, 6},
-			{BlockManager.Instance.GoldOre, 6},
-			{BlockManager.Instance.DiamondOre, 5}
+			{BlockManager.Instance.GetBlock("CoalOre"), 8},
+			{BlockManager.Instance.GetBlock("CopperOre"), 8},
+			{BlockManager.Instance.GetBlock("IronOre"), 6},
+			{BlockManager.Instance.GetBlock("GoldOre"), 6},
+			{BlockManager.Instance.GetBlock("DiamondOre"), 5}
 		};
 
 		oreSpawnRate = new Dictionary<Block, float>{
-			{BlockManager.Instance.CoalOre, 0.25f},
-			{BlockManager.Instance.CopperOre, 0.2f},
-			{BlockManager.Instance.IronOre, 0.15f},
-			{BlockManager.Instance.GoldOre, 0.075f},
-			{BlockManager.Instance.DiamondOre, 0.025f},
+			{BlockManager.Instance.GetBlock("CoalOre"), 0.25f},
+			{BlockManager.Instance.GetBlock("CopperOre"), 0.2f},
+			{BlockManager.Instance.GetBlock("IronOre"), 0.15f},
+			{BlockManager.Instance.GetBlock("GoldOre"), 0.075f},
+			{BlockManager.Instance.GetBlock("DiamondOre"), 0.025f},
 		};
 		
 		Random rng = new Random();
@@ -143,69 +140,69 @@ public partial class Chunk : StaticBody3D
 						// random vein generation
 						// order based on rarity (diamond -> coal)
 						// TODO: find a better way to choose random number
-						if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.DiamondOre]) {
-							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.Air, oreDistance)) {
-								block = BlockManager.Instance.Stone;
+						if (y < diamondHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GetBlock("DiamondOre")]) {
+							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.GetBlock("Air"), oreDistance)) {
+								block = BlockManager.Instance.GetBlock("Stone");
 							} else {
-								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.DiamondOre, rng.Next(1, maxVeinSize[BlockManager.Instance.	DiamondOre]));
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GetBlock("DiamondOre"), rng.Next(1, maxVeinSize[BlockManager.Instance.GetBlock("DiamondOre")]));
 								veinCount++;
 								continue;	
 							}
 						} 
-						else if (y < goldHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GoldOre]) {
-							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.Air, oreDistance)) {
-								block = BlockManager.Instance.Stone;
+						else if (y < goldHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GetBlock("GoldOre")]) {
+							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.GetBlock("Air"), oreDistance)) {
+								block = BlockManager.Instance.GetBlock("Stone");
 							} else {
-								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GoldOre, rng.Next(1, maxVeinSize[BlockManager.Instance.GoldOre]));
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GetBlock("GoldOre"), rng.Next(1, maxVeinSize[BlockManager.Instance.GetBlock("GoldOre")]));
 								veinCount++;
 								continue;
 							}
 						} 
-						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.IronOre]) {
-							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.Air, oreDistance)) {
-								block = BlockManager.Instance.Stone;
+						else if (y < ironHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GetBlock("IronOre")]) {
+							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.GetBlock("Air"), oreDistance)) {
+								block = BlockManager.Instance.GetBlock("Stone");
 							} else {
-								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.IronOre, rng.Next(1, maxVeinSize[BlockManager.Instance.IronOre]));
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GetBlock("IronOre"), rng.Next(1, maxVeinSize[BlockManager.Instance.GetBlock("IronOre")]));
 								veinCount++;
 								continue;
 							}
 						} 
-						else if (y < copperHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CopperOre]) {
-							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.Air, oreDistance)) {
-								block = BlockManager.Instance.Stone;
+						else if (y < copperHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GetBlock("CopperOre")]) {
+							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.GetBlock("Air"), oreDistance)) {
+								block = BlockManager.Instance.GetBlock("Stone");
 							} else {
-								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CopperOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CopperOre]));
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GetBlock("CopperOre"), rng.Next(1, maxVeinSize[BlockManager.Instance.GetBlock("CopperOre")]));
 								veinCount++;
 								continue;
 							}
 						}
-						else if (y < coalHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.CoalOre]) {
-							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.Air, oreDistance)) {
-								block = BlockManager.Instance.Stone;
+						else if (y < coalHeight && oreRandNum < oreSpawnRate[BlockManager.Instance.GetBlock("CoalOre")]) {
+							if (CheckOreWithinXBlock(new Vector3I(x,y,z), BlockManager.Instance.GetBlock("Air"), oreDistance)) {
+								block = BlockManager.Instance.GetBlock("Stone");
 							} else {
-								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.CoalOre, rng.Next(1, maxVeinSize[BlockManager.Instance.CoalOre]));
+								GenerateVein(new Vector3I(x, y, z), BlockManager.Instance.GetBlock("CoalOre"), rng.Next(1, maxVeinSize[BlockManager.Instance.GetBlock("CoalOre")]));
 								veinCount++;
 								continue;
 							}
 						} else {
-							block = BlockManager.Instance.Stone;
+							block = BlockManager.Instance.GetBlock("Stone");
 						}
 						
 					}
 					else if (y < groundHeight) {
-						block = BlockManager.Instance.Dirt;
+						block = BlockManager.Instance.GetBlock("Dirt");
 					}
 					else if (y == groundHeight) {
-						block = BlockManager.Instance.Grass;
+						block = BlockManager.Instance.GetBlock("Grass");
 					}
 					else {
-						block = BlockManager.Instance.Air;
+						block = BlockManager.Instance.GetBlock("Air");
 					}
 
 					_blocks[x, y, z] = block;
 
 					// Save blocks
-					if (block != BlockManager.Instance.Air){
+					if (block != BlockManager.Instance.GetBlock("Air")){
 						// Only save non air blocks to save space
 						var globalCoordinates = new Vector3I((int) globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
 						SavedBlocks[globalCoordinates] = block;
@@ -227,7 +224,7 @@ public partial class Chunk : StaticBody3D
 						_blocks[x, y, z] = value;
 					} 
 					else {
-						_blocks[x, y, z] = BlockManager.Instance.Air;
+						_blocks[x, y, z] = BlockManager.Instance.GetBlock("Air");
 					}
 				}
 			}
@@ -271,11 +268,11 @@ public partial class Chunk : StaticBody3D
 		// Temporary fix for air blocks
 		var block = _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 
-		if (block == BlockManager.Instance.Air) return;
+		if (block == BlockManager.Instance.GetBlock("Air")) return;
 
 		// TODO: also check adjacent chunks for transparent blocks
 		// Use the appropriate textures for each face
-		if (CheckTransparent(blockPosition) && block != BlockManager.Instance.Air) {
+		if (CheckTransparent(blockPosition) && block != BlockManager.Instance.GetBlock("Air")) {
 			CreateFaceMesh(_top, blockPosition, block.Texture);
 			CreateFaceMesh(_bottom, blockPosition, block.Texture);
 			CreateFaceMesh(_left, blockPosition, block.Texture);
@@ -339,8 +336,8 @@ public partial class Chunk : StaticBody3D
 		if (blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) return true;
 
 
-		if (!transparentBlocks.Contains(BlockManager.Instance.Air)) {
-			transparentBlocks.Add(BlockManager.Instance.Air);
+		if (!transparentBlocks.Contains(BlockManager.Instance.GetBlock("Air"))) {
+			transparentBlocks.Add(BlockManager.Instance.GetBlock("Air"));
 		}
 		// TODO: support for other transparent blocks
 		return transparentBlocks.Contains(_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z]);
@@ -352,9 +349,10 @@ public partial class Chunk : StaticBody3D
 		Update();
 		
 		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
-		if(block == BlockManager.Instance.Air){
+		if (block == BlockManager.Instance.GetBlock("Air")) {
 			SavedBlocks.Remove(globalCoordinates);
-		} else {
+		} 
+		else {
 			SavedBlocks[globalCoordinates] = block;
 		}
 	}
@@ -430,7 +428,7 @@ public partial class Chunk : StaticBody3D
 			_blocks[next_pos.X, next_pos.Y, next_pos.Z] = ore;
 
 			// Save blocks
-			if (ore != BlockManager.Instance.Air){
+			if (ore != BlockManager.Instance.GetBlock("Air")){
 				// Only save non air blocks to save space
 				var globalCoordinates = new Vector3I((int) globalBlockPosition.X, next_pos.Y, (int)  globalBlockPosition.Y);
 				SavedBlocks[globalCoordinates] = ore;
