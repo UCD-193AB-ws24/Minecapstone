@@ -1,8 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=7 format=3 uid="uid://0ypfn26rapdv"]
 
 [ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://player.gd" id="1_4flbx"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_onrkg"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="3_i3pqv"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
+radius = 0.3
+height = 1.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -18,11 +22,9 @@ script = ExtResource("1_4flbx")
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
 
-[node name="Body" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
-radius = 0.3
-height = 1.6
-sides = 16
+[node name="Body" type="CSGMesh3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835, 0)
+mesh = SubResource("CapsuleMesh_i3pqv")
 
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
