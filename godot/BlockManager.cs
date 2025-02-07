@@ -6,7 +6,7 @@ using System.Linq;
 [Tool]
 public partial class BlockManager : Node
 {
-	public ItemDictionary ItemDict = new();
+	//public ItemDictionary ItemDict = new();
 
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
 	private int _gridWidth = 4;
@@ -26,10 +26,10 @@ public partial class BlockManager : Node
 		Instance = this;
 
 		(Block Air, Block Stone, Block Dirt, Block Grass) = (
-			(Block) ItemDict.Get("Air"),
-			(Block) ItemDict.Get("Stone"),
-			(Block) ItemDict.Get("Dirt"),
-			(Block) ItemDict.Get("Grass")
+			(Block)ItemDictionary.Get("Air"),
+			(Block)ItemDictionary.Get("Stone"),
+			(Block)ItemDictionary.Get("Dirt"),
+			(Block)ItemDictionary.Get("Grass")
 		);
 
 		// Array of all block textures
@@ -96,6 +96,6 @@ public partial class BlockManager : Node
 	}
 
 	public Block GetBlock(String blockName) {
-		return (Block)ItemDict.Get(blockName);
+		return (Block)ItemDictionary.Get(blockName);
 	}
 }
