@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 [Tool]
-public partial class BlockManager : Node
-{
-	//public ItemDictionary ItemDict = new();
-
+public partial class BlockManager : Node {
 	private readonly Dictionary<Texture2D, Vector2I> _atlasLookup = new();
 	private int _gridWidth = 4;
 	private int _gridHeight = 4;

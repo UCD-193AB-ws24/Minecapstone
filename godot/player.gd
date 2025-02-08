@@ -49,7 +49,7 @@ var thirst = max_thirst
 var hunger_timer = 0.0
 var thirst_timer = 0.0
 
-# ============================ Important stuff ============================
+# ============================ Body related ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
@@ -63,7 +63,7 @@ var thirst_timer = 0.0
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
-
+# ========================= Item dictionary ===================
 @onready var item_dict_script = load("res://ItemDictionary.cs")
 @onready var itemdict_instance = item_dict_script.new()
 
@@ -71,7 +71,6 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
 	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
-	
 
 
 # Called on input event
@@ -142,6 +141,7 @@ func _physics_process(_delta):
 
 	if global_position.y < -64:
 		_on_out_of_bounds()
+
 
 func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
@@ -316,7 +316,7 @@ func _break_block():
 		_is_breaking = false
 		_break_timer.queue_free()
 		_update_navmesh()
-	
+
 
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;
@@ -435,15 +435,19 @@ func _update_health_hunger_thirst(_delta):
 	
 	if health <= 0:
 		_on_player_death()
-		
+
+
 func eat_food(amount):
 	hunger = min(hunger + amount, max_hunger)
 
+
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
-	
+
+
 func healh(amount):
 	health = min(health + amount, max_health)
+
 
 func _on_player_death():
 	print("Player has died")
