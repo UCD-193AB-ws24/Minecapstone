@@ -70,7 +70,8 @@ public partial class InventoryManager : Node {
 			inventorySlots[selectedSlot] = true;
 			return true;
 		}
-		else {
+		else 
+		{
 			// there are no inventory slots that contain item. Make a new entry in itemDict and slotDict 
 			int selectedSlot = GetSpace();
 			
