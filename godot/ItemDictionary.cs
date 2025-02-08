@@ -2,9 +2,10 @@ using Godot;
 using System.Collections.Generic;
 
 // [Tool]
-public static  class ItemDictionary
+public partial class ItemDictionary : Resource
 {
 	//private static Dictionary<string, Item> ItemDict;
+	private static ItemDictionary instance = null;
 	private static string Path = "res://assets/icons/placeholder.jpg";
 	private static Texture2D Placeholder = GD.Load<Texture2D>(Path);
 	private static Dictionary<string, Item> ItemDict = new Dictionary<string, Item>()
@@ -18,8 +19,20 @@ public static  class ItemDictionary
 			(Texture2D)GD.Load("res://assets/dirt.png"))
 		},
 	};
+	private ItemDictionary() {
+
+	}
+	public static ItemDictionary GetInstance() 
+	{
+		if(instance == null)
+		{
+			instance = new ItemDictionary();
+		}
+		return instance;
+	}
+
 	
-	// public static ItemDictionary() 
+	// public ItemDictionary() 
 	// {
 	// 	Texture2D Placeholder = GD.Load<Texture2D>(Path);
 	// 	ItemDict = new Dictionary<string, Item>()

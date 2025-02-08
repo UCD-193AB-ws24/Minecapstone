@@ -64,10 +64,14 @@ var thirst_timer = 0.0
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
 
+@onready var item_dict_script = load("res://ItemDictionary.cs")
+@onready var itemdict_instance = item_dict_script.new()
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 64)
+	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
+	
 
 
 # Called on input event
@@ -301,14 +305,12 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
+		chunk.SetBlock(_block_breaking, itemdict_instance.Get("Air"))
 		
 		var drop_pos:Vector3 = chunk.global_position + Vector3(_block_breaking.x, _block_breaking.y, _block_breaking.z)
 		var block_node = block.GenerateItem()
 		get_parent().add_child(block_node)
 		block_node.global_position = drop_pos + Vector3(0.5, 0.5, 0.5)
-		
-		inventory_manager.PrintInventory()
 		
 		_block_breaking = null
 		_is_breaking = false
