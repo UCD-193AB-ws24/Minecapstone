@@ -22,8 +22,8 @@ public partial class InventoryManager : Node {
 
 	// Returns list of slot numbers that have items named itemName
 	private List<int> ItemInInventory(string itemName) {
-		if (name_to_slots.ContainsKey(itemName)) {
-			List<int> existingSlots = name_to_slots[itemName];
+		if (name_to_slots.TryGetValue(itemName, out List<int> value)) {
+			List<int> existingSlots = value;
 			return existingSlots;
 		} 
 		else {
