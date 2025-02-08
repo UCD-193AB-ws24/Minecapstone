@@ -32,6 +32,11 @@ public partial class Item : Resource {
 	private static readonly PackedScene ItemDropScene = GD.Load<PackedScene>("res://item_drop.tscn");
 	public Node3D GenerateItem() {
 		var droppedItem = ItemDropScene.Instantiate<Node3D>();
+		Sprite3D sprite =  droppedItem.GetNode<Sprite3D>("Sprite3D");
+		sprite.Texture = this.Icon;
+		droppedItem.SetMeta("ItemName", this.Name);
+		//GD.Print("droppedItem has name " + droppedItem.GetMeta("ItemName"));
+
 		return droppedItem;
 	}
 }

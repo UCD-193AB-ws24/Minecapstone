@@ -104,4 +104,6 @@ collision_mask = 9
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D/Area3D"]
 shape = SubResource("BoxShape3D_ioo17")
 
+[node name="ItemDictionary" type="Node" parent="."]
+
 [connection signal="body_entered" from="RigidBody3D/Area3D" to="RigidBody3D" method="_on_area_3d_body_entered"]
