@@ -33,6 +33,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	private static readonly int[] _front = [2, 0, 1, 3];
 
 	private SurfaceTool _surfaceTool = new();
+	private Node3D WorldGenerator;
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 
@@ -45,10 +46,12 @@ public partial class ChunkWorldGen : StaticBody3D
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
-	public void SetChunkPosition(Vector2I position) {
+	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
 		ChunkManagerWorldGen.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
+		this.WorldGenerator = WorldGenerator;
+
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
 		Generate();
@@ -69,29 +72,71 @@ public partial class ChunkWorldGen : StaticBody3D
 			return;
 		}
 
-		for (int x = 0; x < dimensions.X; x++) {
-			for (int y = 0; y < dimensions.Y; y++) {
-				for (int z = 0; z < dimensions.Z; z++) {
-					Block block;
+		// Obtain noise instances from the world generator
+		var gdHeightNoise = WorldGenerator.Get("height_noise").As<FastNoiseLite>();
+		var gdSmoothHeightNoise = WorldGenerator.Get("smooth_height_noise").As<FastNoiseLite>();
 
-					// Set layer heights based on random noise
-					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
-					var groundHeight = (int)(dimensions.Y * ((Noise.GetNoise2D(globalBlockPosition.X, globalBlockPosition.Y) + 1f) / 2f));
-					
-					// Super basic terrain generation
-					if (y == 0) {
-						block = BlockManager.Instance.GetBlock("Stone");
+		// Loop over each horizontal column (x,z) then fill vertical blocks
+		for (int x = 0; x < dimensions.X; x++) {
+			for (int z = 0; z < dimensions.Z; z++) {
+				var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
+				
+				// float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
+				// float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
+				// bool isLand = detailedValue > 0.0f;
+				// float noiseValue = isLand ? detailedValue : smoothValue;
+				// int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
+
+			// 	for (int y = 0; y < dimensions.Y; y++) {
+			// 		Block block;
+			// 		if (y <= terrainHeight) {
+			// 			block = BlockManager.Instance.GetBlock("Stone");
+			// 		} else {
+			// 			block = BlockManager.Instance.GetBlock("Air");
+			// 		}
+			// 		_blocks[x, y, z] = block;
+
+			// 		if (block != BlockManager.Instance.GetBlock("Air")) {
+			// 			var globalCoordinates = new Vector3I(globalPos.X, y, globalPos.Y);
+			// 			SavedBlocks[globalCoordinates] = block;
+			// 		}
+			// 	}
+			// }
+
+				float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
+				bool isLand = detailedValue > 0.0f;
+				int stoneHeight = isLand ? 30 : 20;
+
+				for (int y = 0; y < dimensions.Y; y++) {
+					Block block;
+					if (isLand) {
+						if (y < stoneHeight - 10) {
+							block = BlockManager.Instance.GetBlock("Stone");
+						}
+						else if (y < stoneHeight - 1) {
+							block = BlockManager.Instance.GetBlock("Dirt");
+						}
+						else if (y == stoneHeight - 1) {
+							block = BlockManager.Instance.GetBlock("Grass");
+						}
+						else {
+							block = BlockManager.Instance.GetBlock("Air");
+						}
 					}
 					else {
-						block = BlockManager.Instance.GetBlock("Air");
+						if (y < stoneHeight ) {
+							block = BlockManager.Instance.GetBlock("Stone");
+						} 
+						else {
+							block = BlockManager.Instance.GetBlock("Air");
+						}
 					}
+					
 
 					_blocks[x, y, z] = block;
 
-					// Save blocks
-					if (block != BlockManager.Instance.GetBlock("Air")){
-						// Only save non air blocks to save space
-						var globalCoordinates = new Vector3I((int) globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
+					if (block != BlockManager.Instance.GetBlock("Air")) {
+						var globalCoordinates = new Vector3I(globalPos.X, y, globalPos.Y);
 						SavedBlocks[globalCoordinates] = block;
 					}
 				}

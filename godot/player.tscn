@@ -6,7 +6,7 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
 radius = 0.3
-height = 1.5
+height = 1.4
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -23,7 +23,7 @@ script = ExtResource("1_4flbx")
 script = ExtResource("3_i3pqv")
 
 [node name="Body" type="CSGMesh3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775, 0)
 mesh = SubResource("CapsuleMesh_i3pqv")
 
 [node name="Head" type="Node3D" parent="."]

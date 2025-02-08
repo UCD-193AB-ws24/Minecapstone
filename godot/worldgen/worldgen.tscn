@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=17 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/worldgen.gd" id="1_yvk30"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManagerWorldGen.cs" id="3_igfuc"]
+[ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="3_yvk30"]
 [ext_resource type="PackedScene" uid="uid://c7sylhr0megjp" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://player.tscn" id="6_0r4rx"]
@@ -70,13 +71,50 @@ volumetric_fog_density = 0.0184
 
 [node name="Worldgen" type="Node3D"]
 
-[node name="Worldgen" type="Node3D" parent="."]
+[node name="UI" parent="." instance=ExtResource("5_2riqy")]
+
+[node name="WorldGenerator" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
 script = ExtResource("1_yvk30")
 voronoi_noise = SubResource("FastNoiseLite_8mp4y")
 temperature_noise = SubResource("FastNoiseLite_yvk30")
 precipitation_noise = SubResource("FastNoiseLite_h7q52")
 height_noise = SubResource("FastNoiseLite_41cxm")
+
+[node name="LoadingScreen" type="Control" parent="WorldGenerator"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="WorldGenerator/LoadingScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="WorldGenerator/LoadingScreen"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="WorldGenerator/LoadingScreen/CenterContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="WorldGenerator/LoadingScreen/CenterContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("3_yvk30")
+expand_mode = 1
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
@@ -102,10 +140,11 @@ directional_shadow_mode = 0
 directional_shadow_split_1 = 0.0
 directional_shadow_split_2 = 0.0
 
-[node name="UI" parent="." instance=ExtResource("5_2riqy")]
-
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.1008, 7.42541, 4)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 39.7352, 8.5)
+
+[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher" method="GenerateNavmesh"]
+[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]

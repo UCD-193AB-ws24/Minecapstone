@@ -1,12 +1,14 @@
 extends Node3D
 
+signal world_generated
+
 @export var voronoi_noise: FastNoiseLite
 @export var temperature_noise: FastNoiseLite
 @export var precipitation_noise: FastNoiseLite
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-const SIZE = 1024
+@onready var SIZE = 32 * 16
 const BIOME_NAMES = [
 	"desert",
 	"savanna",
@@ -32,8 +34,19 @@ const BIOME_COLORS = [
 
 var biome_indices = []
 var generation_thread: Thread
+var debug = true
 
-func _ready():
+# func _input(event: InputEvent) -> void:
+# 	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
+# 		generate()
+
+var temperature_averages
+var precipitation_averages
+var combined_height_image
+var land_ocean_mask
+
+func generate():
+	world_generated.is_null()
 	# Load and process TP_map into biome indices
 	var tp_image = Image.load_from_file("res://assets/TP_map.png")
 	tp_image.decompress()
@@ -46,21 +59,16 @@ func _ready():
 		biome_indices[x].resize(256)
 		for y in 256:
 			var color = tp_image.get_pixel(x, y)
-			var index = get_biome_index(color)
+			var index = _get_biome_index(color)
 			biome_indices[x][y] = index
 			
 	smooth_height_noise = height_noise.duplicate()
 	smooth_height_noise.fractal_type = FastNoiseLite.FRACTAL_NONE
 	smooth_height_noise.domain_warp_amplitude = 0.0
 	
-	generate()
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
-		generate()
-
-func generate():
 	print("Generating world...")
+	_handle_loading_screen()
+
 	# Prevent concurrent generation
 	if generation_thread and generation_thread.is_alive():
 		return
@@ -68,43 +76,38 @@ func generate():
 	generation_thread.start(Callable(self, "_threaded_generate"))
 
 func _threaded_generate():
-	# Compute average temperature and precipitation per Voronoi cell
-	var temperature_averages = average_voronoi(temperature_noise)
-	var precipitation_averages = average_voronoi(precipitation_noise)
-	# Compute mask, averages, and final biome map image
-	var land_ocean_mask = create_land_ocean_mask(height_noise)
-	# Combine the smoothened and detailed height maps between land and ocean
-	var combined_height_image = create_combined_height_image(land_ocean_mask)
-
 	# Debug voronoi noise
-	display_voronoi(Vector3(-7, 14/2, 0))
+	_display_voronoi()
 
-	# Debug temperature to voronoi average
-	display_noise(temperature_noise, Vector3(0, 7, 0))
-	display_dict(temperature_averages, Vector3(0, 0, 0))
+	# Compute average temperature per Voronoi cell
+	_display_noise(temperature_noise)
+	temperature_averages = _average_voronoi(temperature_noise)
+	_display_dict(temperature_averages)
+
+	# Compute average precipitation per Voronoi cell
+	_display_noise(precipitation_noise)
+	precipitation_averages = _average_voronoi(precipitation_noise)
+	_display_dict(precipitation_averages)
+
+	# Compute mask, averages, and final biome map image
+	_display_noise(height_noise)
+	land_ocean_mask = _create_land_ocean_mask(height_noise)
+	_display_dict(land_ocean_mask)
+
+	# Combine the smoothened and detailed height maps between land and ocean
+	_display_noise(smooth_height_noise)
+	combined_height_image = _create_combined_height_image()
+	_display_image(combined_height_image)
+
+	#var biome_map = create_biome_map_image(land_ocean_mask, temperature_averages, precipitation_averages)
+	#display_image(biome_map)
+
+	call_deferred("_handle_loading_screen", null, false)
 	
-	# Debug precipitation to voronoi average
-	display_noise(precipitation_noise, Vector3(7, 7, 0))
-	display_dict(precipitation_averages, Vector3(7, 0, 0))
-	
-	# Debug height to land/ocean mask
-	display_noise(height_noise, Vector3(14, 7, 0))
-	display_dict(land_ocean_mask, Vector3(14, 0, 0))
+	# Emit signal when world generation is complete
+	call_deferred("emit_signal", "world_generated")
 
-	display_noise(smooth_height_noise, Vector3(21, 7, 0))
-	display_image(combined_height_image, Vector3(21, 0, 0))
-
-	# display_voronoi(Vector3(28, 7, 0))
-	var biome_map_image = create_biome_map_image(
-		land_ocean_mask,
-		temperature_averages,
-		precipitation_averages,
-		true
-	)
-	# TODO: use this
-	print(biome_map_image)
-
-func create_combined_height_image(land_ocean_mask: Dictionary) -> Image:
+func _create_combined_height_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)
 	for x in SIZE:
 		for y in SIZE:
@@ -125,97 +128,47 @@ func create_combined_height_image(land_ocean_mask: Dictionary) -> Image:
 
 	return image
 
-func create_biome_map_image(land_ocean_mask, temperature_averages, precipitation_averages, debug=false) -> Image:
+func _create_biome_map_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 
-	# TODO: remove temporary debug code
-	if debug:
-		for x in SIZE:
-			for y in SIZE:
-				var pos = Vector2(x, y)
-				var is_land = land_ocean_mask[pos]
-				if is_land:
-					var temp = temperature_averages[pos]
-					var precip = precipitation_averages[pos]
-					
-					# Quantize to 0-255
-					var quant_temp = int((temp + 1.0) * 127.5)
-					quant_temp = clamp(quant_temp, 0, 255)
-					var quant_precip = int((precip + 1.0) * 127.5)
-					quant_precip = clamp(quant_precip, 0, 255)
-					quant_precip = 255 - quant_precip  # Invert precipitation axis
-					
-					var biome_index = biome_indices[quant_temp][quant_precip]
-					var color = BIOME_COLORS[biome_index]
+	for x in SIZE:
+		for y in SIZE:
+			var pos = Vector2(x, y)
+			var is_land = land_ocean_mask[pos]
+			if is_land:
+				var temp = temperature_averages[pos]
+				var precip = precipitation_averages[pos]
+				
+				# Quantize to 0-255
+				var quant_temp = int((temp + 1.0) * 127.5)
+				quant_temp = clamp(quant_temp, 0, 255)
+				var quant_precip = int((precip + 1.0) * 127.5)
+				quant_precip = clamp(quant_precip, 0, 255)
+				quant_precip = 255 - quant_precip  # Invert precipitation axis
+				
+				var biome_index = biome_indices[quant_temp][quant_precip]
+				var color = BIOME_COLORS[biome_index]
 
-					image.set_pixel(x, y, color)
-				else: # is_ocean
-					var ocean_color = Color(0.0, 0.0, 1)
-					image.set_pixel(x, y, ocean_color)
+				# TODO: properly adjust height factor based on biome
+				var height_value = height_noise.get_noise_2d(x, y)
+				var height_factor = clamp((height_value + 1.0) * 0.5, 0.2, 1.0)
+				color.r *= height_factor
+				color.g *= height_factor
+				color.b *= height_factor
+				image.set_pixel(x, y, color)
+			else: # is_ocean
+				var ocean_color = Color(0.0, 0.0, 1)
+				var smooth_value = smooth_height_noise.get_noise_2d(x, y)
+				var height_factor = clamp((smooth_value + 1.0) * 0.5, 0.2, 1.0)
+				ocean_color.r *= height_factor
+				ocean_color.g *= height_factor
+				ocean_color.b *= height_factor
+				image.set_pixel(x, y, ocean_color)
 
-		display_image(image, Vector3(28, 7, 0))
-
-		for x in SIZE:
-			for y in SIZE:
-				var pos = Vector2(x, y)
-				var is_land = land_ocean_mask[pos]
-				if is_land:
-					var color = image.get_pixel(x, y)
-
-					# TODO: properly adjust height factor based on biome
-					var height_value = height_noise.get_noise_2d(x, y)
-					var height_factor = clamp((height_value + 1.0) * 0.5, 0.2, 1.0)
-					color.r *= height_factor
-					color.g *= height_factor
-					color.b *= height_factor
-					image.set_pixel(x, y, color)
-				else: # is_ocean
-					var ocean_color = Color(0.0, 0.0, 1)
-					var smooth_value = smooth_height_noise.get_noise_2d(x, y)
-					var height_factor = clamp((smooth_value + 1.0) * 0.5, 0.2, 1.0)
-					ocean_color.r *= height_factor
-					ocean_color.g *= height_factor
-					ocean_color.b *= height_factor
-					image.set_pixel(x, y, ocean_color)
-
-		display_image(image, Vector3(28, 0, 0))
-	else:
-		for x in SIZE:
-			for y in SIZE:
-				var pos = Vector2(x, y)
-				var is_land = land_ocean_mask[pos]
-				if is_land:
-					var temp = temperature_averages[pos]
-					var precip = precipitation_averages[pos]
-					
-					# Quantize to 0-255
-					var quant_temp = int((temp + 1.0) * 127.5)
-					quant_temp = clamp(quant_temp, 0, 255)
-					var quant_precip = int((precip + 1.0) * 127.5)
-					quant_precip = clamp(quant_precip, 0, 255)
-					quant_precip = 255 - quant_precip  # Invert precipitation axis
-					
-					var biome_index = biome_indices[quant_temp][quant_precip]
-					var color = BIOME_COLORS[biome_index]
-
-					# TODO: properly adjust height factor based on biome
-					var height_value = height_noise.get_noise_2d(x, y)
-					var height_factor = clamp((height_value + 1.0) * 0.5, 0.2, 1.0)
-					color.r *= height_factor
-					color.g *= height_factor
-					color.b *= height_factor
-					image.set_pixel(x, y, color)
-				else: # is_ocean
-					var ocean_color = Color(0.0, 0.0, 1)
-					var smooth_value = smooth_height_noise.get_noise_2d(x, y)
-					var height_factor = clamp((smooth_value + 1.0) * 0.5, 0.2, 1.0)
-					ocean_color.r *= height_factor
-					ocean_color.g *= height_factor
-					ocean_color.b *= height_factor
-					image.set_pixel(x, y, ocean_color)
+	call_deferred("_handle_loading_screen", ImageTexture.create_from_image(image))
 	return image
 
-func get_biome_index(color: Color) -> int:
+func _get_biome_index(color: Color) -> int:
 	var min_dist = INF
 	var best_index = 0
 	for i in BIOME_COLORS.size():
@@ -226,90 +179,67 @@ func get_biome_index(color: Color) -> int:
 			best_index = i
 	return best_index
 
-func average_voronoi(data):
-	var voronoi_data = {}
-	# First pass: Store voronoi hash for each coordinate
+func _average_voronoi(data):
+	var sums = {}      # key: voronoi hash, value: sum of noise values
+	var counts = {}    # key: voronoi hash, value: count
+	var pos_hash = {}  # key: position, value: voronoi hash
+	
+	# First pass: collect sums, counts, and store hash per position
 	for x in range(SIZE):
 		for y in range(SIZE):
 			var pos = Vector2(x, y)
-			var value = voronoi_noise.get_noise_2d(x, y)
-			voronoi_data[pos] = hash(value)
-
-	# Group positions by their voronoi hash
-	var hash_groups = {}
-	for pos in voronoi_data:
-		var h = voronoi_data[pos]
-		if not hash_groups.has(h):
-			hash_groups[h] = []
-		hash_groups[h].append(pos)
-
-	# Calculate averages for each group
+			var h = voronoi_noise.get_noise_2d(x, y)
+			pos_hash[pos] = h
+			var value = data.get_noise_2d(x, y)
+			if not sums.has(h):
+				sums[h] = value
+				counts[h] = 1
+			else:
+				sums[h] += value
+				counts[h] += 1
+	
+	# Compute averages per Voronoi key
 	var averages = {}
-	for h in hash_groups:
-		var positions = hash_groups[h]
-		var total = 0.0
+	for h in sums.keys():
+		averages[h] = sums[h] / counts[h]
+	
+	# Assign resulting average to each position
+	var result = {}
+	for pos in pos_hash.keys():
+		result[pos] = averages[pos_hash[pos]]
+	
+	return result
 
-		# Sum all values in this group
-		for pos in positions:
-			total += data.get_noise_2d(pos.x, pos.y)
-
-		# Calculate average
-		var avg = total / positions.size()
-
-		# Assign average to all positions in group
-		for pos in positions:
-			averages[pos] = avg
-
-	return averages
-
-func display_noise(data:Noise, offset:Vector3):
+func _display_noise(data:Noise):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 
 	for x in range(SIZE):
 		for y in range(SIZE):
 			var value = data.get_noise_2d(x, y)
-
 			var color_value = (value + 1) * 0.5
 			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
-
+			
 	var texture = ImageTexture.create_from_image(image)
-	var sprite = Sprite3D.new()
-	sprite.texture = texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
+	call_deferred("_handle_loading_screen", texture)
 
-func display_dict(dict, offset:Vector3):
-	var voronoi_texture = ImageTexture.create_from_image(dict_to_image(dict))
-	var sprite = Sprite3D.new()
-	sprite.texture = voronoi_texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
+func _display_dict(dict):
+	var texture = ImageTexture.create_from_image(_dict_to_image(dict))
+	call_deferred("_handle_loading_screen", texture)
 
-func display_image(image, offset:Vector3):
-	var texture
-	if image is ImageTexture:
-		texture = image
-	else:
-		texture = ImageTexture.create_from_image(image)
-	var sprite = Sprite3D.new()
-	sprite.texture = texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
-
-func dict_to_image(data):
+func _dict_to_image(data):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	for x in range(SIZE):
 		for y in range(SIZE):
 			var value = data[Vector2(x, y)]
-
 			var color_value = (float(value) + 1) * 0.5
 			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
 	return image
 
-func display_voronoi(offset):
+func _display_image(image):
+	var texture = image if image is ImageTexture else ImageTexture.create_from_image(image)
+	call_deferred("_handle_loading_screen", texture)
+
+func _display_voronoi():
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 
 	for x in range(SIZE):
@@ -321,15 +251,11 @@ func display_voronoi(offset):
 			var g = float((h >> 8) & 0xFF) / 255.0
 			var b = float(h & 0xFF) / 255.0
 			image.set_pixel(x, y, Color(r, g, b))
+	
+	var texture = ImageTexture.create_from_image(image)
+	call_deferred("_handle_loading_screen", texture)
 
-	var voronoi_texture = ImageTexture.create_from_image(image)
-	var sprite = Sprite3D.new()
-	sprite.texture = voronoi_texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
-
-func create_land_ocean_mask(data: Noise):
+func _create_land_ocean_mask(data: Noise):
 	var mask = {}
 	for x in range(SIZE):
 		for y in range(SIZE):
@@ -337,7 +263,7 @@ func create_land_ocean_mask(data: Noise):
 			mask[Vector2(x, y)] = value > 0.0 # Land if value > 0, ocean otherwise
 	return mask
 
-func display_land_ocean(mask, offset: Vector3):
+func _display_land_ocean(mask):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	for x in range(SIZE):
 		for y in range(SIZE):
@@ -345,8 +271,12 @@ func display_land_ocean(mask, offset: Vector3):
 			var color = Color(0, 0, 1) if not is_land else Color(0, 1, 0) # Blue for ocean, green for land
 			image.set_pixel(x, y, color)
 	var texture = ImageTexture.create_from_image(image)
-	var sprite = Sprite3D.new()
-	sprite.texture = texture
-	sprite.pixel_size = 0.006
-	sprite.position += offset
-	call_deferred("add_child", sprite)
+	call_deferred("_handle_loading_screen", texture)
+	
+func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) -> void:
+	if enabled:
+		$LoadingScreen.visible = true
+		$"LoadingScreen/CenterContainer/MarginContainer/TextureRect".texture = texture
+	else:
+		$LoadingScreen.visible = false
+		$"LoadingScreen/CenterContainer/MarginContainer/TextureRect".texture = null

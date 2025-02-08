@@ -19,36 +19,44 @@ public partial class ChunkManagerWorldGen : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	public int view_distance { get; private set; } = 6;
+	public int view_distance { get; private set; } = 32;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
+	private Node3D WorldGenerator;
 
 	public override void _Ready() {
 		Instance = this;
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
-		// TODO: replace with Player.Instance one day..
+		
+		WorldGenerator = GetNode<Node3D>("../../WorldGenerator");
+		WorldGenerator.Call("generate");
+		
 		player = GetNodeOrNull<CharacterBody3D>("../../Player");
 		_chunks = GetChildren().Where(child => child is ChunkWorldGen).Select(child => child as ChunkWorldGen).ToList();
-
+	}
+	
+	// Chunk initialization code runs after world generation
+	private void OnWorldGenerated() {
+		GD.Print("World generated");
+		
+		// Ensure we have enough chunks
 		for (int i = _chunks.Count; i < view_distance * view_distance; i++) {
 			var chunk = (ChunkWorldGen)ChunkScene.Instantiate<ChunkWorldGen>();
 			CallDeferred(Node.MethodName.AddChild, chunk);
 			_chunks.Add(chunk);
 		}
-
+		
 		for (int x = 0; x < view_distance; x++) {
 			for (int z = 0; z < view_distance; z++) {
 				// Get index of the chunk
 				var index = (z * view_distance) + x;
-
-				// Set the chunk position
 				var halfWidth = Mathf.FloorToInt(view_distance / 2f);
-				_chunks[index].SetChunkPosition(new Vector2I(x - halfWidth, z - halfWidth));
+				_chunks[index].SetChunkPosition(new Vector2I(x - halfWidth, z - halfWidth), WorldGenerator);
 			}
 		}
-
-		// This class is a [Tool], do not run this if in Editor
+		
+		// Start the chunk transition process in a separate thread
 		if (!Engine.IsEditorHint()) {
 			new Thread(new ThreadStart(ThreadProcess)).Start();
 		}
