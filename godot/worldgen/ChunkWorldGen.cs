@@ -86,7 +86,7 @@ public partial class ChunkWorldGen : StaticBody3D
 				bool isLand = detailedValue > 0.0f;
 				float noiseValue = isLand ? detailedValue : smoothValue;
 				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
-				int stoneHeight = isLand ? 30 : 20;
+				int stoneHeight = isLand ? 20 : 10;
 
 				// Example of getting the biome color
 				Color biomeColor = (Color)WorldGenerator.Call("get_biome_color", globalPos.X, globalPos.Y);
