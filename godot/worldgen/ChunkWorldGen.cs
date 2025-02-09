@@ -81,43 +81,27 @@ public partial class ChunkWorldGen : StaticBody3D
 			for (int z = 0; z < dimensions.Z; z++) {
 				var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
 				
-				// float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
-				// float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
-				// bool isLand = detailedValue > 0.0f;
-				// float noiseValue = isLand ? detailedValue : smoothValue;
-				// int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
-
-			// 	for (int y = 0; y < dimensions.Y; y++) {
-			// 		Block block;
-			// 		if (y <= terrainHeight) {
-			// 			block = BlockManager.Instance.GetBlock("Stone");
-			// 		} else {
-			// 			block = BlockManager.Instance.GetBlock("Air");
-			// 		}
-			// 		_blocks[x, y, z] = block;
-
-			// 		if (block != BlockManager.Instance.GetBlock("Air")) {
-			// 			var globalCoordinates = new Vector3I(globalPos.X, y, globalPos.Y);
-			// 			SavedBlocks[globalCoordinates] = block;
-			// 		}
-			// 	}
-			// }
-
 				float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
+				float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				bool isLand = detailedValue > 0.0f;
+				float noiseValue = isLand ? detailedValue : smoothValue;
+				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
 				int stoneHeight = isLand ? 30 : 20;
+
+				// Example of getting the biome color
+				Color biomeColor = (Color)WorldGenerator.Call("get_biome_color", globalPos.X, globalPos.Y);
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					Block block;
 					if (isLand) {
-						if (y < stoneHeight - 10) {
-							block = BlockManager.Instance.GetBlock("Stone");
-						}
-						else if (y < stoneHeight - 1) {
+						if (y < terrainHeight) {
 							block = BlockManager.Instance.GetBlock("Dirt");
 						}
-						else if (y == stoneHeight - 1) {
+						else if (y == terrainHeight) {
 							block = BlockManager.Instance.GetBlock("Grass");
+						}
+						else if (y < stoneHeight) {
+							block = BlockManager.Instance.GetBlock("Stone");
 						}
 						else {
 							block = BlockManager.Instance.GetBlock("Air");

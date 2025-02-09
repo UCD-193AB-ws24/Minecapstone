@@ -77,7 +77,6 @@ public partial class BlockManager : Node
 			{Dirt, 0.25f},
 			{Grass, 0.25f}
 		};
-		
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)
