@@ -158,7 +158,12 @@ public partial class ChunkWorldGen : StaticBody3D
 			}
 		}
 
-		_surfaceTool.SetMaterial(BlockManager.Instance.ChunkMaterial);
+		StandardMaterial3D material = BlockManager.Instance.ChunkMaterial;
+		ShaderMaterial shaderMaterial = new();
+
+		// Implement shader here
+
+		material.NextPass = shaderMaterial;
 		var mesh = _surfaceTool.Commit();
 		
 		MeshInstance.Mesh = mesh;

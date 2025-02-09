@@ -25,6 +25,7 @@ public partial class BlockManager : Node
 	public override void _Ready() {
 		Instance = this;
 
+		// TODO: Make this generalized for any number of blocks
 		(Block Air, Block Stone, Block Dirt, Block Grass) = (
 			(Block) ItemDict.Get("Air"),
 			(Block) ItemDict.Get("Stone"),
