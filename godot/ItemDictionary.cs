@@ -4,24 +4,20 @@ using System.Collections.Generic;
 public partial class ItemDictionary : Resource
 {
 	private static ItemDictionary instance = null;
-	private static readonly string Path = "res://assets/icons/placeholder.jpg";
-	private static readonly Texture2D Placeholder = GD.Load<Texture2D>(Path);
-	
-	private static readonly Dictionary<string, Item> ItemDict = new()
-	private static readonly string Path = "res://assets/icons/placeholder.jpg";
-	private static readonly Texture2D Placeholder = GD.Load<Texture2D>(Path);
-	
-	private static readonly Dictionary<string, Item> ItemDict = new()
+	private static string Path = "res://assets/icons/placeholder.jpg";
+	private static Texture2D Placeholder = GD.Load<Texture2D>(Path);
+	private static Dictionary<string, Item> ItemDict = new Dictionary<string, Item>()
 	{
 		{"Air", new Block("Air", Placeholder, 0, false, null, null, null)},
-		{"Dirt", new Block("Dirt", Placeholder, 64, false, (Texture2D)GD.Load("res:ms-appid:P~Microsoft.XboxGamingOverlay_8wekyb3d8bbwe!Appo//assets/dirt.png"))},
+		{"Dirt", new Block("Dirt", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/dirt.png"))},
 		{"Stone", new Block("Stone", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/stone.png"))},
-		{"Grass", new Block("Grass", Placeholder, 64, false,
-			(Texture2D)GD.Load("res://assets/side_grass.png"),
+		{"Grass", new Block("Grass", Placeholder, 64, false, 
+			(Texture2D)GD.Load("res://assets/side_grass.png"), 
 			(Texture2D)GD.Load("res://assets/grass.png"),
 			(Texture2D)GD.Load("res://assets/dirt.png"))
 		},
 	};
+	
 	
 	// Prevent instantiation
 	private ItemDictionary(){}

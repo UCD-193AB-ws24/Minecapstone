@@ -4,14 +4,14 @@ using System;
 [GlobalClass]
 public partial class Item(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable) : Resource
 {
-	[Export] public string Name { get; set; } = Name;
+	[Export] public string Name { get; set; }
 
 	// This is separate from the Item's 3D model, if any
-	public Texture2D Icon { get; set; } = Icon;
+	public Texture2D Icon { get; set; }
 
 	// Generic item properties
-	public int MaxStackSize { get; set; } = MaxStackSize;
-	public bool IsConsumable { get; set; } = IsConsumable;
+	public int MaxStackSize { get; set; }
+	public bool IsConsumable { get; set; }
 
 	// Item type
 	public bool IsBlock { get; set; }
