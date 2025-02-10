@@ -12,8 +12,11 @@ public partial class Block : Item {
 
 	public int HarvestLevel { get; set; }
 
+	// TODO: make line up with Tool.Proficiency (default should be dirt) 
+	public Proficency Proficiency { get; set; }
+
 	// TODO: check if can use primary constructor
-	public Block(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable, Texture2D Texture = null, Texture2D TopTexture = null, Texture2D BottomTexture = null, int HarvestLevel = 0) 
+	public Block(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable, Texture2D Texture = null, Texture2D TopTexture = null, Texture2D BottomTexture = null, int HarvestLevel = 0, Proficency Proficency = Proficency.DIRT) 
 	: base(Name, Icon, MaxStackSize, IsConsumable)
 	{
 		SetMeta("is_block", true);
@@ -25,6 +28,7 @@ public partial class Block : Item {
 		this.TopTexture = TopTexture;
 		this.BottomTexture = BottomTexture;
 		this.HarvestLevel = HarvestLevel;
+		this.Proficiency = Proficency;
 	}
 
 	public Block() : base("Unnamed block", null, 1, false)
