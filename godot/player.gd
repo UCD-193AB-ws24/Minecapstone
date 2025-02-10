@@ -28,6 +28,7 @@ var _is_breaking : bool = false
 var _break_timer : Timer
 var _block_breaking						# position of the block attempting to break or null (not attempted block)
 var _released : bool = true
+var _tool_breaking : Resource
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
 
 # ============================ Health, Hunger, Thirst =====================
@@ -245,6 +246,11 @@ func _begin_block_break(pos:Vector3i):
 	var block = chunk.GetBlock(_block_breaking)
 	var time = block_manager.GetTime(block)
 
+	_tool_breaking = inventory_manager.GetSelectedItem()
+	
+	if _tool_breaking.has_meta("is_tool") and _tool_breaking.GetProficency() == block.GetProficency():
+		time = time / float(_tool_breaking.GetHarvestLevel() + 1)
+
 	# setup timer to calculate block breaking
 	_break_timer = Timer.new()
 	_break_timer.one_shot = true
@@ -264,7 +270,7 @@ func _break_block():
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 
 	# if player isn't looking at a block, cancel the block breaking
-	if not raycast.is_colliding() or not chunk.has_meta("is_chunk"):
+	if not raycast.is_colliding() or not chunk.has_meta("is_chunk") or _tool_breaking != inventory_manager.GetSelectedItem():
 		_block_breaking = null
 		_is_breaking = false
 		block_progress.visible = false
@@ -306,8 +312,9 @@ func _break_block():
 		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
 		
 		# TODO: Fix this
-		inventory_manager.AddItem(block, 1);
-		inventory_manager.PrintInventory();
+		if (_tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() > block.GetHarvestLevel() and _tool_breaking.GetProficiency() == block.GetProficiency()) or block.GetHarvestLevel() == 0:
+			inventory_manager.AddItem(block, 1);
+			inventory_manager.PrintInventory();
 		
 		_block_breaking = null
 		_is_breaking = false

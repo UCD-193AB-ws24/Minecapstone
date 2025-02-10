@@ -8,10 +8,19 @@ public partial class Tool : Item {
 
 	public Tool(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable) : base(Name, Icon, MaxStackSize, IsConsumable)
 	{
+		SetMeta("is_tool", true);
 		base.Name = Name;
 		base.Icon = Icon;
 		base.MaxStackSize = MaxStackSize;
 		base.IsConsumable = IsConsumable;
+	}
+	
+	public int GetHarvestLevel() {
+		return ToolPower;
+	}
+
+	public Proficency GetProficency() {
+		return Proficency;
 	}
 
 }
