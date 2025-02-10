@@ -68,7 +68,8 @@ var thirst_timer = 0.0
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 64)
+	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 5)
+	inventory_manager.AddItem(block_manager.ItemDict.Get("WoodPick"), 1)
 
 
 # Called on input event
@@ -248,7 +249,7 @@ func _begin_block_break(pos:Vector3i):
 
 	_tool_breaking = inventory_manager.GetSelectedItem()
 	
-	if _tool_breaking.has_meta("is_tool") and _tool_breaking.GetProficency() == block.GetProficency():
+	if _tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetProficency() == block.GetProficency():
 		time = time / float(_tool_breaking.GetHarvestLevel() + 1)
 
 	# setup timer to calculate block breaking
@@ -310,9 +311,13 @@ func _break_block():
 	if _break_timer.is_stopped():
 		block_progress.visible = false
 		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
+
+		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool")):
+			print(_tool_breaking.GetHarvestLevel())
+			print(_tool_breaking.GetProficency())
 		
 		# TODO: Fix this
-		if (_tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() > block.GetHarvestLevel() and _tool_breaking.GetProficiency() == block.GetProficiency()) or block.GetHarvestLevel() == 0:
+		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() >= block.GetHarvestLevel() and _tool_breaking.GetProficency() == block.GetProficency()) or block.GetHarvestLevel() == 0:
 			inventory_manager.AddItem(block, 1);
 			inventory_manager.PrintInventory();
 		

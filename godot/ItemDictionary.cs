@@ -20,6 +20,7 @@ public partial class ItemDictionary : Node
 				(Texture2D)GD.Load("res://assets/grass.png"),
 				(Texture2D)GD.Load("res://assets/dirt.png"))
 			},
+			{"WoodPick", new Tool("Wood Pickaxe", Placeholder, 1, true, 1, 0, Proficency.STONE)},
 		};
 
 	}
