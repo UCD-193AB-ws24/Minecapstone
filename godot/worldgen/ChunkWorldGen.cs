@@ -79,7 +79,7 @@ public partial class ChunkWorldGen : StaticBody3D
 		// Loop over each horizontal column (x,z) then fill vertical blocks
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int z = 0; z < dimensions.Z; z++) {
-				var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
+				Vector2I globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
 				
 				float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
@@ -87,9 +87,6 @@ public partial class ChunkWorldGen : StaticBody3D
 				float noiseValue = isLand ? detailedValue : smoothValue;
 				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
 				int stoneHeight = isLand ? 20 : 10;
-
-				// Example of getting the biome color
-				Color biomeColor = (Color)WorldGenerator.Call("get_biome_color", globalPos.X, globalPos.Y);
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					Block block;
@@ -153,35 +150,42 @@ public partial class ChunkWorldGen : StaticBody3D
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
-					CreateBlockMesh(new Vector3I(x, y, z));
+					// TODO: investigate preloading instead of continuously quering for biome color
+					var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
+					Color biomeColor = (Color)WorldGenerator.Call("get_biome_color", globalPos.X, globalPos.Y);
+					CreateBlockMesh(new Vector3I(x, y, z), biomeColor);
 				}
 			}
 		}
 
+		// Load the shader material
+
 		StandardMaterial3D material = BlockManager.Instance.ChunkMaterial;
-		ShaderMaterial shaderMaterial = new();
-
-		// Implement shader here
-
+		ShaderMaterial shaderMaterial = new ShaderMaterial { 
+			Shader = GD.Load<Shader>("res://shaders/vertex_color_shader.gdshader")
+		};
 		material.NextPass = shaderMaterial;
+
+		_surfaceTool.SetMaterial(material);
+
 		var mesh = _surfaceTool.Commit();
 		
 		MeshInstance.Mesh = mesh;
 		CollisionShape.Shape = mesh.CreateTrimeshShape();
 	}
 
-	public void UpdateNavMesh() {
-		for (int x = 0; x < dimensions.X; x++) {
-			for (int y = 0; y < dimensions.Y; y++) {
-				for (int z = 0; z < dimensions.Z; z++) {
-					CreateBlockMesh(new Vector3I(x, y, z));
-				}
-			}
-		}
-	}
+	// public void UpdateNavMesh() {
+	// 	for (int x = 0; x < dimensions.X; x++) {
+	// 		for (int y = 0; y < dimensions.Y; y++) {
+	// 			for (int z = 0; z < dimensions.Z; z++) {
+	// 				CreateBlockMesh(new Vector3I(x, y, z));
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	// Create the mesh for a block
-	private void CreateBlockMesh(Vector3I blockPosition) {
+	private void CreateBlockMesh(Vector3I blockPosition, Color color) {
 		// Temporary fix for air blocks
 		var block = _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 
@@ -189,16 +193,16 @@ public partial class ChunkWorldGen : StaticBody3D
 
 		// TODO: also check adjacent chunks for transparent blocks
 		// Use the appropriate textures for each face
-		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture);
-		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture);
-		if (CheckTransparent(blockPosition + Vector3I.Left)) CreateFaceMesh(_left, blockPosition, block.Texture);
-		if (CheckTransparent(blockPosition + Vector3I.Right)) CreateFaceMesh(_right, blockPosition, block.Texture);
-		if (CheckTransparent(blockPosition + Vector3I.Forward)) CreateFaceMesh(_front, blockPosition, block.Texture);
-		if (CheckTransparent(blockPosition + Vector3I.Back)) CreateFaceMesh(_back, blockPosition, block.Texture);
+		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Left)) CreateFaceMesh(_left, blockPosition, block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Right)) CreateFaceMesh(_right, blockPosition, block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Forward)) CreateFaceMesh(_front, blockPosition, block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Back)) CreateFaceMesh(_back, blockPosition, block.Texture, color);
 	}
 
 	// Create the mesh for a face
-	private void CreateFaceMesh(int[] face, Vector3I blockPosition, Texture2D texture) {
+	private void CreateFaceMesh(int[] face, Vector3I blockPosition, Texture2D texture, Color color) {
 		var texturePosition = BlockManager.Instance.GetTextureAtlasCoordinates(texture);
 		var textureAtlasSize = BlockManager.Instance.TextureAtlasSize;
 
@@ -217,7 +221,7 @@ public partial class ChunkWorldGen : StaticBody3D
 		var b = _vertices[face[1]] + blockPosition;
 		var c = _vertices[face[2]] + blockPosition;
 		var d = _vertices[face[3]] + blockPosition;
-		
+
 		// Define UV triangles
 		var uvTriangle1 = new Vector2[] { uvA, uvB, uvC };
 		var uvTriangle2 = new Vector2[] { uvA, uvC, uvD };
@@ -227,15 +231,14 @@ public partial class ChunkWorldGen : StaticBody3D
 		var triangle2 = new Vector3[] { a, c, d };
 
 		// Normal vector using cross product
-		var normal = ((Vector3)(c-a)).Cross((Vector3)(b-a)).Normalized();
+		var normal = (c - a).Cross(b - a).Normalized();
 		var normals = new Vector3[] { normal, normal, normal };
 
-		ChunkManagerWorldGen chunkManager = ChunkManagerWorldGen.Instance;
-		chunkManager.UpdateNavMesh(triangle1, Transform);
-		chunkManager.UpdateNavMesh(triangle2, Transform);
+		// Define colors for the vertices
+		var colors = new Color[] { color, color, color };
 
-		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1, normals: normals);
-		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals);
+		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1, normals: normals, colors: colors);
+		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals, colors: colors);
 	}
 
 	// Check if a block is transparent

@@ -19,7 +19,7 @@ public partial class ChunkManagerWorldGen : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	public int view_distance { get; private set; } = 32;
+	public int view_distance { get; private set; } = 20;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -33,7 +33,7 @@ public partial class ChunkManagerWorldGen : Node
 		WorldGenerator.Call("generate");
 		
 		player = GetNodeOrNull<CharacterBody3D>("../../Player");
-		_chunks = GetChildren().Where(child => child is ChunkWorldGen).Select(child => child as ChunkWorldGen).ToList();
+		_chunks = [.. GetChildren().Where(child => child is ChunkWorldGen).Select(child => child as ChunkWorldGen)];
 	}
 	
 	// Chunk initialization code runs after world generation
@@ -42,7 +42,7 @@ public partial class ChunkManagerWorldGen : Node
 		
 		// Ensure we have enough chunks
 		for (int i = _chunks.Count; i < view_distance * view_distance; i++) {
-			var chunk = (ChunkWorldGen)ChunkScene.Instantiate<ChunkWorldGen>();
+			var chunk = ChunkScene.Instantiate<ChunkWorldGen>();
 			CallDeferred(Node.MethodName.AddChild, chunk);
 			_chunks.Add(chunk);
 		}
@@ -145,28 +145,28 @@ public partial class ChunkManagerWorldGen : Node
 		}
 	}
 
-	public void UpdateNavMesh(Vector3[] triangles, Transform3D Transform) {
-		// // god-awful way i used to check that all the vertices are properly being added to the navmesh
-		// foreach (var vertex in triangles)	
-		// {
-		// 	var sphere = new SphereMesh();
-		// 	sphere.Radius = 0.1f;
-		// 	var random = new Random();
-		// 	var rotation = new Vector3(
-		// 		(float)(random.NextDouble() * Math.PI * 2),
-		// 		(float)(random.NextDouble() * Math.PI * 2),
-		// 		(float)(random.NextDouble() * Math.PI * 2)
-		// 	);
-		// 	var sphereInstance = new MeshInstance3D
-		// 	{
-		// 		Mesh = sphere,
-		// 		Transform = new Transform3D(Basis.Identity, vertex)
-		// 	};
-		// 	sphereInstance.RotateObjectLocal(Vector3.Right, rotation.X);
-		// 	sphereInstance.RotateObjectLocal(Vector3.Up, rotation.Y);
-		// 	sphereInstance.RotateObjectLocal(Vector3.Forward, rotation.Z);
-		// 	AddChild(sphereInstance);
-		// }
-		NavigationMeshSource.AddFaces(faces: triangles, xform: Transform);
-	}
+	// public void UpdateNavMesh(Vector3[] triangles, Transform3D Transform) {
+	// 	// // god-awful way i used to check that all the vertices are properly being added to the navmesh
+	// 	// foreach (var vertex in triangles)	
+	// 	// {
+	// 	// 	var sphere = new SphereMesh();
+	// 	// 	sphere.Radius = 0.1f;
+	// 	// 	var random = new Random();
+	// 	// 	var rotation = new Vector3(
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2),
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2),
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2)
+	// 	// 	);
+	// 	// 	var sphereInstance = new MeshInstance3D
+	// 	// 	{
+	// 	// 		Mesh = sphere,
+	// 	// 		Transform = new Transform3D(Basis.Identity, vertex)
+	// 	// 	};
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Right, rotation.X);
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Up, rotation.Y);
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Forward, rotation.Z);
+	// 	// 	AddChild(sphereInstance);
+	// 	// }
+	// 	NavigationMeshSource.AddFaces(faces: triangles, xform: Transform);
+	// }
 }

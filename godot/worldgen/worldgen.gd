@@ -8,7 +8,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-@onready var SIZE = 32 * 16
+@onready var SIZE = 16 * 16
 const BIOME_NAMES = [
 	"desert",
 	"savanna",
@@ -132,10 +132,14 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	_display_image(biome_map)
 
-	call_deferred("_handle_loading_screen", null, false)
-	
+	# Wait for user input before completing world generation
+	while not Input.is_key_pressed(KEY_G):
+		print("Waiting for G")
+		await Engine.get_main_loop().process_frame
+
 	# Emit signal when world generation is complete
 	call_deferred("emit_signal", "world_generated")
+	call_deferred("_handle_loading_screen", null, false)
 
 func _create_combined_height_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)

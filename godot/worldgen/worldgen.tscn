@@ -15,7 +15,6 @@ frequency = 0.015
 fractal_type = 0
 cellular_distance_function = 3
 cellular_return_type = 0
-domain_warp_enabled = true
 domain_warp_type = 1
 domain_warp_amplitude = 1.0
 
