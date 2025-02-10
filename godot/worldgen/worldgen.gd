@@ -8,7 +8,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-@onready var SIZE = 16 * 16
+@onready var SIZE = 64 * 16
 const BIOME_NAMES = [
 	"desert",
 	"savanna",
@@ -53,16 +53,16 @@ func _get_biome_index(x: int, y: int) -> int:
 	# If it's not land, return ocean.
 	if not land_ocean_mask[pos]:
 		return -1
-	
+
 	# Retrieve average noise values
 	var temp = temperature_averages.get(pos, 0.0)
 	var precip = precipitation_averages.get(pos, 0.0)
-	
+
 	# Quantize the values (0-255 range)
 	var quant_temp = clamp(int((temp + 1.0) * 127.5), 0, 255)
 	var quant_precip = clamp(int((precip + 1.0) * 127.5), 0, 255)
 	quant_precip = 255 - quant_precip  # invert the precipitation axis
-	
+
 	# Get biome index from the precomputed biome indices array
 	var index = biome_indices[quant_temp][quant_precip]
 	return index
@@ -82,7 +82,7 @@ func generate():
 	tp_image.decompress()
 	if tp_image.get_format() != Image.FORMAT_RGBA8:
 		tp_image.convert(Image.FORMAT_RGBA8)
-	
+
 	biome_indices.resize(256)
 	for x in 256:
 		biome_indices[x] = []
@@ -91,11 +91,11 @@ func generate():
 			var color = tp_image.get_pixel(x, y)
 			var index = _get_biome_index_from_color(color)
 			biome_indices[x][y] = index
-			
+
 	smooth_height_noise = height_noise.duplicate()
 	smooth_height_noise.fractal_type = FastNoiseLite.FRACTAL_NONE
 	smooth_height_noise.domain_warp_amplitude = 0.0
-	
+
 	print("Generating world...")
 	_handle_loading_screen()
 
@@ -133,9 +133,7 @@ func _threaded_generate():
 	_display_image(biome_map)
 
 	# Wait for user input before completing world generation
-	while not Input.is_key_pressed(KEY_G):
-		print("Waiting for G")
-		await Engine.get_main_loop().process_frame
+	await get_tree().create_timer(1.0).timeout
 
 	# Emit signal when world generation is complete
 	call_deferred("emit_signal", "world_generated")
@@ -151,7 +149,7 @@ func _create_combined_height_image() -> Image:
 			var smooth_value = smooth_height_noise.get_noise_2d(x, y)
 			var combined_value = detailed_value if is_land else smooth_value
 			image.set_pixel(x, y, Color(combined_value, combined_value, combined_value))
-	
+
 	# Normalize to 0-1 range
 	image.convert(Image.FORMAT_RGBA8)
 	for x in SIZE:
@@ -172,14 +170,14 @@ func _create_biome_map_image() -> Image:
 			if is_land:
 				var temp = temperature_averages[pos]
 				var precip = precipitation_averages[pos]
-				
+
 				# Quantize to 0-255
 				var quant_temp = int((temp + 1.0) * 127.5)
 				quant_temp = clamp(quant_temp, 0, 255)
 				var quant_precip = int((precip + 1.0) * 127.5)
 				quant_precip = clamp(quant_precip, 0, 255)
 				quant_precip = 255 - quant_precip  # Invert precipitation axis
-				
+
 				var biome_index = biome_indices[quant_temp][quant_precip]
 				var color = BIOME_COLORS[biome_index]
 
@@ -217,7 +215,7 @@ func _average_voronoi(data):
 	var sums = {}      # key: voronoi hash, value: sum of noise values
 	var counts = {}    # key: voronoi hash, value: count
 	var pos_hash = {}  # key: position, value: voronoi hash
-	
+
 	# First pass: collect sums, counts, and store hash per position
 	for x in range(SIZE):
 		for y in range(SIZE):
@@ -231,17 +229,17 @@ func _average_voronoi(data):
 			else:
 				sums[h] += value
 				counts[h] += 1
-	
+
 	# Compute averages per Voronoi key
 	var averages = {}
 	for h in sums.keys():
 		averages[h] = sums[h] / counts[h]
-	
+
 	# Assign resulting average to each position
 	var result = {}
 	for pos in pos_hash.keys():
 		result[pos] = averages[pos_hash[pos]]
-	
+
 	return result
 
 func _display_noise(data:Noise):
@@ -252,7 +250,7 @@ func _display_noise(data:Noise):
 			var value = data.get_noise_2d(x, y)
 			var color_value = (value + 1) * 0.5
 			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
-			
+
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
 
@@ -285,7 +283,7 @@ func _display_voronoi():
 			var g = float((h >> 8) & 0xFF) / 255.0
 			var b = float(h & 0xFF) / 255.0
 			image.set_pixel(x, y, Color(r, g, b))
-	
+
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
 
@@ -306,7 +304,7 @@ func _display_land_ocean(mask):
 			image.set_pixel(x, y, color)
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
-	
+
 func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) -> void:
 	if enabled:
 		$LoadingScreen.visible = true

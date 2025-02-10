@@ -12,7 +12,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	[Export]
 	public MeshInstance3D MeshInstance { get; set; }
 
-	public static Vector3I dimensions = new Vector3I(16, 50, 16);
+	public static Vector3I dimensions = new Vector3I(16, 35, 16);
 
 	private static readonly Vector3[] _vertices = [
 		new Vector3I(0,0,0),
@@ -41,8 +41,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
-	[Export]
-	public FastNoiseLite Noise { get; set; }
+	public Vector2I Offset { get; set; } = new Vector2I((64/2)*16, (64/2)*16);
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
@@ -79,8 +78,7 @@ public partial class ChunkWorldGen : StaticBody3D
 		// Loop over each horizontal column (x,z) then fill vertical blocks
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int z = 0; z < dimensions.Z; z++) {
-				Vector2I globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
-				
+				Vector2I globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z) + Offset;
 				float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				bool isLand = detailedValue > 0.0f;
@@ -129,7 +127,7 @@ public partial class ChunkWorldGen : StaticBody3D
 		for (int x = 0; x < dimensions.X; x++) {
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
-					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z);
+					var globalBlockPosition = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2(x, z) + Offset;
 					var globalCoordinates = new Vector3I((int)  globalBlockPosition.X, y, (int)  globalBlockPosition.Y);
 					if(SavedBlocks.TryGetValue(globalCoordinates, out Block value)) {
 						_blocks[x, y, z] = value;
@@ -151,7 +149,7 @@ public partial class ChunkWorldGen : StaticBody3D
 			for (int y = 0; y < dimensions.Y; y++) {
 				for (int z = 0; z < dimensions.Z; z++) {
 					// TODO: investigate preloading instead of continuously quering for biome color
-					var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z);
+					var globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(x, z) + Offset;
 					Color biomeColor = (Color)WorldGenerator.Call("get_biome_color", globalPos.X, globalPos.Y);
 					CreateBlockMesh(new Vector3I(x, y, z), biomeColor);
 				}
@@ -257,6 +255,9 @@ public partial class ChunkWorldGen : StaticBody3D
 		Update();
 		
 		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
+		
+		// TODO: May need to fix this to account for Offset
+		
 		if (block == BlockManager.Instance.GetBlock("Air")) {
 			SavedBlocks.Remove(globalCoordinates);
 		} 
