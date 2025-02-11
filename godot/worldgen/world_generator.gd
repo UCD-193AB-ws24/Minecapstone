@@ -9,7 +9,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-const VIEW_DISTANCE = 8
+const VIEW_DISTANCE = 16
 @onready var SIZE = VIEW_DISTANCE * 16
 const BIOME_NAMES = [
 	"desert",

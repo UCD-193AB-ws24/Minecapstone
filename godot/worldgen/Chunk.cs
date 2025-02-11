@@ -62,7 +62,6 @@ public partial class Chunk : StaticBody3D
 
 	public override void _Ready() {
 		SetMeta("is_chunk", true);
-
 	}
 
 	// Create and set block in the chunk
@@ -85,19 +84,19 @@ public partial class Chunk : StaticBody3D
 				bool isLand = detailedValue > 0.0f;
 				float noiseValue = isLand ? detailedValue : smoothValue;
 				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
-				int stoneHeight = isLand ? 20 : 10;
+				int stoneHeight = 10;
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					Block block;
 					if (isLand) {
-						if (y < terrainHeight) {
-							block = BlockManager.Instance.GetBlock("Dirt");
+						if (y < stoneHeight) {
+							block = BlockManager.Instance.GetBlock("Stone");
 						}
 						else if (y == terrainHeight) {
 							block = BlockManager.Instance.GetBlock("Grass");
 						}
-						else if (y < stoneHeight) {
-							block = BlockManager.Instance.GetBlock("Stone");
+						else if (y < terrainHeight) {
+							block = BlockManager.Instance.GetBlock("Dirt");
 						}
 						else {
 							block = BlockManager.Instance.GetBlock("Air");
