@@ -76,7 +76,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 39.7352, 8.5)
 [node name="Path3D" type="Path3D" parent="."]
 curve = SubResource("Curve3D_pkg7o")
 
-[node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
+[node name="Zombie" parent="." instance=ExtResource("11_ic0uy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 38.226, 2.4448)
 script = ExtResource("8_gbfbk")
 detection_range = 10.0
@@ -85,6 +85,5 @@ attack_damage = 25.0
 attack_cooldown = 1.0
 chase_speed = 2.0
 
-[node name="NPC2" parent="." instance=ExtResource("11_ic0uy")]
+[node name="NPC" parent="." instance=ExtResource("11_ic0uy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 38.226, 4.05388)
-visible = false

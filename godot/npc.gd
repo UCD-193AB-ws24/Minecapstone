@@ -23,9 +23,6 @@ func actor_setup():
 	# Wait for the first physics frame so the NavigationServer can sync.
 	await get_tree().physics_frame
 
-	#var player = $"../Player"
-	#set_movement_target(player.global_position)
-
 # Public function to handle wandering behavior that child classes can use without calling super
 func handle_wandering(delta):
 	_handle_wandering(delta)
@@ -36,7 +33,9 @@ func _physics_process(delta):
 		velocity.y -= 35 * delta
 	
 	handle_wandering(delta)
-	super(delta)
+	_handle_movement(delta)
+	
+	move_and_slide()
 	
 func _handle_wandering(delta):
 	wander_timer += delta
