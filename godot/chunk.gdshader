@@ -9,7 +9,7 @@ void vertex() {
 void fragment() {
     // Get the base albedo color and texture
     vec4 albedo = texture(ALBEDO_TEXTURE, UV) * COLOR;
-    
+
     // Apply checker pattern
 	if (int(UV.x * 100.0) < 10){
 		if ((int(UV.x * 100.0) / 10) % 2 == 0 && (int(UV.y * 100.0) / 10) % 2 == 0) {
@@ -17,7 +17,7 @@ void fragment() {
 		}
 	}
 
-    
+
     ALBEDO = albedo.rgb;
 }
 

@@ -18,6 +18,7 @@ albedo_color = Color(1, 1, 1, 0.038)
 [node name="Player" type="CharacterBody3D"]
 platform_floor_layers = 4294967041
 script = ExtResource("1_4flbx")
+metadata/Name = "agent"
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
