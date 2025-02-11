@@ -114,6 +114,10 @@ func _input(event):
 		print("scroll down")
 		inventory_manager.CycleDown()
 		inventory_manager.PrintSelected()
+	if Input.is_action_just_pressed("drop_item"):
+		print("dropping item")
+		inventory_manager.DropSelectedItem()
+		inventory_manager.PrintInventory()
 
 
 func _process(_delta):
