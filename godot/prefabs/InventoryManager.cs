@@ -169,4 +169,6 @@ public partial class InventoryManager : Node {
 			selectedSlot = 0;
 		}
 	}
+
+	public int SelectedSlot { get { return selectedSlot; } }
 }

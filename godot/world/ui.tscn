@@ -89,6 +89,9 @@ texture = ExtResource("2_m6e0p")
 expand_mode = 2
 
 [node name="Label" type="Label" parent="ItemTemp"]
+custom_minimum_size = Vector2(0, 95.455)
 layout_mode = 2
-text = "amt"
+text = "amtfwafawfwafawfaffwafw"
 label_settings = SubResource("LabelSettings_xb563")
+vertical_alignment = 1
+autowrap_mode = 3

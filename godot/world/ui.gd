@@ -26,10 +26,11 @@ func _physics_process(_delta: float) -> void:
 	if inventory_manager:
 		var item_amt_label = $"./ItemTemp/Label"
 		var item = inventory_manager.GetSelectedItem()
+
 		if item:
-			item_amt_label.text = str(item.Name) + str(inventory_manager.GetSelectedAmount())
+			item_amt_label.text = "Slot " + str(inventory_manager.SelectedSlot) + ": " + str(item.Name) + " (" + str(inventory_manager.GetSelectedAmount()) + ")"
 		else:
-			item_amt_label.text = "None"
+			item_amt_label.text = "Slot " + str(inventory_manager.SelectedSlot) + ": Empty"
 
 
 func round_vector(vec: Vector3) -> Vector3:
