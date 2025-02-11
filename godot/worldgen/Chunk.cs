@@ -140,7 +140,6 @@ public partial class Chunk : StaticBody3D
 		}
 	}
 
-
 	// Update the mesh and collision shape of the chunk
 	public void Update() {
 		_surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
@@ -157,17 +156,14 @@ public partial class Chunk : StaticBody3D
 		}
 
 		// Load the shader material
-
 		StandardMaterial3D material = BlockManager.Instance.ChunkMaterial;
 		ShaderMaterial shaderMaterial = new() {
 			Shader = GD.Load<Shader>("res://shaders/vertex_color_shader.gdshader")
 		};
 		material.NextPass = shaderMaterial;
-
 		_surfaceTool.SetMaterial(material);
 
 		var mesh = _surfaceTool.Commit();
-		
 		MeshInstance.Mesh = mesh;
 		CollisionShape.Shape = mesh.CreateTrimeshShape();
 	}
@@ -282,13 +278,33 @@ public partial class Chunk : StaticBody3D
 		
 		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
 		
-		// TODO: May need to fix this to account for Offset
-		
-		if (block == BlockManager.Instance.GetBlock("Air")) {
+		if (block == BlockManager.Instance.GetBlock("Air"))
 			SavedBlocks.Remove(globalCoordinates);
-		} 
-		else {
+		else
 			SavedBlocks[globalCoordinates] = block;
+
+		// Force update for adjacent chunks if an air block is set at the chunk edge.
+		if (block == BlockManager.Instance.GetBlock("Air")) {
+			// Check left edge
+			if (blockPosition.X == 0) {
+				var leftNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
+				leftNeighbor?.Update();
+			}
+			// Check right edge
+			if (blockPosition.X == dimensions.X - 1) {
+				var rightNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
+				rightNeighbor?.Update();
+			}
+			// Check front edge (assuming front corresponds to Z == 0)
+			if (blockPosition.Z == 0) {
+				var frontNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
+				frontNeighbor?.Update();
+			}
+			// Check back edge (assuming back corresponds to Z == dimensions.Z - 1)
+			if (blockPosition.Z == dimensions.Z - 1) {
+				var backNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
+				backNeighbor?.Update();
+			}
 		}
 	}
 	
