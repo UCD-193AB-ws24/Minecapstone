@@ -117,7 +117,6 @@ expand_mode = 1
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
-enabled = false
 script = ExtResource("1_8mp4y")
 
 [node name="BlockManager" type="Node" parent="NavigationMesher"]

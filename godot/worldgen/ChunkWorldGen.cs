@@ -41,7 +41,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
-	const int VIEW_DISTANCE = 64;
+	const int VIEW_DISTANCE = 16;
 	public Vector2I Offset { get; set; } = new Vector2I((VIEW_DISTANCE/2)*16, (VIEW_DISTANCE/2)*16);
 
 	// Sets the chunk position and generate and update the chunk at that position
