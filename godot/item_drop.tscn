@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlo1q4o5o5np"]
+[gd_scene load_steps=6 format=3 uid="uid://dlo1q4o5o5np"]
 
 [ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://item_collect.gd" id="1_an6nj"]
 [ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://time_monitor.gd" id="2_6tdqx"]
 [ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_g4j5n"]
+[ext_resource type="Script" uid="uid://ccysnlnw5v5sb" path="res://spin.gd" id="4_6tdqx"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6tdqx"]
 
@@ -23,11 +24,12 @@ priority = 10
 visible = false
 shape = SubResource("BoxShape3D_6tdqx")
 
-[node name="Timer" type="Timer" parent="Area3D"]
+[node name="CollectTimer" type="Timer" parent="Area3D"]
 script = ExtResource("2_6tdqx")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
 pixel_size = 0.0008
 texture = ExtResource("2_g4j5n")
+script = ExtResource("4_6tdqx")
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

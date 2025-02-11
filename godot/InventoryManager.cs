@@ -12,6 +12,8 @@ public partial class InventoryManager : Node {
 	
 	[Export]
 	public int InventorySlots { get; private set; } = 3;
+	[Export]
+	public float DropVelocity { get; private set; } = 5;
 	
 	public InventoryManager() {
 		selectedSlot = 0;
@@ -100,51 +102,100 @@ public partial class InventoryManager : Node {
 		// return -1; // -1 means all slots are filled
 	}
 
-	public Item GetSelectedItem() {
-		if (inventorySlots[selectedSlot]) {
+	public Item GetSelectedItem() 
+	{
+		if (inventorySlots[selectedSlot]) 
+		{
 			return slots_to_items[selectedSlot].item;
 		}
-		else {
+		else 
+		{
 			return null;
 		}
 	}
 
-	public int GetSelectedAmount() {
-		if (inventorySlots[selectedSlot]) {
+	public int GetSelectedAmount()
+	 {
+		if (inventorySlots[selectedSlot]) 
+		{
 			return slots_to_items[selectedSlot].count;
 		}
-		else {
+		else 
+		{
 			return 0;
 		}
 	}
 
-	public void ConsumeSelectedItem() {
+	public void ConsumeSelectedItem() 
+	{
 		if (!inventorySlots[selectedSlot]) return;
 
 		InventoryItem item = slots_to_items[selectedSlot];
 		item.count -= 1;
-		if (item.count == 0) {
+		if (item.count == 0) 
+		{
 			inventorySlots[selectedSlot] = false;
 			slots_to_items.Remove(selectedSlot);
 			name_to_slots[item.item.Name].Remove(selectedSlot);
 		}
 	}
+	public bool DropSelectedItem() 
+	{
+		if (!inventorySlots[selectedSlot])
+		{
+			return false;
+		}
+		InventoryItem item = slots_to_items[selectedSlot];
+		item.count -= 1;
+		RigidBody3D droppedItem = (RigidBody3D) item.item.GenerateItem(); //returns item as Node3D but the scene it instantiates is a Rigidbody3D
+		Node agent = GetParent();
+		Node world = agent.GetParent();
+		//set timer till activating monitoring on dropped item
+		Node collectTimer = droppedItem.FindChild("CollectTimer");
+		world.AddChild(droppedItem); // add to world node
+		collectTimer.Call("pick_up_cooldown");
+		//drop item forward
+		Node3D head = (Node3D) agent.FindChild("Head"); // Head is a Node3D so cast should be fine
+		Vector3 facingDir = -head.GlobalTransform.Basis.Z;
+		Vector3 genPos = head.GlobalPosition;
+		droppedItem.GlobalPosition = genPos;
+		//Vector3 throwDir = genPos + facingDir;
+		droppedItem.LinearVelocity = facingDir.Normalized() * DropVelocity;
+		
+		
+		if (item.count == 0) 
+		{
+			inventorySlots[selectedSlot] = false;
+			slots_to_items.Remove(selectedSlot);
+			name_to_slots[item.item.Name].Remove(selectedSlot);
+		}
+		return true;
+
+	}
+	//untested
+	public void DropItem() 
+	{
+
+	}
 	
-	public void CycleUp() {
+	public void CycleUp() 
+	{
 		selectedSlot -= 1;
 		if (selectedSlot < 0) {
 			selectedSlot = inventorySlots.Length - 1;
 		}
 	}
 	
-	public void CycleDown() {
+	public void CycleDown() 
+	{
 		selectedSlot += 1;
 		if (selectedSlot > inventorySlots.Length - 1) {
 			selectedSlot = 0;
 		}
 	}
 	
-	public void PrintSelected() {
+	public void PrintSelected() 
+	{
 		GD.Print("Slot: " + selectedSlot);
 		if (inventorySlots[selectedSlot]) {
 			GD.Print(slots_to_items[selectedSlot].PrintInventoryItem() + " " + slots_to_items[selectedSlot].PrintAmount());
