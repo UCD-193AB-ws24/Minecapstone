@@ -5,7 +5,7 @@ using System;
 [GlobalClass]
 public partial class Block : Item {
 
-    public Texture2D Texture { get; set; }
+	public Texture2D Texture { get; set; }
 	public Texture2D TopTexture { get; set; }
 	public Texture2D BottomTexture { get; set; }
 	public Texture2D[] Textures => [Texture, TopTexture, BottomTexture];

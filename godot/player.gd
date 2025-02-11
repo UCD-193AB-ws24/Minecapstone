@@ -439,8 +439,13 @@ func eat_food(amount):
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
 	
-func healh(amount):
+func heal(amount):
 	health = min(health + amount, max_health)
+
+func damage(amount):
+	health = max(health - amount, 0)
+	if health <= 0:
+		_on_player_death()
 
 func _on_player_death():
 	print("Player has died")
