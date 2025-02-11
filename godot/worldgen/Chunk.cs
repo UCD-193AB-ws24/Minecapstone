@@ -235,10 +235,14 @@ public partial class Chunk : StaticBody3D
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals, colors: colors);
 	}
 
-	// Modified CheckTransparent to query adjacent chunks on the four horizontal sides.
 	private bool CheckTransparent(Vector3I blockPosition) {
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
-		// Check adjacent chunks for transparent blocks
+		
+
+		/*
+			If blockPosition is at the edge of the chunk
+			Query adjacent chunks on the four horizontal sides for transparent blocks
+		*/
 		if (blockPosition.X < 0) {
 			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
 			if (neighbor != null)
