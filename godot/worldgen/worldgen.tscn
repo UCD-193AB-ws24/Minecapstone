@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=16 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://world/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/worldgen.gd" id="1_yvk30"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
-[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManagerWorldGen.cs" id="3_igfuc"]
-[ext_resource type="Texture2D" uid="uid://barss788eej7w" path="res://assets/dirt.png" id="3_yvk30"]
-[ext_resource type="PackedScene" uid="uid://c7sylhr0megjp" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
+[ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
 
@@ -81,6 +80,7 @@ precipitation_noise = SubResource("FastNoiseLite_h7q52")
 height_noise = SubResource("FastNoiseLite_41cxm")
 
 [node name="LoadingScreen" type="Control" parent="WorldGenerator"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -112,7 +112,6 @@ layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="WorldGenerator/LoadingScreen/CenterContainer/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("3_yvk30")
 expand_mode = 1
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
@@ -142,7 +141,7 @@ directional_shadow_split_2 = 0.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.1008, 7.42541, 4)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 39.7352, 8.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher" method="GenerateNavmesh"]
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]

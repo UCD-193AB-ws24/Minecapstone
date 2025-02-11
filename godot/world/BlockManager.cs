@@ -77,8 +77,7 @@ public partial class BlockManager : Node {
 		};
 	}
 
-	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)
-	{
+	public Vector2I GetTextureAtlasCoordinates(Texture2D texture) {
 		if (_atlasLookup.TryGetValue(texture, out var coords)) {
 			return coords;
 		}
@@ -87,8 +86,7 @@ public partial class BlockManager : Node {
 	}
 	
 	// Gets the time needed to break a block
-	public float GetTime(Block block) 
-	{
+	public float GetTime(Block block) {
 		return time_dictionary[block];
 	}
 

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public partial class ChunkWorldGen : StaticBody3D
+public partial class Chunk : StaticBody3D
 {
 	[Export]
 	public CollisionShape3D CollisionShape { get; set; }
@@ -48,7 +48,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
-		ChunkManagerWorldGen.Instance.UpdateChunkPosition(this, position, ChunkPosition);
+		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
 
@@ -242,28 +242,28 @@ public partial class ChunkWorldGen : StaticBody3D
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
 		// Check adjacent chunks for transparent blocks
 		if (blockPosition.X < 0) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(dimensions.X - 1, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.X >= dimensions.X) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(0, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.Z < 0) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, dimensions.Z - 1)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.Z >= dimensions.Z) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, 0)) == BlockManager.Instance.GetBlock("Air");
 			else

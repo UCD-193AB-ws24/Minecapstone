@@ -6,7 +6,7 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
 radius = 0.3
-height = 1.4
+height = 1.75
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -23,15 +23,19 @@ metadata/Name = "agent"
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
 
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("2_onrkg")
+metadata/_custom_type_script = ExtResource("2_onrkg")
+
 [node name="Body" type="CSGMesh3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("CapsuleMesh_i3pqv")
 
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
 [node name="Headbox" type="CSGBox3D" parent="Head"]
-size = Vector3(0.6, 0.6, 0.6)
+size = Vector3(0.62, 0.62, 0.62)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
 current = true
@@ -45,10 +49,6 @@ target_position = Vector3(0, 0, -4.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_sh265")
-
-[node name="AIController" type="Node" parent="."]
-script = ExtResource("2_onrkg")
-metadata/_custom_type_script = ExtResource("2_onrkg")
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 size = Vector3(1.1, 1.1, 1.1)
