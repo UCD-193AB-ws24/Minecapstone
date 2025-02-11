@@ -22,7 +22,7 @@ public partial class Item(string Name, Texture2D Icon, int MaxStackSize, bool Is
 		return Name;
 	}
 
-	private static readonly PackedScene ItemDropScene = GD.Load<PackedScene>("res://item_drop.tscn");
+	private static readonly PackedScene ItemDropScene = GD.Load<PackedScene>("res://prefabs/item_drop.tscn");
 	public Node3D GenerateItem()
 	{
 		var droppedItem = ItemDropScene.Instantiate<Node3D>();

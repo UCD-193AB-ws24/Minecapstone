@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=4 uid="uid://c7m3rrvvx3cg6"]
 
-[ext_resource type="Script" uid="uid://co8n7congu28" path="res://Chunk.cs" id="1_kdh3y"]
+[ext_resource type="Script" uid="uid://co8n7congu28" path="res://world/Chunk.cs" id="1_kdh3y"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_kdh3y"]
 frequency = 0.0149

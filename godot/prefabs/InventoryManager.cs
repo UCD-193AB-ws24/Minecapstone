@@ -94,57 +94,41 @@ public partial class InventoryManager : Node {
 	
 	public int GetSpace() {
 		return Array.IndexOf(inventorySlots, false);
-		// for (int i = 0; i < inventorySlots.Length; i++) {
-		// 	if (!inventorySlots[i]) {
-		// 		return i;
-		// 	}
-		// }
-		// return -1; // -1 means all slots are filled
 	}
 
-	public Item GetSelectedItem() 
-	{
-		if (inventorySlots[selectedSlot]) 
-		{
+	public Item GetSelectedItem() {
+		if (inventorySlots[selectedSlot]) {
 			return slots_to_items[selectedSlot].item;
 		}
-		else 
-		{
+		else {
 			return null;
 		}
 	}
 
-	public int GetSelectedAmount()
-	 {
-		if (inventorySlots[selectedSlot]) 
-		{
+	public int GetSelectedAmount() {
+		if (inventorySlots[selectedSlot]) {
 			return slots_to_items[selectedSlot].count;
 		}
-		else 
-		{
+		else {
 			return 0;
 		}
 	}
 
-	public void ConsumeSelectedItem() 
-	{
+	public void ConsumeSelectedItem() {
 		if (!inventorySlots[selectedSlot]) return;
 
 		InventoryItem item = slots_to_items[selectedSlot];
 		item.count -= 1;
-		if (item.count == 0) 
-		{
+		if (item.count == 0) {
 			inventorySlots[selectedSlot] = false;
 			slots_to_items.Remove(selectedSlot);
 			name_to_slots[item.item.Name].Remove(selectedSlot);
 		}
 	}
-	public bool DropSelectedItem() 
-	{
-		if (!inventorySlots[selectedSlot])
-		{
-			return false;
-		}
+	
+	public bool DropSelectedItem() {
+		if (!inventorySlots[selectedSlot]) return false;
+		
 		InventoryItem item = slots_to_items[selectedSlot];
 		item.count -= 1;
 		RigidBody3D droppedItem = (RigidBody3D) item.item.GenerateItem(); //returns item as Node3D but the scene it instantiates is a Rigidbody3D
@@ -162,20 +146,12 @@ public partial class InventoryManager : Node {
 		//Vector3 throwDir = genPos + facingDir;
 		droppedItem.LinearVelocity = facingDir.Normalized() * DropVelocity;
 		
-		
-		if (item.count == 0) 
-		{
+		if (item.count == 0) {
 			inventorySlots[selectedSlot] = false;
 			slots_to_items.Remove(selectedSlot);
 			name_to_slots[item.item.Name].Remove(selectedSlot);
 		}
 		return true;
-
-	}
-	//untested
-	public void DropItem() 
-	{
-
 	}
 	
 	public void CycleUp() 
@@ -191,32 +167,6 @@ public partial class InventoryManager : Node {
 		selectedSlot += 1;
 		if (selectedSlot > inventorySlots.Length - 1) {
 			selectedSlot = 0;
-		}
-	}
-	
-	public void PrintSelected() 
-	{
-		GD.Print("Slot: " + selectedSlot);
-		if (inventorySlots[selectedSlot]) {
-			GD.Print(slots_to_items[selectedSlot].PrintInventoryItem() + " " + slots_to_items[selectedSlot].PrintAmount());
-		}
-		else {
-			GD.Print("Nothing");
-		}
-	}
-	
-	public void PrintItem(Item item) {
-		GD.Print(item.Name);
-	}
-	
-	public void PrintInventory() {
-		for (int i=0; i < inventorySlots.Length; i++) {
-			if (inventorySlots[i]) {
-				GD.Print(slots_to_items[i].PrintInventoryItem() + " " + slots_to_items[i].PrintAmount());
-			}
-			else {
-				GD.Print("Nothing");
-			}
 		}
 	}
 }
