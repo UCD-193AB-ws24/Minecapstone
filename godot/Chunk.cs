@@ -36,7 +36,7 @@ public partial class Chunk : StaticBody3D
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 
-	public Vector2I ChunkPosition { get; private set; }
+	public Vector2I ChunkPosition { get; protected set; }
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
@@ -237,5 +237,12 @@ public partial class Chunk : StaticBody3D
 	// Get a block in the chunk
 	public Block GetBlock(Vector3I blockPosition) {
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
+	}
+
+	//spawn block item at broken block's coordinate
+	public void SpawnBlockItem(Block block, Vector3I blockPosition) 
+	{
+		Node blockItem = block.GenerateItem();
+
 	}
 }

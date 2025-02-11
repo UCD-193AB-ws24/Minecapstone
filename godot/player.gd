@@ -49,7 +49,7 @@ var thirst = max_thirst
 var hunger_timer = 0.0
 var thirst_timer = 0.0
 
-# ============================ Important stuff ============================
+# ============================ Body related ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
@@ -63,11 +63,14 @@ var thirst_timer = 0.0
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
+# ========================= Item dictionary ===================
+@onready var item_dict_script = load("res://ItemDictionary.cs")
+@onready var itemdict_instance = item_dict_script.new()
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 64)
+	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
 
 
 # Called on input event
@@ -111,6 +114,10 @@ func _input(event):
 		print("scroll down")
 		inventory_manager.CycleDown()
 		inventory_manager.PrintSelected()
+	if Input.is_action_just_pressed("drop_item"):
+		print("dropping item")
+		inventory_manager.DropSelectedItem()
+		inventory_manager.PrintInventory()
 
 
 func _process(_delta):
@@ -136,8 +143,9 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < -64:
+	if global_position.y < 5:
 		_on_out_of_bounds()
+
 
 func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
@@ -155,7 +163,7 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
 
 	# Handle jumping
-	if is_on_floor() and jump:
+	if is_on_floor() and jump and view != ViewMode.SPECTATOR:
 		velocity.y = _jump_velocity
 
 		# Apply horizontal impulse if jumping while sprinting
@@ -229,7 +237,6 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	# if pressed left mouse prepare for block breaking
 	if Input.is_action_just_pressed("mouse1") and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
-	
 	# if holding down left mouse prepare for breaking
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
@@ -238,8 +245,7 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 # Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
 	_is_breaking = true
-	_block_breaking = pos
-
+	_block_breaking = pos 
 	# get block data, time to break
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
@@ -303,17 +309,18 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
+		chunk.SetBlock(_block_breaking, itemdict_instance.Get("Air"))
 		
-		# TODO: Fix this
-		inventory_manager.AddItem(block, 1);
-		inventory_manager.PrintInventory();
+		var drop_pos:Vector3 = chunk.global_position + Vector3(_block_breaking.x, _block_breaking.y, _block_breaking.z)
+		var block_node = block.GenerateItem()
+		get_parent().add_child(block_node)
+		block_node.global_position = drop_pos + Vector3(0.5, 0.5, 0.5)
 		
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
 		_update_navmesh()
-	
+
 
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;
@@ -432,9 +439,11 @@ func _update_health_hunger_thirst(_delta):
 	
 	if health <= 0:
 		_on_player_death()
-		
+
+
 func eat_food(amount):
 	hunger = min(hunger + amount, max_hunger)
+
 
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
