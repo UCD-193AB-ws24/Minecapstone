@@ -41,7 +41,8 @@ public partial class ChunkWorldGen : StaticBody3D
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
-	public Vector2I Offset { get; set; } = new Vector2I((64/2)*16, (64/2)*16);
+	const int VIEW_DISTANCE = 8;
+	public Vector2I Offset { get; set; } = new Vector2I((VIEW_DISTANCE/2)*16, (VIEW_DISTANCE/2)*16);
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
@@ -53,11 +54,8 @@ public partial class ChunkWorldGen : StaticBody3D
 
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
-		Generate();
-		Update();
-		
 		// After making chunks, puts it into a list of already made chunks
-		SavedChunks.Add(ChunkPosition);
+		// SavedChunks.Add(ChunkPosition);
 	}
 
 	public override void _Ready() {
@@ -239,13 +237,39 @@ public partial class ChunkWorldGen : StaticBody3D
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals, colors: colors);
 	}
 
-	// Check if a block is transparent
+	// Modified CheckTransparent to query adjacent chunks on the four horizontal sides.
 	private bool CheckTransparent(Vector3I blockPosition) {
-		if (blockPosition.X < 0 || blockPosition.X >= dimensions.X) return true;
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
-		if (blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) return true;
+		// Check adjacent chunks for transparent blocks
+		if (blockPosition.X < 0) {
+			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
+			if (neighbor != null)
+				return neighbor.GetBlock(new Vector3I(dimensions.X - 1, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
+			else
+				return true;
+		}
+		if (blockPosition.X >= dimensions.X) {
+			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
+			if (neighbor != null)
+				return neighbor.GetBlock(new Vector3I(0, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
+			else
+				return true;
+		}
+		if (blockPosition.Z < 0) {
+			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
+			if (neighbor != null)
+				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, dimensions.Z - 1)) == BlockManager.Instance.GetBlock("Air");
+			else
+				return true;
+		}
+		if (blockPosition.Z >= dimensions.Z) {
+			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
+			if (neighbor != null)
+				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, 0)) == BlockManager.Instance.GetBlock("Air");
+			else
+				return true;
+		}
 
-		// TODO: support for other transparent blocks
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] == BlockManager.Instance.GetBlock("Air");
 	}
 	

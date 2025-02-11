@@ -19,7 +19,7 @@ public partial class ChunkManagerWorldGen : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	public int view_distance { get; private set; } = 64;
+	public int view_distance { get; private set; } = 8;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -55,6 +55,22 @@ public partial class ChunkManagerWorldGen : Node
 				_chunks[index].SetChunkPosition(new Vector2I(x - halfWidth, z - halfWidth), WorldGenerator);
 			}
 		}
+
+		// Generate the blocks within the chunk
+		for (int x = 0; x < view_distance; x++) {
+			for (int z = 0; z < view_distance; z++) {
+				var index = (z * view_distance) + x;
+				_chunks[index].Generate();
+			}
+		}
+
+		// Create the mesh using the block data
+		for (int x = 0; x < view_distance; x++) {
+			for (int z = 0; z < view_distance; z++) {
+				var index = (z * view_distance) + x;
+				_chunks[index].Update();
+			}
+		}
 		
 		// Start the chunk transition process in a separate thread
 		if (!Engine.IsEditorHint()) {
@@ -64,9 +80,9 @@ public partial class ChunkManagerWorldGen : Node
 
 	// Generate the chunk at the desired position
 	public void UpdateChunkPosition(ChunkWorldGen chunk, Vector2I currentPosition, Vector2I previousPosition) {
-		if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
-			_positionToChunk.Remove(previousPosition);
-		}
+		// if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
+		// 	_positionToChunk.Remove(previousPosition);
+		// }
 
 		_chunkToPosition[chunk] = currentPosition;
 		_positionToChunk[currentPosition] = chunk;
@@ -134,6 +150,13 @@ public partial class ChunkManagerWorldGen : Node
 			// // This sleep didn't do much
 			// Thread.Sleep(1000);
 		}
+	}
+
+	// New helper method to retrieve a chunk at the given position.
+	public ChunkWorldGen GetChunkAtPosition(Vector2I pos) {
+		if (_positionToChunk.ContainsKey(pos))
+			return _positionToChunk[pos];
+		return null;
 	}
 
 	// Debug
