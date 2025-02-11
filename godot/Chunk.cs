@@ -36,7 +36,7 @@ public partial class Chunk : StaticBody3D
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
 
-	public Vector2I ChunkPosition { get; private set; }
+	public Vector2I ChunkPosition { get; protected set; }
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
