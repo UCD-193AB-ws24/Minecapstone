@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 [Tool]
-public partial class ChunkWorldGen : StaticBody3D
+public partial class Chunk : StaticBody3D
 {
 	[Export]
 	public CollisionShape3D CollisionShape { get; set; }
@@ -12,7 +12,7 @@ public partial class ChunkWorldGen : StaticBody3D
 	[Export]
 	public MeshInstance3D MeshInstance { get; set; }
 
-	public static Vector3I dimensions = new Vector3I(16, 35, 16);
+	public static Vector3I dimensions = new(16, 35, 16);
 
 	private static readonly Vector3[] _vertices = [
 		new Vector3I(0,0,0),
@@ -41,16 +41,18 @@ public partial class ChunkWorldGen : StaticBody3D
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
-	const int VIEW_DISTANCE = 16;
-	public Vector2I Offset { get; set; } = new Vector2I((VIEW_DISTANCE/2)*16, (VIEW_DISTANCE/2)*16);
+	private Vector2I Offset { get; set; }
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
-		ChunkManagerWorldGen.Instance.UpdateChunkPosition(this, position, ChunkPosition);
+		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
+
+		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
+		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
 
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
@@ -82,19 +84,19 @@ public partial class ChunkWorldGen : StaticBody3D
 				bool isLand = detailedValue > 0.0f;
 				float noiseValue = isLand ? detailedValue : smoothValue;
 				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
-				int stoneHeight = isLand ? 20 : 10;
+				int stoneHeight = 10;
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					Block block;
 					if (isLand) {
-						if (y < terrainHeight) {
-							block = BlockManager.Instance.GetBlock("Dirt");
+						if (y < stoneHeight) {
+							block = BlockManager.Instance.GetBlock("Stone");
 						}
 						else if (y == terrainHeight) {
 							block = BlockManager.Instance.GetBlock("Grass");
 						}
-						else if (y < stoneHeight) {
-							block = BlockManager.Instance.GetBlock("Stone");
+						else if (y < terrainHeight) {
+							block = BlockManager.Instance.GetBlock("Dirt");
 						}
 						else {
 							block = BlockManager.Instance.GetBlock("Air");
@@ -138,7 +140,6 @@ public partial class ChunkWorldGen : StaticBody3D
 		}
 	}
 
-
 	// Update the mesh and collision shape of the chunk
 	public void Update() {
 		_surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
@@ -155,17 +156,14 @@ public partial class ChunkWorldGen : StaticBody3D
 		}
 
 		// Load the shader material
-
 		StandardMaterial3D material = BlockManager.Instance.ChunkMaterial;
-		ShaderMaterial shaderMaterial = new ShaderMaterial { 
+		ShaderMaterial shaderMaterial = new() {
 			Shader = GD.Load<Shader>("res://shaders/vertex_color_shader.gdshader")
 		};
 		material.NextPass = shaderMaterial;
-
 		_surfaceTool.SetMaterial(material);
 
 		var mesh = _surfaceTool.Commit();
-		
 		MeshInstance.Mesh = mesh;
 		CollisionShape.Shape = mesh.CreateTrimeshShape();
 	}
@@ -237,33 +235,37 @@ public partial class ChunkWorldGen : StaticBody3D
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals, colors: colors);
 	}
 
-	// Modified CheckTransparent to query adjacent chunks on the four horizontal sides.
 	private bool CheckTransparent(Vector3I blockPosition) {
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
-		// Check adjacent chunks for transparent blocks
+		
+
+		/*
+			If blockPosition is at the edge of the chunk
+			Query adjacent chunks on the four horizontal sides for transparent blocks
+		*/
 		if (blockPosition.X < 0) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(dimensions.X - 1, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.X >= dimensions.X) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(0, blockPosition.Y, blockPosition.Z)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.Z < 0) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, dimensions.Z - 1)) == BlockManager.Instance.GetBlock("Air");
 			else
 				return true;
 		}
 		if (blockPosition.Z >= dimensions.Z) {
-			var neighbor = ChunkManagerWorldGen.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
+			var neighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
 			if (neighbor != null)
 				return neighbor.GetBlock(new Vector3I(blockPosition.X, blockPosition.Y, 0)) == BlockManager.Instance.GetBlock("Air");
 			else
@@ -280,13 +282,33 @@ public partial class ChunkWorldGen : StaticBody3D
 		
 		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
 		
-		// TODO: May need to fix this to account for Offset
-		
-		if (block == BlockManager.Instance.GetBlock("Air")) {
+		if (block == BlockManager.Instance.GetBlock("Air"))
 			SavedBlocks.Remove(globalCoordinates);
-		} 
-		else {
+		else
 			SavedBlocks[globalCoordinates] = block;
+
+		// Force update for adjacent chunks if an air block is set at the chunk edge.
+		if (block == BlockManager.Instance.GetBlock("Air")) {
+			// Check left edge
+			if (blockPosition.X == 0) {
+				var leftNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(-1, 0));
+				leftNeighbor?.Update();
+			}
+			// Check right edge
+			if (blockPosition.X == dimensions.X - 1) {
+				var rightNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(1, 0));
+				rightNeighbor?.Update();
+			}
+			// Check front edge (assuming front corresponds to Z == 0)
+			if (blockPosition.Z == 0) {
+				var frontNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, -1));
+				frontNeighbor?.Update();
+			}
+			// Check back edge (assuming back corresponds to Z == dimensions.Z - 1)
+			if (blockPosition.Z == dimensions.Z - 1) {
+				var backNeighbor = ChunkManager.Instance.GetChunkAtPosition(ChunkPosition + new Vector2I(0, 1));
+				backNeighbor?.Update();
+			}
 		}
 	}
 	
