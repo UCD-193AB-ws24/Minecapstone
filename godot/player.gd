@@ -136,7 +136,7 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < -64:
+	if global_position.y < 5:
 		_on_out_of_bounds()
 
 func move_player(direction: Vector2, jump: bool, speed: float, _delta):
@@ -155,7 +155,7 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
 
 	# Handle jumping
-	if is_on_floor() and jump:
+	if is_on_floor() and jump and view != ViewMode.SPECTATOR:
 		velocity.y = _jump_velocity
 
 		# Apply horizontal impulse if jumping while sprinting

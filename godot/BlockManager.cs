@@ -25,6 +25,7 @@ public partial class BlockManager : Node
 	public override void _Ready() {
 		Instance = this;
 
+		// TODO: Make this generalized for any number of blocks
 		(Block Air, Block Stone, Block Dirt, Block Grass) = (
 			(Block) ItemDict.Get("Air"),
 			(Block) ItemDict.Get("Stone"),
@@ -77,7 +78,6 @@ public partial class BlockManager : Node
 			{Dirt, 0.25f},
 			{Grass, 0.25f}
 		};
-		
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture)

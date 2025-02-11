@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://c7m3rrvvx3cg6"]
+[gd_scene load_steps=10 format=4 uid="uid://c7m3rrvvx3cg6"]
 
 [ext_resource type="Script" uid="uid://co8n7congu28" path="res://Chunk.cs" id="1_kdh3y"]
 
@@ -21,9 +21,18 @@ data = {
 [sub_resource type="ImageTexture" id="ImageTexture_a0kup"]
 image = SubResource("Image_kdh3y")
 
+[sub_resource type="Gradient" id="Gradient_kdh3y"]
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_eat54"]
+gradient = SubResource("Gradient_kdh3y")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7yqgf"]
 albedo_texture = SubResource("ImageTexture_a0kup")
+detail_mask = SubResource("GradientTexture1D_eat54")
 texture_filter = 0
+grow_amount = 3.57
+proximity_fade_distance = 95.06
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_a0kup"]
 _surfaces = [{
