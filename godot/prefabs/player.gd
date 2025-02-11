@@ -64,8 +64,7 @@ var thirst_timer = 0.0
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
 # ========================= Item dictionary ===================
-@onready var item_dict_script = load("res://ItemDictionary.cs")
-@onready var itemdict_instance = item_dict_script.new()
+@onready var itemdict_instance = load("res://world/ItemDictionary.cs").new()
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -107,17 +106,11 @@ func _input(event):
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if Input.is_action_just_released("inventory_up"):
-		print("scroll up")
 		inventory_manager.CycleUp()
-		inventory_manager.PrintSelected()
 	if Input.is_action_just_released("inventory_down"):
-		print("scroll down")
 		inventory_manager.CycleDown()
-		inventory_manager.PrintSelected()
 	if Input.is_action_just_pressed("drop_item"):
-		print("dropping item")
 		inventory_manager.DropSelectedItem()
-		inventory_manager.PrintInventory()
 
 
 func _process(_delta):
@@ -395,7 +388,7 @@ func _on_out_of_bounds():
 	velocity = Vector3.ZERO
 
 
-var pearl_scene = preload("res://pearl.tscn")
+var pearl_scene = preload("res://prefabs/pearl.tscn")
 func _throw_pearl():
 	var pearl_instance = pearl_scene.instantiate()
 	pearl_instance.global_transform = global_transform

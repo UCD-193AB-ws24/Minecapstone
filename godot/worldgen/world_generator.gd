@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 
 signal world_generated
@@ -37,10 +38,6 @@ var biome_indices = []
 var generation_thread: Thread
 var debug = true
 
-# func _input(event: InputEvent) -> void:
-# 	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
-# 		generate()
-
 var temperature_averages
 var precipitation_averages
 var combined_height_image
@@ -76,11 +73,13 @@ func get_biome(x: int, y: int) -> String:
 	var index = _get_biome_index(x, y)
 	return BIOME_NAMES[index]
 
+var tp_image = preload("res://assets/TP_map.png")
 func generate():
 	world_generated.is_null()
+		
 	# Load and process TP_map into biome indices
-	var tp_image = Image.load_from_file("res://assets/TP_map.png")
-	tp_image.decompress()
+	if tp_image is CompressedTexture2D:
+		tp_image = tp_image.get_image()
 	if tp_image.get_format() != Image.FORMAT_RGBA8:
 		tp_image.convert(Image.FORMAT_RGBA8)
 

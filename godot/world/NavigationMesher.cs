@@ -1,6 +1,7 @@
 using Godot;
 using System;
 
+[Tool]
 public partial class NavigationMesher : NavigationRegion3D {
 	// TODO: this has to be called, probably dangerously, every time the chunk mesh is updated.
 	// Need to fix this by use and parse collision shapes as source geometry or create geometry data procedurally in scripts.
@@ -19,6 +20,7 @@ public partial class NavigationMesher : NavigationRegion3D {
 	//}
 
 	public void GenerateNavmesh() {
+		if (Engine.IsEditorHint()) return;
 		if (!IsBaking()) {
 			BakeNavigationMesh(true);
 		}

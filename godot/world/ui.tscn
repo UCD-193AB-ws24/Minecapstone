@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bp2lv8kmupisq"]
 
-[ext_resource type="Script" uid="uid://cpjef4lcjfguy" path="res://ui.gd" id="1_fyqef"]
+[ext_resource type="Script" uid="uid://cpjef4lcjfguy" path="res://world/ui.gd" id="1_fyqef"]
 [ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_m6e0p"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_xb563"]
@@ -78,17 +78,20 @@ label_settings = SubResource("LabelSettings_fyqef")
 
 [node name="ItemTemp" type="AspectRatioContainer" parent="."]
 layout_mode = 0
-offset_left = 4.0
-offset_top = 780.0
-offset_right = 213.0
-offset_bottom = 938.0
+offset_left = 6.0
+offset_top = 577.0
+offset_right = 215.0
+offset_bottom = 735.0
 
 [node name="TextureRect" type="TextureRect" parent="ItemTemp"]
 layout_mode = 2
 texture = ExtResource("2_m6e0p")
 expand_mode = 2
 
-[node name="Amount" type="Label" parent="ItemTemp"]
+[node name="Label" type="Label" parent="ItemTemp"]
+custom_minimum_size = Vector2(0, 95.455)
 layout_mode = 2
-text = "amt"
+text = "amtfwafawfwafawfaffwafw"
 label_settings = SubResource("LabelSettings_xb563")
+vertical_alignment = 1
+autowrap_mode = 3
