@@ -12,7 +12,7 @@ public partial class Chunk : StaticBody3D
 	[Export]
 	public MeshInstance3D MeshInstance { get; set; }
 
-	public static Vector3I dimensions = new Vector3I(16, 35, 16);
+	public static Vector3I dimensions = new(16, 35, 16);
 
 	private static readonly Vector3[] _vertices = [
 		new Vector3I(0,0,0),
@@ -41,8 +41,7 @@ public partial class Chunk : StaticBody3D
 	public List<Vector2I> SavedChunks = [];
 	public Dictionary<Vector3I, Block> SavedBlocks = [];
 
-	const int VIEW_DISTANCE = 16;
-	public Vector2I Offset { get; set; } = new Vector2I((VIEW_DISTANCE/2)*16, (VIEW_DISTANCE/2)*16);
+	private Vector2I Offset { get; set; }
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
@@ -52,6 +51,9 @@ public partial class Chunk : StaticBody3D
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
 
+		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
+		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
+
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
 		// After making chunks, puts it into a list of already made chunks
@@ -60,6 +62,7 @@ public partial class Chunk : StaticBody3D
 
 	public override void _Ready() {
 		SetMeta("is_chunk", true);
+
 	}
 
 	// Create and set block in the chunk
@@ -157,7 +160,7 @@ public partial class Chunk : StaticBody3D
 		// Load the shader material
 
 		StandardMaterial3D material = BlockManager.Instance.ChunkMaterial;
-		ShaderMaterial shaderMaterial = new ShaderMaterial { 
+		ShaderMaterial shaderMaterial = new() {
 			Shader = GD.Load<Shader>("res://shaders/vertex_color_shader.gdshader")
 		};
 		material.NextPass = shaderMaterial;

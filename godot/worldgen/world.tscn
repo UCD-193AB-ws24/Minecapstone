@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://world/NavigationMesher.cs" id="1_8mp4y"]
-[ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/worldgen.gd" id="1_yvk30"]
+[ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/world_generator.gd" id="1_yvk30"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
@@ -138,10 +138,10 @@ directional_shadow_split_1 = 0.0
 directional_shadow_split_2 = 0.0
 
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.1008, 7.42541, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher" method="GenerateNavmesh"]
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]

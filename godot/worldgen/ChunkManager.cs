@@ -19,7 +19,7 @@ public partial class ChunkManager : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	public int view_distance { get; private set; } = 16;
+	private int view_distance;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
@@ -30,7 +30,8 @@ public partial class ChunkManager : Node
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
 
 		WorldGenerator = GetNode<Node3D>("../../WorldGenerator");
-		GD.Print(WorldGenerator);
+		view_distance = (int)WorldGenerator.Get("VIEW_DISTANCE");
+
 		WorldGenerator.Call("generate");
 		
 		player = GetNodeOrNull<CharacterBody3D>("../../Player");

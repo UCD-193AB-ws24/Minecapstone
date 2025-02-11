@@ -9,7 +9,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-const VIEW_DISTANCE = 16
+const VIEW_DISTANCE = 8
 @onready var SIZE = VIEW_DISTANCE * 16
 const BIOME_NAMES = [
 	"desert",
@@ -76,7 +76,7 @@ func get_biome(x: int, y: int) -> String:
 var tp_image = preload("res://assets/TP_map.png")
 func generate():
 	world_generated.is_null()
-	
+		
 	# Load and process TP_map into biome indices
 	if tp_image is CompressedTexture2D:
 		tp_image = tp_image.get_image()
