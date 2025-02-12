@@ -10,12 +10,13 @@ public partial class ItemDictionary : Resource
 	{
 		{"Air", new Block("Air", Placeholder, 0, false, null, null, null)},
 		{"Dirt", new Block("Dirt", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/dirt.png"))},
-		{"Stone", new Block("Stone", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/stone.png"))},
+		{"Stone", new Block("Stone", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/stone.png"), HarvestLevel: 1, Proficency: Proficency.STONE)},
 		{"Grass", new Block("Grass", Placeholder, 64, false, 
 			(Texture2D)GD.Load("res://assets/side_grass.png"), 
 			(Texture2D)GD.Load("res://assets/grass.png"),
 			(Texture2D)GD.Load("res://assets/dirt.png"))
 		},
+		{"Wood Pickaxe", new Tool("Wood Pickaxe", Placeholder, 1, true, 1, 0, Proficency.STONE)},
 	};
 	
 	
