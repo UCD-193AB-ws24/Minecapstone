@@ -136,7 +136,7 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < 5:
+	if global_position.y < 15:
 		_on_out_of_bounds()
 
 
