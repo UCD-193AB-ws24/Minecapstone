@@ -3,7 +3,7 @@ extends NPC
 
 
 @export var wander_range: float = 10.0
-@export var wander_change_time: float = 5.0
+@export var wander_change_time: float = 10.0 # Don't make this too fast otherwise it changes too quickly and basically stays in place
 var wander_timer: float = 0.0
 var wander_target: Vector3 = Vector3.ZERO
 var wander_center: Vector3

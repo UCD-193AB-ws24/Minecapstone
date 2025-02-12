@@ -5,7 +5,7 @@ extends NPC_Wanderer
 @export var detection_range: float = 10.0
 @export var attack_range: float = 2.0
 @export var attack_damage: float = 25.0 # current 4 shots player
-@export var attack_cooldown: float = 1.0
+@export var attack_cooldown: float = 2.0 
 @export var chase_speed: float = 2.0
 
 
@@ -32,9 +32,9 @@ func _physics_process(delta):
 	else:
 		if current_state != ZombieState.WANDERING:
 			# When transitioning state, update the wander center
-			wander_center = global_position
-			last_known_position = global_position
-			_generate_wander_target() # generate wander target based on spawn point
+			last_known_position = target_player.global_position
+			wander_center = last_known_position
+			_generate_wander_target() # generate wander target based on where the player was last in chase range
 		current_state = ZombieState.WANDERING
 
 	if old_state != current_state:
