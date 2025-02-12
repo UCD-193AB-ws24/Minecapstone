@@ -24,6 +24,7 @@ debug_enabled = true
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_ul7y6")
+InventorySlots = 10
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
