@@ -21,6 +21,9 @@ path_height_offset = 1.0
 simplify_path = true
 simplify_epsilon = 0.571
 debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(0.987334, 0.843198, 0.838756, 1)
+debug_path_custom_point_size = 24.95
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_ul7y6")

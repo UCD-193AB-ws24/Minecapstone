@@ -35,8 +35,10 @@ func _generate_wander_target() -> Vector3:
 		sin(random_angle) * random_radius
 	)
 	
-	return Vector3(
+	wander_target = Vector3(
 		spawn_position.x + offset.x,
 		spawn_position.y,
 		spawn_position.z + offset.z
 	)
+	
+	return wander_target
