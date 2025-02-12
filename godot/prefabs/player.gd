@@ -70,7 +70,7 @@ var thirst_timer = 0.0
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 5)
+	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
 	inventory_manager.AddItem(itemdict_instance.Get("Wood Pickaxe"), 1)
 
 

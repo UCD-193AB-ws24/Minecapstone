@@ -20,9 +20,11 @@ script = ExtResource("1_xxcha")
 path_height_offset = 1.0
 simplify_path = true
 simplify_epsilon = 0.571
+debug_enabled = true
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_ul7y6")
+InventorySlots = 10
 
 [node name="Body" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)

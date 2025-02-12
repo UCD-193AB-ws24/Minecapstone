@@ -6,15 +6,16 @@ using System.Linq;
 [Tool]
 public partial class InventoryManager : Node 
 {
+	[Export]
+	public float DropVelocity { get; set; } = 5;
+	
 	private readonly Dictionary<string, List<int>> _nameToSlots = [];
 	private readonly Dictionary<int, InventoryItem> _slotsToItems = [];
 	private int _selectedSlot = 0;
 	private bool[] _inventorySlots;
-	
-	[Export]
-	public int InventorySlots { get; private set; } = 3;
-	[Export]
-	public float DropVelocity { get; private set; } = 5;
+	// TODO, using an export here doesn't work on InventorySlots. 
+	// set this up in player's ready function instead.
+	public int InventorySlots { get; set; } = 9;
 	public int SelectedSlot => _selectedSlot;
 
 	public InventoryManager() {
