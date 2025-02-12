@@ -313,8 +313,10 @@ func _break_block():
 		
 		# TODO: Fix this
 		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() >= block.GetHarvestLevel() and _tool_breaking.GetProficency() == block.GetProficency()) or block.GetHarvestLevel() == 0:
-			inventory_manager.AddItem(block, 1);
-			#inventory_manager.PrintInventory();
+			var drop_pos:Vector3 = chunk.global_position + Vector3(_block_breaking.x, _block_breaking.y, _block_breaking.z)
+			var block_node = block.GenerateItem()
+			get_parent().add_child(block_node)
+			block_node.global_position = drop_pos + Vector3(0.5, 0.5, 0.5)
 		
 		_block_breaking = null
 		_is_breaking = false
