@@ -6,8 +6,7 @@ public partial class ItemDictionary : Resource
 	private static ItemDictionary instance = null;
 	private static string Path = "res://assets/icons/placeholder.jpg";
 	private static Texture2D Placeholder = GD.Load<Texture2D>(Path);
-	private static Dictionary<string, Item> ItemDict = new Dictionary<string, Item>()
-	{
+	private static Dictionary<string, Item> ItemDict = new Dictionary<string, Item>() {
 		{"Air", new Block("Air", Placeholder, 0, false, null, null, null)},
 		{"Dirt", new Block("Dirt", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/dirt.png"))},
 		{"Stone", new Block("Stone", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/stone.png"), HarvestLevel: 1, Proficency: Proficency.STONE)},
@@ -23,14 +22,12 @@ public partial class ItemDictionary : Resource
 	// Prevent instantiation
 	private ItemDictionary(){}
 	
-	public static ItemDictionary GetInstance()
-	{
+	public static ItemDictionary GetInstance() {
 		instance ??= new ItemDictionary();
 		return instance;
 	}
 
-	public static Item Get(string BlockName)
-	{
+	public static Item Get(string BlockName) {
 		return ItemDict[BlockName];
 	}
 }

@@ -25,6 +25,9 @@ public partial class ChunkManager : Node
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
 	private Node3D WorldGenerator;
 
+	[Signal]
+	public delegate void WorldLoadedEventHandler();
+
 	public override void _Ready() {
 		Instance = this;
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
@@ -40,8 +43,6 @@ public partial class ChunkManager : Node
 	
 	// Chunk initialization code runs after world generation
 	private void OnWorldGenerated() {
-		GD.Print("World generated");
-		
 		// Ensure we have enough chunks
 		for (int i = _chunks.Count; i < view_distance * view_distance; i++) {
 			var chunk = ChunkScene.Instantiate<Chunk>();
@@ -76,6 +77,7 @@ public partial class ChunkManager : Node
 		
 		// Start the chunk transition process in a separate thread
 		if (!Engine.IsEditorHint()) {
+			EmitSignal(SignalName.WorldLoaded);
 			new Thread(new ThreadStart(ThreadProcess)).Start();
 		}
 	}

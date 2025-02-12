@@ -9,7 +9,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-const VIEW_DISTANCE = 16
+const VIEW_DISTANCE = 4
 @onready var SIZE = VIEW_DISTANCE * 16
 const BIOME_NAMES = [
 	"desert",
@@ -136,8 +136,8 @@ func _threaded_generate():
 	await get_tree().create_timer(1.0).timeout
 
 	# Emit signal when world generation is complete
-	call_deferred("emit_signal", "world_generated")
 	call_deferred("_handle_loading_screen", null, false)
+	call_deferred("emit_signal", "world_generated")
 
 func _create_combined_height_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)

@@ -120,12 +120,12 @@ func _process(_delta):
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
-	if view == ViewMode.SPECTATOR: _spectator_movement(_delta);
-
-	# Highlight block player is looking at, and place or remove blocks
 	if not ai_controller.ai_control_enabled:
+		if view == ViewMode.SPECTATOR: _spectator_movement(_delta);
+
+		# Highlight block player is looking at, and place or remove blocks
 		_handle_block_interaction()
-	
+		
 	if _is_breaking:
 		_break_block()
 
@@ -138,11 +138,19 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < 5:
+	if global_position.y < 15:
 		_on_out_of_bounds()
 
 
-func move_player(direction: Vector2, jump: bool, speed: float, _delta):
+func _apply_gravity(delta):
+	if not is_on_floor():
+		velocity.y -= 35 * delta
+		current_acceleration = _acceleration * 0.25
+	else:
+		current_acceleration = _acceleration
+
+
+func move_to(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
 	if view == ViewMode.SPECTATOR: direction = Vector2.ZERO
 
@@ -352,7 +360,7 @@ func _handle_player_input(_delta):
 	var relative_direction = right_dir * input_vector.x + forward_dir * input_vector.y
 	relative_direction = relative_direction.normalized()
 
-	move_player(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
+	move_to(relative_direction, Input.is_action_pressed("jump"), current_speed, _delta)
 
 
 func _handle_sprint():
@@ -374,14 +382,6 @@ func _handle_sprint():
 		return _sprint_speed
 	else:
 		return _speed
-
-
-func _apply_gravity(_delta):
-	if not is_on_floor():
-		velocity.y -= 35 * _delta
-		current_acceleration = _acceleration * 0.25
-	else:
-		current_acceleration = _acceleration
 
 
 func _update_fov(_delta):
@@ -446,17 +446,19 @@ func _update_health_hunger_thirst(_delta):
 func eat_food(amount):
 	hunger = min(hunger + amount, max_hunger)
 
-
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
-
-
-func healh(amount):
+	
+func heal(amount):
 	health = min(health + amount, max_health)
 
+func damage(damage_amount: float):
+	health = max(health - damage_amount, 0)
+	if health <= 0:
+		_on_player_death()
 
 func _on_player_death():
-	print("Player has died")
+	print(str(self) + " has died!")
 	health = max_health
 	hunger = max_hunger
 	thirst = max_thirst

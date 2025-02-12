@@ -6,8 +6,7 @@ public partial class Tool : Item {
 	public int Durability { get; set; }
 	public Proficency Proficency { get; set; }
 
-	public Tool(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable, int ToolPower, int Durability, Proficency proficency) : base(Name, Icon, MaxStackSize, IsConsumable)
-	{
+	public Tool(string Name, Texture2D Icon, int MaxStackSize, bool IsConsumable, int ToolPower, int Durability, Proficency proficency) : base(Name, Icon, MaxStackSize, IsConsumable) {
 		SetMeta("is_tool", true);
 		base.Name = Name;
 		base.Icon = Icon;
@@ -26,12 +25,10 @@ public partial class Tool : Item {
 		return Proficency;
 	}
 
-	public Tool() : base("Unnamed tool", null, 1, false)
-	{
+	public Tool() : base("Unnamed tool", null, 1, false) {
 		// TODO: Investigate where this is getting called
 		GD.Print("This is not supposed to happen.");
 	}
-
 }
 
 public enum Proficency {
