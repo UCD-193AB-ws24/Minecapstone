@@ -1,8 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=7 format=3 uid="uid://0ypfn26rapdv"]
 
-[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://player.gd" id="1_4flbx"]
-[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="2_onrkg"]
-[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="3_i3pqv"]
+[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://prefabs/player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="3_i3pqv"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
+radius = 0.3
+height = 1.75
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -14,21 +18,24 @@ albedo_color = Color(1, 1, 1, 0.038)
 [node name="Player" type="CharacterBody3D"]
 platform_floor_layers = 4294967041
 script = ExtResource("1_4flbx")
+metadata/Name = "agent"
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
 
-[node name="Body" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.878, 0)
-radius = 0.3
-height = 1.6
-sides = 16
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("2_onrkg")
+metadata/_custom_type_script = ExtResource("2_onrkg")
+
+[node name="Body" type="CSGMesh3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("CapsuleMesh_i3pqv")
 
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
 [node name="Headbox" type="CSGBox3D" parent="Head"]
-size = Vector3(0.6, 0.6, 0.6)
+size = Vector3(0.62, 0.62, 0.62)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
 current = true
@@ -42,10 +49,6 @@ target_position = Vector3(0, 0, -4.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_sh265")
-
-[node name="AIController" type="Node" parent="."]
-script = ExtResource("2_onrkg")
-metadata/_custom_type_script = ExtResource("2_onrkg")
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 size = Vector3(1.1, 1.1, 1.1)

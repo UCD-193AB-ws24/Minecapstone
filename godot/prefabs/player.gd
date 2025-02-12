@@ -50,7 +50,7 @@ var thirst = max_thirst
 var hunger_timer = 0.0
 var thirst_timer = 0.0
 
-# ============================ Important stuff ============================
+# ============================ Body related ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
@@ -64,12 +64,14 @@ var thirst_timer = 0.0
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
+# ========================= Item dictionary ===================
+@onready var itemdict_instance = load("res://world/ItemDictionary.cs").new()
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(block_manager.ItemDict.Get("Stone"), 5)
-	inventory_manager.AddItem(block_manager.ItemDict.Get("WoodPick"), 1)
+	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 5)
+	inventory_manager.AddItem(itemdict_instance.Get("WoodPick"), 1)
 
 
 # Called on input event
@@ -106,13 +108,11 @@ func _input(event):
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if Input.is_action_just_released("inventory_up"):
-		print("scroll up")
 		inventory_manager.CycleUp()
-		inventory_manager.PrintSelected()
 	if Input.is_action_just_released("inventory_down"):
-		print("scroll down")
 		inventory_manager.CycleDown()
-		inventory_manager.PrintSelected()
+	if Input.is_action_just_pressed("drop_item"):
+		inventory_manager.DropSelectedItem()
 
 
 func _process(_delta):
@@ -138,8 +138,9 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < -64:
+	if global_position.y < 5:
 		_on_out_of_bounds()
+
 
 func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 	# Disable movement if spectator mode
@@ -157,7 +158,7 @@ func move_player(direction: Vector2, jump: bool, speed: float, _delta):
 		velocity.z = lerp(velocity.z, 0.0, _acceleration)
 
 	# Handle jumping
-	if is_on_floor() and jump:
+	if is_on_floor() and jump and view != ViewMode.SPECTATOR:
 		velocity.y = _jump_velocity
 
 		# Apply horizontal impulse if jumping while sprinting
@@ -231,7 +232,6 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 	# if pressed left mouse prepare for block breaking
 	if Input.is_action_just_pressed("mouse1") and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
-	
 	# if holding down left mouse prepare for breaking
 	if not _released and not _is_breaking:
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
@@ -240,8 +240,7 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 # Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
 	_is_breaking = true
-	_block_breaking = pos
-
+	_block_breaking = pos 
 	# get block data, time to break
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
@@ -310,22 +309,18 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, block_manager.ItemDict.Get("Air"))
-
-		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool")):
-			print(_tool_breaking.GetHarvestLevel())
-			print(_tool_breaking.GetProficency())
+		chunk.SetBlock(_block_breaking, itemdict_instance.Get("Air"))
 		
 		# TODO: Fix this
 		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() >= block.GetHarvestLevel() and _tool_breaking.GetProficency() == block.GetProficency()) or block.GetHarvestLevel() == 0:
 			inventory_manager.AddItem(block, 1);
-			inventory_manager.PrintInventory();
+			#inventory_manager.PrintInventory();
 		
 		_block_breaking = null
 		_is_breaking = false
 		_break_timer.queue_free()
 		_update_navmesh()
-	
+
 
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;
@@ -400,7 +395,7 @@ func _on_out_of_bounds():
 	velocity = Vector3.ZERO
 
 
-var pearl_scene = preload("res://pearl.tscn")
+var pearl_scene = preload("res://prefabs/pearl.tscn")
 func _throw_pearl():
 	var pearl_instance = pearl_scene.instantiate()
 	pearl_instance.global_transform = global_transform
@@ -444,15 +439,19 @@ func _update_health_hunger_thirst(_delta):
 	
 	if health <= 0:
 		_on_player_death()
-		
+
+
 func eat_food(amount):
 	hunger = min(hunger + amount, max_hunger)
 
+
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
-	
+
+
 func healh(amount):
 	health = min(health + amount, max_health)
+
 
 func _on_player_death():
 	print("Player has died")

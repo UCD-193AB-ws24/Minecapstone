@@ -19,36 +19,62 @@ public partial class ChunkManager : Node
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
 
-	private int _viewDistance = 6;
+	private int view_distance;
 	private CharacterBody3D player;
 	private Vector3 _playerPosition;
 	private object _playerPositionlock = new();	// Semaphore used to lock access to the player position between threads
+	private Node3D WorldGenerator;
 
 	public override void _Ready() {
 		Instance = this;
 		NavigationMeshSource = new NavigationMeshSourceGeometryData3D();
-		// TODO: replace with Player.Instance one day..
-		player = GetNodeOrNull<CharacterBody3D>("../../Player");
-		_chunks = GetChildren().Where(child => child is Chunk).Select(child => child as Chunk).ToList();
 
-		for (int i = _chunks.Count; i < _viewDistance * _viewDistance; i++) {
-			var chunk = (Chunk)ChunkScene.Instantiate<Chunk>();
+		WorldGenerator = GetNode<Node3D>("../../WorldGenerator");
+		view_distance = (int)WorldGenerator.Get("VIEW_DISTANCE");
+
+		WorldGenerator.Call("generate");
+		
+		player = GetNodeOrNull<CharacterBody3D>("../../Player");
+		_chunks = [.. GetChildren().Where(child => child is Chunk).Select(child => child as Chunk)];
+	}
+	
+	// Chunk initialization code runs after world generation
+	private void OnWorldGenerated() {
+		GD.Print("World generated");
+		
+		// Ensure we have enough chunks
+		for (int i = _chunks.Count; i < view_distance * view_distance; i++) {
+			var chunk = ChunkScene.Instantiate<Chunk>();
 			CallDeferred(Node.MethodName.AddChild, chunk);
 			_chunks.Add(chunk);
 		}
-
-		for (int x = 0; x < _viewDistance; x++) {
-			for (int z = 0; z < _viewDistance; z++) {
+		
+		for (int x = 0; x < view_distance; x++) {
+			for (int z = 0; z < view_distance; z++) {
 				// Get index of the chunk
-				var index = (z * _viewDistance) + x;
-
-				// Set the chunk position
-				var halfWidth = Mathf.FloorToInt(_viewDistance / 2f);
-				_chunks[index].SetChunkPosition(new Vector2I(x - halfWidth, z - halfWidth));
+				var index = (z * view_distance) + x;
+				var halfWidth = Mathf.FloorToInt(view_distance / 2f);
+				_chunks[index].SetChunkPosition(new Vector2I(x - halfWidth, z - halfWidth), WorldGenerator);
 			}
 		}
 
-		// This class is a [Tool], do not run this if in Editor
+		// Generate the blocks within the chunk
+		for (int x = 0; x < view_distance; x++) {
+			for (int z = 0; z < view_distance; z++) {
+				var index = (z * view_distance) + x;
+				_chunks[index].Generate();
+			}
+		}
+
+		// Create the mesh using the block data
+		for (int x = 0; x < view_distance; x++) {
+			for (int z = 0; z < view_distance; z++) {
+				var index = (z * view_distance) + x;
+				_chunks[index].Update();
+			}
+		}
+		
+		// Start the chunk transition process in a separate thread
 		if (!Engine.IsEditorHint()) {
 			new Thread(new ThreadStart(ThreadProcess)).Start();
 		}
@@ -56,9 +82,9 @@ public partial class ChunkManager : Node
 
 	// Generate the chunk at the desired position
 	public void UpdateChunkPosition(Chunk chunk, Vector2I currentPosition, Vector2I previousPosition) {
-		if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
-			_positionToChunk.Remove(previousPosition);
-		}
+		// if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
+		// 	_positionToChunk.Remove(previousPosition);
+		// }
 
 		_chunkToPosition[chunk] = currentPosition;
 		_positionToChunk[currentPosition] = chunk;
@@ -102,8 +128,8 @@ public partial class ChunkManager : Node
 			// 	var chunkX = chunkPosition.X;
 			// 	var chunkZ = chunkPosition.Y;
 
-			// 	var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + _viewDistance / 2, _viewDistance) + playerChunkX - _viewDistance / 2);
-			// 	var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + _viewDistance / 2, _viewDistance) + playerChunkZ - _viewDistance / 2);
+			// 	var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + view_distance / 2, view_distance) + playerChunkX - view_distance / 2);
+			// 	var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + view_distance / 2, view_distance) + playerChunkZ - view_distance / 2);
 
 			// 	// Move the chunk position, moving all chunks, if player is in a new chunk
 			// 	if (newChunkX != chunkX || newChunkZ != chunkZ) {
@@ -128,6 +154,13 @@ public partial class ChunkManager : Node
 		}
 	}
 
+	// New helper method to retrieve a chunk at the given position.
+	public Chunk GetChunkAtPosition(Vector2I pos) {
+		if (_positionToChunk.ContainsKey(pos))
+			return _positionToChunk[pos];
+		return null;
+	}
+
 	// Debug
 	public Vector2I GetPlayerChunkPosition() {
 		lock (_playerPositionlock) {
@@ -137,28 +170,28 @@ public partial class ChunkManager : Node
 		}
 	}
 
-	public void UpdateNavMesh(Vector3[] triangles, Transform3D Transform) {
-		// // god-awful way i used to check that all the vertices are properly being added to the navmesh
-		// foreach (var vertex in triangles)	
-		// {
-		// 	var sphere = new SphereMesh();
-		// 	sphere.Radius = 0.1f;
-		// 	var random = new Random();
-		// 	var rotation = new Vector3(
-		// 		(float)(random.NextDouble() * Math.PI * 2),
-		// 		(float)(random.NextDouble() * Math.PI * 2),
-		// 		(float)(random.NextDouble() * Math.PI * 2)
-		// 	);
-		// 	var sphereInstance = new MeshInstance3D
-		// 	{
-		// 		Mesh = sphere,
-		// 		Transform = new Transform3D(Basis.Identity, vertex)
-		// 	};
-		// 	sphereInstance.RotateObjectLocal(Vector3.Right, rotation.X);
-		// 	sphereInstance.RotateObjectLocal(Vector3.Up, rotation.Y);
-		// 	sphereInstance.RotateObjectLocal(Vector3.Forward, rotation.Z);
-		// 	AddChild(sphereInstance);
-		// }
-		NavigationMeshSource.AddFaces(faces: triangles, xform: Transform);
-	}
+	// public void UpdateNavMesh(Vector3[] triangles, Transform3D Transform) {
+	// 	// // god-awful way i used to check that all the vertices are properly being added to the navmesh
+	// 	// foreach (var vertex in triangles)	
+	// 	// {
+	// 	// 	var sphere = new SphereMesh();
+	// 	// 	sphere.Radius = 0.1f;
+	// 	// 	var random = new Random();
+	// 	// 	var rotation = new Vector3(
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2),
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2),
+	// 	// 		(float)(random.NextDouble() * Math.PI * 2)
+	// 	// 	);
+	// 	// 	var sphereInstance = new MeshInstance3D
+	// 	// 	{
+	// 	// 		Mesh = sphere,
+	// 	// 		Transform = new Transform3D(Basis.Identity, vertex)
+	// 	// 	};
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Right, rotation.X);
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Up, rotation.Y);
+	// 	// 	sphereInstance.RotateObjectLocal(Vector3.Forward, rotation.Z);
+	// 	// 	AddChild(sphereInstance);
+	// 	// }
+	// 	NavigationMeshSource.AddFaces(faces: triangles, xform: Transform);
+	// }
 }
