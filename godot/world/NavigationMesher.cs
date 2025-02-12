@@ -8,28 +8,27 @@ public partial class NavigationMesher : NavigationRegion3D {
 	// Source geometry parsing for navigation mesh baking had to parse RenderingServer meshes at runtime. This poses a significant performance issues as visual meshes store geometry data on the GPU and transferring this data back to the CPU blocks the rendering. For runtime (re)baking navigation meshes use and parse collision shapes as source geometry or create geometry data procedurally in scripts.
 	
 	
-	// TODO: redo with new signals from WorldGenerator
-	//public override void _Ready() {
-		//var chunkManager = GetNode("ChunkManager");
-		//if (chunkManager != null) {
-			//CallDeferred(nameof(GenerateNavmesh));
-		//}
-		//else {
-			//GD.Print("ChunkManager node not found");
-		//}
-	//}
-
 	public void GenerateNavmesh() {
-		if (Engine.IsEditorHint()) return;
+		var chunkManager = GetNode("ChunkManager");
+		if (chunkManager != null) {
+			CallDeferred(nameof(BakeNavmesh));
+		}
+		else {
+			GD.Print("ChunkManager node not found");
+		}
+		// TODO: otherwise, queue a bake so the bake occurs once IsFInishedBaking signal is emitted
+	}
+
+	private void BakeNavmesh() {
+		GD.Print("Generating navmesh...");
 		if (!IsBaking()) {
 			BakeNavigationMesh(true);
 		}
-		// otherwise, queue a bake so the bake occurs once IsFInishedBaking signal is emitted
 	}
 
 	private void OnBakeFinished() {
-		var navmesh = NavigationMesh;
-		GD.Print("Navmesh baked --> ", navmesh.GetVertices().Length);
+		int NumVertices = NavigationMesh.GetVertices().Length;
+		GD.Print("Navmesh baked with ", NumVertices, " vertices.");
 	}
 
 	// NavigationMeshGenerator::bake() is deprecated due to core threading changes. 

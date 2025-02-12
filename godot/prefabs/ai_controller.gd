@@ -9,4 +9,4 @@ extends Node
 #func _physics_process(_delta):
 	#if ai_control_enabled:
 		#var current_speed = player._speed
-		#player.move_player(movement_direction.normalized(), is_jumping, current_speed, _delta)
+		#player.move_to(movement_direction.normalized(), is_jumping, current_speed, _delta)

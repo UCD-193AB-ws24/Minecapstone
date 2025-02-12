@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dhxta7hcgf26j"]
+[gd_scene load_steps=6 format=3 uid="uid://le6846223p6p"]
 
 [ext_resource type="Script" uid="uid://bqcahwjg3br67" path="res://prefabs/npc_wanderer.gd" id="1_cuwdc"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="2_kh24r"]
@@ -21,9 +21,6 @@ path_height_offset = 1.0
 simplify_path = true
 simplify_epsilon = 0.571
 debug_enabled = true
-debug_use_custom = true
-debug_path_custom_color = Color(0.987334, 0.843198, 0.838756, 1)
-debug_path_custom_point_size = 24.95
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_ul7y6")

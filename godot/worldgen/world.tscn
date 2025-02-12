@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=18 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://world/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/world_generator.gd" id="1_yvk30"]
@@ -7,7 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
-[ext_resource type="PackedScene" uid="uid://dhxta7hcgf26j" path="res://prefabs/npc.tscn" id="8_kitc0"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="8_kitc0"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="10_ffu4t"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_8mp4y"]
 noise_type = 2
@@ -57,18 +58,18 @@ ground_bottom_color = Color(0.0871543, 0.0697184, 0.0494625, 1)
 ground_horizon_color = Color(0.752941, 0.839216, 1, 1)
 sun_curve = 0.35
 
-[sub_resource type="Sky" id="Sky_ioo17"]
+[sub_resource type="Sky" id="Sky_lh600"]
 sky_material = SubResource("ProceduralSkyMaterial_xylv4")
 radiance_size = 4
 
 [sub_resource type="Environment" id="Environment_g8rv3"]
 background_mode = 2
-sky = SubResource("Sky_ioo17")
+sky = SubResource("Sky_lh600")
 fog_light_color = Color(0, 0, 0, 1)
 fog_density = 0.04
 volumetric_fog_density = 0.0184
 
-[node name="Worldgen" type="Node3D"]
+[node name="World" type="Node3D"]
 
 [node name="UI" parent="." instance=ExtResource("5_2riqy")]
 
@@ -147,5 +148,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
 [node name="NPC" parent="." instance=ExtResource("8_kitc0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
 
-[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher" method="GenerateNavmesh"]
+[node name="NPCZombie" parent="." instance=ExtResource("10_ffu4t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 70, 0)
+
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
