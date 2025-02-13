@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bequwvch7o8sb"]
+
+[ext_resource type="Script" uid="uid://cw6jq4ka2xbmu" path="res://rtc_test.gd" id="1_2v7d4"]
+
+[node name="RtcTest" type="Node2D"]
+script = ExtResource("1_2v7d4")
