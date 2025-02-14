@@ -71,6 +71,7 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
 	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
+	inventory_manager.AddItem(itemdict_instance.Get("Sand"), 64)
 	inventory_manager.AddItem(itemdict_instance.Get("Wood Pickaxe"), 1)
 
 
@@ -138,7 +139,7 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < 15:
+	if global_position.y < 0:
 		_on_out_of_bounds()
 
 
