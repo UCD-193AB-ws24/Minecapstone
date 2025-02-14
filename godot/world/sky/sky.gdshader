@@ -12,7 +12,6 @@ group_uniforms sky;
 	uniform vec3 night_bottom_color : source_color = vec3( 0.1, 0.0, 0.2 );
 
 group_uniforms horizon;
-	uniform vec3 horizon_color : source_color = vec3( 0.0, 0.7, 0.8 );
 	uniform float horizon_blur : hint_range( 0.0, 1.0, 0.01 ) = 0.05;
 
 group_uniforms sun; // First DirectionalLight3D will be the sun
@@ -20,11 +19,17 @@ group_uniforms sun; // First DirectionalLight3D will be the sun
 	uniform vec3 sun_sunset_color : source_color = vec3( 10.0, 3.5, 0.0 );
 	uniform float sun_size : hint_range( 0.01, 1.0 ) = 0.2;
 	uniform float sun_blur : hint_range( 0.01, 20.0 ) = 10.0;
+	uniform vec3 sun_glow_color : source_color = vec3(1.2, 1.0, 0.7);
+	uniform float sun_glow_size : hint_range(0.0, 10.0) = 2.0;
+	uniform float sun_glow_intensity : hint_range(0.0, 5.0) = 2.0;
 
 group_uniforms moon; // Second DirectionalLight3D will be the moon
 	uniform vec3 moon_color : source_color = vec3( 1.0, 0.95, 0.7 );
 	uniform float moon_size : hint_range( 0.01, 1.0 ) = 0.06;
 	uniform float moon_blur : hint_range( 0.01, 10.0 ) = 0.1;
+	uniform vec3 moon_glow_color : source_color = vec3(0.7, 0.7, 0.9);
+	uniform float moon_glow_size : hint_range(0.0, 10.0) = 1.5;
+	uniform float moon_glow_intensity : hint_range(0.0, 5.0) = 1.0;
 
 group_uniforms clouds;
 	// Replaced by noise functions, unncomment if you want to use graphical textures
@@ -175,20 +180,27 @@ void sky()
 	if( EYEDIR.y < 0.0 )
 	{
 		_horizon_amount = clamp( abs( EYEDIR.y ) / horizon_blur, 0.0, 1.0 );
-		// Mixing with the color of the night sky to make the horizon darker
-		vec3 _horizon_color = mix( horizon_color, _sky_color, _night_amount * 0.9 );
-		// And if ther are many dark clouds, we also make the horizon darker
+		 // Use the current bottom color for the horizon
+		vec3 _horizon_color = mix(day_bottom_color, sunset_bottom_color, _sunset_amount);
+		_horizon_color = mix(_horizon_color, night_bottom_color, _night_amount);
+		// And if there are many dark clouds, we also make the horizon darker
 		_horizon_color = mix( _horizon_color, vec3( 0.0 ), ( 1.0 - clouds_cutoff ) * clouds_weight * 0.7 );
 		COLOR = mix( COLOR, _horizon_color, _horizon_amount );
 	}
 
 	//////////////////// MOON //////////////////////////////////////////////////////////////////////
 	float _moon_amount = 0.0;
+	float _moon_glow = 0.0;
 	if( LIGHT1_ENABLED )
 	{
 		// Bigger moon near the horizon
 		float _moon_size = moon_size + cos( LIGHT1_DIRECTION.y * PI ) * moon_size * 0.25;
 		float _moon_distance = distance( EYEDIR, LIGHT1_DIRECTION ) / _moon_size;
+
+		// Calculate glow
+		_moon_glow = clamp(1.0 - (_moon_distance / moon_glow_size), 0.0, 1.0);
+		_moon_glow = pow(_moon_glow, 2.0) * moon_glow_intensity;
+
 		// Finding moon disc and edge blur
 		_moon_amount = clamp(( 1.0 - _moon_distance ) / moon_blur, 0.0, 1.0 );
 		if( _moon_amount > 0.0 )
@@ -201,16 +213,26 @@ void sky()
 			// Hiding the moon behind the horizon
 			_moon_amount *= 1.0 - _horizon_amount;
 			COLOR = mix( COLOR, moon_color, _moon_n_dot_l * _moon_amount );
-		}
+			}
+
+		// Apply moon glow
+		_moon_glow *= (1.0 - _horizon_amount); // Hide glow behind horizon
+		COLOR += moon_glow_color * _moon_glow;
 	}
 
 	//////////////////// SUN ///////////////////////////////////////////////////////////////////////
 	float _sun_distance = 0.0;
+	float _sun_glow = 0.0;
 	if( LIGHT0_ENABLED )
 	{
 		_sun_distance = distance( EYEDIR, LIGHT0_DIRECTION );
 		// Bigger sun near the horizon
 		float _sun_size = sun_size + cos( LIGHT0_DIRECTION.y * PI ) * sun_size * 0.25;
+
+		// Calculate glow
+		_sun_glow = clamp(1.0 - (_sun_distance / (sun_glow_size * _sun_size)), 0.0, 1.0);
+		_sun_glow = pow(_sun_glow, 2.0) * sun_glow_intensity;
+
 		// Finding sun disc and edge blur
 		float _sun_amount = clamp(( 1.0 - _sun_distance / _sun_size ) / sun_blur, 0.0, 1.0 );
 		if( _sun_amount > 0.0 )
@@ -229,6 +251,13 @@ void sky()
 				_sun_color *= _sun_amount;
 			COLOR = mix( COLOR, _sun_color, _sun_amount );
 		}
+
+		// Apply sun glow
+		float _sunset_amount = clamp(1.0 - LIGHT0_DIRECTION.y, 0.0, 1.0);
+		vec3 _glow_color = mix(sun_glow_color, sunset_bottom_color, _sunset_amount * 0.7);
+		_sun_glow *= (1.0 - _horizon_amount); // Hide glow behind horizon
+		_sun_glow = clamp(_sun_glow * (1.0 - _moon_amount), 0.0, 1.0); // Hide glow behind moon
+		COLOR += _glow_color * _sun_glow;
 	}
 
 	//////////////////// STARS /////////////////////////////////////////////////////////////////
