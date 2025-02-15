@@ -122,7 +122,7 @@ directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, -1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 35, 0)
-light_energy = 0.05
+light_energy = 0.1
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true

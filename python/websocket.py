@@ -26,7 +26,7 @@ async def server(websocket):
 				{"role": "system", "content": "The functions you have access to are: move_to_position(x,y)."},
 				{
 					"role": "user",
-					"content": "Message"
+					"content": message
 				}
 			],
 			response_format=FunctionCall,
