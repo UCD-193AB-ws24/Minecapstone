@@ -1,8 +1,12 @@
 import asyncio
+import os
 import websockets
 from openai import OpenAI
 from pydantic import BaseModel
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = OpenAI()
 
