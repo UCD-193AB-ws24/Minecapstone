@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://cwf5gemyuyfrv"]
 
 [ext_resource type="Script" uid="uid://dyofhanucfxhf" path="res://npc_animal.gd" id="1_v1rpo"]
-[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://InventoryManager.cs" id="2_yohm0"]
-[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://ai_controller.gd" id="3_m2cuo"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ilsbc"]
 size = Vector3(0.6, 1.85, 0.6)
@@ -12,7 +12,6 @@ transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
 [node name="npc_animal" type="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0)
 script = ExtResource("1_v1rpo")
 metadata/_custom_type_script = ExtResource("1_v1rpo")
 
