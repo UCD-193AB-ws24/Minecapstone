@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://r2bjifgkjyun"]
+
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="1_h0f8g"]
+[ext_resource type="Script" uid="uid://maufokpkl5w6" path="res://prefabs/npc_zombie.gd" id="2_gbegp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pld1n"]
+albedo_color = Color(0.324917, 0.249988, 0.114357, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gbegp"]
+albedo_color = Color(2.26215e-06, 0.466749, 0.271119, 1)
+
+[node name="NPCZombie" instance=ExtResource("1_h0f8g")]
+script = ExtResource("2_gbegp")
+detection_range = 10.0
+attack_range = 2.0
+attack_damage = 25.0
+attack_cooldown = 2.0
+chase_speed = 2.0
+
+[node name="Body" parent="." index="2"]
+material = SubResource("StandardMaterial3D_pld1n")
+
+[node name="Headbox" parent="Head" index="0"]
+material = SubResource("StandardMaterial3D_gbegp")
