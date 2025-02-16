@@ -42,7 +42,7 @@ func _handle_movement(delta):
 	var next_path_position: Vector3 = navigation_agent.get_next_path_position()
 	var path_direction = current_pos.direction_to(next_path_position)
 	var path_direction_2d = Vector2(path_direction.x, path_direction.z) * _speed
-	var height_diff = current_pos.y - next_path_position.y
+	# var height_diff = current_pos.y - next_path_position.y
 
 	if velocity.length() < 0.4:
 		if not just_jumped:
