@@ -1,19 +1,56 @@
-[gd_scene load_steps=4 format=3 uid="uid://cawy43bepy8em"]
+[gd_scene load_steps=7 format=3 uid="uid://o5ao0h13xhxa"]
 
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="1_08nds"]
-[ext_resource type="Script" uid="uid://cd5ptaglu0xxs" path="res://prefabs/npc.gd" id="2_360ac"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_5tihr"]
+[ext_resource type="Script" uid="uid://dk6a0k4rirtvs" path="res://prefabs/LLM_methods.gd" id="2_360ac"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_8osc0"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_08nds"]
-albedo_color = Color(0, 0.447059, 1, 1)
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
+radius = 0.3
+height = 1.75
 
-[node name="Agent" instance=ExtResource("1_08nds")]
+[sub_resource type="BoxShape3D" id="BoxShape3D_sh265"]
+size = Vector3(0.6, 1.85, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_onrkg"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.038)
+
+[node name="Agent" type="CharacterBody3D"]
+platform_floor_layers = 4294967041
 script = ExtResource("2_360ac")
+metadata/Name = "agent"
 
-[node name="Headbox" parent="Head" index="0"]
-material = SubResource("StandardMaterial3D_08nds")
+[node name="InventoryManager" type="Node" parent="."]
+script = ExtResource("2_5tihr")
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." index="6"]
-path_height_offset = 1.0
-simplify_path = true
-simplify_epsilon = 0.571
-debug_enabled = true
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("3_8osc0")
+metadata/_custom_type_script = ExtResource("3_8osc0")
+
+[node name="Body" type="CSGMesh3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("CapsuleMesh_i3pqv")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Headbox" type="CSGBox3D" parent="Head"]
+size = Vector3(0.62, 0.62, 0.62)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 90.0
+size = 0.048
+
+[node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
+visible = false
+target_position = Vector3(0, 0, -4.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_sh265")
+
+[node name="BlockHighlight" type="CSGBox3D" parent="."]
+size = Vector3(1.1, 1.1, 1.1)
+material = SubResource("StandardMaterial3D_onrkg")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
