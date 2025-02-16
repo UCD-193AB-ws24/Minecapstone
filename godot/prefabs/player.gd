@@ -29,7 +29,7 @@ var _break_timer : Timer
 var _block_breaking						# position of the block attempting to break or null (not attempted block)
 var _released : bool = true
 var _tool_breaking : Resource
-@onready var block_progress : Label = $"../UI/Control/BlockProgress"
+@onready var block_progress : Label = $"../UI/TopLeftUI/BlockProgress"
 
 # ============================ Health, Hunger, Thirst =====================
 @export var max_health = 100
