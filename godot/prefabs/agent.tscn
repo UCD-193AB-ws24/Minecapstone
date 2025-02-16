@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cawy43bepy8em"]
+
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="1_08nds"]
+[ext_resource type="Script" uid="uid://cd5ptaglu0xxs" path="res://prefabs/npc.gd" id="2_360ac"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_08nds"]
+albedo_color = Color(0, 0.447059, 1, 1)
+
+[node name="Agent" instance=ExtResource("1_08nds")]
+script = ExtResource("2_360ac")
+
+[node name="Headbox" parent="Head" index="0"]
+material = SubResource("StandardMaterial3D_08nds")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." index="6"]
+path_height_offset = 1.0
+simplify_path = true
+simplify_epsilon = 0.571
+debug_enabled = true
