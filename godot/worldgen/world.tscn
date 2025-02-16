@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=18 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://tm2stv4tedvu" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -10,7 +10,9 @@
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/sky.gd" id="7_ffu4t"]
 [ext_resource type="Shader" uid="uid://xxsy78ugnrrd" path="res://world/sky/sky.gdshader" id="7_slxu5"]
 [ext_resource type="Texture2D" uid="uid://be6wwir2t6ar4" path="res://world/sky/stars.png" id="8_slxu5"]
-[ext_resource type="PackedScene" uid="uid://o5ao0h13xhxa" path="res://prefabs/agent.tscn" id="13_a6p7n"]
+[ext_resource type="PackedScene" uid="uid://uxwrdmqmbpym" path="res://prefabs/agent.tscn" id="11_mcsb2"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -129,13 +131,17 @@ shadow_blur = 0.0
 directional_shadow_max_distance = 250.0
 
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6242, 27.6642, 0.00230122)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
 
-[node name="Agent" parent="." instance=ExtResource("13_a6p7n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.601203, 25.2048, -1.74317)
+[node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
+
+[node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
+
+[node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
