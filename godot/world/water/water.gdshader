@@ -1,4 +1,5 @@
 shader_type spatial;
+render_mode blend_mix,depth_prepass_alpha,cull_back;
 
 uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, repeat_disable, filter_nearest; 
 
@@ -26,15 +27,33 @@ uniform sampler2D normal2;
 uniform vec2 wave_dir2 = vec2(0.0, 1.0);
 uniform float wave_speed : hint_range(0.0, 0.2) = 0.015;
 
+uniform float shine_strength : hint_range(0.0, 1.0) = 0.17;
+uniform float shine_shininess : hint_range(0.0, 32.0) = 18.0;
+uniform float shadow : hint_range(0.0, 1.0) = 0.72;
+uniform float shadow_width : hint_range(0.001, 0.5) = 0.18;
+
+uniform float wave_amplitude1 = 2.0;
+uniform float wave_amplitude2 = 0.5;
+uniform int normal_map_w = 256;
+
+uniform float foam_intensity : hint_range(1.0, 3.0) = 1.5;
+
 vec3 screen(vec3 base, vec3 blend){
 	return 1.0 - (1.0 - base) * (1.0 - blend);
 }
 
+vec2 round_to_pixel(vec2 i, int width) {
+    float denom = 1.0 / float(width);
+    float _x = i.x + abs(mod(i.x, denom) - denom);
+    float _y = i.y + abs(mod(i.y, denom) - denom);
+    return vec2(_x, _y);
+}
+
 void vertex() {
-	// Vertext displacement for waves
 	uv_world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	wave_height = texture(wave_texture, uv_world_pos.xz / wave_scale + TIME * wave_speed).r;
-	VERTEX.y += wave_height * height_scale;
+	float wave2 = texture(wave_texture, (uv_world_pos.xz + vec2(0.3, 0.476)) / wave_scale - TIME * wave_speed).r;
+	VERTEX.y += (wave_height * wave_amplitude1 + wave2 * wave_amplitude2) * height_scale;
 }
 
 void fragment()
@@ -55,21 +74,41 @@ void fragment()
 	float alpha_blend = -vertical_depth * absorbance;
 	alpha_blend = clamp(1.0 - exp(alpha_blend), 0.0, 1.0);
 	
-	// Small layer of foam
-	float foam_blend = clamp(1.0 - (vertical_depth / foam_amount), 0.0, 1.0);
+	// Enhanced foam with noise texture and increased brightness
+	vec2 foam_uv = uv_world_pos.xz / wave_scale;
+	float foam_noise_sample = texture(foam_noise, foam_uv + TIME * wave_speed * 0.5).r;
+	float foam_edge = clamp(1.0 - (vertical_depth / foam_amount), 0.0, 1.0);
+	float foam_blend = foam_edge * foam_noise_sample * foam_intensity;
 	vec3 foam = foam_blend * foam_color;
 	
 	// Mix them all together
 	vec3 color_out = mix(deep_color, shallow_color, depth_fade_blend);
 	color_out = screen(color_out, foam);
 	
-	// Normal maps
+	// Pixel-perfect UV sampling for normals
+	vec2 pixel_uv = round_to_pixel(uv_world_pos.xz / wave_scale, normal_map_w);
 	vec2 normal_offset1 = (TIME * wave_dir1) * wave_speed;
 	vec2 normal_offset2 = (TIME * wave_dir2) * wave_speed;
-	vec3 normal_blend = mix(texture(normal1, uv_world_pos.xz / wave_scale + normal_offset1), texture(normal2, uv_world_pos.xz / wave_scale + normal_offset2), 0.5).rgb;
+	vec3 normal1_sample = texture(normal1, pixel_uv + normal_offset1).rgb;
+	vec3 normal2_sample = texture(normal2, pixel_uv + normal_offset2).rgb;
+	vec3 normal_blend = mix(normal1_sample, normal2_sample, 0.5);
 	
 	ALBEDO = color_out;
 	ALPHA = alpha_blend;
 	ROUGHNESS = roughness;
 	NORMAL_MAP = normal_blend;
+}
+
+void light() {
+    vec3 H = normalize(VIEW + LIGHT);
+    float NdotH = dot(NORMAL, H);
+    
+    // Specular calculation
+    float specular_amount = max(pow(NdotH, shine_shininess * shine_shininess), 0.0) * ATTENUATION;
+    SPECULAR_LIGHT += shine_strength * specular_amount * LIGHT_COLOR;
+    
+    float NdotL = dot(NORMAL, LIGHT) * ATTENUATION;
+    NdotL = smoothstep(shadow - shadow_width, shadow + shadow_width, NdotL);
+    
+    DIFFUSE_LIGHT += LIGHT_COLOR * ALBEDO * NdotL;
 }

@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://tm2stv4tedvu"]
+[gd_scene load_steps=6 format=3 uid="uid://cusvipgi8kqav"]
 
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/world_generator.gd" id="1_fhb02"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_8mp4y"]
 noise_type = 2
-frequency = 0.015
+frequency = 0.0325
 fractal_type = 0
 cellular_distance_function = 3
 cellular_return_type = 0
@@ -13,18 +13,18 @@ domain_warp_amplitude = 1.0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_yvk30"]
 noise_type = 0
-frequency = 0.002
-offset = Vector3(0, 153.6, 0)
+frequency = 0.0031
 fractal_type = 0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_h7q52"]
 noise_type = 0
-frequency = 0.002
+frequency = 0.0031
 offset = Vector3(1000, 1000, 0)
 fractal_type = 0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_41cxm"]
 seed = 8600
+frequency = 0.0084
 fractal_gain = 0.46
 domain_warp_enabled = true
 domain_warp_amplitude = 0.5
