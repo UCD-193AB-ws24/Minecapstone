@@ -2,6 +2,7 @@ using Godot;
 using Godot.NativeInterop;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 [Tool]
 public partial class Chunk : StaticBody3D
@@ -198,15 +199,14 @@ public partial class Chunk : StaticBody3D
 						}
 					}
 					else {
-						if (y < stoneHeight ) {
-							block = BlockManager.Instance.GetBlock("Stone");
-						} 
+						if (y <= terrainHeight - 7 || y == 0) {
+							block = BlockManager.Instance.GetBlock("Sand");
+						}
 						else {
 							block = BlockManager.Instance.GetBlock("Air");
 						}
 					}
 					
-
 					_blocks[x, y, z] = block;
 
 					if (block != BlockManager.Instance.GetBlock("Air")) {
@@ -277,7 +277,6 @@ public partial class Chunk : StaticBody3D
 
 	// Create the mesh for a block
 	private void CreateBlockMesh(Vector3I blockPosition, Color color) {
-		// Temporary fix for air blocks
 		var block = _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 
 		if (block == BlockManager.Instance.GetBlock("Air")) return;
@@ -334,7 +333,7 @@ public partial class Chunk : StaticBody3D
 		var normals = new Vector3[] { normal, normal, normal };
 
 		// Define colors for the vertices
-		var colors = new Color[] { color, color, color };
+		var colors = new Color[] { color };
 
 		_surfaceTool.AddTriangleFan(triangle1, uvTriangle1, normals: normals, colors: colors);
 		_surfaceTool.AddTriangleFan(triangle2, uvTriangle2, normals: normals, colors: colors);
@@ -342,11 +341,9 @@ public partial class Chunk : StaticBody3D
 
 	private bool CheckTransparent(Vector3I blockPosition) {
 		if (blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y) return true;
-		
 		if (!transparentBlocks.Contains(BlockManager.Instance.GetBlock("Air"))) {
 			transparentBlocks.Add(BlockManager.Instance.GetBlock("Air"));
 		}
-
 		/*
 			If blockPosition is at the edge of the chunk
 			Query adjacent chunks on the four horizontal sides for transparent blocks
