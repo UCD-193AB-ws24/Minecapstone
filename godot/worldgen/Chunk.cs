@@ -281,22 +281,25 @@ public partial class Chunk : StaticBody3D
 
 		if (block == BlockManager.Instance.GetBlock("Air")) return;
 
+		// Only apply biome color to grass and dirt blocks
+		Color blockColor = (block.Name == "Grass" || block.Name == "Dirt") ? color : Colors.White;
+
 		// TODO: also check adjacent chunks for transparent blocks
 		// Use the appropriate textures for each face
 		if (CheckTransparent(blockPosition) && block != BlockManager.Instance.GetBlock("Air")) {
-			CreateFaceMesh(_top, blockPosition, block.Texture, color);
-			CreateFaceMesh(_bottom, blockPosition, block.Texture, color);
-			CreateFaceMesh(_left, blockPosition, block.Texture, color);
-			CreateFaceMesh(_right, blockPosition, block.Texture, color);
-			CreateFaceMesh(_front, blockPosition, block.Texture, color);
-			CreateFaceMesh(_back, blockPosition, block.Texture, color);
+			CreateFaceMesh(_top, blockPosition, block.Texture, blockColor);
+			CreateFaceMesh(_bottom, blockPosition, block.Texture, blockColor);
+			CreateFaceMesh(_left, blockPosition, block.Texture, blockColor);
+			CreateFaceMesh(_right, blockPosition, block.Texture, blockColor);
+			CreateFaceMesh(_front, blockPosition, block.Texture, blockColor);
+			CreateFaceMesh(_back, blockPosition, block.Texture, blockColor);
 		} 
-		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture, color);
-		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture, color);
-		if (CheckTransparent(blockPosition + Vector3I.Left)) CreateFaceMesh(_left, blockPosition, block.Texture, color);
-		if (CheckTransparent(blockPosition + Vector3I.Right)) CreateFaceMesh(_right, blockPosition, block.Texture, color);
-		if (CheckTransparent(blockPosition + Vector3I.Forward)) CreateFaceMesh(_front, blockPosition, block.Texture, color);
-		if (CheckTransparent(blockPosition + Vector3I.Back)) CreateFaceMesh(_back, blockPosition, block.Texture, color);
+		if (CheckTransparent(blockPosition + Vector3I.Up)) CreateFaceMesh(_top, blockPosition, block.TopTexture ?? block.Texture, blockColor);
+		if (CheckTransparent(blockPosition + Vector3I.Down)) CreateFaceMesh(_bottom, blockPosition, block.BottomTexture ?? block.Texture, blockColor);
+		if (CheckTransparent(blockPosition + Vector3I.Left)) CreateFaceMesh(_left, blockPosition, block.Texture, blockColor);
+		if (CheckTransparent(blockPosition + Vector3I.Right)) CreateFaceMesh(_right, blockPosition, block.Texture, blockColor);
+		if (CheckTransparent(blockPosition + Vector3I.Forward)) CreateFaceMesh(_front, blockPosition, block.Texture, blockColor);
+		if (CheckTransparent(blockPosition + Vector3I.Back)) CreateFaceMesh(_back, blockPosition, block.Texture, blockColor);
 	}
 
 	// Create the mesh for a face

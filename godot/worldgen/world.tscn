@@ -84,10 +84,8 @@ glow_normalized = true
 glow_strength = 1.46
 fog_enabled = true
 fog_mode = 1
-fog_density = 0.5
+fog_density = 0.3
 fog_sky_affect = 0.0
-fog_depth_begin = 30.0
-fog_depth_end = 150.0
 adjustment_brightness = 0.87
 
 [node name="World" type="Node3D"]
@@ -145,7 +143,7 @@ process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 0, 30, 0)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
