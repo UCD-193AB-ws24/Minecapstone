@@ -1,3 +1,4 @@
+# Global Singleton Class_Name: API
 extends Node
 
 
@@ -10,12 +11,7 @@ var socket = WebSocketPeer.new()
 
 signal connected
 signal response_received
-
-func prompt_llm(prompt: String):
-	# socket.put_packet("Hello, world!".to_utf8_buffer())
-	socket.send_text(prompt)
-	await response_received
-	print("Response: ", socket.get_packet().get_string_from_utf8())
+signal response(key, response: String)
 
 
 func _ready():
@@ -28,16 +24,23 @@ func _ready():
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
 
-	print("Websocket peer attempting to connect to port 5000")
 	
 	if err != OK:
-		print("Unable to connect. Are you running the Python server?")
+		print("Websocket peer failed to open a connection to port 5000, is the port being used?")
 		set_process(false)
 	else:
 		# Wait for the socket to connect.
 		await get_tree().create_timer(2).timeout
-		print("Connected to websocket server.")
+		print("Websocket peer attempting to connect to port 5000")
 		connected.emit()
+
+
+func prompt_llm(prompt: String, key: int):
+	# Wait until the socket is open before sending the prompt.
+	socket.send_text(prompt)
+	await response_received
+	var response_string = socket.get_packet().get_string_from_utf8()
+	response.emit(key, response_string)
 
 
 func _physics_process(_delta):
@@ -56,8 +59,9 @@ func _physics_process(_delta):
 	# WebSocketPeer.STATE_CLOSING means the socket is closing.
 	# It is important to keep polling for a clean close.
 	elif state == WebSocketPeer.STATE_CLOSING:
-		print("Closing...")
+		print("Connection lost. Is the Python server running?")
 		pass
+
 
 	# WebSocketPeer.STATE_CLOSED means the connection has fully closed.
 	# It is now safe to stop polling.

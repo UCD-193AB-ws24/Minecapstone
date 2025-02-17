@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://uxwrdmqmbpym"]
+[gd_scene load_steps=4 format=3 uid="uid://uxwrdmqmbpym"]
 
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="1_360ac"]
 [ext_resource type="Script" uid="uid://dk6a0k4rirtvs" path="res://prefabs/agent.gd" id="2_360ac"]
+[ext_resource type="Script" uid="uid://c8awvxecd5ig2" path="res://prefabs/agent_controller.gd" id="3_6hp0s"]
 
 [node name="Agent" instance=ExtResource("1_360ac")]
 script = ExtResource("2_360ac")
+
+[node name="AgentController" type="Node" parent="." index="0"]
+script = ExtResource("3_6hp0s")

@@ -15,27 +15,55 @@ client = OpenAI()
 # TODO: expand these to be more general
 
 
-class FunctionCall(BaseModel):
-	function_name: list[str]
-	function_args: list[str]
+class Function(BaseModel):
+	line_of_code: list[str]
 
+
+system_prompt = """
+You have access to the following context:
+- position: Vector2 - The agent's current position
+- move_to_position(x,y) - Move the agent to the specified coordinates
+
+Write the Godot 4.x function body for the function: eval().
+Your code will be executed in a context where these variables and functions are available.
+"""
 
 async def server(websocket):
 	async for message in websocket:
-		completion = client.beta.chat.completions.parse(
-			model="gpt-4o-mini",
-			messages=[
-				{"role": "system", "content": "The functions you have access to are: move_to_position(x,y). You can also do "},
-				{
-					"role": "user",
-					"content": message
-				}
-			],
-			# response_format=FunctionCall,
-		)
-		response = completion.choices[0].message.content
-		print(message, "--> function_name: ", completion.choices[0].message.parsed.function_name, "function_args: ", completion.choices[0].message.parsed.function_args)
-		await websocket.send(response)
+		# completion = client.beta.chat.completions.parse(
+		# 	model="gpt-4o-mini",
+		# 	messages=[
+		# 		{"role": "system", "content": system_prompt},
+		# 		{
+		# 			"role": "user",
+		# 			"content": message
+		# 		}
+		# 	],
+		# 	response_format=Function,
+		# )
+		# response = completion.choices[0].message.content
+		
+		response = {
+			"line_of_code": [
+				"var center_x = position.x",
+				"var center_y = position.y",
+				"var radius = 5",
+				"var num_steps = 100",
+				"var angle_step = (2 * PI) / num_steps",
+				"for i in range(num_steps):",
+				"    var angle = angle_step * i",
+				"    var x = center_x + radius * cos(angle)",
+				"    var y = center_y + radius * sin(angle)",
+				"    move_to_position(x, y)"
+			]
+		}
+
+		# Format the lines with proper indentation and join them
+		code_lines = response["line_of_code"]
+		code_lines = [line.replace("    ", "\t") for line in code_lines]
+		formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
+
+		await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
 
 
 async def main():
