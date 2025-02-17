@@ -5,24 +5,28 @@ extends Node
 
 var socket = WebSocketPeer.new()
 
+signal connected
+
 func _ready():
 	# Initiate connection to the given URL.
 	var err = socket.connect_to_url(websocket_url)
-	print("Peer attempting to connect to port 5000")
+	connect("connected", Callable(self, "_on_connected"))
+
+	print("Websocket peer attempting to connect to port 5000")
 	
 	if err != OK:
-		print("Unable to connect")
+		print("Unable to connect. Are you running the Python server?")
 		set_process(false)
 	else:
 		# Wait for the socket to connect.
 		await get_tree().create_timer(2).timeout
-		
-		var message = "Go to position (5,3)."
-		
-		print("Sent message: ", message)
+		connected.emit()
 
-		# Send data.
-		socket.send_text(message)
+func _on_connected():
+	print("Connected to websocket server.")
+	# socket.put_packet("Hello, world!".to_utf8_buffer())
+	socket.send_text("Hello, world!")
+
 
 func _physics_process(_delta):
 	# Data transfer and state updates will only happen when calling this function.

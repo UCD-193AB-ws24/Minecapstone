@@ -75,7 +75,6 @@ func get_biome(x: int, y: int) -> String:
 	
 func _ready() -> void:
 	# Allows for debug in world_generator scene
-	print(get_tree().current_scene.name)
 	if get_tree().current_scene.name == "WorldGenerator":
 		generate()
 		debug = true
