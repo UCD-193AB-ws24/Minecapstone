@@ -138,9 +138,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
 
 [node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
 process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 
 [node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
 process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)

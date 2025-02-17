@@ -16,50 +16,40 @@ client = OpenAI()
 
 
 class Function(BaseModel):
-	line_of_code: list[str]
+	function_call: list[str]
 
 
 system_prompt = """
 You have access to the following context:
 - position: Vector2 - The agent's current position
-- move_to_position(x,y) - Move the agent to the specified coordinates
 
-Write the Godot 4.x function body for the function: eval().
-Your code will be executed in a context where these variables and functions are available.
+Functions or Awaits
+- move_to_position(x,y) - Move the agent to the specified coordinates
+- await agent.movement_completed - Wait for the agent to reach the position.
+
+Please use awaits if you want to set a target position and wait for the agent to reach it.
+YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
+Provide the list of functions you would like to call to achieve the goal.
 """
 
 async def server(websocket):
 	async for message in websocket:
-		# completion = client.beta.chat.completions.parse(
-		# 	model="gpt-4o-mini",
-		# 	messages=[
-		# 		{"role": "system", "content": system_prompt},
-		# 		{
-		# 			"role": "user",
-		# 			"content": message
-		# 		}
-		# 	],
-		# 	response_format=Function,
-		# )
-		# response = completion.choices[0].message.content
-		
-		response = {
-			"line_of_code": [
-				"var center_x = position.x",
-				"var center_y = position.y",
-				"var radius = 5",
-				"var num_steps = 100",
-				"var angle_step = (2 * PI) / num_steps",
-				"for i in range(num_steps):",
-				"    var angle = angle_step * i",
-				"    var x = center_x + radius * cos(angle)",
-				"    var y = center_y + radius * sin(angle)",
-				"    move_to_position(x, y)"
-			]
-		}
+		completion = client.beta.chat.completions.parse(
+			model="gpt-4o-mini",
+			messages=[
+				{"role": "system", "content": system_prompt},
+				{
+					"role": "user",
+					"content": message
+				}
+			],
+			response_format=Function,
+		)
+		response = json.loads(completion.choices[0].message.content)
+		print(response)
 
 		# Format the lines with proper indentation and join them
-		code_lines = response["line_of_code"]
+		code_lines = response["function_call"]
 		code_lines = [line.replace("    ", "\t") for line in code_lines]
 		formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
 

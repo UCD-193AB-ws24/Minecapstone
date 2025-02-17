@@ -10,7 +10,6 @@ var just_jumped = false
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
-	_speed = 1.0
 
 
 func actor_setup():
@@ -21,6 +20,8 @@ func actor_setup():
 
 
 func set_movement_target(movement_target: Vector3):
+	# TODO: replace this with a query to the closest point on the navmesh
+	if movement_target.y == 0: movement_target.y = global_position.y
 	navigation_agent.set_target_position(movement_target)
 
 

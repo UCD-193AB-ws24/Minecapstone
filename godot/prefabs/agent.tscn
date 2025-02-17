@@ -8,4 +8,5 @@
 script = ExtResource("2_360ac")
 
 [node name="AgentController" type="Node" parent="." index="0"]
+process_mode = 4
 script = ExtResource("3_6hp0s")

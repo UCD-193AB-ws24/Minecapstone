@@ -1,5 +1,6 @@
 class_name Agent extends NPC
 
+signal movement_completed
 
 @onready var goal : String = ""
 @onready var hash_id : int = hash(self)
@@ -21,7 +22,7 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_goal("Walk in a circle of radius 5.")
+		set_goal("Move to (-15, 0). Then, move back to (0,0).")
 
 
 # Prompts the LLM based on the agent's goal
@@ -38,48 +39,44 @@ func _on_response(key, response: String):
 	# Ensure the response is for this agent
 	if key != self.hash_id: return
 
-	if (run_script(response)):  # Pass raw code directly
-		print("True")
+	# Run dangerously set AI-generated code.
+	if (await run_script(response)):
+		print("Script created by agent successful.")
 	else:
-		print("False")
+		print("Script created by agent failed.")
 
-
+# Do not modify this function, it is used to run the script created by the LLM
 func run_script(input: String):
-	var script : Script = agent_controller.get_script()
-	
-	var source = script.get_source_code() + """
-func eval():
+	var source = agent_controller.get_script().get_source_code().replace(
+		"class_name AgentController\nextends Node", 
+		"extends RefCounted").replace(
+		"func eval(delta):\n\tdelta = delta\n\treturn true",
+		""
+		) + """
+func eval(delta):
 %s
 	return true
-""" % ("\t" + input.replace("\n", "\n\t"))
+""" % input
 
-# 	var script = GDScript.new()
-# 	var source = """
-# extends RefCounted
+	# TODO: remove debug print
+	print("Debug: Agent performing ", input)
 
-# var agent: Agent
-# var position: Vector2
+	# Dangerously created script
+	var script = GDScript.new()
+	script.set_source_code(source)
 
-# func setup(target_agent: Agent):
-# 	self.agent = target_agent
-# 	self.position = target_agent.position
-# 	return self
+	var err = script.reload()
+	if err != OK:
+		print("Script error: ", err)
+		return false
 
-# func move_to_position(x: float, y: float):
-# 	agent.navigate_to(Vector2(x, y))
-
-
-
-# 	script.set_source_code(source)
-# 	var err = script.reload()
-# 	if err != OK:
-# 		print("Script error: ", err)
-# 		return false
-
-# 	var instance = RefCounted.new()
-# 	instance.set_script(script)
-# 	return instance.setup(self).eval()
+	var instance = RefCounted.new()
+	instance.set_script(script)
+	return await instance.setup(self).eval(0)
 
 
-# func _physics_process(delta):
-# 	super(delta)
+# Use this function to emit signals
+func _physics_process(delta):
+	super(delta)
+	if navigation_agent.is_navigation_finished():
+		movement_completed.emit()

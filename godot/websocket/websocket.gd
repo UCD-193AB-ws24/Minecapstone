@@ -23,7 +23,6 @@ func _ready():
 	# Initiate connection to the given URL.
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
-
 	
 	if err != OK:
 		print("Websocket peer failed to open a connection to port 5000, is the port being used?")
