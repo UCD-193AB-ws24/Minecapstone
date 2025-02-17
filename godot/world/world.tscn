@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=29 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -25,6 +25,12 @@ agent_max_slope = 90.0
 edge_max_length = 49.92
 edge_max_error = 1.0
 vertices_per_polygon = 5.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ysn08"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_m0cxt"]
+seamless = true
+noise = SubResource("FastNoiseLite_ysn08")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mcsb2"]
 shader = ExtResource("7_slxu5")
@@ -67,28 +73,32 @@ shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_a6p7n"]
 sky_material = SubResource("ShaderMaterial_mcsb2")
+radiance_size = 4
 
 [sub_resource type="Environment" id="Environment_g8rv3"]
 background_mode = 2
 sky = SubResource("Sky_a6p7n")
 ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_sky_contribution = 0.94
+tonemap_mode = 3
 ssao_enabled = true
 ssao_radius = 1.25
-ssao_power = 8.78452
+ssao_power = 5.0
 ssil_enabled = true
 ssil_radius = 16.0
 sdfgi_y_scale = 0
-glow_enabled = true
-glow_normalized = true
-glow_intensity = 0.25
+glow_strength = 2.0
+glow_map = SubResource("NoiseTexture2D_m0cxt")
 fog_mode = 1
-fog_density = 0.3
-fog_sky_affect = 0.0
+fog_density = 1.0
+fog_sky_affect = 0.53
+fog_depth_begin = 96.2
+fog_depth_end = 354.8
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0045
-volumetric_fog_length = 50.0
-volumetric_fog_sky_affect = 0.05
+volumetric_fog_density = 0.0075
+volumetric_fog_anisotropy = -0.23
+volumetric_fog_length = 32.0
+volumetric_fog_detail_spread = 6.0
+volumetric_fog_ambient_inject = 1.5
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
 frequency = 0.0323
@@ -179,16 +189,19 @@ light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
-shadow_blur = 0.0
+shadow_opacity = 0.8
+shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 0.783693, -0.621148, 0, 0.621148, 0.783693, 0, 35, 0)
-light_energy = 0.1
+light_energy = 0.35
+light_volumetric_fog_energy = 4.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
-shadow_blur = 0.0
+shadow_opacity = 0.3
+shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
