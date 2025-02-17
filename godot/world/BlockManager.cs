@@ -19,20 +19,28 @@ public partial class BlockManager : Node {
 	
 	public Dictionary<Block, float> time_dictionary;
 
+	public List<Block> oreList = new List<Block>{};
+
 	public override void _Ready() {
 		Instance = this;
 
 		// TODO: Make this generalized for any number of blocks
-		(Block Air, Block Stone, Block Dirt, Block Grass, Block Sand) = (
+		(Block Air, Block Stone, Block Dirt, Block Grass, Block Sand, Block IronOre, Block CopperOre, Block CoalOre, Block GoldOre, Block DiamondOre) = (
 			(Block)ItemDictionary.Get("Air"),
 			(Block)ItemDictionary.Get("Stone"),
 			(Block)ItemDictionary.Get("Dirt"),
 			(Block)ItemDictionary.Get("Grass"),
-			(Block)ItemDictionary.Get("Sand")
+			(Block)ItemDictionary.Get("Sand"),
+			(Block)ItemDictionary.Get("IronOre"),
+			(Block)ItemDictionary.Get("CopperOre"),
+			(Block)ItemDictionary.Get("CoalOre"),
+			(Block)ItemDictionary.Get("GoldOre"),
+			(Block)ItemDictionary.Get("DiamondOre")
 		);
 
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, Sand }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, Sand, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
+		SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
 		for (int i = 0; i < blockTextures.Length; i++) {
@@ -74,8 +82,19 @@ public partial class BlockManager : Node {
 			{Air, 0.0f},
 			{Stone, 1.5f},
 			{Dirt, 0.25f},
-			{Grass, 0.25f}
+			{Grass, 0.25f},
+			{CoalOre, 2.5f}, // in real minecraft coal is annoying and takes long to mine
+			{CopperOre, 1.75f},
+			{IronOre, 2.0f},
+			{GoldOre, 2.5f},
+			{DiamondOre, 5.0f}
 		};
+		
+		oreList.Add(CoalOre);
+		oreList.Add(CopperOre);
+		oreList.Add(IronOre);
+		oreList.Add(GoldOre);
+		oreList.Add(DiamondOre);
 	}
 
 	public Vector2I GetTextureAtlasCoordinates(Texture2D texture) {
