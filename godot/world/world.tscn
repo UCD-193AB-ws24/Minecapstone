@@ -71,9 +71,8 @@ sky_material = SubResource("ShaderMaterial_mcsb2")
 [sub_resource type="Environment" id="Environment_g8rv3"]
 background_mode = 2
 sky = SubResource("Sky_a6p7n")
-ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.5
+ambient_light_sky_contribution = 0.94
 ssao_enabled = true
 ssao_radius = 1.25
 ssao_power = 8.78452
