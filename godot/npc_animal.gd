@@ -7,7 +7,6 @@ enum BehaviorModes {Wandering, Scared, Curious}
 @onready var player = $"../Player"
 @onready var oldHealth = health
 
-# Figured out timers!
 var _wandering_timer : Timer
 var _scared_timer : Timer
 var _wandering_duration: float = 5
@@ -17,6 +16,7 @@ var detection_range = 25
 func _ready():
 	max_health = 50
 	health = 50
+	# Made it jump higher so it can go up 1 block heights while following navmesh meant for taller agents
 	_jump_velocity = 12.0
 	super()
 	_wandering_timer = Timer.new()
@@ -79,6 +79,7 @@ func _target_logic():
 			
 func _scared_movement():
 		_speed = 3
+		# While scared, want to randomly change direction while running around
 		var chance = randf_range(0, 1)
 		if chance < 0.02:
 			_generate_scared_target()
@@ -104,15 +105,15 @@ func _wandering_movement():
 			set_movement_target(global_position + Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
 				
 func _on_wandering_timer_timeout():
+	# Wandering is an endless behavior, so just finds somewhere new to wander towards on timer end.
 	if behavior == BehaviorModes.Wandering:
-		var random_offset = Vector3(randf_range(-10, 10), global_position.y, randf_range(-10, 10))
+		var random_offset = Vector3(randf_range(-10, 10), 0, randf_range(-10, 10))
 		set_movement_target(global_position + random_offset)
-		_wandering_timer.start()  # Restart the timer
+		_wandering_timer.start()
 
 func _on_scared_timer_timeout():
 	if behavior == BehaviorModes.Scared:
 		behavior = BehaviorModes.Wandering
-
 
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()

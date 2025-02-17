@@ -30,7 +30,7 @@ height = 0.8
 sides = 16
 
 [node name="Head" type="Node3D" parent="."]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0.5, 0.4)
+transform = Transform3D(-1.1, 0, -9.61651e-08, 0, 1.1, 0, 9.61651e-08, 0, -1.1, 0, 0.5, 0.4)
 
 [node name="Headbox" type="CSGBox3D" parent="Head"]
 size = Vector3(0.6, 0.6, 0.6)
