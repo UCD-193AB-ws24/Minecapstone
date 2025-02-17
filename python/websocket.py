@@ -1,44 +1,48 @@
 import asyncio
-import os
 import websockets
 from openai import OpenAI
 from pydantic import BaseModel
-import json
 from dotenv import load_dotenv
+import json
+import os
+
 
 load_dotenv()
-
 client = OpenAI()
 
-# TODO: split websocket & LLM into separate files
 
+# TODO: split websocket & LLM into separate files
 # TODO: expand these to be more general
+
 
 class FunctionCall(BaseModel):
 	function_name: list[str]
 	function_args: list[str]
+
 
 async def server(websocket):
 	async for message in websocket:
 		completion = client.beta.chat.completions.parse(
 			model="gpt-4o-mini",
 			messages=[
-				{"role": "system", "content": "The functions you have access to are: move_to_position(x,y)."},
+				{"role": "system", "content": "The functions you have access to are: move_to_position(x,y). You can also do "},
 				{
 					"role": "user",
 					"content": message
 				}
 			],
-			response_format=FunctionCall,
+			# response_format=FunctionCall,
 		)
 		response = completion.choices[0].message.content
 		print(message, "--> function_name: ", completion.choices[0].message.parsed.function_name, "function_args: ", completion.choices[0].message.parsed.function_args)
 		await websocket.send(response)
 
+
 async def main():
 	start_server = await websockets.serve(server, "localhost", 5000)
 	print("Server started on port 5000")
 	await start_server.wait_closed()
+
 
 asyncio.run(main())
 

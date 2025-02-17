@@ -1,13 +1,29 @@
 extends Node
 
+
 # The URL we will connect to.
 @export var websocket_url = "ws://localhost:5000"
+@export var enabled = true
+
 
 var socket = WebSocketPeer.new()
 
 signal connected
+signal response_received
+
+func prompt_llm(prompt: String):
+	# socket.put_packet("Hello, world!".to_utf8_buffer())
+	socket.send_text(prompt)
+	await response_received
+	print("Response: ", socket.get_packet().get_string_from_utf8())
+
 
 func _ready():
+	if not enabled:
+		set_process(false)
+		set_physics_process(false)
+		return
+	
 	# Initiate connection to the given URL.
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
@@ -20,12 +36,8 @@ func _ready():
 	else:
 		# Wait for the socket to connect.
 		await get_tree().create_timer(2).timeout
+		print("Connected to websocket server.")
 		connected.emit()
-
-func _on_connected():
-	print("Connected to websocket server.")
-	# socket.put_packet("Hello, world!".to_utf8_buffer())
-	socket.send_text("Hello, world!")
 
 
 func _physics_process(_delta):
@@ -39,7 +51,7 @@ func _physics_process(_delta):
 	# WebSocketPeer.STATE_OPEN means the socket is connected and ready to send and receive data.
 	if state == WebSocketPeer.STATE_OPEN:
 		while socket.get_available_packet_count():
-			print("Response: ", socket.get_packet().get_string_from_utf8())
+			response_received.emit()
 
 	# WebSocketPeer.STATE_CLOSING means the socket is closing.
 	# It is important to keep polling for a clean close.
