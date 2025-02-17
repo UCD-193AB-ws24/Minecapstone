@@ -27,7 +27,7 @@ var previous_elevation: float = 0.0
 func _ready():
 	_update_shader_parameters()
 
-func _physics_process(delta):
+func _process(delta):
 	# Update time
 	elapsed_time += delta * time_scale
 	

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=27 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://prefabs/agent.tscn" id="11_mcsb2"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
+[ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://world/water/water.gdshader" id="14_dqqhb"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -36,17 +37,17 @@ shader_parameter/night_bottom_color = Color(0.0313061, 3.43909e-05, 0.0860805, 1
 shader_parameter/horizon_blur = 0.15
 shader_parameter/sun_color = Color(10, 8, 1, 1)
 shader_parameter/sun_sunset_color = Color(10, 3.5, 0, 1)
-shader_parameter/sun_size = 0.05
-shader_parameter/sun_blur = 3.575
+shader_parameter/sun_size = 0.1
+shader_parameter/sun_blur = 2.5
 shader_parameter/sun_glow_color = Color(0.996483, 0.764433, 0.393047, 1)
-shader_parameter/sun_glow_size = 4.231
-shader_parameter/sun_glow_intensity = 1.4
-shader_parameter/moon_color = Color(0.843184, 0.843184, 0.843184, 1)
-shader_parameter/moon_size = 0.045
-shader_parameter/moon_blur = 0.1
-shader_parameter/moon_glow_color = Color(0.568973, 0.568973, 0.568973, 1)
-shader_parameter/moon_glow_size = 1.755
-shader_parameter/moon_glow_intensity = 5.0
+shader_parameter/sun_glow_size = 4.0
+shader_parameter/sun_glow_intensity = 1.5
+shader_parameter/moon_color = Color(0.960351, 0.960351, 0.960351, 1)
+shader_parameter/moon_size = 0.08
+shader_parameter/moon_blur = 0.01
+shader_parameter/moon_glow_color = Color(0.237539, 0.237539, 0.237539, 1)
+shader_parameter/moon_glow_size = 3.5
+shader_parameter/moon_glow_intensity = 0.73
 shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
 shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
 shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
@@ -73,20 +74,73 @@ sky = SubResource("Sky_a6p7n")
 ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.5
-ssr_fade_in = 6.3761e-05
 ssao_enabled = true
+ssao_radius = 1.25
 ssao_power = 8.78452
 ssil_enabled = true
 ssil_radius = 16.0
 sdfgi_y_scale = 0
 glow_enabled = true
 glow_normalized = true
-glow_strength = 1.46
-fog_enabled = true
+glow_intensity = 0.25
 fog_mode = 1
 fog_density = 0.3
 fog_sky_affect = 0.0
-adjustment_brightness = 0.87
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0045
+volumetric_fog_length = 50.0
+volumetric_fog_sky_affect = 0.05
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
+fractal_type = 2
+domain_warp_enabled = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ysn08"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_h8lre")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dqqhb"]
+frequency = 0.0031
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b2suy"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_dqqhb")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_b2suy"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h8lre"]
+seamless = true
+noise = SubResource("FastNoiseLite_b2suy")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dqqhb"]
+render_priority = 0
+shader = ExtResource("14_dqqhb")
+shader_parameter/depth_fade_distance = 1.0
+shader_parameter/absorbance = 2.0
+shader_parameter/shallow_color = Color(0.22, 0.66, 1, 1)
+shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
+shader_parameter/foam_amount = 0.305
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/foam_noise = SubResource("NoiseTexture2D_ysn08")
+shader_parameter/roughness = 0.05
+shader_parameter/wave_texture = SubResource("NoiseTexture2D_h8lre")
+shader_parameter/wave_scale = 29.715
+shader_parameter/height_scale = 1.4
+shader_parameter/normal1 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir1 = Vector2(3, 0)
+shader_parameter/normal2 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir2 = Vector2(0, 3)
+shader_parameter/wave_speed = 0.015
+
+[sub_resource type="QuadMesh" id="QuadMesh_dqqhb"]
+material = SubResource("ShaderMaterial_dqqhb")
+size = Vector2(4000, 4000)
+subdivide_width = 400
+subdivide_depth = 400
+orientation = 1
 
 [node name="World" type="Node3D"]
 
@@ -145,6 +199,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 process_mode = 4
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 0, 30, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+mesh = SubResource("QuadMesh_dqqhb")
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
