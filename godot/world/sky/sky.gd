@@ -89,6 +89,8 @@ func determine_sun_phase() -> SunPhase:
 # 	moon.light_energy = smoothstep(-0.1, 0.1, moon.global_transform.basis.z.normalized().y)
 
 func _update_shader_parameters():
+	if not environment.sky: return
+	
 	environment.sky.sky_material.set_shader_parameter("clouds_cutoff", clouds_cutoff)
 	environment.sky.sky_material.set_shader_parameter("clouds_weight", clouds_weight)
 	

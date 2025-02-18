@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=23 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -8,8 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/sky.gd" id="7_ffu4t"]
-[ext_resource type="Shader" uid="uid://xxsy78ugnrrd" path="res://world/sky/sky.gdshader" id="7_slxu5"]
-[ext_resource type="Texture2D" uid="uid://be6wwir2t6ar4" path="res://world/sky/stars.png" id="8_slxu5"]
+[ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="7_ocfjn"]
 [ext_resource type="PackedScene" path="res://prefabs/agent.tscn" id="11_mcsb2"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
@@ -25,80 +24,6 @@ agent_max_slope = 90.0
 edge_max_length = 49.92
 edge_max_error = 1.0
 vertices_per_polygon = 5.0
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_ysn08"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_m0cxt"]
-seamless = true
-noise = SubResource("FastNoiseLite_ysn08")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_mcsb2"]
-shader = ExtResource("7_slxu5")
-shader_parameter/day_top_color = Color(0.416859, 0.709056, 1, 1)
-shader_parameter/day_bottom_color = Color(0.517831, 0.729596, 0.874015, 1)
-shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
-shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
-shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
-shader_parameter/night_bottom_color = Color(0.0313061, 3.43909e-05, 0.0860805, 1)
-shader_parameter/horizon_blur = 0.15
-shader_parameter/sun_color = Color(10, 8, 1, 1)
-shader_parameter/sun_sunset_color = Color(10, 3.5, 0, 1)
-shader_parameter/sun_size = 0.1
-shader_parameter/sun_blur = 2.5
-shader_parameter/sun_glow_color = Color(0.996483, 0.764433, 0.393047, 1)
-shader_parameter/sun_glow_size = 4.0
-shader_parameter/sun_glow_intensity = 1.5
-shader_parameter/moon_color = Color(0.960351, 0.960351, 0.960351, 1)
-shader_parameter/moon_size = 0.08
-shader_parameter/moon_blur = 0.01
-shader_parameter/moon_glow_color = Color(0.237539, 0.237539, 0.237539, 1)
-shader_parameter/moon_glow_size = 3.5
-shader_parameter/moon_glow_intensity = 0.73
-shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
-shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
-shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
-shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
-shader_parameter/clouds_speed = 2.0
-shader_parameter/clouds_direction = 0.2
-shader_parameter/clouds_scale = 1.8
-shader_parameter/clouds_cutoff = 0.47
-shader_parameter/clouds_fuzziness = 0.59
-shader_parameter/clouds_weight = 0.0
-shader_parameter/clouds_blur = 0.18
-shader_parameter/stars_texture = ExtResource("8_slxu5")
-shader_parameter/stars_speed = 0.35
-shader_parameter/stars_scale = 3.0
-shader_parameter/stars_opacity = 0.1
-shader_parameter/overwritten_time = 0.0
-
-[sub_resource type="Sky" id="Sky_a6p7n"]
-sky_material = SubResource("ShaderMaterial_mcsb2")
-radiance_size = 4
-
-[sub_resource type="Environment" id="Environment_g8rv3"]
-background_mode = 2
-sky = SubResource("Sky_a6p7n")
-ambient_light_color = Color(1, 1, 1, 1)
-tonemap_mode = 3
-ssao_enabled = true
-ssao_radius = 1.25
-ssao_power = 5.0
-ssil_enabled = true
-ssil_radius = 16.0
-sdfgi_y_scale = 0
-glow_strength = 2.0
-glow_map = SubResource("NoiseTexture2D_m0cxt")
-fog_mode = 1
-fog_density = 1.0
-fog_sky_affect = 0.53
-fog_depth_begin = 96.2
-fog_depth_end = 354.8
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.0075
-volumetric_fog_anisotropy = -0.23
-volumetric_fog_length = 32.0
-volumetric_fog_detail_spread = 6.0
-volumetric_fog_ambient_inject = 1.5
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
 frequency = 0.0323
@@ -179,7 +104,7 @@ script = ExtResource("3_igfuc")
 ChunkScene = ExtResource("4_b2ttj")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_g8rv3")
+environment = ExtResource("7_ocfjn")
 script = ExtResource("7_ffu4t")
 day_duration_seconds = 60.0
 night_duration_seconds = 60.0
@@ -190,7 +115,7 @@ mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 0.783693, 0.621148, 0, -0.621148, 0.783693, 0, 35, 0)
+transform = Transform3D(-1, -8.44439e-08, 2.26267e-08, 0, 0.258819, 0.965926, -8.74228e-08, 0.965926, -0.258819, 0, 35, 0)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -200,8 +125,8 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 0.783693, -0.621148, 0, 0.621148, 0.783693, 0, 35, 0)
-light_energy = 0.35
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 35, 0)
+light_energy = 0.5
 light_volumetric_fog_energy = 4.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -214,7 +139,7 @@ directional_shadow_max_distance = 250.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
 
 [node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
 process_mode = 4
@@ -223,10 +148,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 [node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
 process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 process_mode = 4
-transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 0, 30, 0)
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+_speed = 2.0
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
