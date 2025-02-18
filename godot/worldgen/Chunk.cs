@@ -54,17 +54,23 @@ public partial class Chunk : StaticBody3D
 
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
-	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator) {
+	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator, bool forceUpdate = false) {
 		// Set chunk position as deferred to ensure the Chunk exists before setting its position
 		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
+
 
 		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
 		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
 
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
 		
+		if (forceUpdate) {
+			Generate();
+			Update();
+		}
+
 		// After making chunks, puts it into a list of already made chunks
 		// SavedChunks.Add(ChunkPosition);
 	}
