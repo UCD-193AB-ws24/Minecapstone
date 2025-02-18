@@ -43,9 +43,9 @@ shape = SubResource("BoxShape3D_6tdqx")
 script = ExtResource("2_6tdqx")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(0.0394772, 0, -0.903729, 0, 0.904594, 0, 0.903729, 0, 0.0394772, 0, 0.235759, 0)
+transform = Transform3D(-0.778057, 0, -0.461389, 0, 0.904594, 0, 0.461389, 0, -0.778057, 0, 0.0868833, 0)
 pixel_size = 0.0008
-render_priority = 1
+render_priority = 2
 texture = ExtResource("2_g4j5n")
 script = SubResource("GDScript_sisb3")
 
