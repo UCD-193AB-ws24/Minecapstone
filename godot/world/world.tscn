@@ -107,15 +107,19 @@ frequency = 0.0323
 noise = SubResource("FastNoiseLite_h8lre")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_dqqhb"]
-frequency = 0.0031
+frequency = 0.0027
 fractal_type = 2
+fractal_octaves = 7
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b2suy"]
 seamless = true
+seamless_blend_skirt = 0.122
 as_normal_map = true
+bump_strength = 7.4
 noise = SubResource("FastNoiseLite_dqqhb")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_b2suy"]
+fractal_type = 2
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h8lre"]
 seamless = true
@@ -124,8 +128,8 @@ noise = SubResource("FastNoiseLite_b2suy")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dqqhb"]
 render_priority = 1
 shader = ExtResource("14_dqqhb")
-shader_parameter/depth_fade_distance = 5.0
-shader_parameter/absorbance = 0.42
+shader_parameter/depth_fade_distance = 4.605
+shader_parameter/absorbance = 0.639
 shader_parameter/shallow_color = Color(0.217007, 0.537483, 0.785124, 1)
 shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
 shader_parameter/foam_amount = 0.491
@@ -134,20 +138,20 @@ shader_parameter/foam_noise = SubResource("NoiseTexture2D_dqqhb")
 shader_parameter/roughness = 0.077
 shader_parameter/wave_texture = SubResource("NoiseTexture2D_h8lre")
 shader_parameter/wave_scale = 32.0
-shader_parameter/height_scale = 1.4
+shader_parameter/height_scale = 1.155
 shader_parameter/normal1 = SubResource("NoiseTexture2D_b2suy")
-shader_parameter/wave_dir1 = Vector2(3, 0)
+shader_parameter/wave_dir1 = Vector2(3, 3)
 shader_parameter/normal2 = SubResource("NoiseTexture2D_b2suy")
-shader_parameter/wave_dir2 = Vector2(0, 3)
+shader_parameter/wave_dir2 = Vector2(-3, 3)
 shader_parameter/wave_speed = 0.004
-shader_parameter/shine_strength = 0.319
+shader_parameter/shine_strength = 0.214
 shader_parameter/shine_shininess = 13.0
-shader_parameter/shadow = 0.72
+shader_parameter/shadow = 1.0
 shader_parameter/shadow_width = 0.18
-shader_parameter/wave_amplitude1 = 2.0
+shader_parameter/wave_amplitude1 = 1.93
 shader_parameter/wave_amplitude2 = 0.5
 shader_parameter/normal_map_w = 256
-shader_parameter/foam_intensity = 1.5
+shader_parameter/foam_intensity = 3.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_dqqhb"]
 material = SubResource("ShaderMaterial_dqqhb")
