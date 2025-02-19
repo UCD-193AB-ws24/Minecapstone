@@ -2,17 +2,17 @@
 Mein Capstone? Nein. Unser Capstone.
 
 ## Setup
-This project uses Python 3.11.9, older or new versions may or may not work.
+1. This project uses Python 3.11.9, older or new versions may or may not work.
 ```bash
-python -m venv .venv						# Create virtual environment, can also use Python: Create Environment
+python -m venv .venv				# Create virtual environment, can also use Python: Create Environment
 pip install -r ./python/requirements.txt	# Install requirements
 ```
 
-Then, copy ``.env.development`` and rename the new file to ``.env.development.local``.
-Set all the environment variables within ``.env.development.local``.
+2. Then, copy ``.env.development`` and rename the new file to ``.env.development.local``.
+3. Set all the environment variables within ``.env.development.local``.
 ####  DO NOT PUSH API KEYS TO THE REPO!!
 
-If you want to use LLM agents in Godot you must run the python websocket file before running the game.
+4. If you want to use LLM agents in Godot you must run the python websocket file before running the game.
 ```bash
 python ./python/websocket.py
 ```
