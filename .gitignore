@@ -1,3 +1,6 @@
 *.tmp
 .vscode/*
 *.old*
+*.local
+.env
+.env.development
