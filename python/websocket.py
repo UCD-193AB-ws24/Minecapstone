@@ -20,27 +20,31 @@ class Function(BaseModel):
 
 
 system_prompt = """
+You write Godot 4.3 code to achieve a goal.
+
 You have access to the following context:
 - position: Vector2 - The agent's current position
 
 Functions or Awaits
-- move_to_position(x,y) - Move the agent to the specified coordinates
+- move_to_position(float x, float y) - Move the agent to the specified coordinates. 
 - await agent.movement_completed - Wait for the agent to reach the position.
 
 Please use awaits if you want to set a target position and wait for the agent to reach it.
 YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
+The constant for pi in Godot is PI.
 Provide the list of functions you would like to call to achieve the goal.
+You must achieve the goal using what function calls available to you, if possible.
 """
 
 async def server(websocket):
 	async for message in websocket:
 		completion = client.beta.chat.completions.parse(
-			model="gpt-4o-mini",
+			model="gpt-4o",
 			messages=[
 				{"role": "system", "content": system_prompt},
 				{
 					"role": "user",
-					"content": message
+					"content": message + " Ensure the code is Godot 4.3 compatible code, you are writing the function func eval(delta):"
 				}
 			],
 			response_format=Function,

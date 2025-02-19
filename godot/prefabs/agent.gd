@@ -22,7 +22,7 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_goal("Move to (30, 0). Then, move to (25,25). Then, move to the middle of those two points.")
+		set_goal("Move to (30, 0). Then use move_to to walk in a circle of radius 4 around that point.")
 
 
 # Prompts the LLM based on the agent's goal
