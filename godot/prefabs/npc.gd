@@ -50,10 +50,12 @@ func _handle_movement(delta):
 			move_to(path_direction_2d, true, _speed, delta)
 			just_jumped = true
 			navigation_agent.path_postprocessing = NavigationPathQueryParameters3D.PATH_POSTPROCESSING_EDGECENTERED
-			navigation_agent.path_desired_distance = randf_range(0.5, 1.5)
-			await get_tree().create_timer(randf_range(0.25, 1)).timeout
+			navigation_agent.path_desired_distance = randf_range(0.5, 3)
+			navigation_agent.target_desired_distance = randf_range(0.5, 3)
+			await get_tree().create_timer(randf_range(0.25, 2)).timeout
 			navigation_agent.path_postprocessing = NavigationPathQueryParameters3D.PATH_POSTPROCESSING_CORRIDORFUNNEL
 			navigation_agent.path_desired_distance = 1
+			navigation_agent.target_desired_distance = 1
 			just_jumped = false
 		else:
 			move_to(path_direction_2d, false, _speed, delta)

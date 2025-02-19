@@ -15,46 +15,57 @@ client = OpenAI()
 # TODO: expand these to be more general
 
 
-class Function(BaseModel):
-	function_call: list[str]
+class LinesOfCodeWithinFunction(BaseModel):
+	line_of_code_of_function: list[str]
 
 
 system_prompt = """
-You write Godot 4.3 code to achieve a goal.
-
 You have access to the following context:
 - position: Vector2 - The agent's current position
 
 Functions or Awaits
 - move_to_position(float x, float y) - Move the agent to the specified coordinates. 
-- await agent.movement_completed - Wait for the agent to reach the position.
+- await agent.movement_completed - Wait for the agent to reach the position, must be directly after move_to_position.
 
-Please use awaits if you want to set a target position and wait for the agent to reach it.
 YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
-The constant for pi in Godot is PI.
+You are allowed to write conditionals, loops, and functions.
+"""
+
+user_preprompt = """
 Provide the list of functions you would like to call to achieve the goal.
 You must achieve the goal using what function calls available to you, if possible.
+
+Changes in Godot 4.3 you MUST ADHERE TO, lest Parser Errors will occur:
+deg2rad is now deg_to_rad() in Godot 4.3. 
+OS.get_ticks_msec() is now Time.get_ticks_msec() in Godot 4.3.
+
+Failing to adhere to this will result in Parser Error: Function "deg2rad()" not found in base self. Did you mean to use "deg_to_rad()"?
+
+Since you are writing the body of the function "func eval(delta)", you cannot include it in lines_of_code_of_function.
+Ensure the code is Godot 4.3 compatible code, you are writing the BODY of the function func eval(delta):
+
+The eval function is called every physics frame within func _physics_process(delta: float) -> void, and thus you have access to delta.
 """
 
 async def server(websocket):
 	async for message in websocket:
 		completion = client.beta.chat.completions.parse(
-			model="gpt-4o",
+			model="gpt-4o-mini",
 			messages=[
 				{"role": "system", "content": system_prompt},
 				{
 					"role": "user",
-					"content": message + " Ensure the code is Godot 4.3 compatible code, you are writing the function func eval(delta):"
+					"content": message + user_preprompt,
 				}
 			],
-			response_format=Function,
+			response_format=LinesOfCodeWithinFunction,
 		)
 		response = json.loads(completion.choices[0].message.content)
 		print(response)
 
 		# Format the lines with proper indentation and join them
-		code_lines = response["function_call"]
-		code_lines = [line.replace("    ", "\t") for line in code_lines]
+		code_lines = response["line_of_code_of_function"]
+		code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
 		formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
 
 		await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
