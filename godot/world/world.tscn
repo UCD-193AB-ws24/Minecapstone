@@ -152,7 +152,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-process_mode = 4
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
 _speed = 2.0
 
