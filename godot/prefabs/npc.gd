@@ -28,7 +28,7 @@ func set_look_target(look_target: Vector3):
 	#head.look_at(look_target, Vector3(0,1,0))
 	var new_dir:Vector3 = head.global_position - look_target
 	new_dir = new_dir.normalized()
-	#use trig for finding angles between x and z component.
+	head.look_at(look_target)
 
 
 func _physics_process(delta):
@@ -38,6 +38,11 @@ func _physics_process(delta):
 
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
+	#You can delete the commented out code below
+	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_Z:
+	# 	set_look_target(Vector3(-10,99,-20))
+	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_X:
+	# 	set_look_target(Vector3(26, 24, 0))
 	return
 
 
