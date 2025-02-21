@@ -11,5 +11,8 @@ script = ExtResource("2_360ac")
 process_mode = 4
 script = ExtResource("3_6hp0s")
 
+[node name="Head" parent="." index="4"]
+rotation_edit_mode = 2
+
 [node name="AIController" parent="." index="6"]
 metadata/_custom_type_script = "uid://da2vclwxlejcg"
