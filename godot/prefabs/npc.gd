@@ -24,6 +24,12 @@ func set_movement_target(movement_target: Vector3):
 	if movement_target.y == 0: movement_target.y = global_position.y
 	navigation_agent.set_target_position(movement_target)
 
+func set_look_target(look_target: Vector3):
+	#head.look_at(look_target, Vector3(0,1,0))
+	var new_dir:Vector3 = head.global_position - look_target
+	new_dir = new_dir.normalized()
+	#use trig for finding angles between x and z component.
+
 
 func _physics_process(delta):
 	_handle_movement(delta)
