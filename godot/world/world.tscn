@@ -111,6 +111,7 @@ night_duration_seconds = 60.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+visible = false
 mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
