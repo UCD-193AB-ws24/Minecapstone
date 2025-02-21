@@ -22,6 +22,7 @@ metadata/Name = "agent"
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
+InventorySlots = 9
 
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("2_onrkg")

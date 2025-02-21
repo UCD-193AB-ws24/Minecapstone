@@ -21,7 +21,7 @@ var last_known_position: Vector3
 func _physics_process(delta):
 	target_player = owner.find_children("Player")[0]
 
-	# var old_state = current_state
+	var old_state = current_state
 	var distance_to_player = global_position.distance_to(target_player.global_position)
 
 	if distance_to_player <= detection_range:
@@ -37,8 +37,8 @@ func _physics_process(delta):
 			_generate_wander_target() # generate wander target based on where the player was last in chase range
 		current_state = ZombieState.WANDERING
 
-	# if old_state != current_state:
-	# 	print("State changed to ", ZombieState.keys()[current_state])
+	if old_state != current_state:
+		print("State changed to ", ZombieState.keys()[current_state])
 
 	# Handle state
 	match current_state:

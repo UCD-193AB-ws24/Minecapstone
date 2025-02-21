@@ -23,16 +23,15 @@ public partial class BlockManager : Node {
 		Instance = this;
 
 		// TODO: Make this generalized for any number of blocks
-		(Block Air, Block Stone, Block Dirt, Block Grass, Block Sand) = (
+		(Block Air, Block Stone, Block Dirt, Block Grass) = (
 			(Block)ItemDictionary.Get("Air"),
 			(Block)ItemDictionary.Get("Stone"),
 			(Block)ItemDictionary.Get("Dirt"),
-			(Block)ItemDictionary.Get("Grass"),
-			(Block)ItemDictionary.Get("Sand")
+			(Block)ItemDictionary.Get("Grass")
 		);
 
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, Sand }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass }.SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
 		for (int i = 0; i < blockTextures.Length; i++) {

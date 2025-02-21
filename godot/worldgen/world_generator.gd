@@ -9,7 +9,7 @@ signal world_generated
 @export var height_noise: FastNoiseLite
 var smooth_height_noise: FastNoiseLite
 
-const VIEW_DISTANCE = 2
+const VIEW_DISTANCE = 4
 @onready var SIZE = VIEW_DISTANCE * 16
 const BIOME_NAMES = [
 	"desert",
@@ -36,7 +36,7 @@ const BIOME_COLORS = [
 
 var biome_indices = []
 var generation_thread: Thread
-var debug = false
+var debug = true
 
 var temperature_averages
 var precipitation_averages
@@ -72,16 +72,6 @@ func get_biome_color(x: int, y: int) -> Color:
 func get_biome(x: int, y: int) -> String:
 	var index = _get_biome_index(x, y)
 	return BIOME_NAMES[index]
-	
-func _ready() -> void:
-	# Allows for debug in world_generator scene
-	if get_tree().current_scene.name == "WorldGenerator":
-		generate()
-		debug = true
-
-func _input(event):
-	if debug and event is InputEventKey and event.pressed and event.keycode == KEY_G:
-		generate()
 
 var tp_image = preload("res://assets/TP_map.png")
 func generate():
@@ -142,12 +132,11 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	_display_image(biome_map)
 
+	# Wait for user input before completing world generation
 	await get_tree().create_timer(1.0).timeout
 
-	if not debug:
-		call_deferred("_handle_loading_screen", null, false)
-
 	# Emit signal when world generation is complete
+	call_deferred("_handle_loading_screen", null, false)
 	call_deferred("emit_signal", "world_generated")
 
 func _create_combined_height_image() -> Image:

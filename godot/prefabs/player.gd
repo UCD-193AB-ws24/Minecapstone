@@ -29,7 +29,7 @@ var _break_timer : Timer
 var _block_breaking						# position of the block attempting to break or null (not attempted block)
 var _released : bool = true
 var _tool_breaking : Resource
-@onready var block_progress : Label = $"../UI/TopLeftUI/BlockProgress"
+@onready var block_progress : Label = $"../UI/Control/BlockProgress"
 
 # ============================ Health, Hunger, Thirst =====================
 @export var max_health = 100
@@ -71,7 +71,6 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
 	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
-	inventory_manager.AddItem(itemdict_instance.Get("Sand"), 64)
 	inventory_manager.AddItem(itemdict_instance.Get("Wood Pickaxe"), 1)
 
 
@@ -139,7 +138,7 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < 0:
+	if global_position.y < 15:
 		_on_out_of_bounds()
 
 
