@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://cwf5gemyuyfrv"]
 
-[ext_resource type="Script" uid="uid://dyofhanucfxhf" path="res://npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://b0jv6f07kxcof" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
@@ -30,7 +30,7 @@ height = 0.8
 sides = 16
 
 [node name="Head" type="Node3D" parent="."]
-transform = Transform3D(-1.1, 0, -9.61651e-08, 0, 1.1, 0, 9.61651e-08, 0, -1.1, 0, 0.5, 0.4)
+transform = Transform3D(-1.1, 0, -1.66095e-07, 0, 1.1, 0, 1.66095e-07, 0, -1.1, 0, 0.5, 0.4)
 
 [node name="Headbox" type="CSGBox3D" parent="Head"]
 size = Vector3(0.6, 0.6, 0.6)

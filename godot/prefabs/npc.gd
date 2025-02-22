@@ -10,6 +10,7 @@ var just_jumped = false
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
+	
 	_speed = 1.0
 
 
@@ -65,3 +66,15 @@ func _handle_movement(delta):
 			move_to(path_direction_2d, false, _speed, delta)
 	else:
 		move_to(path_direction_2d, false, _speed, delta)
+
+
+func _rotate_toward(movement_target: Vector3):
+	var direction = (movement_target - global_position).normalized()
+	rotation.y = atan2(direction.x, direction.z) + PI
+
+
+func _on_player_death():
+	# Want to despawn instead of respawning at spawn point
+	# Drop loot
+	inventory_manager.DropAllItems()
+	queue_free()

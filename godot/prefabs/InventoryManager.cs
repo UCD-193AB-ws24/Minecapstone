@@ -45,9 +45,25 @@ public partial class InventoryManager : Node
 		if (!_inventorySlots[_selectedSlot]) return false;
 		
 		var item = _slotsToItems[_selectedSlot];
-		var droppedItem = SpawnDroppedItem(item.item);
+		SpawnMultipleDroppedItems(item.item, item.count);
 		DecrementItemInSlot(_selectedSlot);
 		return true;
+	}
+	
+	public bool DropSelectedStack() {
+		if (!_inventorySlots[_selectedSlot]) return false;
+		
+		var item = _slotsToItems[_selectedSlot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		RemoveItemInSlot(_selectedSlot);
+		return true;
+	}
+	public void DropAllItems() {
+		for (int i = 0; i < _inventorySlots.Length; i++) {
+			if (_inventorySlots[i]) {
+				RemoveItemInSlot(i);
+			}
+		}
 	}
 
 	public bool AddItem(Item item, int amount) {
@@ -117,7 +133,23 @@ public partial class InventoryManager : Node
 		
 		return droppedItem;
 	}
-
+	
+	private void SpawnMultipleDroppedItems(Item item, int count) {
+		for(int i = 0; i < count; i++) {
+			var droppedItem = SpawnDroppedItem(item);
+		}
+	}
+	
+	private void RemoveItemInSlot(int slot) {
+		var item = _slotsToItems[slot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		item.count = 0;
+		
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		_nameToSlots[item.item.Name].Remove(slot);
+	}
+	
 	private void DecrementItemInSlot(int slot) {
 		var item = _slotsToItems[slot];
 		item.count--;

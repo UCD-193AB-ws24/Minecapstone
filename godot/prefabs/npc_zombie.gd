@@ -9,7 +9,7 @@ extends NPC_Wanderer
 @export var chase_speed: float = 2.0
 
 
-enum ZombieState { WANDERING, CHASING, ATTACKING}
+enum ZombieState { WANDERING, CHASING, ATTACKING }
 var current_state: ZombieState = ZombieState.WANDERING
 
 
@@ -17,7 +17,11 @@ var can_attack: bool = true
 var target_player: Player = null
 var last_known_position: Vector3
 
-
+func _ready():
+	super()
+	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
+	inventory_manager.AddItem(itemdict_instance.Get("Dirt"), 64)
+	
 func _physics_process(delta):
 	target_player = owner.find_children("Player")[0]
 
@@ -50,6 +54,7 @@ func _physics_process(delta):
 		ZombieState.ATTACKING:
 			_handle_attacking()
 	
+	_rotate_toward(navigation_agent.target_position)
 	super(delta)
 
 # note to ryan: don't call _handle_movement(delta) inside of handle_chasing and _handle attacking, 
@@ -73,13 +78,15 @@ func _handle_attacking():
 
 func _attack_player():
 	if target_player and global_position.distance_to(target_player.global_position) <= attack_range:
-		target_player.damage(attack_damage)
+		if raycast.is_colliding() and raycast.get_collider() == target_player:
+			target_player.damage(attack_damage)
+			_apply_knockback(target_player)
 
 
-func damage(damage_amount: float):
-	damage(damage_amount)
-	if health <= 0:
-		queue_free()
+#func damage(damage_amount: float):
+	#damage(damage_amount)
+	#if health <= 0:
+		#queue_free()
 
 
 func _input(_event):

@@ -126,6 +126,8 @@ func _process(_delta):
 		# Highlight block player is looking at, and place or remove blocks
 		_handle_block_interaction()
 		
+		_handle_attacking()
+		
 	if _is_breaking:
 		_break_block()
 
@@ -184,28 +186,31 @@ func _handle_block_interaction():
 	# Lock the block highlight rotation to prevent it from rotating with the player
 	block_highlight.global_rotation = Vector3.ZERO
 	
-	if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
-		var chunk = raycast.get_collider()
+	# if raycast.is_colliding() and raycast.get_collider().has_meta("is_chunk"):
+	if raycast.is_colliding():
+		var collider = raycast.get_collider()
+		if raycast.is_colliding() and collider and collider.has_meta("is_chunk"):
+			var chunk = raycast.get_collider()
 
-		var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
-		var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
-		
-		block_highlight.visible = true
-		block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
-
-		# Handles the mouse1 event for breaking blocks
-		_handle_block_breaking(block_position, chunk.global_position)
-		
-		if Input.is_action_just_pressed("mouse2"):
-			var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
+			var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+			var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 			
-			# Prevent player from placing blocks if the block will intersect the player
-			if not _block_position_intersect_player(new_block_position):
-				#replace block_manager.ItemDict.Get with selected block to place from inventory
-				if inventory_manager.GetSelectedItem() != null and inventory_manager.GetSelectedItem().has_meta("is_block"):
-					chunk_manager.SetBlock(new_block_position, inventory_manager.GetSelectedItem())
-					inventory_manager.ConsumeSelectedItem()
-					_update_navmesh()
+			block_highlight.visible = true
+			block_highlight.global_position = int_block_position + Vector3(0.5, 0.5, 0.5)
+
+			# Handles the mouse1 event for breaking blocks
+			_handle_block_breaking(block_position, chunk.global_position)
+			
+			if Input.is_action_just_pressed("mouse2"):
+				var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
+				
+				# Prevent player from placing blocks if the block will intersect the player
+				if not _block_position_intersect_player(new_block_position):
+					#replace block_manager.ItemDict.Get with selected block to place from inventory
+					if inventory_manager.GetSelectedItem() != null and inventory_manager.GetSelectedItem().has_meta("is_block"):
+						chunk_manager.SetBlock(new_block_position, inventory_manager.GetSelectedItem())
+						inventory_manager.ConsumeSelectedItem()
+						_update_navmesh()
 	else:
 		block_highlight.visible = false
 
@@ -331,6 +336,19 @@ func _break_block():
 		_break_timer.queue_free()
 		_update_navmesh()
 
+func _handle_attacking():
+	if raycast.is_colliding() and raycast.get_collider() is Player:
+		var target = raycast.get_collider()
+		if Input.is_action_just_pressed("mouse1"):
+			target.damage(10)
+			print("Entity has been attacked -- health is now: ", target.health)
+			_apply_knockback(target)
+			
+func _apply_knockback(target):
+	var knockback_direction = (target.global_position - global_position).normalized()
+	var knockback_strength = 10.0
+	target.velocity += knockback_direction * knockback_strength
+	target.velocity.y += 3.5
 
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;

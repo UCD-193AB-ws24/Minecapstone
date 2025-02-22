@@ -102,7 +102,7 @@ func _wandering_movement():
 		var chance = randf_range(0, 1)
 		# randomly change direction
 		if chance < 0.02:
-			set_movement_target(global_position + Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
+			set_movement_target(global_position + Vector3(randf_range	(-10, 10), 0, randf_range(-10, 10)))
 				
 func _on_wandering_timer_timeout():
 	# Wandering is an endless behavior, so just finds somewhere new to wander towards on timer end.
@@ -117,4 +117,5 @@ func _on_scared_timer_timeout():
 
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
+	# Removing the PI fixes raycast emitted by animal
 	rotation.y = atan2(direction.x, direction.z)
