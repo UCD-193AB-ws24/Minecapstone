@@ -17,6 +17,12 @@ func move_to_position(x: float, y: float):
 	print("Moving to position: ", x, " ", y)
 	agent.set_movement_target(Vector3(x, 0, y))
 
+func discard_here(itemName: String, amount: int):
+	# TODO: remove debug print
+	print("dropping ", amount , " ", itemName, )
+	agent.discard_item(itemName, amount)
+
+
 func eval(delta):
 	delta = delta
 	return true
