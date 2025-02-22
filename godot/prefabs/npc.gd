@@ -30,6 +30,10 @@ func set_look_target(look_target: Vector3):
 	new_dir = new_dir.normalized()
 	head.look_at(look_target)
 
+func discard_item(item_name: String, amount: int):
+	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
+	inventory_manager.DropItem(item_name, amount)
+
 
 func _physics_process(delta):
 	_handle_movement(delta)
