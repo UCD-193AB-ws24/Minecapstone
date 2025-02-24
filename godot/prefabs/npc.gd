@@ -10,6 +10,7 @@ var just_jumped = false
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
+	inventory_manager.AddItem(itemdict_instance.Get("Sand"), 64)
 
 
 func actor_setup():
@@ -31,8 +32,10 @@ func set_look_target(look_target: Vector3):
 	head.look_at(look_target)
 
 func discard_item(item_name: String, amount: int):
+	print("discarding")
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
-	inventory_manager.DropItem(item_name, amount)
+	print(inventory_manager.DropItem(item_name, amount))
+	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
 
 
 func _physics_process(delta):
@@ -47,6 +50,8 @@ func _input(_event):
 	# 	set_look_target(Vector3(-10,99,-20))
 	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_X:
 	# 	set_look_target(Vector3(26, 24, 0))
+	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_C:		
+	# 	discard_item("Sand", 9)
 	return
 
 
