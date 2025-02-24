@@ -71,9 +71,15 @@ public partial class InventoryManager : Node
 					//leftover amounts in item
 					return true;
 				}
-				_inventorySlots[slotNums[i]] = false;
-				_slotsToItems.Remove(slotNums[i]);
-				_nameToSlots[itemName].Remove(slotNums[i]);
+				// _inventorySlots[slotNums[i]] = false;
+				// _slotsToItems.Remove(slotNums[i]);
+				// _nameToSlots[itemName].Remove(slotNums[i]);
+				// //Check if there is anymore slots that contain the item
+				// if(_nameToSlots[itemName].Count <= 0)
+				// {
+				// 	_nameToSlots.Remove(itemName);
+				// }
+				ReleaseItemSlot(itemName, slotNums[i]);
 				return true;
 			} else 
 			{
@@ -84,9 +90,10 @@ public partial class InventoryManager : Node
 				}
 				//subtract amount from item.count
 				amount -= items.count;
-				_inventorySlots[slotNums[i]] = false;
-				_slotsToItems.Remove(slotNums[i]);
-				_nameToSlots[itemName].Remove(slotNums[i]);
+				// _inventorySlots[slotNums[i]] = false;
+				// _slotsToItems.Remove(slotNums[i]);
+				// _nameToSlots[itemName].Remove(slotNums[i]);
+				ReleaseItemSlot(itemName, slotNums[i]);
 			}
 		}
 		//if the loop exits here, then the agent still has more it wants to drop but there's no more of the item to drop
@@ -167,8 +174,20 @@ public partial class InventoryManager : Node
 		item.count--;
 		if (item.count > 0) return;
 		
-		_inventorySlots[slot] = false;
-		_slotsToItems.Remove(slot);
-		_nameToSlots[item.item.Name].Remove(slot);
+		// _inventorySlots[slot] = false;
+		// _slotsToItems.Remove(slot);
+		// _nameToSlots[item.item.Name].Remove(slot);
+		ReleaseItemSlot(item.item.Name, slot);
+	}
+	private void ReleaseItemSlot(String itemName, int slotNum)
+	{
+		_inventorySlots[slotNum] = false;
+		_slotsToItems.Remove(slotNum);
+		_nameToSlots[itemName].Remove(slotNum);
+		//Check if there is anymore slots that contain the item
+		if(_nameToSlots[itemName].Count <= 0)
+		{
+			_nameToSlots.Remove(itemName);
+		}
 	}
 }
