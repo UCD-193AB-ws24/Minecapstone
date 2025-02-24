@@ -5,14 +5,13 @@
 [ext_resource type="Script" uid="uid://c8awvxecd5ig2" path="res://prefabs/agent_controller.gd" id="3_6hp0s"]
 
 [node name="Agent" instance=ExtResource("1_360ac")]
+collision_layer = 1
 script = ExtResource("2_360ac")
+metadata/Name = "agent"
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4
 script = ExtResource("3_6hp0s")
-
-[node name="Head" parent="." index="4"]
-rotation_edit_mode = 2
 
 [node name="AIController" parent="." index="6"]
 metadata/_custom_type_script = "uid://da2vclwxlejcg"
