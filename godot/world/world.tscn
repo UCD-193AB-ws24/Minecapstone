@@ -1,7 +1,7 @@
 [gd_scene load_steps=24 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
-[ext_resource type="Script" path="res://prefabs/agent_manager.gd" id="1_dqqhb"]
+[ext_resource type="PackedScene" uid="uid://qv6r47xs88ux" path="res://prefabs/agent_manager.tscn" id="1_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
@@ -88,8 +88,7 @@ orientation = 1
 
 [node name="World" type="Node3D"]
 
-[node name="AgentManager" type="Node" parent="."]
-script = ExtResource("1_dqqhb")
+[node name="AgentManager" parent="." instance=ExtResource("1_dqqhb")]
 
 [node name="UI" parent="." instance=ExtResource("5_2riqy")]
 
