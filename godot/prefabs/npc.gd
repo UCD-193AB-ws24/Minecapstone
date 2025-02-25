@@ -8,6 +8,8 @@ var agent_manager
 var just_jumped = false
 var cached_npc_pos
 
+signal target_reached
+
 #for navigating to a moving target
 var cur_target:Node = null
 
@@ -47,6 +49,7 @@ func _moving_target_process():
 		print("target reached")
 		cur_target = null # stop following target
 		navigation_agent.target_desired_distance = 1.0
+		target_reached.emit()
 
 func set_look_target(look_target: Vector3):
 	#head.look_at(look_target, Vector3(0,1,0))
@@ -56,13 +59,24 @@ func set_look_target(look_target: Vector3):
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
-	print(inventory_manager.DropItem(item_name, amount))
+	inventory_manager.DropItem(item_name, amount)
 	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
 
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = agent_manager.get_agent(agent_name)
 	set_moving_target(agent_ref)
-
+	await target_reached
+	 # standard head angle for dropping item towards receiving agent who is [-1, 1] block level
+	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
+	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
+		# receiving agent is above this agent by 2+ blocks
+		look_pos.y += 1
+	elif (round(agent_ref.global_position.y - self.global_position.y)) <= -2:
+		# receiving agent is above this agent by 2- blocks
+		look_pos.y += 1
+	set_look_target(look_pos)
+	inventory_manager.DropItem(item_name, amount)
+	print(round(agent_ref.global_position.y - self.global_position.y))
 
 func _physics_process(delta):
 	if cur_target != null:
