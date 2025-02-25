@@ -161,11 +161,6 @@ transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407
 initial_goal = "Move to (20,0) Then respond to any messages"
 _speed = 2.0
 
-[node name="Agent3" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
-initial_goal = ""
-_speed = 2.0
-
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]

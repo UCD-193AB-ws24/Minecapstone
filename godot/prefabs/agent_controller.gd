@@ -14,11 +14,6 @@ func setup(target_agent: Agent):
 func _physics_process(delta: float) -> void:
 	eval(delta)
 
-# Helper function for LLM movement and waiting
-func move_and_wait (x: float, y: float):
-	move_to_position(x,y)
-	# Return signal
-	return agent.movement_completed
 	
 func move_to_position(x: float, y: float):
 	# print("Moving to position: ", x, " ", y)
@@ -42,25 +37,12 @@ func get_nearby_agents() -> Array:
 				nearby_agents.append(agent_id)
 				
 	return nearby_agents
-	
-func move_with_timeout(x: float, y:float, timeout_seconds: float = 3.0):
+
+
+func move_and_continue(x: float, y: float):
 	move_to_position(x,y)
-	
-	var timer = get_tree().create_timer(timeout_seconds)
-	
-	var completed = false
-	
-	var movement_conn = agent.movement_completed.connect(func(): completed = true)
-	
-	await timer.timeout
-	
-	if not completed:
-		print("Movement timed out")
-	
-	if movement_conn.is_valid():
-		agent.movement_completed.disconnect(movement_conn)
-	
-	return completed
+	#agent.start_movement_timeout()
+	return true
 
 func eval(delta):
 	delta = delta

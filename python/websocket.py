@@ -20,81 +20,63 @@ class LinesOfCodeWithinFunction(BaseModel):
 
 
 system_prompt = """
-You are controlling an agent in a virtual world. YOu have access to these functions:
+You control an agent in a virtual world. You can use these functions:
 
-Functions Available:
-- move_to_position(float x, float y) - Move the agent to specified coordinates
-- move_with_timeout(float x, float y) - Move to position with a safety timeout
-- get_nearby_agents() -> Array[int] - Get IDs of agents within range
-- send_message(int target_id, String content) - Send a message to another agent
+- move_and_continue(float x, float y) - Move to coordinates
+- get_nearby_agents() -> Array[int] - Get IDs of nearby agents
+- send_message(int target_id, String content) - Send a message
 
-YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED FUNCTIONS.
-IMPORTANT: Always use move_with_timeout instead of directly awaiting movement_completed.
-Example of correct movement:
-await move_with_timeout(10, 10)
-DO NOT use await agent.movement_completed directly as it may cause the game to freeze.
+IMPORTANT:
+1. DO NOT use 'await' with any function
+2. DO NOT use infinite loops
 
-You can write conditionals and loops.
-
-When you receive a message, you should:
-1. Process the message content
-2. Use get_nearby_agents() to find other agents if needed
-3. Respond using send_message() if appropriate
-4. Move to a new position if the message requests it
-
-Remember: Your code will only run once per prompt, so include all necessary actions in your response.
-"""
-
-user_preprompt = """
-Provide the list of functions you would like to call to achieve the goal.
-Include ALL necessary function calls in your response, as you won't get another chance to respond.
-
-Example of good response:
+Example of good code:
 ```
 var nearby = get_nearby_agents()
 if nearby.size() > 0:
     send_message(nearby[0], "Hello!")
-move_to_position(10, 10)
-await agent.movement_completed  # Proper way to wait for movement to finish
+move_and_continue(10, 10)
 ```
+"""
 
-Example of INCORRECT response (do not use):
-```
-move_to_position(10, 10)
-yield()  # Wrong! yield() is deprecated in Godot 4.3
-```
+user_preprompt = """
+Provide the list of functions you would like to call to achieve the goal.
+Remember to follow the rules about not using await or infinite loops.
 
-Changes in Godot 4.4 you MUST ADHERE TO:
+Changes in Godot 4.3 you MUST ADHERE TO:
 - deg2rad is now deg_to_rad() in Godot 4.3
 - OS.get_ticks_msec() is now Time.get_ticks_msec() in Godot 4.3
-- yield() is deprecated in Godot 4.3, use 'await signal_name' instead
-- To wait for movement to complete, use 'await agent.movement_completed'
+- yield() is deprecated in Godot 4.3, don't use it at all
 
-You are writing the body of the function "func eval(delta)".
-Ensure the code is Godot 4.3 compatible.
+You are writing the body of the function "func eval(delta)", which is called every physics frame.
+Ensure the code is Godot 4.3 compatible. Ensure that the code will compile. Pay attention to indentations, spelling, spacing, syntax, and formatting.
 """
 
 async def server(websocket):
 	async for message in websocket:
-		goal = message
+		try:
+			goal = message
 
-		completion = client.beta.chat.completions.parse(
-			model="gpt-4o-mini",
-			messages=[
-				{"role": "system", "content": system_prompt},
-				{"role": "user", "content": goal + "\n" + user_preprompt}
-			],
-			response_format=LinesOfCodeWithinFunction,
-		)
-		response = json.loads(completion.choices[0].message.content)
-		print(response)
+			completion = client.beta.chat.completions.parse(
+				model="gpt-4o-mini",
+				messages=[
+					{"role": "system", "content": system_prompt},
+					{"role": "user", "content": goal + "\n" + user_preprompt}
+				],
+				response_format=LinesOfCodeWithinFunction,
+			)
+			response = json.loads(completion.choices[0].message.content)
+			print(response)
 
-		# Format the lines with proper indentation and join them
-		code_lines = response["line_of_code_of_function"]
-		code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
-		formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
+			# Format the lines with proper indentation and join them
+			code_lines = response["line_of_code_of_function"]
+			code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
+			formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
 
-		await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
+			await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
+		except Exception as e:
+			print(f"Error handling message: {e}")
+			await websocket.send("\n\tmove_and_continue(0,0)") # Send a default response in case of error
 
 
 async def main():

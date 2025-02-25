@@ -5,6 +5,11 @@ signal movement_completed
 @onready var goal : String = ""
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
+@onready var _prev_position: Vector3 = Vector3.ZERO
+@onready var _was_navigating: bool = false
+@onready var _movement_timeout: float = 5.0
+@onready var _movement_start_time: float = 0.0
+@onready var _is_waiting_for_movement: bool = false
 
 @export var initial_goal: String = ""
 
@@ -95,11 +100,28 @@ func eval(delta):
 func _physics_process(delta):
 	super(delta)
 	
-	if navigation_agent.is_navigation_finished():
-		print("Agent " + str(hash_id) + " reached destination, emitting signal")
-		movement_completed.emit()
+	if _is_waiting_for_movement:
+		var current_time = Time.get_ticks_msec() / 1000.0
+		if current_time - _movement_start_time > _movement_timeout:
+			print("Movement timed out for agent ", hash_id)
+			_is_waiting_for_movement = false
+			movement_completed.emit()
+			
+	if navigation_agent:
+		var is_finished = navigation_agent.is_navigation_finished()
+		
+		if _was_navigating and is_finished:
+			print("Agent ", hash_id, " reached destination")
+			_is_waiting_for_movement = false
+			movement_completed.emit()
+			
+		_was_navigating = !is_finished
 		
 		
+func start_movement_timeout():
+	_is_waiting_for_movement = true
+	_movement_start_time = Time.get_ticks_msec() / 1000.0
+
 # Agent communication
 func _on_message_received(from_id: int, to_id: int, content: String) -> void:
 	if to_id == hash_id:
