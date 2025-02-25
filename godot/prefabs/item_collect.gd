@@ -1,4 +1,13 @@
+@tool
 extends RigidBody3D
+
+func _ready() -> void:
+	var texture = $Sprite3D.texture
+	$Sprite3D.position = Vector3.ZERO
+	if texture:
+		var target_width = 1024.0  # Set your desired width here
+		var scale_factor = target_width / texture.get_width()
+		$Sprite3D.scale = Vector3(scale_factor, scale_factor, scale_factor)
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:

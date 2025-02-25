@@ -10,8 +10,6 @@ var just_jumped = false
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
-	
-	_speed = 1.0
 
 
 func actor_setup():
@@ -23,6 +21,8 @@ func actor_setup():
 
 
 func set_movement_target(movement_target: Vector3):
+	# TODO: replace this with a query to the closest point on the navmesh
+	if movement_target.y == 0: movement_target.y = global_position.y
 	navigation_agent.set_target_position(movement_target)
 
 
@@ -52,15 +52,13 @@ func _handle_movement(delta):
 		if not just_jumped:
 			move_to(path_direction_2d, true, _speed, delta)
 			just_jumped = true
-			var postprocessing_options = [
-				NavigationPathQueryParameters3D.PATH_POSTPROCESSING_NONE,
-				NavigationPathQueryParameters3D.PATH_POSTPROCESSING_EDGECENTERED
-			]
-			navigation_agent.path_postprocessing = postprocessing_options[randi() % postprocessing_options.size()]
-			navigation_agent.path_desired_distance = randf_range(0.9, 3)
-			await get_tree().create_timer(1.0).timeout
+			navigation_agent.path_postprocessing = NavigationPathQueryParameters3D.PATH_POSTPROCESSING_EDGECENTERED
+			navigation_agent.path_desired_distance = randf_range(0.5, 3)
+			navigation_agent.target_desired_distance = randf_range(0.5, 3)
+			await get_tree().create_timer(randf_range(0.25, 2)).timeout
 			navigation_agent.path_postprocessing = NavigationPathQueryParameters3D.PATH_POSTPROCESSING_CORRIDORFUNNEL
 			navigation_agent.path_desired_distance = 1
+			navigation_agent.target_desired_distance = 1
 			just_jumped = false
 		else:
 			move_to(path_direction_2d, false, _speed, delta)

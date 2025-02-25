@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=18 format=3 uid="uid://hadt75m23sds"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/world_generator.gd" id="1_yvk30"]

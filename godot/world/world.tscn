@@ -1,0 +1,158 @@
+[gd_scene load_steps=22 format=3 uid="uid://codcxxqo8wi2f"]
+
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
+[ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
+[ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
+[ext_resource type="Environment" uid="uid://0gvumcxkr4dg" path="res://world/sky/nosky.tres" id="7_ocfjn"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="11_mcsb2"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
+[ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://world/water/water.gdshader" id="14_dqqhb"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
+geometry_parsed_geometry_type = 1
+cell_size = 0.16
+cell_height = 0.5
+agent_radius = 0.32
+agent_max_climb = 1.0
+agent_max_slope = 90.0
+edge_max_length = 49.92
+edge_max_error = 1.0
+vertices_per_polygon = 5.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
+frequency = 0.0323
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dqqhb"]
+noise = SubResource("FastNoiseLite_h8lre")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dqqhb"]
+frequency = 0.0027
+fractal_type = 2
+fractal_octaves = 7
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b2suy"]
+seamless = true
+seamless_blend_skirt = 0.122
+as_normal_map = true
+bump_strength = 7.4
+noise = SubResource("FastNoiseLite_dqqhb")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_b2suy"]
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h8lre"]
+seamless = true
+noise = SubResource("FastNoiseLite_b2suy")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dqqhb"]
+render_priority = 1
+shader = ExtResource("14_dqqhb")
+shader_parameter/depth_fade_distance = 4.605
+shader_parameter/absorbance = 0.639
+shader_parameter/shallow_color = Color(0.217007, 0.537483, 0.785124, 1)
+shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
+shader_parameter/foam_amount = 0.491
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/foam_noise = SubResource("NoiseTexture2D_dqqhb")
+shader_parameter/roughness = 0.077
+shader_parameter/wave_texture = SubResource("NoiseTexture2D_h8lre")
+shader_parameter/wave_scale = 32.0
+shader_parameter/height_scale = 1.155
+shader_parameter/normal1 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir1 = Vector2(3, 3)
+shader_parameter/normal2 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir2 = Vector2(-3, 3)
+shader_parameter/wave_speed = 0.004
+shader_parameter/shine_strength = 0.214
+shader_parameter/shine_shininess = 13.0
+shader_parameter/shadow = 1.0
+shader_parameter/shadow_width = 0.18
+shader_parameter/wave_amplitude1 = 1.93
+shader_parameter/wave_amplitude2 = 0.5
+shader_parameter/normal_map_w = 256
+shader_parameter/foam_intensity = 3.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_dqqhb"]
+material = SubResource("ShaderMaterial_dqqhb")
+size = Vector2(4000, 4000)
+subdivide_width = 400
+subdivide_depth = 400
+orientation = 1
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("5_2riqy")]
+
+[node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_ol1lb")
+script = ExtResource("1_8mp4y")
+
+[node name="BlockManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("2_yvk30")
+
+[node name="ChunkManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("3_igfuc")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("7_ocfjn")
+script = ExtResource("7_ffu4t")
+day_duration_seconds = 60.0
+night_duration_seconds = 60.0
+
+[node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+visible = false
+mesh = SubResource("QuadMesh_dqqhb")
+skeleton = NodePath("../..")
+
+[node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(-1, -8.44439e-08, 2.26267e-08, 0, 0.258819, 0.965926, -8.74228e-08, 0.965926, -0.258819, 0, 35, 0)
+light_angular_distance = 2.0
+shadow_enabled = true
+shadow_normal_bias = 3.0
+shadow_reverse_cull_face = true
+shadow_opacity = 0.8
+shadow_blur = 0.1
+directional_shadow_max_distance = 250.0
+
+[node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 35, 0)
+light_energy = 1.5
+light_volumetric_fog_energy = 4.0
+shadow_enabled = true
+shadow_normal_bias = 3.0
+shadow_reverse_cull_face = true
+shadow_opacity = 0.3
+shadow_blur = 0.1
+directional_shadow_max_distance = 250.0
+
+[node name="Player" parent="." instance=ExtResource("6_0r4rx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
+
+[node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
+
+[node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+attack_damage = 0.0
+
+[node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+_speed = 2.0
+
+[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
