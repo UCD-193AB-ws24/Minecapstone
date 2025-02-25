@@ -83,6 +83,7 @@ public partial class BlockManager : Node {
 			{Stone, 1.5f},
 			{Dirt, 0.25f},
 			{Grass, 0.25f},
+			{Sand, 0.25f},
 			{CoalOre, 2.5f}, // in real minecraft coal is annoying and takes long to mine
 			{CopperOre, 1.75f},
 			{IronOre, 2.0f},
