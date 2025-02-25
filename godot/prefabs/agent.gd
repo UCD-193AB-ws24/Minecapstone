@@ -78,5 +78,5 @@ func eval(delta):
 # Use this function to emit signals
 func _physics_process(delta):
 	super(delta)
-	if navigation_agent.is_navigation_finished():
+	if navigation_agent.is_target_reached():
 		movement_completed.emit()
