@@ -49,8 +49,40 @@ Changes in Godot 4.3 you MUST ADHERE TO:
 - yield() is deprecated in Godot 4.3, don't use it at all
 
 You are writing the body of the function "func eval(delta)", which is called every physics frame.
-Ensure the code is Godot 4.3 compatible. Ensure that the code will compile. Pay attention to indentations, spelling, spacing, syntax, and formatting.
+Ensure the code is Godot 4.3 compatible. Ensure that the code will compile. Pay attention to indentations, spelling, spacing, syntax, and formatting.a
 """
+
+def validate_indentation(code_lines):
+	"""Validate and fix indentation in code"""
+	fixed_lines = []
+	in_block = False
+
+	for i, line in enumerate(code_lines):
+		# Skip empty lines
+		if not line.strip():
+			fixed_lines.append(line)
+			continue
+        
+        # Check if we're entering a new block
+		if line.strip().endswith(":"):
+			in_block = True
+			fixed_lines.append(line)
+			continue
+        
+        # If we're in a block and this line isn't indented but should be
+		if in_block and i > 0 and not line.startswith("\t") and line.strip():
+            # This is a line that should be indented but isn't
+			fixed_line = "\t" + line
+			fixed_lines.append(fixed_line)
+		else:
+			fixed_lines.append(line)
+            
+            # If this line is not indented, we're no longer in a block
+			if not line.startswith("\t"):
+				in_block = False
+    
+	return fixed_lines
+
 
 async def server(websocket):
 	async for message in websocket:
@@ -71,7 +103,11 @@ async def server(websocket):
 			# Format the lines with proper indentation and join them
 			code_lines = response["line_of_code_of_function"]
 			code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
-			formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
+
+			# Validate and fix indentation
+			fixed_code_lines = validate_indentation(code_lines)
+
+			formatted_code = "\n\t" + "\n\t".join(fixed_code_lines)  # Add initial tab
 
 			await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
 		except Exception as e:
