@@ -153,12 +153,12 @@ attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
-initial_goal = "Find nearby agents and send them a greeting message"
+goal = "Move to (30,0). Then, send a message that says, \"Move to (0, 0)\"."
 _speed = 2.0
 
 [node name="Agent2" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
-initial_goal = "Move to (20,0) Then respond to any messages"
+goal = "Move to (0,-30)."
 _speed = 2.0
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
