@@ -4,8 +4,6 @@ class_name Agent extends NPC
 @export var goal : String = "Move to (30,0)."
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
-
-
 @onready var _command_queue: Array[Command] = []
 @onready var memories : Array[Dictionary] = []
 

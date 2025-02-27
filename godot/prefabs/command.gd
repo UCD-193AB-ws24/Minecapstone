@@ -35,10 +35,12 @@ func execute(_agent: Agent):
 
 	if command_type == CommandType.GOAL:
 		API.prompt_llm(command, agent.hash_id)
+		command_status = CommandStatus.DONE
 		# API will emit response signal emit containing (key, response_string)
 	elif command_type == CommandType.SCRIPT:
 		# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
 		agent.run_script(command)
+		command_status = CommandStatus.DONE
 
 	return command_status
 
