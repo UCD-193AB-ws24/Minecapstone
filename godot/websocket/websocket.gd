@@ -5,7 +5,6 @@ extends Node
 # The URL we will connect to.
 @export var websocket_url = "ws://localhost:5000"
 @export var enabled = true
-var connection_open = false
 
 
 var socket = WebSocketPeer.new()
@@ -41,9 +40,15 @@ func prompt_llm(prompt: String, key: int):
 		await connected
 	
 	socket.send_text(prompt)
-	await response_received
-	var response_string = socket.get_packet().get_string_from_utf8()
-	response.emit(key, response_string)
+
+	# Wait for a non-empty response.
+	var response_string = ""
+	while response_string == "":
+		await response_received
+		response_string = socket.get_packet().get_string_from_utf8()
+		response.emit(key, response_string)
+
+		# TODO: add timeout
 
 
 func _physics_process(_delta):
@@ -56,9 +61,7 @@ func _physics_process(_delta):
 
 	# WebSocketPeer.STATE_OPEN means the socket is connected and ready to send and receive data.
 	if state == WebSocketPeer.STATE_OPEN:
-		if connection_open == false:
-			connection_open = true
-		while socket.get_available_packet_count():
+		if socket.get_available_packet_count():
 			response_received.emit()
 
 	# WebSocketPeer.STATE_CLOSING means the socket is closing.
