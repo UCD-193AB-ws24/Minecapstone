@@ -11,6 +11,10 @@ signal movement_completed
 @onready var _movement_start_time: float = 0.0
 @onready var _is_waiting_for_movement: bool = false
 
+@onready var _is_executing: bool = false
+@onready var _task_queue: Array = []
+@onready var _current_task = null
+
 @export var initial_goal: String = ""
 
 func _ready() -> void:
@@ -45,26 +49,74 @@ func actor_setup():
 		else:
 			set_goal(initial_goal)
 
-
 # Prompts the LLM based on the agent's goal
 func set_goal(new_goal:String):
+	# Add to task queue
+	var task = {
+		"type": "goal",
+		"content": new_goal
+	}
+	_enqueue_task(task)
+
+# Add task to the queue
+func _enqueue_task(task):
+	_task_queue.append(task)
+	
+	# If not currently executing, start processing the queue
+	if not _is_executing:
+		_process_queue()
+
+# Process the task queue
+func _process_queue():
+	if _is_executing or _task_queue.size() == 0:
+		return
+		
+	_is_executing = true
+	_current_task = _task_queue.pop_front()
+	
+	match _current_task.type:
+		"goal":
+			_execute_goal(_current_task.content)
+		"script":
+			_execute_script(_current_task.content)
+		_:
+			print("Unknown task")
+			_task_completed()
+
+
+func _execute_goal(new_goal: String):
 	self.goal = new_goal
-	print("Goal set to: ", new_goal)
+	print("Agent ", hash_id, " executing goal: ", new_goal)
+	
+	# Prompt LLM with the goal
+	API.prompt_llm(new_goal, self.hash_id)
+	# _task_completed() will be called when response is received
 
-	# Prompt the LLM with the goal, and passing the identifier of this agent
-	API.prompt_llm(self.goal, self.hash_id)
+# Execute script from LLM
+func _execute_script(script_content: String):
+	run_script(script_content)
 
+# Mark task as completed
+func _task_completed():
+	_is_executing = false
+	_current_task = null
+	
+	# Continue processing
+	_process_queue()
 
 # Handles the response from the LLM
 func _on_response(key, response: String):
 	# Ensure the response is for this agent
 	if key != self.hash_id: return
 
-	# Run dangerously set AI-generated code.
-	if (await run_script(response)):
-		print("Script created by agent successful.")
-	else:
-		print("Script created by agent failed.")
+	var task = {
+		"type": "script",
+		"content": response
+	}
+	
+	_enqueue_task(task)
+	
+	_task_completed()
 
 # Do not modify this function, it is used to run the script created by the LLM
 func run_script(input: String):
@@ -93,8 +145,10 @@ func eval(delta):
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
-	return await instance.setup(self).eval(0)
-
+	var result = await instance.setup(self).eval(0)
+	_task_completed()
+	
+	return result
 
 # Use this function to emit signals
 func _physics_process(delta):
@@ -135,8 +189,8 @@ func _on_message_received(from_id: int, to_id: int, content: String) -> void:
 		var new_goal = "Message received from agent " + str(from_id) + ": " + content + "\nRespond according to message content."
 		self.goal = new_goal
 		
-		# Prompt LLM with updated context
-		API.prompt_llm(goal, hash_id)
+		# Set goal but do not call API directly
+		set_goal(new_goal)
 
 		# Get current state and environment info
 		#var context = {
