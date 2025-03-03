@@ -7,6 +7,10 @@ class_name Agent extends NPC
 @onready var _command_queue: Array[Command] = []
 @onready var memories : Array[Dictionary] = []
 
+# State tracking
+enum GoalStatus { PENDING, COMPLETED, FAILED }
+@onready var _goal_status: GoalStatus = GoalStatus.PENDING
+@export var max_memories: int = 20
 
 func _ready() -> void:
 	super()
@@ -28,6 +32,49 @@ func actor_setup():
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
 		set_goal(goal)
+
+func set_initial_goal(new_goal:String):
+	goal = new_goal
+	_goal_status = GoalStatus.PENDING
+	prompt_llm()
+	
+func prompt_llm():
+	# Build context about current state
+	var context = "Current situation\n"
+	context += "- Position: " + str(global_position) + "\n"
+	context += "- Current goal: " + goal + "\n"
+	
+	# Add status of goal
+	match _goal_status:
+		GoalStatus.COMPLETED:
+			context += "- Goal status: COMPLETED\n"
+			context += "- You need to set a new goal for yourself \n"
+		GoalStatus.FAILED:
+			context += "- Goal status: FAILED\n"
+			context += "- Consider why the goal failed and what you want to do next \n"
+		GoalStatus.PENDING:
+			context += "- Goal status: PENDING\n"
+			context += "- Continue working on your goal \n"
+			
+	if memories.size() > 0:
+		context += "- Recent events:\n"
+		var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
+		for memory in recent_memories:
+			if memory.type == "message":
+				context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
+			elif memory.type == "goal_update":
+				context += "* Previous goal: " + memory.goal + "\n"
+			elif memory.type == "action":
+				context += "* Action performed: " + memory.action + "\n"
+	
+	var command_info = {
+		"agent": self,
+		"type": Command.CommandType.GOAL,
+		"command": context
+	}
+	
+	print("Debug: Agent prompting LLM with context")
+	_command_queue.append(_command.new().create_with(command_info))
 
 # Queues a prompt to the LLM based on the agent's goal
 static var _command = preload("command.gd")
