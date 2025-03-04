@@ -76,8 +76,13 @@ func prompt_llm():
 	print("Debug: Agent prompting LLM with context")
 	_command_queue.append(_command.new().create_with(command_info))
 
+func add_memory(memory: Dictionary):
+	memories.append(memory)
+	if memories.size() > max_memories:
+		memories.pop_front()
+
 # Queues a prompt to the LLM based on the agent's goal
-static var _command = preload("command.gd")
+
 func set_goal(new_goal:String):
 	# Add to task queue
 
@@ -101,13 +106,18 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		print("Debug: To agent id: ", to_id)
 
 		memories.append({
+			"type": "message",
 			"msg": msg,
 			"from_id": from_id,
-			"to_id": to_id
+			"to_id": to_id,
+			"timestamp": Time.get_ticks_msec() / 1000.0
 		})
-
+		
+		
 		# TODO: prompt llm to determine if the agent should respond, for now do it anyways
-		set_goal(msg)
+		if _command_queue.size() == 0:
+			prompt_llm()
+		#set_goal(msg)
 
 		# Get current state and environment info
 		#var context = {
@@ -117,6 +127,31 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 			#"nearby_agents": agent_controller.get_nearby_agents()
 		#}
 
+# Update goal status - call from agent_controller when goal is completed/failed
+func set_goal_status(status: GoalStatus, new_goal: String = ""):
+	_goal_status = status
+	
+	if new_goal != "":
+		goal = new_goal
+		add_memory({
+			"type": "goal_update",
+			"goal": new_goal,
+			"timestamp": Time.get_ticks_msec() / 1000.0
+		})
+		
+	# If completed a goal or failed, prompt llm
+	if status != GoalStatus.PENDING and _command_queue.size() == 0:
+		prompt_llm()
+
+# Record an action
+func record_action(action_description: String):
+	add_memory({
+		"type": "action",
+		"action": action_description,
+		"timestamp": Time.get_ticks_msec() / 1000.0
+	})
+
+static var _command = preload("command.gd")
 # Use this function to emit signals
 func _physics_process(delta):
 	super(delta)
@@ -125,3 +160,7 @@ func _physics_process(delta):
 		var command_status = _command_queue.front().execute(self)
 		if command_status == Command.CommandStatus.DONE:
 			_command_queue.pop_front()
+			
+		# If we completed the script and have no more commands prompt LLM again
+		if len(_command_queue) == 0:
+			prompt_llm()
