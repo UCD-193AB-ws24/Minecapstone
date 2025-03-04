@@ -71,8 +71,10 @@ func _on_response(key: int, response: String):
 		"command": response
 	})
 	
+	# Add to agent's command queue
 	agent._command_queue.append(script_command)
 	
+	# Mark command as done
 	command_status = CommandStatus.DONE
 
 

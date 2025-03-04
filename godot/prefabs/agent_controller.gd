@@ -23,25 +23,49 @@ func move_to_position(x: float, y: float):
 	await agent.navigation_agent.target_reached
 	return true
 
-# func get_nearby_agents() -> Array:
-# 	var message_broker = agent.get_node("/root/MessageHandler")
-# 	var nearby_agents: Array[int] = []
+func get_nearby_agents() -> Array:
+	var nearby = []
+	var all_ids = message_broker.get_all_agent_ids()
 	
-# 	for agent_id in message_broker.get_all_agent_ids():
-# 		if agent_id != agent.hash_id:
-# 			var other_agent = message_broker.get_agent_by_id(agent_id)
-# 			var distance = agent.global_position.distance_to(other_agent.global_position)
-# 			if distance < 30: # Arbitrary distance
-# 				nearby_agents.append(agent_id)
-				
-# 	return nearby_agents
-
+	for id in all_ids:
+		if id != agent.hash_id:
+			var other_agent = message_broker.get_agent_by_id(id)
+			if other_agent:
+				var distance = agent.global_position.distance_to(other_agent.global_position)
+				if distance < 30:
+					nearby.append(id)
+					
+	return nearby
+	
 func say(msg: String) -> void:
 	message_broker.send_message(msg, agent.hash_id)
+	agent.record_action("Said: " + msg)
 
 func say_to(msg: String, target_id: int) -> void:
 	message_broker.send_message(msg, agent.hash_id, target_id)
+	agent.record_action("Said to " + str(target_id) + ": " + msg)
 
 func eval(delta):
 	delta = delta
 	return true
+
+# Goal management
+
+func set_goal(goal_description: String):
+	agent.set_goal_status(Agent.GoalStatus.PENDING, goal_description)
+	agent.record_action("Set new goal: " + goal_description)
+	return true
+	
+func complete_goal():
+	agent.set_goal_status(Agent.GoalStatus.COMPLETED)
+	agent.record_action("Completed goal: " + agent.goal)
+	return true
+	
+func fail_goal():
+	agent.set_goal_status(Agent.GoalStatus.FAILED)
+	agent.record_action("Failed goal: " + agent.goal)
+	return true
+	
+func get_position() -> Vector3:
+	return agent.global_position
+	
