@@ -7,7 +7,7 @@ import json
 import os
 
 
-load_dotenv()
+load_dotenv("./.env.development.local")
 client = OpenAI()
 
 
@@ -20,43 +20,59 @@ class LinesOfCodeWithinFunction(BaseModel):
 
 
 system_prompt = """
-You have access to the following context:
-- position: Vector2 - The agent's current position
+You are an autonomous agent in a 3D world. You'll be called after completing previous actions to decide what to do next.
 
-Functions or Awaits
-- await move_to_position(float x, float y) - Move the agent to the specified coordinates. 
-- say(string message) - Send a global message.
+FUNCTION REFERENCE:
+- move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
+- say(message) - Broadcast a message to all nearby agents
+- say_to(message, target_id) - Send a message to a specific agent
+- set_goal(goal_description) - Update your current goal 
+- complete_goal() - Mark your current goal as completed
+- fail_goal() - Mark your current goal as failed
+- get_position() -> Vector3 - Get your current position
+- get_nearby_agents() -> Array[int] - Get IDs of nearby agents
 
-YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
-You are allowed to write conditionals, loops, and functions.
+IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
+CORRECT EXAMPLE:
+var reached = await move_to_position(30, 0)
+if reached:
+say("I've arrived!")
+Copy
+INCORRECT EXAMPLE:
+var reached = move_to_position(30, 0)  # ERROR: Missing await!
+Copy
+Remember:
+1. If a goal is COMPLETED or FAILED, set a new goal
+2. Keep your code simple and focused
+3. Your code will execute fully before you're called again
 """
 
 user_preprompt = """
 Provide the list of functions you would like to call to achieve the goal.
-You must achieve the goal using what function calls available to you, if possible.
+Remember that you're a persistent agent in an ongoing simulation - you'll be recalled after your code completes.
 
-Changes in Godot 4.3 you MUST ADHERE TO, lest Parser Errors will occur:
-deg2rad is now deg_to_rad() in Godot 4.3. 
-OS.get_ticks_msec() is now Time.get_ticks_msec() in Godot 4.3.
+Your responses should focus on immediate actions. For a PENDING goal, work toward completing it. For a COMPLETED or FAILED goal, set a new goal based on the situation.
 
-Failing to adhere to this will result in Parser Error: Function "deg2rad()" not found in base self. Did you mean to use "deg_to_rad()"?
+Changes in Godot 4.3 you MUST ADHERE TO:
+- deg2rad is now deg_to_rad() in Godot 4.3
+- OS.get_ticks_msec() is now Time.get_ticks_msec() in Godot 4.3
+- yield() is deprecated in Godot 4.3, don't use it at all
 
-Since you are writing the body of the function "func eval(delta)", you cannot include it in lines_of_code_of_function.
-Ensure the code is Godot 4.3 compatible code, you are writing the BODY of the function func eval(delta):
-
-The eval function is called every physics frame within func _physics_process(delta: float) -> void, and thus you have access to delta.
+You are writing the body of the function "func eval(delta)", which is called every physics frame.
+Ensure the code is Godot 4.3 compatible.
 """
 
 async def server(websocket):
 	async for message in websocket:
-		print("The fucking message:" + message)
+		print(message)
+
 		completion = client.beta.chat.completions.parse(
 			model="gpt-4o-mini",
 			messages=[
 				{"role": "system", "content": system_prompt},
 				{
 					"role": "user",
-					"content": message + user_preprompt,
+					"content": message + "\n" + user_preprompt,
 				}
 			],
 			response_format=LinesOfCodeWithinFunction,
@@ -73,7 +89,7 @@ async def server(websocket):
 
 
 async def main():
-	start_server = await websockets.serve(server, "localhost", 5000)
+	start_server = await websockets.serve(server, "localhost", 5000, ping_interval = 30, ping_timeout = 10, max_size = 1024*1024)
 	print("Server started on port 5000")
 	await start_server.wait_closed()
 

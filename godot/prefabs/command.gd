@@ -47,6 +47,8 @@ func execute(_agent: Agent):
 		agent.run_script(command)
 		command_status = CommandStatus.DONE
 		
+		agent.script_execution_completed()
+		
 	# Timeout functionality
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - start_time > timeout_seconds:

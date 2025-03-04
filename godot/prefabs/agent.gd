@@ -12,6 +12,11 @@ enum GoalStatus { PENDING, COMPLETED, FAILED }
 @onready var _goal_status: GoalStatus = GoalStatus.PENDING
 @export var max_memories: int = 20
 
+# Loop protection
+@onready var _last_prompt_time: float = 0.0
+@export var min_time_between_prompts: float = 5.0
+@onready var _is_waiting_for_script: bool = false
+
 func _ready() -> void:
 	super()
 	# Register agent with message_broker
@@ -19,7 +24,8 @@ func _ready() -> void:
 	message_broker.register_agent(self)
 	message_broker.message.connect(_on_message_received)
 	API.connect("response", Callable(self, "_on_response"))
-
+	
+	_last_prompt_time = Time.get_ticks_msec() / 1000.0
 
 # Gets call-deferred in _ready of npc
 func actor_setup():
@@ -36,9 +42,25 @@ func actor_setup():
 func set_initial_goal(new_goal:String):
 	goal = new_goal
 	_goal_status = GoalStatus.PENDING
-	prompt_llm()
+	
+	await get_tree().create_timer(1.0).timeout
+	
+	schedule_prompt()
 	
 func prompt_llm():
+	# Check prompt timing
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if current_time - _last_prompt_time < min_time_between_prompts:
+		print("Debug: Prompt limiting, waiting")
+		schedule_prompt()
+		return
+	
+	if _is_waiting_for_script:
+		print("Debug: Waiting for script response")
+		return
+		
+	_last_prompt_time = current_time
+	
 	# Build context about current state
 	var context = "Current situation\n"
 	context += "- Position: " + str(global_position) + "\n"
@@ -74,6 +96,8 @@ func prompt_llm():
 	}
 	
 	print("Debug: Agent prompting LLM with context")
+	_is_waiting_for_script = true
+	
 	_command_queue.append(_command.new().create_with(command_info))
 
 func add_memory(memory: Dictionary):
@@ -140,9 +164,9 @@ func set_goal_status(status: GoalStatus, new_goal: String = ""):
 		})
 		
 	# If completed a goal or failed, prompt llm
-	if status != GoalStatus.PENDING and _command_queue.size() == 0:
-		prompt_llm()
-
+	if status != GoalStatus.PENDING:
+		_is_waiting_for_script = false
+	
 # Record an action taken by the agent
 func record_action(action_description: String):
 	add_memory({
@@ -150,6 +174,49 @@ func record_action(action_description: String):
 		"action": action_description,
 		"timestamp": Time.get_ticks_msec() / 1000.0
 	})
+	
+func _on_response(key, response: String):
+	if key != self.hash_id:
+		return
+		
+	print("Debug: Received script from LLM")
+	_is_waiting_for_script = false
+	
+func run_script(input: String):
+	var script_command = _command.new().create_with({
+		"agent": self,
+		"type": Command.CommandType.SCRIPT,
+		"command": input
+	})
+	
+	return await script_command.run_script(input)
+	
+func script_execution_completed():
+	print("Debug: Script execution completed")
+	
+	var timer = get_tree().create_timer(min_time_between_prompts)
+	timer.timeout.connect(func():
+		if _command_queue.size() == 0 and not _is_waiting_for_script:
+			schedule_prompt()
+	)
+	
+var _prompt_timer: SceneTreeTimer = null
+
+func schedule_prompt():
+	# Cancel existing prompts
+	if _prompt_timer != null and _prompt_timer.time_left > 0:
+		pass
+	
+	var current_time = Time.get_ticks_msec() / 1000.0
+	var time_since_last = current_time - _last_prompt_time
+	var wait_time = max(0.1, min_time_between_prompts - time_since_last)
+	
+	_prompt_timer = get_tree().create_timer(wait_time)
+	_prompt_timer.timeout.connect(func():
+		if _command_queue.size() == 0 and not _is_waiting_for_script:
+			print("Debug: Retry prompting")
+			prompt_llm()
+	)
 
 static var _command = preload("command.gd")
 # Use this function to emit signals
@@ -161,6 +228,3 @@ func _physics_process(delta):
 		if command_status == Command.CommandStatus.DONE:
 			_command_queue.pop_front()
 			
-		# If we completed the script and have no more commands prompt LLM again
-		if len(_command_queue) == 0:
-			prompt_llm()
