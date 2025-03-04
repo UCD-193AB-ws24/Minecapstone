@@ -31,7 +31,7 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_goal(goal)
+		set_initial_goal(goal)
 
 func set_initial_goal(new_goal:String):
 	goal = new_goal
@@ -143,7 +143,7 @@ func set_goal_status(status: GoalStatus, new_goal: String = ""):
 	if status != GoalStatus.PENDING and _command_queue.size() == 0:
 		prompt_llm()
 
-# Record an action
+# Record an action taken by the agent
 func record_action(action_description: String):
 	add_memory({
 		"type": "action",
