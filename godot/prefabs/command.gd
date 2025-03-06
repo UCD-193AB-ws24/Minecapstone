@@ -38,14 +38,15 @@ func execute(_agent: Agent):
 	command_status = CommandStatus.EXECUTING
 	start_time = Time.get_ticks_msec() / 1000.0 
 
-	if command_type == CommandType.GOAL:
-		API.prompt_llm(command, agent.hash_id)
-		command_status = CommandStatus.DONE
-		# API will emit response signal emit containing (key, response_string)
-	elif command_type == CommandType.SCRIPT:
-		# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
-		self.run_script(command)
-		command_status = CommandStatus.DONE
+	match command_type:
+		CommandType.GOAL:
+			API.prompt_llm(command, agent.hash_id)
+			command_status = CommandStatus.DONE
+			# API will emit response signal emit containing (key, response_string)
+		CommandType.SCRIPT:
+			# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
+			self.run_script(command)
+			command_status = CommandStatus.DONE
 
 	# Timeout functionality
 	var current_time = Time.get_ticks_msec() / 1000.0
