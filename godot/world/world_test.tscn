@@ -1,0 +1,71 @@
+[gd_scene load_steps=12 format=3 uid="uid://cgb063gab15jv"]
+
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
+[ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_t5wr3"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_r23cj"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="4_34trn"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_wwssr"]
+[ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_0lc8j"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="7_3dg17"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="8_wvq50"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="9_pcqhl"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="10_a8v0b"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
+vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("1_w4vno")]
+
+[node name="WorldGenerator" parent="." instance=ExtResource("2_t5wr3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.833702, -0.419207, -0.359453, 0.202048, -0.374226, 0.905059, -0.513924, -0.827176, -0.227293, 0, 39.8777, 0)
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_w4vno")
+script = ExtResource("3_r23cj")
+
+[node name="BlockManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("4_34trn")
+
+[node name="ChunkManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("5_wwssr")
+ChunkScene = ExtResource("6_0lc8j")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationMesher"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+use_collision = true
+size = Vector3(100, 1, 100)
+
+[node name="Player" parent="." instance=ExtResource("7_3dg17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
+
+[node name="NPC" parent="." instance=ExtResource("8_wvq50")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
+
+[node name="NPCZombie" parent="." instance=ExtResource("9_pcqhl")]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+attack_damage = 0.0
+
+[node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+goal = "Move to (30,0). Then, send a message that says, \"Move to (0, 0)\"."
+_speed = 2.0
+
+[node name="Agent2" parent="." instance=ExtResource("10_a8v0b")]
+process_mode = 4
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+goal = "Move to (10,0)."
+_speed = 2.0
+
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
