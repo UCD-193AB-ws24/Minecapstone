@@ -86,13 +86,6 @@ func prompt_llm():
 	_add_command(command_info)
 
 
-func add_memory(memory: Dictionary) -> void:
-	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
-	memories.append(memory)
-	if memories.size() > max_memories:
-		memories.pop_front()
-
-
 func _add_command(command_info: Dictionary) -> void:
 	if _command:
 		_command_queue.append(_command.new().create_with(command_info))
@@ -179,7 +172,6 @@ func set_goal_status(status: GoalStatus, new_goal: String = ""):
 		add_memory({
 			"type": "goal_update",
 			"goal": new_goal,
-			"timestamp": Time.get_ticks_msec() / 1000.0
 		})
 		
 	# If completed a goal or failed, prompt llm
@@ -197,6 +189,13 @@ func record_action(action_description: String):
 		"type": "action",
 		"action": action_description
 	})
+
+
+func add_memory(memory: Dictionary) -> void:
+	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
+	memories.append(memory)
+	if memories.size() > max_memories:
+		memories.pop_front()
 
 
 func _on_response(key, response: String):
