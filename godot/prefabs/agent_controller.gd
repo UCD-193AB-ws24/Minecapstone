@@ -50,7 +50,6 @@ func eval(delta):
 	return true
 
 # Goal management
-
 func set_goal(goal_description: String):
 	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)
 	agent.record_action("Set new goal: " + goal_description)

@@ -60,21 +60,17 @@ func _physics_process(_delta):
 	var state = socket.get_ready_state()
 
 	# WebSocketPeer.STATE_OPEN means the socket is connected and ready to send and receive data.
-	if state == WebSocketPeer.STATE_OPEN:
-		if socket.get_available_packet_count():
-			response_received.emit()
-
-	# WebSocketPeer.STATE_CLOSING means the socket is closing.
-	# It is important to keep polling for a clean close.
-	elif state == WebSocketPeer.STATE_CLOSING:
-		print("Connection lost. Is the Python server running?")
-		pass
-
-	# WebSocketPeer.STATE_CLOSED means the connection has fully closed.
-	# It is now safe to stop polling.
-	elif state == WebSocketPeer.STATE_CLOSED:
-		# The code will be -1 if the disconnection was not properly notified by the remote peer.
-		var code = socket.get_close_code()
-		print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
-		set_process(false) # Stop processing.
-		set_physics_process(false) # Stop physics processing.
+	match state:
+		WebSocketPeer.STATE_OPEN:
+			if socket.get_available_packet_count():
+				response_received.emit()
+		
+		WebSocketPeer.STATE_CLOSING:
+			print("Connection lost. Is the Python server running?")
+		
+		WebSocketPeer.STATE_CLOSED:
+			# The code will be -1 if the disconnection was not properly notified by the remote peer.
+			var code = socket.get_close_code()
+			print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
+			set_process(false) # Stop processing.
+			set_physics_process(false) # Stop physics processing.

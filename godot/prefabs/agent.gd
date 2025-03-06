@@ -8,12 +8,7 @@ class_name Agent extends NPC
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
 @onready var memories : Array[Dictionary] = []
-
-# Private variables
 @onready var _command_queue: Array[Command] = []
-@onready var _last_prompt_time: float = 0.0
-@onready var _is_waiting_for_script: bool = false
-@onready var _debug_id: String = str(hash_id).substr(0,5)
 
 # State tracking
 enum GoalStatus { IN_PROGRESS, COMPLETED, FAILED }
@@ -23,12 +18,10 @@ enum GoalStatus { IN_PROGRESS, COMPLETED, FAILED }
 static var _command = preload("command.gd")
 
 
+# Initialize the agent
 func _ready() -> void:
 	super()
-	_initialize()
 
-
-func _initialize() -> void:
 	# Register with message_broker
 	MessageBroker.register_agent(self)
 	MessageBroker.message.connect(_on_message_received)
@@ -37,8 +30,6 @@ func _initialize() -> void:
 	if not API.is_connected("response", Callable(self, "_on_response")):
 		API.connect("response", Callable(self, "_on_response"))
 		
-	_last_prompt_time = Time.get_ticks_msec() / 1000.0
-
 
 # Gets call-deferred in _ready of npc
 func actor_setup():
@@ -58,39 +49,31 @@ func set_initial_goal(new_goal:String):
 	_goal_status = GoalStatus.IN_PROGRESS
 	
 	await get_tree().create_timer(1.0).timeout
+
 	prompt_llm()
 
 
 func prompt_llm():
-	# Check if we should prompt
-	if _is_waiting_for_script:
-		print("Debug: [Agent %s] Skipping prompt - waiting for script" % _debug_id)
-		return
-	
 	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] Skipping prompt - commands in queue" % _debug_id)
+		print("Debug: [Agent %s] Skipping prompt - commands in queue" % hash_id)
 		return
 	
 	# Build context about current state
-	var context = _build_prompt_context()
+	# var context = _build_prompt_context()
 	
 	var command_info = {
 		"agent": self,
 		"type": Command.CommandType.GOAL,
-		"command": context
+		"command": goal
 	}
 	
 	print("Debug: Agent prompting LLM with context")
-	_is_waiting_for_script = true
 	
 	_add_command(command_info)
 
 
 func _add_command(command_info: Dictionary) -> void:
-	if _command:
-		_command_queue.append(_command.new().create_with(command_info))
-	else:
-		push_error("Command script not available")
+	_command_queue.append(_command.new().create_with(command_info))
 
 
 func _process_command_queue() -> void:
@@ -100,47 +83,47 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 
 
-func _build_prompt_context() -> String:
-	var context = "Current situation\n"
-	context += "- Position: " + str(global_position) + "\n"
-	context += "- Current goal: " + goal + "\n"
+# func _build_prompt_context() -> String:
+# 	var context = "Current situation\n"
+# 	context += "- Position: " + str(global_position) + "\n"
+# 	context += "- Current goal: " + goal + "\n"
 	
-	# Add status of goal
-	match _goal_status:
-		GoalStatus.COMPLETED:
-			context += "- Goal status: COMPLETED\n"
-			context += "- IMPORTANT: The previous goal '" + goal + "' is already COMPLETED. \n"
-			context += "- You MUST set a new goal using the set_goal() function\n"
-			context += "- DO NOT attempt to complete the previous goal again \n"
-		GoalStatus.FAILED:
-			context += "- Goal status: FAILED\n"
-			context += "- Consider why the goal failed and what you want to do next \n"
-		GoalStatus.IN_PROGRESS:
-			context += "- Goal status: IN_PROGRESS\n"
-			context += "- Continue working on your goal \n"
+# 	# Add status of goal
+# 	match _goal_status:
+# 		GoalStatus.COMPLETED:
+# 			context += "- Goal status: COMPLETED\n"
+# 			context += "- IMPORTANT: The previous goal '" + goal + "' is already COMPLETED. \n"
+# 			context += "- You MUST set a new goal using the set_goal() function\n"
+# 			context += "- DO NOT attempt to complete the previous goal again \n"
+# 		GoalStatus.FAILED:
+# 			context += "- Goal status: FAILED\n"
+# 			context += "- Consider why the goal failed and what you want to do next \n"
+# 		GoalStatus.IN_PROGRESS:
+# 			context += "- Goal status: IN_PROGRESS\n"
+# 			context += "- Continue working on your goal \n"
 			
-	if memories.size() > 0:
-		context += "- Recent events:\n"
-		var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
-		for memory in recent_memories:
-			if memory.type == "message":
-				context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
-			elif memory.type == "goal_update":
-				context += "* Previous goal: " + memory.goal + "\n"
-			elif memory.type == "action":
-				context += "* Action performed: " + memory.action + "\n"
-	return context
+# 	if memories.size() > 0:
+# 		context += "- Recent events:\n"
+# 		var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
+# 		for memory in recent_memories:
+# 			if memory.type == "message":
+# 				context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
+# 			elif memory.type == "goal_update":
+# 				context += "* Previous goal: " + memory.goal + "\n"
+# 			elif memory.type == "action":
+# 				context += "* Action performed: " + memory.action + "\n"
+# 	return context
 
 
-func set_goal(new_goal: String) -> void:
-	var command_info = {
-		"agent": self,
-		"type": Command.CommandType.GOAL,
-		"command": new_goal
-	}
+# func set_goal(new_goal: String) -> void:
+# 	var command_info = {
+# 		"agent": self,
+# 		"type": Command.CommandType.GOAL,
+# 		"command": new_goal
+# 	}
 	
-	print("Debug: Agent received goal: ", new_goal)
-	_add_command(command_info)
+# 	print("Debug: Agent received goal: ", new_goal)
+# 	_add_command(command_info)
 
 
 func _on_message_received(msg: String, from_id: int, to_id: int):
@@ -163,69 +146,53 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		# will not cause receiving agent to prompt, but will be included into the agents context memories
 
 
-# Update goal status - call from agent_controller when goal is completed/failed
-func set_goal_status(status: GoalStatus, new_goal: String = ""):
-	_goal_status = status
+# # Update goal status - call from agent_controller when goal is completed/failed
+# func set_goal_status(status: GoalStatus, new_goal: String = ""):
+# 	_goal_status = status
 	
-	if new_goal != "":
-		goal = new_goal
-		add_memory({
-			"type": "goal_update",
-			"goal": new_goal,
-		})
+# 	if new_goal != "":
+# 		goal = new_goal
+# 		add_memory({
+# 			"type": "goal_update",
+# 			"goal": new_goal,
+# 		})
 		
-	# If completed a goal or failed, prompt llm
-	if status != GoalStatus.IN_PROGRESS:
-		print("Debug: [Agent %s] Goal status changed to %s" % [_debug_id, GoalStatus.keys()[status]])
-		_is_waiting_for_script = false
+# 	# If completed a goal or failed, prompt llm
+# 	if status != GoalStatus.IN_PROGRESS:
+# 		print("Debug: [Agent %s] Goal status changed to %s" % [_debug_id, GoalStatus.keys()[status]])
+# 		_is_waiting_for_script = false
 		
-		await get_tree().create_timer(1.0).timeout
-		prompt_llm()
+# 		await get_tree().create_timer(1.0).timeout
+# 		prompt_llm()
 
 
-# Record an action taken by the agent
-func record_action(action_description: String):
-	add_memory({
-		"type": "action",
-		"action": action_description
-	})
+# # Record an action taken by the agent
+# func record_action(action_description: String):
+# 	add_memory({
+# 		"type": "action",
+# 		"action": action_description
+# 	})
 
 
-func add_memory(memory: Dictionary) -> void:
-	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
-	memories.append(memory)
-	if memories.size() > max_memories:
-		memories.pop_front()
+# func add_memory(memory: Dictionary) -> void:
+# 	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
+# 	memories.append(memory)
+# 	if memories.size() > max_memories:
+# 		memories.pop_front()
 
 
 func _on_response(key, response: String):
-	if key != self.hash_id:
-		return
-		
-	print("Debug: [Agent %s] Received script from LLM" % _debug_id)
-	_is_waiting_for_script = false
-
-
-func run_script(input: String):
-	var script_command = _command.new().create_with({
-		"agent": self,
-		"type": Command.CommandType.SCRIPT,
-		"command": input
-	})
-	
-	return await script_command.run_script(input)
+	if key == self.hash_id:
+		print("Debug: [Agent %s] Received script from LLM" % hash_id)
 
 
 func script_execution_completed():
 	print("Debug: Script execution completed")
 	
-	var timer = get_tree().create_timer(0.5)
+	await get_tree().create_timer(0.5).timeout
 	
-	
-	timer.timeout.connect(func():
-		if not _is_waiting_for_script and _command_queue.size() == 0:
-			prompt_llm()
-	)
+	if _command_queue.size() == 0:
+		prompt_llm()
 
 
 # Use this function to emit signals

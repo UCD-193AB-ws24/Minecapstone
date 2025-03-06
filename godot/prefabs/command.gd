@@ -44,11 +44,9 @@ func execute(_agent: Agent):
 		# API will emit response signal emit containing (key, response_string)
 	elif command_type == CommandType.SCRIPT:
 		# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
-		agent.run_script(command)
+		self.run_script(command)
 		command_status = CommandStatus.DONE
-		
-		agent.script_execution_completed()
-		
+
 	# Timeout functionality
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - start_time > timeout_seconds:
@@ -86,12 +84,7 @@ func run_script(input: String):
 		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(
 		"func eval(delta):\n\tdelta = delta\n\treturn true",
-		""
-		) + """
-func eval(delta):
-%s
-	return true
-""" % input
+		"func eval(delta):\n%s\n\treturn true" % input)
 
 	# TODO: remove debug print
 	print("Debug: Agent " + str(agent.hash_id) + " performing ", input)
