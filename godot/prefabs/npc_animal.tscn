@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://cwf5gemyuyfrv"]
+[gd_scene load_steps=7 format=3 uid="uid://cwf5gemyuyfrv"]
 
-[ext_resource type="Script" uid="uid://b0jv6f07kxcof" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://dlr6a1ejkp2mu" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
@@ -11,9 +11,11 @@ size = Vector3(0.6, 1.85, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_k4eh4"]
+
 [node name="npc_animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
-metadata/_custom_type_script = ExtResource("1_v1rpo")
+metadata/_custom_type_script = "uid://dlr6a1ejkp2mu"
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_height_offset = 1.0
@@ -48,9 +50,14 @@ shape = SubResource("BoxShape3D_ilsbc")
 
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("3_m2cuo")
-metadata/_custom_type_script = ExtResource("3_m2cuo")
+metadata/_custom_type_script = "uid://da2vclwxlejcg"
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_whuro")
+
+[node name="DetectionSphere" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionSphere"]
+shape = SubResource("SphereShape3D_k4eh4")
