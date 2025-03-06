@@ -3,7 +3,6 @@ class_name Agent extends NPC
 # Config and export variables
 @export var goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
-@export var min_time_between_prompts: float = 5.0
 
 # Internal variables
 @onready var hash_id : int = hash(self)
@@ -13,6 +12,7 @@ class_name Agent extends NPC
 @onready var _last_prompt_time: float = 0.0
 @onready var _is_waiting_for_script: bool = false
 @onready var _prompt_timer: SceneTreeTimer = null
+@onready var _debug_id: String = str(hash_id).substr(0,5)
 
 # State tracking
 enum GoalStatus { IN_PROGRESS, COMPLETED, FAILED }
@@ -58,7 +58,7 @@ func set_initial_goal(new_goal:String):
 	_goal_status = GoalStatus.IN_PROGRESS
 	
 	await get_tree().create_timer(1.0).timeout
-	_schedule_prompt()
+	prompt_llm()
 
 func add_memory(memory: Dictionary) -> void:
 	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
@@ -81,11 +81,13 @@ func _process_command_queue() -> void:
 			
 func prompt_llm():
 	# Check if we should prompt
-	if not _should_prompt():
-		_schedule_prompt()
+	if _is_waiting_for_script:
+		print("Debug: [Agent %s] Skipping prompt - waiting for script" % _debug_id)
 		return
-		
-	_last_prompt_time = Time.get_ticks_msec() / 1000.0
+	
+	if _command_queue.size() > 0:
+		print("Debug: [Agent %s] Skipping prompt - commands in queue" % _debug_id)
+		return
 	
 	# Build context about current state
 	var context = _build_prompt_context()
@@ -110,7 +112,9 @@ func _build_prompt_context() -> String:
 	match _goal_status:
 		GoalStatus.COMPLETED:
 			context += "- Goal status: COMPLETED\n"
-			context += "- You need to set a new goal for yourself \n"
+			context += "- IMPORTANT: The previous goal '" + goal + "' is already COMPLETED. \n"
+			context += "- You MUST set a new goal using the set_goal() function\n"
+			context += "- DO NOT attempt to complete the previous goal again \n"
 		GoalStatus.FAILED:
 			context += "- Goal status: FAILED\n"
 			context += "- Consider why the goal failed and what you want to do next \n"
@@ -130,14 +134,6 @@ func _build_prompt_context() -> String:
 				context += "* Action performed: " + memory.action + "\n"
 	return context
 
-
-func _should_prompt() -> bool:
-	var current_time = Time.get_ticks_msec() / 1000.0
-	return (
-		_command_queue.size() == 0 and
-		not _is_waiting_for_script and
-		current_time - _last_prompt_time >= min_time_between_prompts
-	)
 
 func set_goal(new_goal: String) -> void:
 	var command_info = {
@@ -167,19 +163,8 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 			"timestamp": Time.get_ticks_msec() / 1000.0
 		})
 		
+		# will not cause receiving agent to prompt, but will be included into the agents context memories
 		
-		# TODO: prompt llm to determine if the agent should respond, for now do it anyways
-		if _command_queue.size() == 0:
-			prompt_llm()
-		#set_goal(msg)
-
-		# Get current state and environment info
-		#var context = {
-			#"message_from": from_id,
-			#"message_content": content,
-			#"my_position": global_position,
-			#"nearby_agents": agent_controller.get_nearby_agents()
-		#}
 
 # Update goal status - call from agent_controller when goal is completed/failed
 func set_goal_status(status: GoalStatus, new_goal: String = ""):
@@ -195,7 +180,11 @@ func set_goal_status(status: GoalStatus, new_goal: String = ""):
 		
 	# If completed a goal or failed, prompt llm
 	if status != GoalStatus.IN_PROGRESS:
+		print("Debug: [Agent %s] Goal status changed to %s" % [_debug_id, GoalStatus.keys()[status]])
 		_is_waiting_for_script = false
+		
+		var timer = get_tree().create_timer(0.5)
+		timer.timeout.connect(func(): prompt_llm())
 	
 # Record an action taken by the agent
 func record_action(action_description: String):
@@ -208,7 +197,7 @@ func _on_response(key, response: String):
 	if key != self.hash_id:
 		return
 		
-	print("Debug: Received script from LLM")
+	print("Debug: [Agent %s] Received script from LLM" % _debug_id)
 	_is_waiting_for_script = false
 	
 func run_script(input: String):
@@ -223,27 +212,11 @@ func run_script(input: String):
 func script_execution_completed():
 	print("Debug: Script execution completed")
 	
-	var timer = get_tree().create_timer(min_time_between_prompts)
+	var timer = get_tree().create_timer(0.5)
+	
+	
 	timer.timeout.connect(func():
-		if _command_queue.size() == 0 and not _is_waiting_for_script:
-			_schedule_prompt()
-	)
-	
-
-
-func _schedule_prompt():
-	# Cancel existing prompts
-	if _prompt_timer != null and _prompt_timer.time_left > 0:
-		pass
-	
-	var current_time = Time.get_ticks_msec() / 1000.0
-	var time_since_last = current_time - _last_prompt_time
-	var wait_time = max(0.1, min_time_between_prompts - time_since_last)
-	
-	_prompt_timer = get_tree().create_timer(wait_time)
-	_prompt_timer.timeout.connect(func():
-		if _command_queue.size() == 0 and not _is_waiting_for_script:
-			print("Debug: Retry prompting")
+		if not _is_waiting_for_script and _command_queue.size() == 0:
 			prompt_llm()
 	)
 

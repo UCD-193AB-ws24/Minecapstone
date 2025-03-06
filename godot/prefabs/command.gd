@@ -94,7 +94,7 @@ func eval(delta):
 """ % input
 
 	# TODO: remove debug print
-	print("Debug: Agent performing ", input)
+	print("Debug: Agent " + str(agent.hash_id) + " performing ", input)
 
 	# Dangerously created script
 	var script = GDScript.new()
