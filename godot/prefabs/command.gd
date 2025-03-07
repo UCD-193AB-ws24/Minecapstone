@@ -32,6 +32,7 @@ func create_with(command_info: Dictionary) -> Command:
 
 # Handles the response from API, used only if the command is a GOAL
 func _LLM_set_goal(key: int, response: String):
+	print("Done waiting")
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
 
@@ -46,7 +47,7 @@ func _LLM_set_goal(key: int, response: String):
 	}
 	agent.add_command(command_info)
 
-	command_status = CommandStatus.DONE		# Mark command as done
+	command_status = CommandStatus.DONE
 
 
 func execute(_agent: Agent):
@@ -58,8 +59,9 @@ func execute(_agent: Agent):
 
 	match command_type:
 		CommandType.GOAL:
+			print("Prompted LLM, waiting...")
 			API.prompt_llm(command, agent.hash_id)
-			command_status = CommandStatus.DONE
+			command_status = CommandStatus.EXECUTING
 			# API will emit response signal emit containing (key, response_string)
 		CommandType.SCRIPT:
 			var script_result = await self.run_script(command)

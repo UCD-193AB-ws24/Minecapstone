@@ -29,6 +29,24 @@ func _ready() -> void:
 func _physics_process(delta):
 	super(delta)
 	_process_command_queue()
+	# Print debug information about commands in the queue
+	if not _command_queue.is_empty():
+		print("Debug: [Agent %s] Command Queue Status:" % hash_id)
+		for i in range(_command_queue.size()):
+			var cmd = _command_queue[i]
+			var status_text = "WAITING"
+			if cmd.command_status == Command.CommandStatus.EXECUTING:
+				status_text = "EXECUTING"
+			elif cmd.command_status == Command.CommandStatus.DONE:
+				status_text = "DONE"
+				
+			var type_text = "GOAL" if cmd.command_type == Command.CommandType.GOAL else "SCRIPT"
+			
+			print("  [%d] Type: %s | Status: %s | Command: %s" % [
+				i, type_text, status_text, cmd.command.substr(0, 50) + (
+					"..." if cmd.command.length() > 50 else ""
+				)
+			])
 
 
 # Gets call-deferred in _ready of npc
@@ -54,17 +72,19 @@ func _process_command_queue() -> void:
 				pass
 			Command.CommandStatus.DONE:
 				_command_queue.pop_front()
+				if _command_queue.is_empty():
+					generate_new_goal()
 
 
-func prompt_llm():
+func generate_new_goal():
 	if _command_queue.size() > 0:
 		print("Debug: [Agent %s] Skipping prompt - commands in queue" % hash_id)
 		return
+	else:
+		print("Debug: [Agent %s] Prompting LLM" % hash_id)
 	
-	# Build context about current state
-	var context = _build_prompt_context()
-	
-	# set_goal(context)
+	# Build context about current state, this will inform the LLM ab the agent's current situation
+	# var context = _build_prompt_context()
 	set_goal(goal)
 
 
@@ -80,7 +100,7 @@ func set_goal(new_goal: String) -> void:
 
 
 func add_command(command_info: Dictionary) -> void:
-	_command_queue.append(_command.new().create_with(command_info))
+	_command_queue.push_back(_command.new().create_with(command_info))
 
 
 func _on_message_received(msg: String, from_id: int, to_id: int):
@@ -131,7 +151,7 @@ func _build_prompt_context() -> String:
 	context += "- Position: " + str(global_position) + "\n"
 	context += "- Current goal: " + goal + "\n"
 	
-	# # Add status of goal
+	# Add status of goal
 	# match _goal_status:
 	# 	GoalStatus.COMPLETED:
 	# 		context += "- Goal status: COMPLETED\n"
@@ -145,16 +165,16 @@ func _build_prompt_context() -> String:
 	# 		context += "- Goal status: IN_PROGRESS\n"
 	# 		context += "- Continue working on your goal \n"
 			
-	# if memories.size() > 0:
-	# 	context += "- Recent events:\n"
-	# 	var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
-	# 	for memory in recent_memories:
-	# 		if memory.type == "message":
-	# 			context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
-	# 		elif memory.type == "goal_update":
-	# 			context += "* Previous goal: " + memory.goal + "\n"
-	# 		elif memory.type == "action":
-	# 			context += "* Action performed: " + memory.action + "\n"
+	if memories.size() > 0:
+		context += "- Recent events:\n"
+		var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
+		for memory in recent_memories:
+			if memory.type == "message":
+				context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
+			elif memory.type == "goal_update":
+				context += "* Previous goal: " + memory.goal + "\n"
+			elif memory.type == "action":
+				context += "* Action performed: " + memory.action + "\n"
 	return context
 
 
