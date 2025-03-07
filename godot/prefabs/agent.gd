@@ -78,7 +78,7 @@ func _add_command(command_info: Dictionary) -> void:
 
 func _process_command_queue() -> void:
 	if len(_command_queue) > 0:
-		var command_status = _command_queue.front().execute(self)
+		var command_status = await _command_queue.front().execute(self)
 		if command_status == Command.CommandStatus.DONE:
 			_command_queue.pop_front()
 
@@ -166,19 +166,19 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 # 		prompt_llm()
 
 
-# # Record an action taken by the agent
-# func record_action(action_description: String):
-# 	add_memory({
-# 		"type": "action",
-# 		"action": action_description
-# 	})
+# Record an action taken by the agent
+func record_action(action_description: String):
+	add_memory({
+		"type": "action",
+		"action": action_description
+	})
 
 
-# func add_memory(memory: Dictionary) -> void:
-# 	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
-# 	memories.append(memory)
-# 	if memories.size() > max_memories:
-# 		memories.pop_front()
+func add_memory(memory: Dictionary) -> void:
+	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
+	memories.append(memory)
+	if memories.size() > max_memories:
+		memories.pop_front()
 
 
 func _on_response(key, response: String):

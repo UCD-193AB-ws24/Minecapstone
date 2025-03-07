@@ -45,7 +45,8 @@ func execute(_agent: Agent):
 			# API will emit response signal emit containing (key, response_string)
 		CommandType.SCRIPT:
 			# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
-			self.run_script(command)
+			var script_result = await self.run_script(command)
+			agent.script_execution_completed()
 			command_status = CommandStatus.DONE
 
 	# Timeout functionality

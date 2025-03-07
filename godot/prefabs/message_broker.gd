@@ -18,6 +18,7 @@ func unregister_agent(agent: Agent) -> void:
 	agents.erase(agent.hash_id)
 
 func send_message(msg: String, from_id: int, to_id: int = -1) -> bool:
+	print("Debug: %s sending message to %s: %s" % [from_id, to_id, msg])
 	message.emit(msg, from_id, to_id)
 	return true
 
