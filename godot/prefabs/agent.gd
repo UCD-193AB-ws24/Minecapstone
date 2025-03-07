@@ -29,24 +29,25 @@ func _ready() -> void:
 func _physics_process(delta):
 	super(delta)
 	_process_command_queue()
+	
 	# Print debug information about commands in the queue
-	if not _command_queue.is_empty():
-		print("Debug: [Agent %s] Command Queue Status:" % hash_id)
-		for i in range(_command_queue.size()):
-			var cmd = _command_queue[i]
-			var status_text = "WAITING"
-			if cmd.command_status == Command.CommandStatus.EXECUTING:
-				status_text = "EXECUTING"
-			elif cmd.command_status == Command.CommandStatus.DONE:
-				status_text = "DONE"
+	# if not _command_queue.is_empty():
+	# 	print("Debug: [Agent %s] Command Queue Status:" % hash_id)
+	# 	for i in range(_command_queue.size()):
+	# 		var cmd = _command_queue[i]
+	# 		var status_text = "WAITING"
+	# 		if cmd.command_status == Command.CommandStatus.EXECUTING:
+	# 			status_text = "EXECUTING"
+	# 		elif cmd.command_status == Command.CommandStatus.DONE:
+	# 			status_text = "DONE"
 				
-			var type_text = "GOAL" if cmd.command_type == Command.CommandType.GOAL else "SCRIPT"
+	# 		var type_text = "GOAL" if cmd.command_type == Command.CommandType.GOAL else "SCRIPT"
 			
-			print("  [%d] Type: %s | Status: %s | Command: %s" % [
-				i, type_text, status_text, cmd.command.substr(0, 50) + (
-					"..." if cmd.command.length() > 50 else ""
-				)
-			])
+	# 		print("  [%d] Type: %s | Status: %s | Command: %s" % [
+	# 			i, type_text, status_text, cmd.command.substr(0, 50) + (
+	# 				"..." if cmd.command.length() > 50 else ""
+	# 			)
+	# 		])
 
 
 # Gets call-deferred in _ready of npc
