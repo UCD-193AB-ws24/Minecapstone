@@ -76,10 +76,10 @@ func set_goal(new_goal: String) -> void:
 		"type": Command.CommandType.GOAL,
 		"command": new_goal
 	}
-	_add_command(command_info)
+	add_command(command_info)
 
 
-func _add_command(command_info: Dictionary) -> void:
+func add_command(command_info: Dictionary) -> void:
 	_command_queue.append(_command.new().create_with(command_info))
 
 

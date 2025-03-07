@@ -76,7 +76,6 @@ async def server(websocket):
 			response_format=LinesOfCodeWithinFunction,
 		)
 		response = json.loads(completion.choices[0].message.content)
-		print(response)
 
 		# Format the lines with proper indentation and join them
 		code_lines = response["line_of_code_of_function"]

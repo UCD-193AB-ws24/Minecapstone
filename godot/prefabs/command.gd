@@ -39,13 +39,13 @@ func _LLM_set_goal(key: int, response: String):
 		API.response.disconnect(_LLM_set_goal)
 
 	# Next command after goal is to run the SCRIPT
-	var script_command = Command.new().create_with({
+	var command_info = {
 		"agent": agent,
 		"type": CommandType.SCRIPT,
 		"command": response
-	})
+	}
+	agent.add_command(command_info)
 
-	agent._command_queue.append(script_command)
 	command_status = CommandStatus.DONE		# Mark command as done
 
 

@@ -72,6 +72,8 @@ func set_goal(goal_description: String):
 	return true
 
 
+# TODO: We should automatically determine whether a goal is completed or failed
+# not the agent, somehow.
 # func set_goal(goal_description: String):
 # 	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)
 # 	agent.record_action("Set new goal: " + goal_description)
