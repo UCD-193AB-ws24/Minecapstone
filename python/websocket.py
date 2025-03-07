@@ -23,13 +23,11 @@ system_prompt = """
 You are an autonomous agent in a 3D world. You'll be called after completing previous actions to decide what to do next.
 
 FUNCTION REFERENCE:
+- get_position() -> Vector3 - Get your current position
 - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
 - set_goal(goal_description) - Update your current goal 
-- complete_goal() - Mark your current goal as completed
-- fail_goal() - Mark your current goal as failed
-- get_position() -> Vector3 - Get your current position
 - get_nearby_agents() -> Array[int] - Get IDs of nearby agents
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:

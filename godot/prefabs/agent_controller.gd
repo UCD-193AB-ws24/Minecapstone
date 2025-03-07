@@ -15,6 +15,10 @@ func setup(target_agent: Agent):
 	return self
 
 
+func get_position() -> Vector3:
+	return agent.global_position
+
+
 func move_to_position(x: float, y: float):
 	# print("Moving to position: ", x, " ", y)
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
@@ -64,20 +68,21 @@ func eval():
 
 
 func set_goal(goal_description: String):
-	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)
-	agent.record_action("Set new goal: " + goal_description)
+	agent.set_goal(goal_description)
 	return true
+
+
+# func set_goal(goal_description: String):
+# 	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)
+# 	agent.record_action("Set new goal: " + goal_description)
+# 	return true
 	
-func complete_goal():
-	agent.set_goal_status(Agent.GoalStatus.COMPLETED)
-	agent.record_action("Completed goal: " + agent.goal)
-	return true
+# func complete_goal():
+# 	agent.set_goal_status(Agent.GoalStatus.COMPLETED)
+# 	agent.record_action("Completed goal: " + agent.goal)
+# 	return true
 	
-func fail_goal():
-	agent.set_goal_status(Agent.GoalStatus.FAILED)
-	agent.record_action("Failed goal: " + agent.goal)
-	return true
-	
-func get_position() -> Vector3:
-	return agent.global_position
-	
+# func fail_goal():
+# 	agent.set_goal_status(Agent.GoalStatus.FAILED)
+# 	agent.record_action("Failed goal: " + agent.goal)
+# 	return true

@@ -58,7 +58,7 @@ attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
-goal = "Move to (30,0). Then, send a message that says, \"Move to (0, 0)\"."
+goal = "Move to (30,0). Then, set your goal to Move to (0, 0)."
 _speed = 2.0
 
 [node name="Agent2" parent="." instance=ExtResource("10_a8v0b")]

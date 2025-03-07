@@ -10,10 +10,6 @@ class_name Agent extends NPC
 @onready var memories : Array[Dictionary] = []
 @onready var _command_queue: Array[Command] = []
 
-# State tracking
-enum GoalStatus { IN_PROGRESS, COMPLETED, FAILED }
-@onready var _goal_status: GoalStatus = GoalStatus.IN_PROGRESS
-
 # Command preload
 static var _command = preload("command.gd")
 
@@ -45,16 +41,19 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_initial_goal(goal)
+		set_goal(goal)
 
 
-func set_initial_goal(new_goal:String):
-	goal = new_goal
-	_goal_status = GoalStatus.IN_PROGRESS
-	
-	await get_tree().create_timer(1.0).timeout
-
-	prompt_llm()
+func _process_command_queue() -> void:
+	if len(_command_queue) > 0:
+		var command_status = await _command_queue.front().execute(self)
+		match command_status:
+			Command.CommandStatus.EXECUTING:
+				pass
+			Command.CommandStatus.WAITING:
+				pass
+			Command.CommandStatus.DONE:
+				_command_queue.pop_front()
 
 
 func prompt_llm():
@@ -69,21 +68,6 @@ func prompt_llm():
 	set_goal(goal)
 
 
-func _add_command(command_info: Dictionary) -> void:
-	_command_queue.append(_command.new().create_with(command_info))
-
-
-func _process_command_queue() -> void:
-	if len(_command_queue) > 0:
-		var command_status = await _command_queue.front().execute(self)
-		match command_status:
-			Command.CommandStatus.EXECUTING:
-				pass
-			Command.CommandStatus.WAITING:
-				pass
-			Command.CommandStatus.DONE:
-				_command_queue.pop_front()
-
 func set_goal(new_goal: String) -> void:
 	print("Debug: Agent received goal: ", new_goal)
 
@@ -93,6 +77,10 @@ func set_goal(new_goal: String) -> void:
 		"command": new_goal
 	}
 	_add_command(command_info)
+
+
+func _add_command(command_info: Dictionary) -> void:
+	_command_queue.append(_command.new().create_with(command_info))
 
 
 func _on_message_received(msg: String, from_id: int, to_id: int):
