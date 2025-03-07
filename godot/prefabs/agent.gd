@@ -27,8 +27,7 @@ func _ready() -> void:
 	MessageBroker.message.connect(_on_message_received)
 	
 	# Connect to API
-	if not API.is_connected("response", Callable(self, "_on_response")):
-		API.connect("response", Callable(self, "_on_response"))
+	API.connect("response", Callable(self, "_on_response"))
 		
 
 # Gets call-deferred in _ready of npc
@@ -61,15 +60,8 @@ func prompt_llm():
 	# Build context about current state
 	# var context = _build_prompt_context()
 	
-	var command_info = {
-		"agent": self,
-		"type": Command.CommandType.GOAL,
-		"command": goal
-	}
-	
-	print("Debug: Agent prompting LLM with context")
-	
-	_add_command(command_info)
+	# set_goal(context)
+	set_goal(goal)
 
 
 func _add_command(command_info: Dictionary) -> void:
@@ -81,6 +73,68 @@ func _process_command_queue() -> void:
 		var command_status = await _command_queue.front().execute(self)
 		if command_status == Command.CommandStatus.DONE:
 			_command_queue.pop_front()
+
+
+func set_goal(new_goal: String) -> void:
+	print("Debug: Agent received goal: ", new_goal)
+
+	var command_info = {
+		"agent": self,
+		"type": Command.CommandType.GOAL,
+		"command": new_goal
+	}
+	_add_command(command_info)
+
+
+func _on_message_received(msg: String, from_id: int, to_id: int):
+	# to_id == -1, the message is for all agents
+	# to_id == hash_id, the message is for this agent
+	# TODO: Do not process messages sent by self, but probably should do that
+	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
+		print("Debug: Agent received message: ", msg)
+		print("Debug: From agent id: ", from_id)
+		print("Debug: To agent id: ", to_id)
+
+		# Included this message in the agent's memory
+		memories.append({
+			"type": "message",
+			"msg": msg,
+			"from_id": from_id,
+			"to_id": to_id,
+			"timestamp": Time.get_ticks_msec() / 1000.0
+		})
+
+
+# Record an action taken by the agent
+func record_action(action_description: String):
+	add_memory({
+		"type": "action",
+		"action": action_description
+	})
+
+
+func add_memory(memory: Dictionary) -> void:
+	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
+	memories.append(memory)
+	if memories.size() > max_memories:
+		memories.pop_front()
+
+
+func _on_response(key, _response: String):
+	if key == self.hash_id:
+		print("Debug: [Agent %s] Received script from LLM" % hash_id)
+
+
+func script_execution_completed():
+	print("Debug: Script execution completed")
+	
+	await get_tree().create_timer(0.5).timeout
+
+
+# Use this function to emit signals
+func _physics_process(delta):
+	super(delta)
+	_process_command_queue()
 
 
 # func _build_prompt_context() -> String:
@@ -115,37 +169,6 @@ func _process_command_queue() -> void:
 # 	return context
 
 
-# func set_goal(new_goal: String) -> void:
-# 	var command_info = {
-# 		"agent": self,
-# 		"type": Command.CommandType.GOAL,
-# 		"command": new_goal
-# 	}
-	
-# 	print("Debug: Agent received goal: ", new_goal)
-# 	_add_command(command_info)
-
-
-func _on_message_received(msg: String, from_id: int, to_id: int):
-	# If to_id is -1, the message is for all agents
-	# If to_id is the same as this agent's hash_id, the message is for this agent
-	# and do not process messages sent by self
-	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
-		print("Debug: Agent received message: ", msg)
-		print("Debug: From agent id: ", from_id)
-		print("Debug: To agent id: ", to_id)
-
-		memories.append({
-			"type": "message",
-			"msg": msg,
-			"from_id": from_id,
-			"to_id": to_id,
-			"timestamp": Time.get_ticks_msec() / 1000.0
-		})
-		
-		# will not cause receiving agent to prompt, but will be included into the agents context memories
-
-
 # # Update goal status - call from agent_controller when goal is completed/failed
 # func set_goal_status(status: GoalStatus, new_goal: String = ""):
 # 	_goal_status = status
@@ -164,38 +187,3 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		
 # 		await get_tree().create_timer(1.0).timeout
 # 		prompt_llm()
-
-
-# Record an action taken by the agent
-func record_action(action_description: String):
-	add_memory({
-		"type": "action",
-		"action": action_description
-	})
-
-
-func add_memory(memory: Dictionary) -> void:
-	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
-	memories.append(memory)
-	if memories.size() > max_memories:
-		memories.pop_front()
-
-
-func _on_response(key, response: String):
-	if key == self.hash_id:
-		print("Debug: [Agent %s] Received script from LLM" % hash_id)
-
-
-func script_execution_completed():
-	print("Debug: Script execution completed")
-	
-	await get_tree().create_timer(0.5).timeout
-	
-	if _command_queue.size() == 0:
-		prompt_llm()
-
-
-# Use this function to emit signals
-func _physics_process(delta):
-	super(delta)
-	_process_command_queue()

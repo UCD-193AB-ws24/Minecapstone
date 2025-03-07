@@ -42,7 +42,7 @@ func get_nearby_agents() -> Array:
 				var distance = agent.global_position.distance_to(other_agent.global_position)
 				if distance < 30:
 					nearby.append(id)
-					
+
 	return nearby
 
 
@@ -56,8 +56,7 @@ func say_to(msg: String, target_id: int) -> void:
 	agent.record_action("Said to " + str(target_id) + ": " + msg)
 
 
-func eval(delta):
-	delta = delta
+func eval():
 	return true
 
 # ============================== Goal management================================

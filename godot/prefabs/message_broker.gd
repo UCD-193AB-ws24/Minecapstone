@@ -11,14 +11,14 @@ var last_message_time: float = 0.0
 var waiting: bool = false
 
 func register_agent(agent: Agent) -> void:
-	agents[agent.hash_id] = agent
-	print("Registered agent with hash_id ", agent.hash_id)
+	if agent.process_mode == Node.PROCESS_MODE_INHERIT:
+		agents[agent.hash_id] = agent
+		print("Registered agent with hash_id ", agent.hash_id)
 	
 func unregister_agent(agent: Agent) -> void:
 	agents.erase(agent.hash_id)
 
 func send_message(msg: String, from_id: int, to_id: int = -1) -> bool:
-	print("Debug: %s sending message to %s: %s" % [from_id, to_id, msg])
 	message.emit(msg, from_id, to_id)
 	return true
 

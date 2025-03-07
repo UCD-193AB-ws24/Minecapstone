@@ -58,7 +58,7 @@ Changes in Godot 4.3 you MUST ADHERE TO:
 - OS.get_ticks_msec() is now Time.get_ticks_msec() in Godot 4.3
 - yield() is deprecated in Godot 4.3, don't use it at all
 
-You are writing the body of the function "func eval(delta)", which is called every physics frame.
+You are writing the body of the function "func eval()", which is called only once.
 Ensure the code is Godot 4.3 compatible.
 """
 

@@ -85,8 +85,8 @@ func run_script(input: String):
 	var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(
-		"func eval(delta):\n\tdelta = delta\n\treturn true",
-		"func eval(delta):\n%s\n\treturn true" % input)
+		"func eval():\n\treturn true",
+		"func eval():\n%s\n\treturn true" % input)
 
 	# TODO: remove debug print
 	print("Debug: Agent " + str(agent.hash_id) + " performing ", input)
@@ -102,6 +102,6 @@ func run_script(input: String):
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
-	var result = await instance.setup(agent).eval(0)
+	var result = await instance.setup(agent).eval()
 
 	return result
