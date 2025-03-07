@@ -59,7 +59,9 @@ func say_to(msg: String, target_id: int) -> void:
 func eval():
 	return true
 
+
 # ============================== Goal management================================
+
 
 func set_goal(goal_description: String):
 	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)

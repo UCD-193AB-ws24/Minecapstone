@@ -24,11 +24,29 @@ func create_with(command_info: Dictionary) -> Command:
 	command = command_info["command"]
 	agent = command_info["agent"]
 	
-	# Only connect if GOAL command
 	if command_type == CommandType.GOAL:
-		API.response.connect(_on_response)
+		API.response.connect(_LLM_set_goal)
 		
 	return self
+
+
+# Handles the response from API, used only if the command is a GOAL
+func _LLM_set_goal(key: int, response: String):
+	# Ensure the response is for this agent
+	if !agent or key != agent.hash_id: return
+
+	if API.response.is_connected(_LLM_set_goal):
+		API.response.disconnect(_LLM_set_goal)
+
+	# Next command after goal is to run the SCRIPT
+	var script_command = Command.new().create_with({
+		"agent": agent,
+		"type": CommandType.SCRIPT,
+		"command": response
+	})
+
+	agent._command_queue.append(script_command)
+	command_status = CommandStatus.DONE		# Mark command as done
 
 
 func execute(_agent: Agent):
@@ -44,7 +62,6 @@ func execute(_agent: Agent):
 			command_status = CommandStatus.DONE
 			# API will emit response signal emit containing (key, response_string)
 		CommandType.SCRIPT:
-			# TODO: evaluate necessity of a "CommandType" if the script is always ran after generating a response from the goal
 			var script_result = await self.run_script(command)
 			agent.script_execution_completed()
 			command_status = CommandStatus.DONE
@@ -58,29 +75,8 @@ func execute(_agent: Agent):
 	return command_status
 
 
-# Handles the response from API
-func _on_response(key: int, response: String):
-	# Ensure the response is for this agent
-	if !agent or key != agent.hash_id: return
-	
-	if API.response.is_connected(_on_response):
-		API.response.disconnect(_on_response)
-		
-	# Create new script
-	var script_command = Command.new().create_with({
-		"agent": agent,
-		"type": CommandType.SCRIPT,
-		"command": response
-	})
-	
-	# Add to agent's command queue
-	agent._command_queue.append(script_command)
-	
-	# Mark command as done
-	command_status = CommandStatus.DONE
-
-
 # Do not modify this function, it is used to run the script created by the LLM
+# Asynchronously completes when the script is done running
 func run_script(input: String):
 	var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node", 
