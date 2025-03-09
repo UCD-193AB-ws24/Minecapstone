@@ -27,7 +27,7 @@ func create_with(command_info: Dictionary) -> Command:
 	
 	# Only connect if GOAL command
 	if command_type == CommandType.LLM_REQUEST:
-		API.response.connect(_on_response)
+		API.response.connect(_LLM_set_goal)
 		
 	return self
 
@@ -59,33 +59,28 @@ func _execute_script() -> void:
 	print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
 	
 	# Run script
-	await agent.run_script(command)
+	await self.run_script(command)
 	
 	# Mark command as done and notify agent
 	command_status = CommandStatus.DONE
 	agent.script_execution_completed()
 
-
-
-# Handles the response from API
-func _on_response(key: int, response: String):
+# Handles the response from API, used only if this command is a GOAL
+func _LLM_set_goal(key: int, response: String):
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
-	
-	if API.response.is_connected(_on_response):
-		API.response.disconnect(_on_response)
-		
-	# Create new script
-	var script_command = Command.new().create_with({
+
+	if API.response.is_connected(_LLM_set_goal):
+		API.response.disconnect(_LLM_set_goal)
+
+	# Next command after goal is to run the SCRIPT
+	var command_info = {
 		"agent": agent,
 		"type": CommandType.SCRIPT,
 		"command": response
-	})
-	
-	# Add to agent's command queue
-	agent._command_queue.append(script_command)
-	
-	# Mark command as done
+	}
+	agent.add_command(command_info)
+
 	command_status = CommandStatus.DONE
 
 
@@ -94,13 +89,8 @@ func run_script(input: String):
 	var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(
-		"func eval(delta):\n\tdelta = delta\n\treturn true",
-		""
-		) + """
-func eval(delta):
-%s
-	return true
-""" % input
+		"func eval():\n\treturn true",
+		"func eval():\n%s\n\treturn true" % input)
 
 	# TODO: remove debug print
 	print("Debug: Agent performing ", input)
@@ -116,6 +106,6 @@ func eval(delta):
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
-	var result = await instance.setup(agent).eval(0)
+	var result = await instance.setup(agent).eval()
 
 	return result
