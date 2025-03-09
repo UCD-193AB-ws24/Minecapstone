@@ -58,7 +58,7 @@ attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
-_speed = 2.3
+_speed = 1.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]

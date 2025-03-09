@@ -28,9 +28,9 @@ func send_message(msg: String, from_id: int, to_id: int = -1) -> bool:
 	# TODO: check if to_id is a valid agent, inform source agent if failed
 
 	if to_id == -1:
-		print("Debug: ", from_id, " said ", msg)
+		print("[%s]: %s" % [from_id, msg])
 	else:	
-		print("Debug: ", from_id, " whispered to ", "to_id:", msg)
+		print("[%s] to [%s]: %s" % [from_id, to_id, msg])
 
 	message.emit(msg, from_id, to_id)
 	return true

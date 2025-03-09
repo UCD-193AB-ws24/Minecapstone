@@ -61,28 +61,31 @@ Ensure the code is Godot 4.3 compatible.
 """
 
 async def server(websocket):
-	async for message in websocket:
-		print(message)
+	try:
+		async for message in websocket:
+			print(message)
 
-		completion = client.beta.chat.completions.parse(
-			model="gpt-4o-mini",
-			messages=[
-				{"role": "system", "content": system_prompt},
-				{
-					"role": "user",
-					"content": message + "\n" + user_preprompt,
-				}
-			],
-			response_format=LinesOfCodeWithinFunction,
-		)
-		response = json.loads(completion.choices[0].message.content)
+			completion = client.beta.chat.completions.parse(
+				model="gpt-4o-mini",
+				messages=[
+					{"role": "system", "content": system_prompt},
+					{
+						"role": "user",
+						"content": message + "\n" + user_preprompt,
+					}
+				],
+				response_format=LinesOfCodeWithinFunction,
+			)
+			response = json.loads(completion.choices[0].message.content)
 
-		# Format the lines with proper indentation and join them
-		code_lines = response["line_of_code_of_function"]
-		code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
-		formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
+			# Format the lines with proper indentation and join them
+			code_lines = response["line_of_code_of_function"]
+			code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
+			formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
 
-		await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
+			await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
+	except Exception as e:
+		print(f"Error: {e}")
 
 
 async def main():

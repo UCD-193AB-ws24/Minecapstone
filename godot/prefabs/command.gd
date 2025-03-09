@@ -30,9 +30,8 @@ func create_with(command_info: Dictionary) -> Command:
 	return self
 
 
-# Handles the response from API, used only if the command is a GOAL
+# Handles the response from API, used only if this command is a GOAL
 func _LLM_set_goal(key: int, response: String):
-	print("Done waiting")
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
 
@@ -59,7 +58,7 @@ func execute(_agent: Agent):
 
 	match command_type:
 		CommandType.GOAL:
-			print("Prompted LLM, waiting...")
+			print("Debug: [Agent " + str(agent.hash_id) + "] prompting LLM with goal: ", command)
 			API.prompt_llm(command, agent.hash_id)
 			command_status = CommandStatus.EXECUTING
 			# API will emit response signal emit containing (key, response_string)
@@ -87,7 +86,7 @@ func run_script(input: String):
 		"func eval():\n%s\n\treturn true" % input)
 
 	# TODO: remove debug print
-	print("Debug: Agent " + str(agent.hash_id) + " performing ", input)
+	print("Debug: [Agent " + str(agent.hash_id) + "] performing script.")
 
 	# Dangerously created script
 	var script = GDScript.new()

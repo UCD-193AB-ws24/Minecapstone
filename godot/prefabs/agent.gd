@@ -29,7 +29,7 @@ func _ready() -> void:
 func _physics_process(delta):
 	super(delta)
 	_process_command_queue()
-	
+
 	# Print debug information about commands in the queue
 	# if not _command_queue.is_empty():
 	# 	print("Debug: [Agent %s] Command Queue Status:" % hash_id)
@@ -73,8 +73,8 @@ func _process_command_queue() -> void:
 				pass
 			Command.CommandStatus.DONE:
 				_command_queue.pop_front()
-				if _command_queue.is_empty():
-					generate_new_goal()
+				# if _command_queue.is_empty():
+				# 	generate_new_goal()
 
 
 func generate_new_goal():
@@ -86,12 +86,13 @@ func generate_new_goal():
 	
 	# Build context about current state, this will inform the LLM ab the agent's current situation
 	# var context = _build_prompt_context()
+	print("goal generated cuz i went hre")
 	set_goal(goal)
 
 
 func set_goal(new_goal: String) -> void:
-	print("Debug: Agent received goal: ", new_goal)
-
+	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
+	
 	var command_info = {
 		"agent": self,
 		"type": Command.CommandType.GOAL,
