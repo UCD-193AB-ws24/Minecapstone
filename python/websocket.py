@@ -27,22 +27,23 @@ FUNCTION REFERENCE:
 - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
-- set_goal(goal_description) - Update your current goal 
 - get_nearby_agents() -> Array[int] - Get IDs of nearby agents
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
 CORRECT EXAMPLE:
 var reached = await move_to_position(30, 0)
 if reached:
-say("I've arrived!")
-Copy
+    say("I've arrived!")
+
 INCORRECT EXAMPLE:
 var reached = move_to_position(30, 0)  # ERROR: Missing await!
-Copy
+
 Remember:
-1. If a goal is COMPLETED or FAILED, set a new goal
-2. Keep your code simple and focused
-3. Your code will execute fully before you're called again
+1. Your goal is defined by the game, not by you. Focus on taking actions toward your current goal.
+2. Keep your code simple and focused on the immediate next steps to achieve your goal.
+3. Your code will execute fully before you're called again for the next action.
+4. You don't need to explicitly complete goals - the game will handle that for you.
+5. If you receive messages from other agents, you can choose how to respond based on your current goal.
 """
 
 user_preprompt = """

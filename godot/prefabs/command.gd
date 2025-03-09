@@ -2,20 +2,21 @@ class_name Command
 extends Node
 
 enum CommandType {
-	GOAL,
+	LLM_REQUEST,
 	SCRIPT,
+	GOAL_UPDATE,
 }
 enum CommandStatus {
 	WAITING,
 	EXECUTING,
 	DONE,
 }
+
 var agent: Agent	# Used to access hash to send to API and agent_controller
 var command_type: CommandType
 var command_status: CommandStatus
 var command: String
-var start_time: float = 0.0
-@export var timeout_seconds: float = 15.0 # 15 second time out
+
 
 
 func create_with(command_info: Dictionary) -> Command:
@@ -24,29 +25,11 @@ func create_with(command_info: Dictionary) -> Command:
 	command = command_info["command"]
 	agent = command_info["agent"]
 	
-	if command_type == CommandType.GOAL:
-		API.response.connect(_LLM_set_goal)
+	# Only connect if GOAL command
+	if command_type == CommandType.LLM_REQUEST:
+		API.response.connect(_on_response)
 		
 	return self
-
-
-# Handles the response from API, used only if this command is a GOAL
-func _LLM_set_goal(key: int, response: String):
-	# Ensure the response is for this agent
-	if !agent or key != agent.hash_id: return
-
-	if API.response.is_connected(_LLM_set_goal):
-		API.response.disconnect(_LLM_set_goal)
-
-	# Next command after goal is to run the SCRIPT
-	var command_info = {
-		"agent": agent,
-		"type": CommandType.SCRIPT,
-		"command": response
-	}
-	agent.add_command(command_info)
-
-	command_status = CommandStatus.DONE
 
 
 func execute(_agent: Agent):
@@ -54,39 +37,73 @@ func execute(_agent: Agent):
 		return command_status
 
 	command_status = CommandStatus.EXECUTING
-	start_time = Time.get_ticks_msec() / 1000.0 
-
+	
 	match command_type:
-		CommandType.GOAL:
-			print("Debug: [Agent " + str(agent.hash_id) + "] prompting LLM with goal: ", command)
-			API.prompt_llm(command, agent.hash_id)
-			command_status = CommandStatus.EXECUTING
-			# API will emit response signal emit containing (key, response_string)
+		CommandType.LLM_REQUEST:
+			var context = agent._build_prompt_context()
+			API.prompt_llm(context, agent.hash_id)
+			
 		CommandType.SCRIPT:
-			var script_result = await self.run_script(command)
-			agent.script_execution_completed()
+			_execute_script()
+		
+		CommandType.GOAL_UPDATE:
+			agent.goal = command
+			agent._memory.add_goal_update(command)
+			print("Debug: [Agent %s] Goal updated to: %s" % [agent.hash_id, command])
 			command_status = CommandStatus.DONE
-
-	# Timeout functionality
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - start_time > timeout_seconds:
-		print("Command timed out")
-		command_status = CommandStatus.DONE
-
+		
 	return command_status
+			
+
+func _execute_script() -> void:
+	print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
+	
+	# Run script
+	await agent.run_script(command)
+	
+	# Mark command as done and notify agent
+	command_status = CommandStatus.DONE
+	agent.script_execution_completed()
+
+
+
+# Handles the response from API
+func _on_response(key: int, response: String):
+	# Ensure the response is for this agent
+	if !agent or key != agent.hash_id: return
+	
+	if API.response.is_connected(_on_response):
+		API.response.disconnect(_on_response)
+		
+	# Create new script
+	var script_command = Command.new().create_with({
+		"agent": agent,
+		"type": CommandType.SCRIPT,
+		"command": response
+	})
+	
+	# Add to agent's command queue
+	agent._command_queue.append(script_command)
+	
+	# Mark command as done
+	command_status = CommandStatus.DONE
 
 
 # Do not modify this function, it is used to run the script created by the LLM
-# Asynchronously completes when the script is done running
 func run_script(input: String):
 	var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(
-		"func eval():\n\treturn true",
-		"func eval():\n%s\n\treturn true" % input)
+		"func eval(delta):\n\tdelta = delta\n\treturn true",
+		""
+		) + """
+func eval(delta):
+%s
+	return true
+""" % input
 
 	# TODO: remove debug print
-	print("Debug: [Agent " + str(agent.hash_id) + "] performing script.")
+	print("Debug: Agent performing ", input)
 
 	# Dangerously created script
 	var script = GDScript.new()
@@ -99,6 +116,6 @@ func run_script(input: String):
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
-	var result = await instance.setup(agent).eval()
+	var result = await instance.setup(agent).eval(0)
 
 	return result

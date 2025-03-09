@@ -9,6 +9,7 @@ class_name Agent extends NPC
 @onready var agent_controller = $AgentController
 @onready var _command_queue: Array[Command] = []
 @onready var _memory: Memory = Memory.new(max_memories)
+@onready var _is_processing_commands: bool = false
 
 # Command preload
 static var _command = preload("command.gd")
@@ -59,22 +60,41 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_goal(goal)
+		request_llm_action()
 
 
 func _process_command_queue() -> void:
+	if _is_processing_commands:
+		return
+		
 	if len(_command_queue) > 0:
+		_is_processing_commands = true
+		
 		var command_status = await _command_queue.front().execute(self)
-		match command_status:
-			Command.CommandStatus.EXECUTING:
-				pass
-			Command.CommandStatus.WAITING:
-				pass
-			Command.CommandStatus.DONE:
-				_command_queue.pop_front()
-				# if _command_queue.is_empty():
-				# 	generate_new_goal()
+		if command_status == Command.CommandStatus.DONE:
+			_command_queue.pop_front()
+			
+			# If all are processed, make request to LLM
+			if _command_queue.is_empty():
+				request_llm_action()
+		
+		_is_processing_commands = false
 
+# Request new action from LLM
+func request_llm_action() -> void:
+	if _command_queue.size() > 0:
+		print("Debug: [Agent %s] Skipping LLM request")
+		return
+	
+	print("Debug: [Agent %s] Requestion action from LLM" % hash_id)
+	
+	var command_info = {
+		"agent": self,
+		"type": Command.CommandType.LLM_REQUEST,
+		"command": goal
+	}
+	
+	add_command(command_info)
 
 func generate_new_goal():
 	if _command_queue.size() > 0:
@@ -90,17 +110,17 @@ func generate_new_goal():
 
 
 func set_goal(new_goal: String) -> void:
-	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
+	if new_goal == goal:
+		return
 	
-	if goal != new_goal:
-		_memory.add_goal_update(new_goal)
-		goal = new_goal
+	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
 	
 	var command_info = {
 		"agent": self,
-		"type": Command.CommandType.GOAL,
+		"type": Command.CommandType.GOAL_UPDATE,
 		"command": new_goal
 	}
+	
 	add_command(command_info)
 
 
@@ -130,9 +150,8 @@ func _on_response(key, _response: String):
 
 
 func script_execution_completed():
-	print("Debug: Script execution completed")
-	
-	await get_tree().create_timer(0.5).timeout
+	print("Debug: [Agent %s] Script execution completed" % hash_id)
+
 
 
 func _build_prompt_context() -> String:
@@ -143,40 +162,8 @@ func _build_prompt_context() -> String:
 	context += _memory.format_recent_for_prompt(5)
 	
 	return context
-	# Add status of goal
-	# match _goal_status:
-	# 	GoalStatus.COMPLETED:
-	# 		context += "- Goal status: COMPLETED\n"
-	# 		context += "- IMPORTANT: The previous goal '" + goal + "' is already COMPLETED. \n"
-	# 		context += "- You MUST set a new goal using the set_goal() function\n"
-	# 		context += "- DO NOT attempt to complete the previous goal again \n"
-	# 	GoalStatus.FAILED:
-	# 		context += "- Goal status: FAILED\n"
-	# 		context += "- Consider why the goal failed and what you want to do next \n"
-	# 	GoalStatus.IN_PROGRESS:
-	# 		context += "- Goal status: IN_PROGRESS\n"
-	# 		context += "- Continue working on your goal \n"
-			
+	
 
 # Get all memoris of a specific type
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 	return _memory.get_by_type(memory_type)
-
-# # Update goal status - call from agent_controller when goal is completed/failed
-# func set_goal_status(status: GoalStatus, new_goal: String = ""):
-# 	_goal_status = status
-	
-# 	if new_goal != "":
-# 		goal = new_goal
-# 		add_memory({
-# 			"type": "goal_update",
-# 			"goal": new_goal,
-# 		})
-		
-# 	# If completed a goal or failed, prompt llm
-# 	if status != GoalStatus.IN_PROGRESS:
-# 		print("Debug: [Agent %s] Goal status changed to %s" % [_debug_id, GoalStatus.keys()[status]])
-# 		_is_waiting_for_script = false
-		
-# 		await get_tree().create_timer(1.0).timeout
-# 		prompt_llm()
