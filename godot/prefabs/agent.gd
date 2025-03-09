@@ -7,12 +7,11 @@ class_name Agent extends NPC
 
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
-@onready var memories : Array[Dictionary] = []
 @onready var _command_queue: Array[Command] = []
+@onready var _memory: Memory = Memory.new(max_memories)
 
 # Command preload
 static var _command = preload("command.gd")
-
 
 # Initialize the agent
 func _ready() -> void:
@@ -93,6 +92,10 @@ func generate_new_goal():
 func set_goal(new_goal: String) -> void:
 	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
 	
+	if goal != new_goal:
+		_memory.add_goal_update(new_goal)
+		goal = new_goal
+	
 	var command_info = {
 		"agent": self,
 		"type": Command.CommandType.GOAL,
@@ -113,29 +116,13 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		print("Debug: [Agent %s] Received message from [Agent %s]: %s" % [hash_id, from_id, msg])
 
 		# Included this message in the agent's memory
-		memories.append({
-			"type": "message",
-			"msg": msg,
-			"from_id": from_id,
-			"to_id": to_id,
-			"timestamp": Time.get_ticks_msec() / 1000.0
-		})
+		_memory.add_message(msg, from_id, to_id)
 
 
 # Record an action taken by the agent
-func record_action(action_description: String):
-	add_memory({
-		"type": "action",
-		"action": action_description
-	})
 
-
-func add_memory(memory: Dictionary) -> void:
-	memory["timestamp"] = Time.get_ticks_msec() / 1000.0
-	memories.append(memory)
-	if memories.size() > max_memories:
-		memories.pop_front()
-
+# Recording individual actions might be excessive
+#func record_action(action_description: String):
 
 func _on_response(key, _response: String):
 	if key == self.hash_id:
@@ -153,6 +140,9 @@ func _build_prompt_context() -> String:
 	context += "- Position: " + str(global_position) + "\n"
 	context += "- Current goal: " + goal + "\n"
 	
+	context += _memory.format_recent_for_prompt(5)
+	
+	return context
 	# Add status of goal
 	# match _goal_status:
 	# 	GoalStatus.COMPLETED:
@@ -167,18 +157,10 @@ func _build_prompt_context() -> String:
 	# 		context += "- Goal status: IN_PROGRESS\n"
 	# 		context += "- Continue working on your goal \n"
 			
-	if memories.size() > 0:
-		context += "- Recent events:\n"
-		var recent_memories = memories.slice(max(0, memories.size() -5), memories.size())
-		for memory in recent_memories:
-			if memory.type == "message":
-				context += "* Message from agent " + str(memory.from_id) + ": " + memory.msg + "\n"
-			elif memory.type == "goal_update":
-				context += "* Previous goal: " + memory.goal + "\n"
-			elif memory.type == "action":
-				context += "* Action performed: " + memory.action + "\n"
-	return context
 
+# Get all memoris of a specific type
+func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
+	return _memory.get_by_type(memory_type)
 
 # # Update goal status - call from agent_controller when goal is completed/failed
 # func set_goal_status(status: GoalStatus, new_goal: String = ""):
