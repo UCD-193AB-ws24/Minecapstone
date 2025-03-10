@@ -52,12 +52,12 @@ func get_nearby_agents() -> Array:
 
 func say(msg: String) -> void:
 	message_broker.send_message(msg, agent.hash_id)
-	agent.record_action("Said: " + msg)
+	# agent.record_action("Said: " + msg)
 
 
 func say_to(msg: String, target_id: int) -> void:
 	message_broker.send_message(msg, agent.hash_id, target_id)
-	agent.record_action("Said to " + str(target_id) + ": " + msg)
+	# agent.record_action("Said to " + str(target_id) + ": " + msg)
 
 
 func eval():

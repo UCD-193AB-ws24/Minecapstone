@@ -56,7 +56,7 @@ func execute(_agent: Agent):
 			
 
 func _execute_script() -> void:
-	print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
+	# print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
 	
 	# Run script
 	await self.run_script(command)
@@ -93,7 +93,7 @@ func run_script(input: String):
 		"func eval():\n%s\n\treturn true" % input)
 
 	# TODO: remove debug print
-	print("Debug: Agent performing ", input)
+	print_rich("Debug: Agent performing [color=blue]%s[/color]" % input)
 
 	# Dangerously created script
 	var script = GDScript.new()
