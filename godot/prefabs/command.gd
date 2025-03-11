@@ -66,8 +66,6 @@ func _LLM_set_goal(key: int, response: String):
 	agent.set_goal(response)
 	agent.memories.add_goal_update(response)
 
-	print_rich("Debug: [Agent %s] Updated Goal: [color=lime]%s[/color]" % [agent.debug_id, response])
-
 	command_status = CommandStatus.DONE
 
 # Sets the goal to the LLM generated one, used only if this command is a GENERATE_SCRIPT
@@ -79,12 +77,7 @@ func _LLM_execute_script(key: int, response: String):
 		API.response.disconnect(_LLM_execute_script)
 
 	# Then, run the generated script
-	var command_info = {
-		"agent": agent,
-		"type": CommandType.SCRIPT,
-		"input": response
-	}
-	agent.add_command(command_info)
+	agent.add_command(CommandType.SCRIPT, response)
 
 	print_rich("Debug: [Agent %s] [color=lime]Updated Script[/color]" % [agent.debug_id])
 
@@ -109,8 +102,7 @@ func run_script(input: String):
 		"func eval():\n\treturn true",
 		"func eval():\n%s\n\treturn true" % input)
 
-	# TODO: remove debug print
-	print_rich("Debug: Agent performing [color=cornflower_blue]%s[/color]" % input)
+	# print_rich("Debug: Agent performing [color=cornflower_blue]%s[/color]" % input)
 
 	# Dangerously created script
 	var script = GDScript.new()

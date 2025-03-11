@@ -81,7 +81,7 @@ async def server(websocket):
 				prompt = message[len("SCRIPT "):]
 				code = generate_script(goal=prompt)
 				await websocket.send(code)  # Send raw code, no JSON wrapping
-				print(f"Generated code.")
+				# print(f"Generated code.")
 	except Exception as e:
 		print(f"Error: {e}")
 

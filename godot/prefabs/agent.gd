@@ -89,31 +89,21 @@ func _generate_new_goal() -> void:
 	if _command_queue.size() > 0:
 		print("Debug: [Agent %s] NOT generating new goal, commands in queue")
 		return
-	
-	print("Debug: [Agent %s] generating new goal " % debug_id)
-	
-	var command_info = {
-		"agent": self,
-		"type": Command.CommandType.GENERATE_GOAL,
-		"input": goal
-	}
-	
-	add_command(command_info)
+	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 
 func set_goal(new_goal: String) -> void:
 	print_rich("Debug: [Agent %s] Updated Goal: [color=lime]%s[/color]" % [debug_id, new_goal])
 	goal = new_goal
-	
+	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
+
+
+func add_command(command_type: Command.CommandType, input: String) -> void:
 	var command_info = {
 		"agent": self,
-		"type": Command.CommandType.GENERATE_SCRIPT,
-		"input": new_goal
+		"type": command_type,
+		"input": input
 	}
-	add_command(command_info)
-
-
-func add_command(command_info: Dictionary) -> void:
 	_command_queue.push_back(_command.new().create_with(command_info))
 
 
@@ -129,7 +119,7 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 
 
 func script_execution_completed():
-	print("Debug: [Agent %s] Script execution completed" % debug_id)
+	print_rich("Debug: [Agent %s] [color=cornflower_blue]Script execution completed[/color]" % debug_id)
 
 
 func build_prompt_context() -> String:

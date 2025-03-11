@@ -21,6 +21,7 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_t5wr3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+VIEW_DISTANCE = 1
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.833702, -0.419207, -0.359453, 0.202048, -0.374226, 0.905059, -0.513924, -0.827176, -0.227293, 0, 39.8777, 0)
