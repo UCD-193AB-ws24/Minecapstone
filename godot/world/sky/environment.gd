@@ -1,9 +1,14 @@
+@tool
+
 extends WorldEnvironment
 
 @onready var sun: DirectionalLight3D = $Sun
 @onready var moon: DirectionalLight3D = $Moon
 
 enum SunPhase { Day, Night, Sunrise, Sunset }
+
+# Low graphics mode
+@export var low_graphics_mode: bool = true
 
 # Time settings
 @export var day_duration_seconds: float = 30.0
@@ -25,9 +30,17 @@ var elapsed_time: float = 0.0
 var previous_elevation: float = 0.0
 
 func _ready():
+	if low_graphics_mode:
+		self.environment = load("res://world/sky/nosky.tres")
+		$Water.visible = false
+	else:
+		self.environment = load("res://world/sky/sky.tres")
+		$Water.visible = true
 	_update_shader_parameters()
 
 func _process(delta):
+	if Engine.is_editor_hint(): return
+
 	# Update time
 	elapsed_time += delta * time_scale
 	
