@@ -42,17 +42,17 @@ func set_movement_target(movement_target: Vector3):
 func set_moving_target(moving_target: Node):
 	navigation_agent.target_desired_distance = 5.0
 	cur_target = moving_target #set moving target to follow
-	print("setting cur_target to ", cur_target.name)
+	# print("setting cur_target to ", cur_target.name)
 	
 
 func _moving_target_process():
 	var target_pos = cur_target.global_position
 	if navigation_agent.target_position.distance_to(target_pos) > 1:
-		print("updating cur_target position")
+		# print("updating cur_target position")
 		set_movement_target(target_pos)
 		set_look_target(target_pos)
 	if navigation_agent.is_target_reached():
-		print("target reached")
+		# print("target reached")
 		cur_target = null # stop following target
 		navigation_agent.target_desired_distance = 1.0
 		target_reached.emit()
@@ -82,7 +82,7 @@ func give_to(agent_name: String, item_name:String, amount:int):
 		look_pos.y += 1
 	set_look_target(look_pos)
 	inventory_manager.DropItem(item_name, amount)
-	print(round(agent_ref.global_position.y - self.global_position.y))
+	# print(round(agent_ref.global_position.y - self.global_position.y))
 
 func _physics_process(delta):
 	if cur_target != null:
