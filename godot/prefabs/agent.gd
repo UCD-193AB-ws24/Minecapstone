@@ -32,22 +32,24 @@ func _physics_process(delta):
 
 	# Print debug information about commands in the queue
 	# if not _command_queue.is_empty():
-	# 	print("Debug: [Agent %s] Command Queue Status:" % hash_id)
-	# 	for i in range(_command_queue.size()):
-	# 		var cmd = _command_queue[i]
-	# 		var status_text = "WAITING"
-	# 		if cmd.command_status == Command.CommandStatus.EXECUTING:
-	# 			status_text = "EXECUTING"
-	# 		elif cmd.command_status == Command.CommandStatus.DONE:
-	# 			status_text = "DONE"
+		# for i in range(_command_queue.size()):
+		# 	var cmd = _command_queue[i]
+		# 	var status_text = "WAITING"
+		# 	if cmd.command_status == Command.CommandStatus.EXECUTING:
+		# 		status_text = "EXECUTING"
+		# 	elif cmd.command_status == Command.CommandStatus.DONE:
+		# 		status_text = "DONE"
 				
-	# 		var type_text = "GOAL" if cmd.command_type == Command.CommandType.GOAL else "SCRIPT"
+		# 	var type_text = "UNKNOWN"
+		# 	match cmd.command_type:
+		# 		Command.CommandType.GENERATE_GOAL:
+		# 			type_text = "GENERATE_GOAL"
+		# 		Command.CommandType.GENERATE_SCRIPT:
+		# 			type_text = "GENERATE_SCRIPT"
+		# 		Command.CommandType.SCRIPT:
+		# 			type_text = "SCRIPT"
 			
-	# 		print("  [%d] Type: %s | Status: %s | Command: %s" % [
-	# 			i, type_text, status_text, cmd.command.substr(0, 50) + (
-	# 				"..." if cmd.command.length() > 50 else ""
-	# 			)
-	# 		])
+		# 	print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
 
 
 # Gets call-deferred in _ready of npc
@@ -60,65 +62,54 @@ func actor_setup():
 	# Wait for websocket connection
 	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		await API.connected
-		request_llm_action()
+
+		# Debug
+		set_goal(goal)
 
 
 func _process_command_queue() -> void:
+	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
 	if _is_processing_commands:
 		return
 		
 	if len(_command_queue) > 0:
 		_is_processing_commands = true
-		
+
 		var command_status = await _command_queue.front().execute(self)
 		if command_status == Command.CommandStatus.DONE:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
 			if _command_queue.is_empty():
-				request_llm_action()
+				_generate_new_goal()
 		
 		_is_processing_commands = false
 
-# Request new action from LLM
-func request_llm_action() -> void:
+
+# Queues up the generation of a new goal from the LLM
+func _generate_new_goal() -> void:
 	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] Skipping LLM request")
+		print("Debug: [Agent %s] generating new goal, commands in queue")
 		return
 	
-	print("Debug: [Agent %s] Requestion action from LLM" % hash_id)
+	print("Debug: [Agent %s] generating new goal " % hash_id)
 	
 	var command_info = {
 		"agent": self,
-		"type": Command.CommandType.LLM_REQUEST,
-		"command": goal
+		"type": Command.CommandType.GENERATE_GOAL,
+		"input": goal
 	}
 	
 	add_command(command_info)
 
-func generate_new_goal():
-	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] Skipping prompt - commands in queue" % hash_id)
-		return
-	else:
-		print("Debug: [Agent %s] Prompting LLM" % hash_id)
-	
-	# Build context about current state, this will inform the LLM ab the agent's current situation
-	# var context = _build_prompt_context()
-	print("goal generated cuz i went hre")
-	set_goal(goal)
-
 
 func set_goal(new_goal: String) -> void:
-	if new_goal == goal:
-		return
-	
 	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
 	
 	var command_info = {
 		"agent": self,
-		"type": Command.CommandType.GOAL_UPDATE,
-		"command": new_goal
+		"type": Command.CommandType.GENERATE_SCRIPT,
+		"input": new_goal
 	}
 	
 	add_command(command_info)
@@ -139,31 +130,27 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		_memory.add_message(msg, from_id, to_id)
 
 
-# Record an action taken by the agent
-
-# Recording individual actions might be excessive
-#func record_action(action_description: String):
-
 func _on_response(key, _response: String):
 	if key == self.hash_id:
-		print("Debug: [Agent %s] Received script from LLM" % hash_id)
+		print("Debug: [Agent %s] Received response from LLM" % hash_id)
 
 
 func script_execution_completed():
 	print("Debug: [Agent %s] Script execution completed" % hash_id)
 
 
-
-func _build_prompt_context() -> String:
+func build_prompt_context() -> String:
 	var context = "Current situation\n"
-	context += "- Position: " + str(global_position) + "\n"
-	context += "- Current goal: " + goal + "\n"
+	# context += "- Position: " + str(global_position) + "\n"
 	
 	context += _memory.format_recent_for_prompt(5)
 	
 	return context
 	
 
-# Get all memoris of a specific type
+# Get all memories of a specific type
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 	return _memory.get_by_type(memory_type)
+
+# TODO: investigate effectiveness of recording actions taken by agent
+# func record_action(action_description: String):

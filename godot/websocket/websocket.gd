@@ -34,7 +34,15 @@ func _ready():
 		connected.emit()
 
 
-func prompt_llm(prompt: String, key: int):
+func generate_script(prompt: String, key: int):
+	_prompt_LLM("SCRIPT " + prompt, key)
+
+
+func generate_goal(prompt: String, key: int):
+	_prompt_LLM("GOAL " + prompt, key)
+
+
+func _prompt_LLM(prompt: String, key: int):
 	# Wait until the socket is open before sending the prompt.
 	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await connected
@@ -47,8 +55,7 @@ func prompt_llm(prompt: String, key: int):
 		await response_received
 		response_string = socket.get_packet().get_string_from_utf8()
 		response.emit(key, response_string)
-
-		# TODO: add timeout
+		# TODO: add timeout?
 
 
 func _physics_process(_delta):

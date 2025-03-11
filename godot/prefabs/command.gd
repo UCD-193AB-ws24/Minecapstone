@@ -2,9 +2,9 @@ class_name Command
 extends Node
 
 enum CommandType {
-	LLM_REQUEST,
-	SCRIPT,
-	GOAL_UPDATE,
+	GENERATE_GOAL,		# Generates a new goal using current context
+	GENERATE_SCRIPT,	# Generates a script using the given goal
+	SCRIPT,				# Executes the script
 }
 enum CommandStatus {
 	WAITING,
@@ -15,19 +15,20 @@ enum CommandStatus {
 var agent: Agent	# Used to access hash to send to API and agent_controller
 var command_type: CommandType
 var command_status: CommandStatus
-var command: String
-
+var command_input: String
 
 
 func create_with(command_info: Dictionary) -> Command:
 	command_type = command_info["type"]
 	command_status = CommandStatus.WAITING
-	command = command_info["command"]
+	command_input = command_info["input"]
 	agent = command_info["agent"]
 	
-	# Only connect if GOAL command
-	if command_type == CommandType.LLM_REQUEST:
-		API.response.connect(_LLM_set_goal)
+	match command_type:
+		CommandType.GENERATE_GOAL:
+			API.response.connect(_LLM_set_goal)
+		CommandType.GENERATE_SCRIPT:
+			API.response.connect(_LLM_execute_script)
 		
 	return self
 
@@ -39,33 +40,21 @@ func execute(_agent: Agent):
 	command_status = CommandStatus.EXECUTING
 	
 	match command_type:
-		CommandType.LLM_REQUEST:
-			var context = agent._build_prompt_context()
-			API.prompt_llm(context, agent.hash_id)
-			
+		CommandType.GENERATE_GOAL:
+			# Will call _LLM_set_goal when response is received
+			var context = agent.build_prompt_context()
+			API.generate_goal(context, agent.hash_id)
+		CommandType.GENERATE_SCRIPT:
+			# Will call _LLM_execute_script when response is received
+			var goal = command_input
+			API.generate_script(goal, agent.hash_id)
 		CommandType.SCRIPT:
 			_execute_script()
-		
-		CommandType.GOAL_UPDATE:
-			agent.goal = command
-			agent._memory.add_goal_update(command)
-			print("Debug: [Agent %s] Goal updated to: %s" % [agent.hash_id, command])
-			command_status = CommandStatus.DONE
-		
+
+
 	return command_status
-			
 
-func _execute_script() -> void:
-	# print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
-	
-	# Run script
-	await self.run_script(command)
-	
-	# Mark command as done and notify agent
-	command_status = CommandStatus.DONE
-	agent.script_execution_completed()
-
-# Handles the response from API, used only if this command is a GOAL
+# Handles the response from API, used only if this command is a GENERATE_GOAL
 func _LLM_set_goal(key: int, response: String):
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
@@ -73,15 +62,49 @@ func _LLM_set_goal(key: int, response: String):
 	if API.response.is_connected(_LLM_set_goal):
 		API.response.disconnect(_LLM_set_goal)
 
+	# Next command after generating goal is to set the goal
+	var command_info = {
+		"agent": agent,
+		"type": CommandType.GENERATE_SCRIPT,
+		"input": response
+	}
+	agent.add_command(command_info)
+
+	agent.goal = response
+	agent._memory.add_GENERATE_SCRIPT(response)
+	print("Debug: [Agent %s] Goal updated to: %s" % [agent.hash_id, response])
+
+	command_status = CommandStatus.DONE
+
+# Sets the goal to the LLM generated one, used only if this command is a GENERATE_SCRIPT
+func _LLM_execute_script(key: int, response: String):
+	# Ensure the response is for this agent
+	if !agent or key != agent.hash_id: return
+
+	if API.response.is_connected(_LLM_execute_script):
+		API.response.disconnect(_LLM_execute_script)
+
 	# Next command after goal is to run the SCRIPT
 	var command_info = {
 		"agent": agent,
 		"type": CommandType.SCRIPT,
-		"command": response
+		"input": response
 	}
 	agent.add_command(command_info)
 
 	command_status = CommandStatus.DONE
+
+
+# Executes the generated script, used only if this command is a SCRIPT
+func _execute_script() -> void:
+	# print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
+	
+	# Run script
+	await self.run_script(command_input)
+	
+	# Mark command as done and notify agent
+	command_status = CommandStatus.DONE
+	agent.script_execution_completed()
 
 
 # Do not modify this function, it is used to run the script created by the LLM

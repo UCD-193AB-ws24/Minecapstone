@@ -18,6 +18,9 @@ client = OpenAI()
 class LinesOfCodeWithinFunction(BaseModel):
 	line_of_code_of_function: list[str]
 
+class Goal(BaseModel):
+	plaintext_goal: str
+
 
 system_prompt = """
 You are an autonomous agent in a 3D world. You'll be called after completing previous actions to decide what to do next.
@@ -33,13 +36,15 @@ IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await 
 CORRECT EXAMPLE:
 var reached = await move_to_position(30, 0)
 if reached:
-    say("I've arrived!")
+	say("I've arrived!")
 
 INCORRECT EXAMPLE:
 var reached = move_to_position(30, 0)  # ERROR: Missing await!
 
+Distances are meters, so anything within 1 meter is considered "nearby".
+
 Remember:
-1. Your goal is defined by the game, not by you. Focus on taking actions toward your current goal.
+1. Your goal is defined by you, and can be anything given your constraints and abilities.
 2. Keep your code simple and focused on the immediate next steps to achieve your goal.
 3. Your code will execute fully before you're called again for the next action.
 4. You don't need to explicitly complete goals - the game will handle that for you.
@@ -64,29 +69,63 @@ Ensure the code is Godot 4.3 compatible.
 async def server(websocket):
 	try:
 		async for message in websocket:
-			print(message)
+			prompt = ""
 
-			completion = client.beta.chat.completions.parse(
-				model="gpt-4o-mini",
-				messages=[
-					{"role": "system", "content": system_prompt},
-					{
-						"role": "user",
-						"content": message + "\n" + user_preprompt,
-					}
-				],
-				response_format=LinesOfCodeWithinFunction,
-			)
-			response = json.loads(completion.choices[0].message.content)
-
-			# Format the lines with proper indentation and join them
-			code_lines = response["line_of_code_of_function"]
-			code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
-			formatted_code = "\n\t" + "\n\t".join(code_lines)  # Add initial tab
-
-			await websocket.send(formatted_code)  # Send raw code, no JSON wrapping
+			# TODO: make this look prettier
+			if message.startswith("GOAL "):
+				prompt = message[len("GOAL "):]
+				goal = generate_goal(context=prompt)
+				await websocket.send(goal)
+				print(f"Generated goal: {goal}")
+			elif message.startswith("SCRIPT "):
+				print("Generating code...")
+				prompt = message[len("SCRIPT "):]
+				code = generate_script(goal=prompt)
+				await websocket.send(code)  # Send raw code, no JSON wrapping
+				print(f"Generated code.")
 	except Exception as e:
 		print(f"Error: {e}")
+
+
+def generate_script(goal: str):
+	response = LLM_generate(
+		messages=[
+			{"role": "system", "content": system_prompt},
+			{"role": "user", "content": goal + "\n" + user_preprompt},
+		],
+		response_format=LinesOfCodeWithinFunction,
+	)
+	response = json.loads(response)
+
+	# Format the lines with proper indentation and join them
+	code_lines = response["line_of_code_of_function"]
+	code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
+ 
+	# Add a newline and tab to the beginning of each line
+	formatted_code = "\n\t" + "\n\t".join(code_lines)
+	return formatted_code
+
+
+def generate_goal(context: str):
+	response = LLM_generate(
+		messages=[
+			{"role": "system", "content": system_prompt},
+			{"role": "user", "content": context},
+		],
+		response_format=Goal,
+	)
+	response = json.loads(response)
+	return response["plaintext_goal"]
+
+
+def LLM_generate(messages: list[dict[str, str]], response_format: BaseModel):
+	completion = client.beta.chat.completions.parse(
+		model="gpt-4o-mini",
+		messages=messages,
+		response_format=response_format,
+	)
+
+	return completion.choices[0].message.content
 
 
 async def main():
