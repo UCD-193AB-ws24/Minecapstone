@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="minecraft"
-run/main_scene="uid://codcxxqo8wi2f"
+run/main_scene="uid://cgb063gab15jv"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 API="*res://websocket/websocket.gd"
+MessageBroker="*res://prefabs/message_broker.gd"
 
 [dotnet]
 

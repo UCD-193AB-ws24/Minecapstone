@@ -6,6 +6,9 @@
 
 [node name="Agent" instance=ExtResource("1_360ac")]
 script = ExtResource("2_360ac")
+goal = "Move to (30,0)."
+max_memories = 20
+infinite_decisions = false
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4
