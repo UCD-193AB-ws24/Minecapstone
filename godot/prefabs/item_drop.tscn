@@ -3,9 +3,24 @@
 [ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://prefabs/item_collect.gd" id="1_an6nj"]
 [ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://prefabs/time_monitor.gd" id="2_6tdqx"]
 [ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_g4j5n"]
-[ext_resource type="Script" uid="uid://ccysnlnw5v5sb" path="res://prefabs/spin.gd" id="4_6tdqx"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6tdqx"]
+
+[sub_resource type="GDScript" id="GDScript_sisb3"]
+script/source = "@tool
+extends Sprite3D
+var time = 0;
+
+func _physics_process(delta: float) -> void:
+	var deg_per_sec = 290.0
+	rotate_y(delta * deg_to_rad(deg_per_sec))
+	var frequency = 1.0
+	var amplitude = 0.002
+	time += delta * frequency
+	self.position += Vector3(0,sin(time) * amplitude,0)
+	if time >= PI * 2: # approxmate value of 2 * pi
+		time -= PI * 2
+"
 
 [node name="ItemDrop" type="RigidBody3D"]
 collision_layer = 0
@@ -28,8 +43,10 @@ shape = SubResource("BoxShape3D_6tdqx")
 script = ExtResource("2_6tdqx")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(-0.778057, 0, -0.461389, 0, 0.904594, 0, 0.461389, 0, -0.778057, 0, 0.0868833, 0)
 pixel_size = 0.0008
+render_priority = 2
 texture = ExtResource("2_g4j5n")
-script = ExtResource("4_6tdqx")
+script = SubResource("GDScript_sisb3")
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

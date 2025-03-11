@@ -15,6 +15,7 @@ public partial class ChunkManager : Node
 
 	private List<Chunk> _chunks;
 
+	[Export] public bool DoInfiniteGeneration { get; set; } = false;
 	[Export] public PackedScene ChunkScene { get; set; }
 
 	public NavigationMeshSourceGeometryData3D NavigationMeshSource { get; private set; }
@@ -78,7 +79,9 @@ public partial class ChunkManager : Node
 		// Start the chunk transition process in a separate thread
 		if (!Engine.IsEditorHint()) {
 			EmitSignal(SignalName.WorldLoaded);
-			new Thread(new ThreadStart(ThreadProcess)).Start();
+			if (DoInfiniteGeneration) {
+				new Thread(new ThreadStart(ThreadProcess)).Start();
+			}
 		}
 	}
 
@@ -115,7 +118,9 @@ public partial class ChunkManager : Node
 		}
 	}
 
+	// Performs infinite generation, relies on DoInfiniteGeneration being true
 	// Checks for chunk position transitions, and updates the chunk position if possible
+	// TODO: This is very laggy due to the new world generation. Needs optimization
 	private void ThreadProcess() {
 		// Run constantly only if the object hasn't been deleted
 		while (IsInstanceValid(this)) {
@@ -124,35 +129,33 @@ public partial class ChunkManager : Node
 				playerChunkX = Mathf.FloorToInt(_playerPosition.X / Chunk.dimensions.X);
 				playerChunkZ = Mathf.FloorToInt(_playerPosition.Z / Chunk.dimensions.Z);
 			}
-			// Uncomment below for infinite generation
-			// foreach (var chunk in _chunks) {
-			// 	var chunkPosition = _chunkToPosition[chunk];
-			// 	var chunkX = chunkPosition.X;
-			// 	var chunkZ = chunkPosition.Y;
+			foreach (var chunk in _chunks) {
+				var chunkPosition = _chunkToPosition[chunk];
+				var chunkX = chunkPosition.X;
+				var chunkZ = chunkPosition.Y;
 
-			// 	var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + view_distance / 2, view_distance) + playerChunkX - view_distance / 2);
-			// 	var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + view_distance / 2, view_distance) + playerChunkZ - view_distance / 2);
+				var newChunkX = (int)(Mathf.PosMod(chunkX - playerChunkX + view_distance / 2, view_distance) + playerChunkX - view_distance / 2);
+				var newChunkZ = (int)(Mathf.PosMod(chunkZ - playerChunkZ + view_distance / 2, view_distance) + playerChunkZ - view_distance / 2);
 
-			// 	// Move the chunk position, moving all chunks, if player is in a new chunk
-			// 	if (newChunkX != chunkX || newChunkZ != chunkZ) {
-			// 		lock (_positionToChunk){
-			// 			if (_positionToChunk.ContainsKey(chunkPosition)) {
-			// 				_positionToChunk.Remove(chunkPosition);
-			// 			}
-			// 			var newPosition = new Vector2I(newChunkX, newChunkZ);
-			// 			_chunkToPosition[chunk] = newPosition;
-			// 			_positionToChunk[newPosition] = chunk;
-
-			// 			// Move an already existing chunk to the new posiiton
-			// 			chunk.CallDeferred(nameof(Chunk.SetChunkPosition), newPosition);
+				// Move the chunk position, moving all chunks, if player is in a new chunk
+				if (newChunkX != chunkX || newChunkZ != chunkZ) {
+					lock (_positionToChunk){
+						if (_positionToChunk.ContainsKey(chunkPosition)) {
+							_positionToChunk.Remove(chunkPosition);
+						}
+						var newPosition = new Vector2I(newChunkX, newChunkZ);
+						_chunkToPosition[chunk] = newPosition;
+						_positionToChunk[newPosition] = chunk;
+						// Move an already existing chunk to the new posiiton
+						chunk.CallDeferred(nameof(Chunk.SetChunkPosition), newPosition, WorldGenerator, true);
 						
-			// 			// Do not update chunk positons as fast as possible to reduce frame drops
-			// 			Thread.Sleep(10);
-			// 		}
-			// 	}
-			// }
-			// // This sleep didn't do much
-			// Thread.Sleep(1000);
+						// Do not update chunk positons as fast as possible to reduce frame drops
+						Thread.Sleep(10);
+					}
+				}
+			}
+			// This sleep didn't do much
+			Thread.Sleep(1000);
 		}
 	}
 

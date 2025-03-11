@@ -22,11 +22,10 @@ metadata/Name = "agent"
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
-InventorySlots = 9
 
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("2_onrkg")
-metadata/_custom_type_script = ExtResource("2_onrkg")
+metadata/_custom_type_script = "uid://da2vclwxlejcg"
 
 [node name="Body" type="CSGMesh3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)

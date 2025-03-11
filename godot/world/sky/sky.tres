@@ -1,0 +1,74 @@
+[gd_resource type="Environment" load_steps=7 format=3 uid="uid://dduchnkkscoka"]
+
+[ext_resource type="Shader" uid="uid://xxsy78ugnrrd" path="res://world/sky/sky.gdshader" id="1_owfsy"]
+[ext_resource type="Texture2D" uid="uid://be6wwir2t6ar4" path="res://world/sky/stars.png" id="2_eciw1"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ysn08"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_m0cxt"]
+seamless = true
+noise = SubResource("FastNoiseLite_ysn08")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mcsb2"]
+shader = ExtResource("1_owfsy")
+shader_parameter/day_top_color = Color(0.416859, 0.709056, 1, 1)
+shader_parameter/day_bottom_color = Color(0.517831, 0.729596, 0.874015, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.0313061, 3.43909e-05, 0.0860805, 1)
+shader_parameter/horizon_blur = 0.15
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 3.5, 0, 1)
+shader_parameter/sun_size = 0.1
+shader_parameter/sun_blur = 2.5
+shader_parameter/sun_glow_color = Color(0.996483, 0.764433, 0.393047, 1)
+shader_parameter/sun_glow_size = 4.0
+shader_parameter/sun_glow_intensity = 1.5
+shader_parameter/moon_color = Color(0.960351, 0.960351, 0.960351, 1)
+shader_parameter/moon_size = 0.08
+shader_parameter/moon_blur = 0.01
+shader_parameter/moon_glow_color = Color(0.237539, 0.237539, 0.237539, 1)
+shader_parameter/moon_glow_size = 3.5
+shader_parameter/moon_glow_intensity = 0.73
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.8
+shader_parameter/clouds_cutoff = 0.47
+shader_parameter/clouds_fuzziness = 0.59
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.18
+shader_parameter/stars_texture = ExtResource("2_eciw1")
+shader_parameter/stars_speed = 0.35
+shader_parameter/stars_scale = 3.0
+shader_parameter/stars_opacity = 0.1
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_a6p7n"]
+sky_material = SubResource("ShaderMaterial_mcsb2")
+radiance_size = 4
+
+[resource]
+background_mode = 2
+sky = SubResource("Sky_a6p7n")
+ssao_enabled = true
+ssao_radius = 1.25
+ssao_power = 5.0
+ssil_enabled = true
+ssil_radius = 16.0
+sdfgi_y_scale = 0
+glow_strength = 2.0
+glow_map = SubResource("NoiseTexture2D_m0cxt")
+fog_mode = 1
+fog_density = 1.0
+fog_sky_affect = 0.53
+fog_depth_begin = 96.2
+fog_depth_end = 354.8
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0032
+volumetric_fog_anisotropy = -0.23
+volumetric_fog_ambient_inject = 0.25
