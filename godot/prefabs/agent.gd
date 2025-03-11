@@ -6,9 +6,10 @@ class_name Agent extends NPC
 @export var max_memories: int = 20
 
 @onready var hash_id : int = hash(self)
+@onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
+@onready var memories: Memory = Memory.new(max_memories)
 @onready var _command_queue: Array[Command] = []
-@onready var _memory: Memory = Memory.new(max_memories)
 @onready var _is_processing_commands: bool = false
 
 # Command preload
@@ -21,9 +22,6 @@ func _ready() -> void:
 	# Register with message_broker
 	MessageBroker.register_agent(self)
 	MessageBroker.message.connect(_on_message_received)
-	
-	# Connect to API
-	API.connect("response", Callable(self, "_on_response"))
 
 
 func _physics_process(delta):
@@ -89,10 +87,10 @@ func _process_command_queue() -> void:
 # Queues up the generation of a new goal from the LLM
 func _generate_new_goal() -> void:
 	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] generating new goal, commands in queue")
+		print("Debug: [Agent %s] NOT generating new goal, commands in queue")
 		return
 	
-	print("Debug: [Agent %s] generating new goal " % hash_id)
+	print("Debug: [Agent %s] generating new goal " % debug_id)
 	
 	var command_info = {
 		"agent": self,
@@ -104,14 +102,14 @@ func _generate_new_goal() -> void:
 
 
 func set_goal(new_goal: String) -> void:
-	print("Debug: [Agent %s] Setting goal: %s" % [hash_id, new_goal])
+	print_rich("Debug: [Agent %s] Updated Goal: [color=lime]%s[/color]" % [debug_id, new_goal])
+	goal = new_goal
 	
 	var command_info = {
 		"agent": self,
 		"type": Command.CommandType.GENERATE_SCRIPT,
 		"input": new_goal
 	}
-	
 	add_command(command_info)
 
 
@@ -124,33 +122,28 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
-		print("Debug: [Agent %s] Received message from [Agent %s]: %s" % [hash_id, from_id, msg])
+		print("Debug: [Agent %s] Received message from [Agent %s]: %s" % [debug_id, from_id, msg])
 
 		# Included this message in the agent's memory
-		_memory.add_message(msg, from_id, to_id)
-
-
-func _on_response(key, _response: String):
-	if key == self.hash_id:
-		print("Debug: [Agent %s] Received response from LLM" % hash_id)
+		memories.add_message(msg, from_id, to_id)
 
 
 func script_execution_completed():
-	print("Debug: [Agent %s] Script execution completed" % hash_id)
+	print("Debug: [Agent %s] Script execution completed" % debug_id)
 
 
 func build_prompt_context() -> String:
 	var context = "Current situation\n"
 	# context += "- Position: " + str(global_position) + "\n"
 	
-	context += _memory.format_recent_for_prompt(5)
+	context += memories.format_recent_for_prompt(5)
 	
 	return context
 	
 
 # Get all memories of a specific type
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
-	return _memory.get_by_type(memory_type)
+	return memories.get_by_type(memory_type)
 
 # TODO: investigate effectiveness of recording actions taken by agent
 # func record_action(action_description: String):

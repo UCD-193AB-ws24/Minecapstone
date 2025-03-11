@@ -17,7 +17,7 @@ var waiting: bool = false
 func register_agent(agent: Agent) -> void:
 	if agent.process_mode == Node.PROCESS_MODE_INHERIT:
 		agents[agent.hash_id] = agent
-		print("Registered agent with hash_id ", agent.hash_id)
+		print("Debug: [Agent %s] registered" % agent.debug_id)
 
 
 func unregister_agent(agent: Agent) -> void:

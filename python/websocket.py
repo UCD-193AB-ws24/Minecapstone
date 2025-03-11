@@ -78,7 +78,6 @@ async def server(websocket):
 				await websocket.send(goal)
 				print(f"Generated goal: {goal}")
 			elif message.startswith("SCRIPT "):
-				print("Generating code...")
 				prompt = message[len("SCRIPT "):]
 				code = generate_script(goal=prompt)
 				await websocket.send(code)  # Send raw code, no JSON wrapping

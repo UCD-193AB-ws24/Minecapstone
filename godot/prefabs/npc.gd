@@ -21,7 +21,13 @@ func actor_setup():
 
 func set_movement_target(movement_target: Vector3):
 	# TODO: replace this with a query to the closest point on the navmesh
-	if movement_target.y == 0: movement_target.y = global_position.y
+	if movement_target.y == 0:
+		# Sample the navigation map to find the closest point to the target
+		var nav_map_rid = navigation_agent.get_navigation_map()
+		var from = Vector3(movement_target.x, 1000, movement_target.y)  # Start high above target position
+		var to = Vector3(movement_target.x, -1000, movement_target.y)    # End deep below target position
+		movement_target = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, from, to)
+	
 	navigation_agent.set_target_position(movement_target)
 
 

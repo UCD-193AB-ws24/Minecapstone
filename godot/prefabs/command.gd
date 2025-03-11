@@ -62,17 +62,11 @@ func _LLM_set_goal(key: int, response: String):
 	if API.response.is_connected(_LLM_set_goal):
 		API.response.disconnect(_LLM_set_goal)
 
-	# Next command after generating goal is to set the goal
-	var command_info = {
-		"agent": agent,
-		"type": CommandType.GENERATE_SCRIPT,
-		"input": response
-	}
-	agent.add_command(command_info)
+	# Then, set the goal to the LLM generated one
+	agent.set_goal(response)
+	agent.memories.add_goal_update(response)
 
-	agent.goal = response
-	agent._memory.add_GENERATE_SCRIPT(response)
-	print("Debug: [Agent %s] Goal updated to: %s" % [agent.hash_id, response])
+	print_rich("Debug: [Agent %s] Updated Goal: [color=lime]%s[/color]" % [agent.debug_id, response])
 
 	command_status = CommandStatus.DONE
 
@@ -84,7 +78,7 @@ func _LLM_execute_script(key: int, response: String):
 	if API.response.is_connected(_LLM_execute_script):
 		API.response.disconnect(_LLM_execute_script)
 
-	# Next command after goal is to run the SCRIPT
+	# Then, run the generated script
 	var command_info = {
 		"agent": agent,
 		"type": CommandType.SCRIPT,
@@ -92,13 +86,13 @@ func _LLM_execute_script(key: int, response: String):
 	}
 	agent.add_command(command_info)
 
+	print_rich("Debug: [Agent %s] [color=lime]Updated Script[/color]" % [agent.debug_id])
+
 	command_status = CommandStatus.DONE
 
 
 # Executes the generated script, used only if this command is a SCRIPT
 func _execute_script() -> void:
-	# print("Debug: [Agent %s] Executing script: %s" % [agent.hash_id, command])
-	
 	# Run script
 	await self.run_script(command_input)
 	

@@ -23,13 +23,7 @@ func move_to_position(x: float, y: float):
 	# print("Moving to position: ", x, " ", y)
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
 
-	# Sample the navigation map to find the closest point to the target
-	var nav_map_rid = agent.navigation_agent.get_navigation_map()
-	var from = Vector3(x, 1000, y)  # Start high above target position
-	var to = Vector3(x, -1000, y)    # End deep below target position
-	var closest_point = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, from, to)
-
-	agent.set_movement_target(closest_point)
+	agent.set_movement_target(Vector3(x,0,y))
 
 	await agent.navigation_agent.target_reached
 	return true
