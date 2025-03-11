@@ -18,21 +18,6 @@ var command_status: CommandStatus
 var command_input: String
 
 
-func create_with(command_info: Dictionary) -> Command:
-	command_type = command_info["type"]
-	command_status = CommandStatus.WAITING
-	command_input = command_info["input"]
-	agent = command_info["agent"]
-	
-	match command_type:
-		CommandType.GENERATE_GOAL:
-			API.response.connect(_LLM_set_goal)
-		CommandType.GENERATE_SCRIPT:
-			API.response.connect(_LLM_execute_script)
-		
-	return self
-
-
 func execute(_agent: Agent):
 	if command_status != CommandStatus.WAITING:
 		return command_status
@@ -54,6 +39,22 @@ func execute(_agent: Agent):
 
 	return command_status
 
+
+func create_with(command_info: Dictionary) -> Command:
+	command_type = command_info["type"]
+	command_status = CommandStatus.WAITING
+	command_input = command_info["input"]
+	agent = command_info["agent"]
+	
+	match command_type:
+		CommandType.GENERATE_GOAL:
+			API.response.connect(_LLM_set_goal)
+		CommandType.GENERATE_SCRIPT:
+			API.response.connect(_LLM_execute_script)
+		
+	return self
+
+
 # Handles the response from API, used only if this command is a GENERATE_GOAL
 func _LLM_set_goal(key: int, response: String):
 	# Ensure the response is for this agent
@@ -67,6 +68,7 @@ func _LLM_set_goal(key: int, response: String):
 	agent.memories.add_goal_update(response)
 
 	command_status = CommandStatus.DONE
+
 
 # Sets the goal to the LLM generated one, used only if this command is a GENERATE_SCRIPT
 func _LLM_execute_script(key: int, response: String):

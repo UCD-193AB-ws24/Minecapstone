@@ -12,7 +12,6 @@ class_name Agent extends NPC
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
 
-# Command preload
 static var _command = preload("command.gd")
 
 # Initialize the agent
