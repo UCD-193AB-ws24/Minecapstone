@@ -8,9 +8,6 @@
 collision_layer = 1
 script = ExtResource("2_360ac")
 metadata/Name = "agent"
-goal = "Move to (30,0)."
-max_memories = 20
-infinite_decisions = false
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4

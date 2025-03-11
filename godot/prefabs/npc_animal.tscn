@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://d3bafosjkurl4"]
 
-[ext_resource type="Script" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
