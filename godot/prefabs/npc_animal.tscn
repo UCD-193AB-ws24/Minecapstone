@@ -13,7 +13,7 @@ albedo_color = Color(1, 1, 1, 0.038)
 
 [node name="Animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
-metadata/_custom_type_script = ExtResource("1_v1rpo")
+metadata/_custom_type_script = "uid://b1on6248sdblg"
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_height_offset = 1.0
