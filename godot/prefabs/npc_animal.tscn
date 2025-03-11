@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://cwf5gemyuyfrv"]
+[gd_scene load_steps=6 format=3 uid="uid://d3bafosjkurl4"]
 
-[ext_resource type="Script" uid="uid://dyofhanucfxhf" path="res://npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
@@ -11,7 +11,7 @@ size = Vector3(0.6, 1.85, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
-[node name="npc_animal" type="CharacterBody3D"]
+[node name="Animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
 metadata/_custom_type_script = ExtResource("1_v1rpo")
 
@@ -19,6 +19,7 @@ metadata/_custom_type_script = ExtResource("1_v1rpo")
 path_height_offset = 1.0
 simplify_path = true
 simplify_epsilon = 0.571
+debug_enabled = true
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_yohm0")
@@ -48,7 +49,7 @@ shape = SubResource("BoxShape3D_ilsbc")
 
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("3_m2cuo")
-metadata/_custom_type_script = ExtResource("3_m2cuo")
+metadata/_custom_type_script = "uid://da2vclwxlejcg"
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
