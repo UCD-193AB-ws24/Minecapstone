@@ -81,7 +81,7 @@ func _LLM_execute_script(key: int, response: String):
 	# Then, run the generated script
 	agent.add_command(CommandType.SCRIPT, response)
 
-	print_rich("Debug: [Agent %s] [color=lime]Updated Script[/color]" % [agent.debug_id])
+	# print_rich("Debug: [Agent %s] [color=lime]Updated Script[/color]" % [agent.debug_id])
 
 	command_status = CommandStatus.DONE
 

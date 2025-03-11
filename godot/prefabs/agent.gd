@@ -4,6 +4,7 @@ class_name Agent extends NPC
 # Config and export variables
 @export var goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
+@export var infinite_decisions: bool = false
 
 @onready var hash_id : int = hash(self)
 @onready var debug_id : String = str(hash_id).substr(0, 3)
@@ -77,7 +78,7 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
-			if _command_queue.is_empty():
+			if _command_queue.is_empty() and infinite_decisions:
 				_generate_new_goal()
 		
 		_is_processing_commands = false
@@ -92,7 +93,7 @@ func _generate_new_goal() -> void:
 
 
 func set_goal(new_goal: String) -> void:
-	print_rich("Debug: [Agent %s] Updated Goal: [color=lime]%s[/color]" % [debug_id, new_goal])
+	print_rich("Debug: [Agent %s] [color=lime]%s[/color] (Goal Updated)" % [debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
 
@@ -118,7 +119,7 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 
 
 func script_execution_completed():
-	print_rich("Debug: [Agent %s] [color=cornflower_blue]Script execution completed[/color]" % debug_id)
+	print_rich("Debug: [Agent %s] [color=lime]Script execution completed[/color]" % debug_id)
 
 
 func build_prompt_context() -> String:
