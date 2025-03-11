@@ -50,7 +50,7 @@ shape = SubResource("BoxShape3D_sh265")
 
 [node name="AIController" type="Node" parent="."]
 script = ExtResource("2_kh24r")
-metadata/_custom_type_script = ExtResource("2_kh24r")
+metadata/_custom_type_script = "uid://da2vclwxlejcg"
 
 [node name="BlockHighlight" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
