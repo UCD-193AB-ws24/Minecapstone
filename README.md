@@ -26,7 +26,14 @@ python ./python/websocket.py
 - [x] Player needs, sprinting
 - [x] Prototype chunk saving, loading, and infinite generation
 - [x] Basic Inventory Management, item dictionary to identify and store items/blocks
-- [x] Prototype intelligent navigation using NavigationMesh & NavigationAgent
+- [x] Navigation prototype
 - [x] Procedural world generation using voronoi biome selection, noise for ocean/land and height maps
 - [x] Ore generation
 - [x] Item drops, with the ability to pick them up
+- [x] Basic Zombie AI w/ pathfinding
+- [x] Chunk optimizations (better transparency checks), basic visual shaders for fun
+- [x] Tools
+- [x] Websocket Python server for LLM agents
+- [x] Embodied LLM agent functionality -- infinite decision-making
+- [x] Command-based architecture for querying and running goals & scripts
+
