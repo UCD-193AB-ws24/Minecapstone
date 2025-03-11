@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://d3bafosjkurl4"]
 
-[ext_resource type="Script" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
@@ -13,7 +13,7 @@ albedo_color = Color(1, 1, 1, 0.038)
 
 [node name="Animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
-metadata/_custom_type_script = ExtResource("1_v1rpo")
+metadata/_custom_type_script = "uid://b1on6248sdblg"
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_height_offset = 1.0

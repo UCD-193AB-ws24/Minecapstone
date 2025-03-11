@@ -47,6 +47,7 @@ func _prompt_LLM(prompt: String, key: int):
 	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await connected
 	
+	# Send the prompt to the LLM
 	socket.send_text(prompt)
 
 	# Wait for a non-empty response.

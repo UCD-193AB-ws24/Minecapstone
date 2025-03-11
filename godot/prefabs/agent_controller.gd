@@ -22,11 +22,15 @@ func get_position() -> Vector3:
 func move_to_position(x: float, y: float):
 	# print("Moving to position: ", x, " ", y)
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-
 	agent.set_movement_target(Vector3(x,0,y))
 
 	await agent.navigation_agent.target_reached
 	return true
+
+func discard(itemName: String, amount: int):
+	# TODO: remove debug print
+	print("dropping ", amount , " ", itemName, )
+	agent.discard_item(itemName, amount)
 
 
 func get_nearby_agents() -> Array:
