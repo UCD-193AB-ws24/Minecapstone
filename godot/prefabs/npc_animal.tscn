@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3 uid="uid://d3bafosjkurl4"]
+
+[ext_resource type="Script" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ilsbc"]
+size = Vector3(0.6, 1.85, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_whuro"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.038)
+
+[node name="Animal" type="CharacterBody3D"]
+script = ExtResource("1_v1rpo")
+metadata/_custom_type_script = ExtResource("1_v1rpo")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_height_offset = 1.0
+simplify_path = true
+simplify_epsilon = 0.571
+debug_enabled = true
+
+[node name="InventoryManager" type="Node" parent="."]
+script = ExtResource("2_yohm0")
+
+[node name="Body" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1.1, 0, 0, 0, -4.80825e-08, -1.1, 0, 1.1, -4.80825e-08, 0, 0.4, 0)
+radius = 0.3
+height = 0.8
+sides = 16
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(-1.1, 0, -9.61651e-08, 0, 1.1, 0, 9.61651e-08, 0, -1.1, 0, 0.5, 0.4)
+
+[node name="Headbox" type="CSGBox3D" parent="Head"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 90.0
+size = 0.048
+
+[node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
+target_position = Vector3(0, 0, -4.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_ilsbc")
+
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("3_m2cuo")
+metadata/_custom_type_script = "uid://da2vclwxlejcg"
+
+[node name="BlockHighlight" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+size = Vector3(1.1, 1.1, 1.1)
+material = SubResource("StandardMaterial3D_whuro")
