@@ -19,6 +19,3 @@ billboard = 1
 text = "waiting..."
 font_size = 50
 outline_size = 16
-
-[node name="AIController" parent="." index="7"]
-metadata/_custom_type_script = "uid://da2vclwxlejcg"
