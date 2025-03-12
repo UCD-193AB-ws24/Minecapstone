@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cgb063gab15jv"]
+[gd_scene load_steps=15 format=3 uid="uid://cgb063gab15jv"]
 
 [ext_resource type="PackedScene" uid="uid://qv6r47xs88ux" path="res://prefabs/agent_manager.tscn" id="1_t5wr3"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
@@ -16,6 +16,12 @@
 vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t5wr3"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r23cj"]
+albedo_color = Color(0, 0, 1, 1)
+
 [node name="World" type="Node3D"]
 
 [node name="AgentManager" parent="." instance=ExtResource("1_t5wr3")]
@@ -27,7 +33,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
 VIEW_DISTANCE = 1
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.833702, -0.419207, -0.359453, 0.202048, -0.374226, 0.905059, -0.513924, -0.827176, -0.227293, 0, 39.8777, 0)
+transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_w4vno")
@@ -61,8 +67,36 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
 attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
-transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
 _speed = 2.0
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 20.25, 15)
+radius = 7.0
+height = 1.0
+sides = 32
+material = SubResource("StandardMaterial3D_t5wr3")
+
+[node name="Label3D" type="Label3D" parent="CSGCylinder3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+billboard = 1
+text = "Coordinates are (-30, 15)"
+font_size = 200
+outline_size = 48
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 20.25, -15)
+radius = 7.0
+height = 1.0
+sides = 32
+material = SubResource("StandardMaterial3D_r23cj")
+
+[node name="Label3D" type="Label3D" parent="CSGCylinder3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0908279, 4.83133, -1.23383)
+billboard = 1
+text = "Coordinates are (-30, -15)"
+font_size = 200
+outline_size = 48
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
