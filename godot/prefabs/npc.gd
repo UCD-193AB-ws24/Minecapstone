@@ -117,7 +117,7 @@ func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 
-func _target_nearest_entity(target:String = "npc"):
+func _select_nearest_target(target:String = "npc"):
 	if detected_entities.is_empty():
 		target_entity = null
 		return

@@ -24,11 +24,11 @@ func move_to_current_target():
 	label.text = "Moving to position of target: " + agent.target_entity.name 
 	agent.set_movement_target(agent.target_entity.global_position)
 
-func select_nearest_target_type(target: String):
+func select_nearest_entity_type(target: String):
 	label.text = "Selecting nearest target of type: " + target
 	agent._select_nearest_target(target)
 
-func attack_selected_entity(count: int = 1):
+func attack_selected_target(count: int = 1):
 	label.text = "Attacking entity " + str(count) + "times."
 	for i in range(count):
 		agent._attack_entity()

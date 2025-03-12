@@ -147,13 +147,31 @@ process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 
 [node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
-process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
-attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+detection_range = 10.0
+attack_range = 2.0
+attack_damage = 25.0
+attack_cooldown = 2.0
+chase_speed = 2.0
 _speed = 2.0
+_jump_velocity = 10.0
+_acceleration = 0.15
+normal_fov = 70.0
+fov_transition_speed = 7.5
+double_tap_time = 0.3
+max_health = 100
+max_hunger = 100
+max_thirst = 100
+hunger_decrease_rate = 0.01
+thirst_decrease_rate = 0.015
+sprint_hunger = 0.09
+sprint_thirst = 0.035
+health_decrease_rate = 2.5
+natural_healing_rate = 5.0
+_mouse_sensitivity = 0.1
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
