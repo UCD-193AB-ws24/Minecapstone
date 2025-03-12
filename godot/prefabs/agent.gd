@@ -2,6 +2,7 @@ class_name Agent extends NPC
 
 signal movement_completed
 
+
 @onready var goal : String = ""
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController

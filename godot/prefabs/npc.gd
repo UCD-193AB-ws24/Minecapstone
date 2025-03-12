@@ -1,6 +1,7 @@
 class_name NPC
 extends Player
 
+signal attack_completed
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
@@ -47,9 +48,9 @@ func _physics_process(delta):
 	# specifically for agents, we need to constantly update the target position (using _set_chase_target_position) and then check if were within attack range
 	if targeting:
 		_set_chase_target_position()
-		if position.distance_to(target_entity.position) <= attack_range:
+		
+	if target_entity and position.distance_to(target_entity.position) <= attack_range:
 			targeting = false
-
 
 	_handle_movement(delta)
 	super(delta)
@@ -94,17 +95,24 @@ func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
 	rotation.y = atan2(direction.x, direction.z) + PI
 
-func _handle_attacking():
+func _handle_attacking(c : int = 1):
 	navigation_agent.target_position = target_entity.global_position
-	if can_attack:
-		_attack_entity()
-		can_attack = false
-		await get_tree().create_timer(attack_cooldown).timeout
-		can_attack = true
+	for i in range(0, c):
+		if can_attack:
+			_attack_entity()
+			can_attack = false
+			await get_tree().create_timer(attack_cooldown).timeout
+			can_attack = true
+	
+	print("finished attack")
+	attack_completed.emit()
 
 func _attack_entity():
+	print("attempting to attack 1")
 	if target_entity and global_position.distance_to(target_entity.global_position) <= attack_range:
+		print("attempting to attack 2")
 		if raycast.is_colliding() and raycast.get_collider() == target_entity:
+			print("targeting: " + raycast.get_collider().name)
 			target_entity.damage(attack_damage)
 			_apply_knockback(target_entity)
 

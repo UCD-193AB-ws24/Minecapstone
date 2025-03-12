@@ -5,6 +5,7 @@ var agent: Agent
 var position: Vector3
 var label: Label3D
 
+
 func setup(target_agent: Agent):
 	self.agent = target_agent
 	self.position = target_agent.position
@@ -29,9 +30,9 @@ func select_nearest_entity_type(target: String):
 	agent._select_nearest_target(target)
 
 func attack_selected_target(count: int = 1):
-	label.text = "Attacking entity " + str(count) + "times."
-	for i in range(count):
-		agent._attack_entity()
+	label.text = "Attacking entity " + str(count) + " times."
+	
+	agent._handle_attacking(count)
 
 # Need to implement attacking specific entities
 #func attack_target_entity():
