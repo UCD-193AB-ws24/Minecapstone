@@ -2,9 +2,6 @@ class_name Command
 extends Node
 
 enum CommandType {
-	GENERATE_GOAL,		# Generates a new goal using current context
-	GENERATE_SCRIPT,	# Generates a script using the given goal
-	SCRIPT,				# Executes the script
 }
 enum CommandStatus {
 	WAITING,
@@ -12,7 +9,6 @@ enum CommandStatus {
 	DONE,
 }
 
-var agent: Agent	# Used to access hash to send to API and agent_controller
 var command_type: CommandType
 var command_status: CommandStatus
 var command_input: String
@@ -32,7 +28,9 @@ func execute(_agent: Agent):
 		CommandType.GENERATE_SCRIPT:
 			# Will call _LLM_execute_script when response is received
 			var goal = command_input
-			API.generate_script(goal, agent.hash_id)
+			var context = agent.build_prompt_context()
+			var full_script_prompt = "Goal: " + goal + "\n" + context
+			API.generate_script(full_script_prompt, agent.hash_id)
 		CommandType.SCRIPT:
 			_execute_script()
 
@@ -99,7 +97,6 @@ func _execute_script() -> void:
 # Do not modify this function, it is used to run the script created by the LLM
 func run_script(input: String):
 	var source = agent.agent_controller.get_script().get_source_code().replace(
-		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(
 		"func eval():\n\treturn true",
 		"func eval():\n%s\n\treturn true" % input)
