@@ -31,6 +31,7 @@ FUNCTION REFERENCE:
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
 - get_nearby_agents() -> Array[int] - Get IDs of nearby agents
+- eat_food() - Restore your hunger by 10 points
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
 CORRECT EXAMPLE:
