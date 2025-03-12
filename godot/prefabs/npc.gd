@@ -191,9 +191,10 @@ func _attack_entity():
 			_apply_knockback(target_entity)
 
 func _on_body_entered(body: Node):
-	if body is Player or  body is NPC_Zombie: 
+	if is_instance_of(body, Player):
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
+		print("added entity: ", body.name)
 		
 func _on_body_exited(body: Node):
 	if body in detected_entities:
