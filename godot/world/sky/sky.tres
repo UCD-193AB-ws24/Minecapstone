@@ -1,7 +1,7 @@
 [gd_resource type="Environment" load_steps=7 format=3 uid="uid://dduchnkkscoka"]
 
-[ext_resource type="Shader" uid="uid://xxsy78ugnrrd" path="res://world/sky/sky.gdshader" id="1_owfsy"]
-[ext_resource type="Texture2D" uid="uid://be6wwir2t6ar4" path="res://world/sky/stars.png" id="2_eciw1"]
+[ext_resource type="Shader" uid="uid://dy517bcconjr8" path="res://world/sky/sky.gdshader" id="1_owfsy"]
+[ext_resource type="Texture2D" uid="uid://dscjsyn150ixv" path="res://world/sky/stars.png" id="2_eciw1"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ysn08"]
 
@@ -38,7 +38,7 @@ shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
 shader_parameter/clouds_speed = 2.0
 shader_parameter/clouds_direction = 0.2
 shader_parameter/clouds_scale = 1.8
-shader_parameter/clouds_cutoff = 0.47
+shader_parameter/clouds_cutoff = 0.3
 shader_parameter/clouds_fuzziness = 0.59
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.18
@@ -71,4 +71,3 @@ fog_depth_end = 354.8
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0032
 volumetric_fog_anisotropy = -0.23
-volumetric_fog_ambient_inject = 0.25

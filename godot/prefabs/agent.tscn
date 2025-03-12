@@ -5,7 +5,12 @@
 [ext_resource type="Script" uid="uid://c8awvxecd5ig2" path="res://prefabs/agent_controller.gd" id="3_6hp0s"]
 
 [node name="Agent" instance=ExtResource("1_360ac")]
+collision_layer = 1
 script = ExtResource("2_360ac")
+goal = "Move to (30,0)."
+max_memories = 20
+infinite_decisions = false
+metadata/Name = "agent"
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4

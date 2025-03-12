@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://cwf5gemyuyfrv"]
+[gd_scene load_steps=6 format=3 uid="uid://d3bafosjkurl4"]
 
-[ext_resource type="Script" uid="uid://dlr6a1ejkp2mu" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
+[ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/npc_animal.gd" id="1_v1rpo"]
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="2_yohm0"]
 [ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="3_m2cuo"]
 
@@ -13,14 +13,15 @@ albedo_color = Color(1, 1, 1, 0.038)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_k4eh4"]
 
-[node name="npc_animal" type="CharacterBody3D"]
+[node name="Animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
-metadata/_custom_type_script = "uid://dlr6a1ejkp2mu"
+metadata/_custom_type_script = "uid://b1on6248sdblg"
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 path_height_offset = 1.0
 simplify_path = true
 simplify_epsilon = 0.571
+debug_enabled = true
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("2_yohm0")

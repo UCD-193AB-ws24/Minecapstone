@@ -1,6 +1,7 @@
-[gd_scene load_steps=23 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=24 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
+[ext_resource type="PackedScene" uid="uid://qv6r47xs88ux" path="res://prefabs/agent_manager.tscn" id="1_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
@@ -8,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
-[ext_resource type="Environment" uid="uid://0gvumcxkr4dg" path="res://world/sky/nosky.tres" id="7_ocfjn"]
+[ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="7_ocfjn"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="11_mcsb2"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
@@ -73,7 +74,7 @@ shader_parameter/shine_strength = 0.214
 shader_parameter/shine_shininess = 13.0
 shader_parameter/shadow = 1.0
 shader_parameter/shadow_width = 0.18
-shader_parameter/wave_amplitude1 = 1.93
+shader_parameter/wave_amplitude1 = 2.0
 shader_parameter/wave_amplitude2 = 0.5
 shader_parameter/normal_map_w = 256
 shader_parameter/foam_intensity = 3.0
@@ -86,6 +87,8 @@ subdivide_depth = 400
 orientation = 1
 
 [node name="World" type="Node3D"]
+
+[node name="AgentManager" parent="." instance=ExtResource("1_dqqhb")]
 
 [node name="UI" parent="." instance=ExtResource("5_2riqy")]
 
@@ -106,17 +109,17 @@ ChunkScene = ExtResource("4_b2ttj")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("7_ocfjn")
 script = ExtResource("7_ffu4t")
+low_graphics_mode = false
 day_duration_seconds = 60.0
 night_duration_seconds = 60.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
-visible = false
 mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, -8.44439e-08, 2.26267e-08, 0, 0.258819, 0.965926, -8.74228e-08, 0.965926, -0.258819, 0, 35, 0)
+transform = Transform3D(-1, 8.74228e-08, 0, -8.29051e-08, -0.948324, 0.317305, 2.77397e-08, 0.317305, 0.948324, 0, 35, 0)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -126,9 +129,8 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 35, 0)
-light_energy = 1.5
-light_volumetric_fog_energy = 4.0
+transform = Transform3D(1, 0, 0, 0, 0.948324, -0.317305, 0, 0.317305, 0.948324, -0.0167961, 35, 0.0408497)
+light_energy = 0.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
@@ -152,6 +154,12 @@ detection_range = 100.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+goal = "Move to (30,0). Then, send a message that says, \"Move to (0, 0)\"."
+_speed = 2.0
+
+[node name="Agent2" parent="." instance=ExtResource("11_mcsb2")]
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 33.1885, -1.72397)
+goal = "Move to (10,0)."
 _speed = 2.0
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]

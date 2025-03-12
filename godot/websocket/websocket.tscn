@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://bequwvch7o8sb"]
+
+[node name="WebsocketTest" type="Node2D"]
