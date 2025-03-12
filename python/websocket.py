@@ -80,18 +80,18 @@ async def server(websocket):
 				print(f"Generated goal: {goal}")
 			elif message.startswith("SCRIPT "):
 				prompt = message[len("SCRIPT "):]
-				code = generate_script(prompt=prompt)
+				code = generate_script(goal=prompt)
 				await websocket.send(code)  # Send raw code, no JSON wrapping
 				# print(f"Generated code.")
 	except Exception as e:
 		print(f"Error: {e}")
 
 
-def generate_script(prompt: str):
+def generate_script(goal: str):
 	response = LLM_generate(
 		messages=[
 			{"role": "system", "content": system_prompt},
-			{"role": "user", "content": prompt + "\n" + user_preprompt},
+			{"role": "user", "content": goal + "\n" + user_preprompt},
 		],
 		response_format=LinesOfCodeWithinFunction,
 	)

@@ -8,4 +8,4 @@ func _init(goal_description: String):
 	goal = goal_description
 	
 func format_for_prompt() -> String:
-	return "* Completed: %s" % goal
+	return "*Completed: %s" % goal
