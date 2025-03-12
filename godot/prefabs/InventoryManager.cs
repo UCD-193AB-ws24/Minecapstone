@@ -187,13 +187,12 @@ public partial class InventoryManager : Node
 
 	private void DecrementItemInSlot(int slot) {
 		var item = _slotsToItems[slot];
-		SpawnMultipleDroppedItems(item.item, item.count);
-		item.count = 0;
+		item.count--;
+		if (item.count > 0) return;
 		
-		// _inventorySlots[slot] = false;
-		// _slotsToItems.Remove(slot);
-		// _nameToSlots[item.item.Name].Remove(slot);
-		ReleaseItemSlot(item.item.Name, slot);
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		_nameToSlots[item.item.Name].Remove(slot);
 	}
 
 	private void SpawnMultipleDroppedItems(Item item, int count) {
