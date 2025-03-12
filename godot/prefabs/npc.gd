@@ -13,7 +13,7 @@ var detected_entities: Array = []
 var targeting : bool = false
 @onready var detection_area: Area3D = $DetectionSphere
 
-@export var detection_range: float = 10.0
+@export var detection_range: float = 100.0
 @export var attack_range: float = 2.0
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0 
@@ -117,7 +117,7 @@ func _attack_entity():
 			_apply_knockback(target_entity)
 
 func _on_body_entered(body: Node):
-	if body is Player: 
+	if body is Player or  body is NPC_Zombie: 
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
 		
@@ -130,7 +130,7 @@ func _select_nearest_target(target:String = "npc"):
 		target_entity = null
 		return
 		
-	var target_string = "npc_"
+	var target_string = "NPC"
 	if target != "npc":
 		target_string += target
 
@@ -138,8 +138,9 @@ func _select_nearest_target(target:String = "npc"):
 	var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
 	
 	for entity in detected_entities:
+		print("checking entity: " + entity.name)
 		var distance = global_position.distance_to(entity.global_position)
-		if distance < nearest_distance and entity.has_meta(target_string):
+		if distance < nearest_distance and entity.name == target_string:
 			nearest_distance = distance
 			nearest_entity = entity
 	

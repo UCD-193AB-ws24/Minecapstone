@@ -17,9 +17,11 @@ var current_state: ZombieState = ZombieState.WANDERING
 #var target_entity: Player = null
 var last_known_position: Vector3
 
+func _init() -> void:
+	set_meta("npc_zombie", true)
+
 func _ready():
 	super()
-	set_meta("npc_zombie", true)
 	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
 	inventory_manager.AddItem(itemdict_instance.Get("Dirt"), 64)
 	
