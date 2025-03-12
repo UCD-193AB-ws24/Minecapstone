@@ -32,7 +32,9 @@ func execute(_agent: Agent):
 		CommandType.GENERATE_SCRIPT:
 			# Will call _LLM_execute_script when response is received
 			var goal = command_input
-			API.generate_script(goal, agent.hash_id)
+			var context = agent.build_prompt_context()
+			var full_prompt = "Goal: " + goal + "\n" + context
+			API.generate_script(full_prompt, agent.hash_id)
 		CommandType.SCRIPT:
 			_execute_script()
 
