@@ -19,6 +19,7 @@ var last_known_position: Vector3
 
 func _ready():
 	super()
+	set_meta("npc_zombie", true)
 	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
 	inventory_manager.AddItem(itemdict_instance.Get("Dirt"), 64)
 	
@@ -62,9 +63,7 @@ func _physics_process(delta):
 # when it could be called externally or by a super class
 # use descriptive function names instead of "_handle..." when possible
 
-func _set_chase_target_position():
-	navigation_agent.target_position = target_entity.global_position
-	_speed = chase_speed
+
 
 
 func _input(_event):

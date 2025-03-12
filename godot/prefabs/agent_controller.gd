@@ -19,10 +19,17 @@ func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
 	agent.set_movement_target(Vector3(x, 0.0, y))
 
+func move_to_current_target():
+	# print("Moving to position: ", x, " ", y)
+	label.text = "Moving to position of target: " + agent.target_entity.name 
+	agent.set_movement_target(agent.target_entity.global_position)
 
-func attack_nearest_entity(count: int = 1):
+func select_nearest_target_type(target: String):
+	label.text = "Selecting nearest target of type: " + target
+	agent._select_nearest_target(target)
+
+func attack_selected_entity(count: int = 1):
 	label.text = "Attacking entity " + str(count) + "times."
-	agent._target_nearest_entity()
 	for i in range(count):
 		agent._attack_entity()
 

@@ -9,6 +9,7 @@ var can_attack = true
 
 var target_entity: Player = null
 var detected_entities: Array = []
+var targeting : bool = false
 @onready var detection_area: Area3D = $DetectionSphere
 
 @export var detection_range: float = 10.0
@@ -43,6 +44,13 @@ func set_movement_target(movement_target: Vector3):
 
 
 func _physics_process(delta):
+	# specifically for agents, we need to constantly update the target position (using _set_chase_target_position) and then check if were within attack range
+	if targeting:
+		_set_chase_target_position()
+		if position.distance_to(target_entity.position) <= attack_range:
+			targeting = false
+
+
 	_handle_movement(delta)
 	super(delta)
 
@@ -109,22 +117,30 @@ func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 
-func _target_nearest_entity():
+func _target_nearest_entity(target:String = "npc"):
 	if detected_entities.is_empty():
 		target_entity = null
 		return
-	
+		
+	var target_string = "npc_"
+	if target != "npc":
+		target_string += target
+
 	var nearest_entity: Player = detected_entities[0]
 	var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
 	
 	for entity in detected_entities:
 		var distance = global_position.distance_to(entity.global_position)
-		if distance < nearest_distance:
+		if distance < nearest_distance and entity.has_meta(target_string):
 			nearest_distance = distance
 			nearest_entity = entity
 	
 	target_entity = nearest_entity
 	print("New target: ", target_entity.name, " at distance: ", nearest_distance)
+
+func _set_chase_target_position():
+	navigation_agent.target_position = target_entity.global_position
+	_speed = chase_speed
 
 func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
