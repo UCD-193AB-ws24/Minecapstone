@@ -25,6 +25,8 @@ func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
 	agent.set_movement_target(Vector3(x,0,y))
 
+	# TODO: replace with a loop that checks if the agent has reached the target, instead of waiting for a signal
+	# Waiting for signal blocks the agent from doing anything else?... i had a better reason... it's 12 am..
 	await agent.navigation_agent.target_reached
 	return true
 
