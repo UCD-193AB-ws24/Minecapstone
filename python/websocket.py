@@ -31,8 +31,8 @@ FUNCTION REFERENCE:
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
 - select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If no value is specified it will attack the nearest target
-- move_to_current_target() - Move the agent to the current target position.
-- attack_selected_target(int c) - Attack the currently selected target. The argument c provides the number of times to attack.
+- move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
+- attack_selected_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
 - eat_food() - Restore your hunger by 10 points
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
@@ -40,6 +40,13 @@ CORRECT EXAMPLE:
 var reached = await move_to_position(30, 0)
 if reached:
 	say("I've arrived!")
+
+CORRECT EXAMPLE: Attacking functions are sensitive to how they are called:
+Example Prompt: "Attack the nearest zombie 3 times"
+CORRECT EXAMPLE:
+select_nearest_entity_type("zombie")
+await move_to_current_target()
+await attack_selected_target(3)
 
 INCORRECT EXAMPLE:
 var reached = move_to_position(30, 0)  # ERROR: Missing await!
@@ -54,52 +61,52 @@ Remember:
 5. If you receive messages from other agents, you can choose how to respond based on your current goal.
 """
 
-old_system_prompt="""
-You have access to the following context:
-position: Vector2 - The agent's current position
-detected_entities: Array - The list of entities detected by the agent. Each entity has a position and type.
-entity_types: List - hardcoded list of entities the agent is allowed to detect. Current List: ["zombie"]
+# old_system_prompt="""
+# You have access to the following context:
+# position: Vector2 - The agent's current position
+# detected_entities: Array - The list of entities detected by the agent. Each entity has a position and type.
+# entity_types: List - hardcoded list of entities the agent is allowed to detect. Current List: ["zombie"]
 
-Functions or Awaits
-select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If no value is specified it will attack the nearest target
-move_to_position(float x, float y) - Move the agent to the specified coordinates.
-move_to_current_target() - Move the agent to the current target position.
-await agent.movement_completed - Wait for the agent to reach the position, must be directly after move_to_position.
-await attack_selected_target(int c) - Attack the currently selected target. The argument c provides the number of times to attack.
+# Functions or Awaits
+# select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If no value is specified it will attack the nearest target
+# move_to_position(float x, float y) - Move the agent to the specified coordinates.
+# move_to_current_target() - Move the agent to the current target position.
+# await agent.movement_completed - Wait for the agent to reach the position, must be directly after move_to_position.
+# await attack_selected_target(int c) - Attack the currently selected target. The argument c provides the number of times to attack.
 
-IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
-CORRECT EXAMPLE:
-var reached = await move_to_position(30, 0)
-if reached:
-    say("I've arrived!")
+# IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
+# CORRECT EXAMPLE:
+# var reached = await move_to_position(30, 0)
+# if reached:
+#     say("I've arrived!")
 
-INCORRECT EXAMPLE:
-var reached = move_to_position(30, 0)  # ERROR: Missing await!
+# INCORRECT EXAMPLE:
+# var reached = move_to_position(30, 0)  # ERROR: Missing await!
 
-IMPORTANT: Attacking functions are sensitive to how they are called:
-Example Prompt: "Attack the nearest zombie 3 times"
-CORRECT EXAMPLE:
-select_nearest_entity_type("zombie")
-move_to_current_target()
-await agent.movement_completed
-await attack_selected_target(3)
+# IMPORTANT: Attacking functions are sensitive to how they are called:
+# Example Prompt: "Attack the nearest zombie 3 times"
+# CORRECT EXAMPLE:
+# select_nearest_entity_type("zombie")
+# move_to_current_target()
+# await agent.movement_completed
+# await attack_selected_target(3)
 
 
-INCORRECT EXAMPLE:
-select_nearest_entity_type("zombie")
-move_to_current_target()
-await agent.movement_completed
-for i in range(3):
-	await attack_selected_target()  # ERROR: missing argument c
+# INCORRECT EXAMPLE:
+# select_nearest_entity_type("zombie")
+# move_to_current_target()
+# await agent.movement_completed
+# for i in range(3):
+# 	await attack_selected_target()  # ERROR: missing argument c
 
-Remember:
-Your goal is defined by the game, not by you. Focus on taking actions toward your current goal.
-Keep your code simple and focused on the immediate next steps to achieve your goal.
-You don't need to explicitly complete goals - the game will handle that for you.
+# Remember:
+# Your goal is defined by the game, not by you. Focus on taking actions toward your current goal.
+# Keep your code simple and focused on the immediate next steps to achieve your goal.
+# You don't need to explicitly complete goals - the game will handle that for you.
 
-YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
-You are allowed to write conditionals, loops, and functions.
-"""
+# YOU ARE NOT ALLOWED TO USE ANYTHING ELSE OTHER THAN THE PROVIDED CONTEXT.
+# You are allowed to write conditionals, loops, and functions.
+# """
 
 user_preprompt = """
 Provide the list of functions you would like to call to achieve the goal.

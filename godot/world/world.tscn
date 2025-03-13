@@ -153,7 +153,7 @@ detection_range = 100.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
-goal = "Attack the nearest thing 100 times."
+goal = "Attack the nearest zombie 100 times."
 _speed = 2.0
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
