@@ -40,6 +40,58 @@ public partial class InventoryManager : Node
 		if (!_inventorySlots[_selectedSlot]) return;
 		DecrementItemInSlot(_selectedSlot);
 	}
+
+	public bool DropItem(String itemName, int amount) {
+		int currentAmount = amount;
+		if(!_nameToSlots.ContainsKey(itemName))
+		{
+			return false;
+		}
+		List<int> slotNums = _nameToSlots[itemName];
+		//check starting from the most recent slotnum 
+		for(int i = slotNums.Count - 1; i >= 0; i--) {
+			InventoryItem items = _slotsToItems[slotNums[i]];
+			if(items.count >= currentAmount) 
+			{
+				//spawn items equal to currentAmount
+				for (int j = 0; j < currentAmount; j++) {
+					SpawnDroppedItem(items.item);
+				}
+				items.count -= currentAmount;
+				if(items.count > 0)
+				{
+					//leftover amounts in item
+					return true;
+				}
+				// _inventorySlots[slotNums[i]] = false;
+				// _slotsToItems.Remove(slotNums[i]);
+				// _nameToSlots[itemName].Remove(slotNums[i]);
+				// //Check if there is anymore slots that contain the item
+				// if(_nameToSlots[itemName].Count <= 0)
+				// {
+				// 	_nameToSlots.Remove(itemName);
+				// }
+				ReleaseItemSlot(itemName, slotNums[i]);
+				return true;
+			} else 
+			{
+				//items.count < amount
+				//spawn items equal to currentAmount
+				for (int j = 0; j < items.count; j++) {
+					SpawnDroppedItem(items.item);
+				}
+				//subtract amount from item.count
+				amount -= items.count;
+				// _inventorySlots[slotNums[i]] = false;
+				// _slotsToItems.Remove(slotNums[i]);
+				// _nameToSlots[itemName].Remove(slotNums[i]);
+				ReleaseItemSlot(itemName, slotNums[i]);
+			}
+		}
+		//if the loop exits here, then the agent still has more it wants to drop but there's no more of the item to drop
+		//return true because the agent drops all quantities of the item 
+		return true;
+	}
 	
 	public bool DropSelectedItem() {
 		if (!_inventorySlots[_selectedSlot]) return false;
@@ -158,5 +210,17 @@ public partial class InventoryManager : Node
 		_inventorySlots[slot] = false;
 		_slotsToItems.Remove(slot);
 		_nameToSlots[item.item.Name].Remove(slot);
+	}
+
+	private void ReleaseItemSlot(String itemName, int slotNum)
+	{
+		_inventorySlots[slotNum] = false;
+		_slotsToItems.Remove(slotNum);
+		_nameToSlots[itemName].Remove(slotNum);
+		//Check if there is anymore slots that contain the item
+		if(_nameToSlots[itemName].Count <= 0)
+		{
+			_nameToSlots.Remove(itemName);
+		}
 	}
 }

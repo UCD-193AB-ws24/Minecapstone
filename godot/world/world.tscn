@@ -149,7 +149,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 
 [node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
-collision_layer = 1
 detection_range = 100.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]

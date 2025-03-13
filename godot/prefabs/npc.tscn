@@ -14,7 +14,6 @@ albedo_color = Color(1, 1, 1, 0.038)
 [sub_resource type="SphereShape3D" id="SphereShape3D_cuwdc"]
 
 [node name="NPC" type="CharacterBody3D"]
-collision_layer = 8
 platform_floor_layers = 4294967041
 script = ExtResource("1_cuwdc")
 
