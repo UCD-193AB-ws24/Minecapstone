@@ -11,6 +11,8 @@ size = Vector3(0.6, 1.85, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.038)
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_k4eh4"]
+
 [node name="Animal" type="CharacterBody3D"]
 script = ExtResource("1_v1rpo")
 metadata/_custom_type_script = "uid://b1on6248sdblg"
@@ -31,7 +33,7 @@ height = 0.8
 sides = 16
 
 [node name="Head" type="Node3D" parent="."]
-transform = Transform3D(-1.1, 0, -9.61651e-08, 0, 1.1, 0, 9.61651e-08, 0, -1.1, 0, 0.5, 0.4)
+transform = Transform3D(-1.1, 0, -1.66095e-07, 0, 1.1, 0, 1.66095e-07, 0, -1.1, 0, 0.5, 0.4)
 
 [node name="Headbox" type="CSGBox3D" parent="Head"]
 size = Vector3(0.6, 0.6, 0.6)
@@ -55,3 +57,8 @@ metadata/_custom_type_script = "uid://da2vclwxlejcg"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 size = Vector3(1.1, 1.1, 1.1)
 material = SubResource("StandardMaterial3D_whuro")
+
+[node name="DetectionSphere" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionSphere"]
+shape = SubResource("SphereShape3D_k4eh4")

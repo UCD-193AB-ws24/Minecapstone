@@ -8,6 +8,7 @@ var label: Label3D
 var message_broker = MessageBroker
 
 
+
 func setup(target_agent: Agent):
 	self.agent = target_agent
 	self.position = target_agent.position
@@ -24,8 +25,30 @@ func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
 	agent.set_movement_target(Vector3(x,0,y))
 
+	# TODO: replace with a loop that checks if the agent has reached the target, instead of waiting for a signal
+	# Waiting for signal blocks the agent from doing anything else?... i had a better reason... it's 12 am..
 	await agent.navigation_agent.target_reached
 	return true
+
+func move_to_current_target():
+	# print("Moving to position: ", x, " ", y)
+	label.text = "Moving to position of target: " + agent.target_entity.name 
+	agent.set_movement_target(agent.target_entity.global_position)
+
+func select_nearest_entity_type(target: String):
+	label.text = "Selecting nearest target of type: " + target
+	agent._select_nearest_target(target)
+
+func attack_selected_target(count: int = 1):
+	label.text = "Attacking entity " + str(count) + " times."
+	
+	agent._handle_attacking(count)
+
+# Need to implement attacking specific entities
+#func attack_target_entity():
+	#label.text = "Attacking entity: " + entity
+	#agent._attack_entity()
+
 
 func discard(itemName: String, amount: int):
 	# TODO: remove debug print

@@ -1,6 +1,6 @@
 extends Control
 
-@onready var label: Label = $TopLeftUI/Label
+@onready var label = $GridContainer/Label
 
 func _physics_process(_delta: float) -> void:
 	label.text = "FPS: " + str(Engine.get_frames_per_second())
@@ -13,9 +13,9 @@ func _physics_process(_delta: float) -> void:
 	if player:
 		label.text += "\nPlayer Global Position: " + str(round_vector(player.global_position))
 		label.text += "\nPlayer Velocity: " + str(round(player.velocity.length() * 10) / 10.0)
-		var healthbar:ProgressBar = $TopLeftUI/Health
-		var hungerbar:ProgressBar = $TopLeftUI/Hunger
-		var thirstbar:ProgressBar = $TopLeftUI/Thirst
+		var healthbar:ProgressBar = $Health
+		var hungerbar:ProgressBar = $Hunger
+		var thirstbar:ProgressBar = $Thirst
 
 		if player:
 			healthbar.value = player.health
@@ -24,7 +24,7 @@ func _physics_process(_delta: float) -> void:
 
 	var inventory_manager = $"../Player/InventoryManager"
 	if inventory_manager:
-		var item_amt_label = $BottomLeftUI/Label
+		var item_amt_label = $"./ItemTemp/Label"
 		var item = inventory_manager.GetSelectedItem()
 
 		if item:

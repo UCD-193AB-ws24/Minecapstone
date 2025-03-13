@@ -1,0 +1,161 @@
+[gd_scene load_steps=19 format=3 uid="uid://bhv1foa5e6ax2"]
+
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
+[ext_resource type="Script" uid="uid://ba2hvvw34j740" path="res://worldgen/world_generator.gd" id="1_yvk30"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
+[ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="8_kitc0"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="10_ffu4t"]
+[ext_resource type="PackedScene" path="res://prefabs/npc_animal.tscn" id="10_mcsb2"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_8mp4y"]
+noise_type = 2
+frequency = 0.015
+fractal_type = 0
+cellular_distance_function = 3
+cellular_return_type = 0
+domain_warp_type = 1
+domain_warp_amplitude = 1.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_yvk30"]
+noise_type = 0
+frequency = 0.002
+offset = Vector3(0, 153.6, 0)
+fractal_type = 0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_h7q52"]
+noise_type = 0
+frequency = 0.002
+offset = Vector3(1000, 1000, 0)
+fractal_type = 0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_41cxm"]
+noise_type = 0
+frequency = 0.0016
+fractal_gain = 0.43
+domain_warp_enabled = true
+domain_warp_amplitude = 5.0
+domain_warp_frequency = 40.0
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
+geometry_parsed_geometry_type = 1
+cell_size = 0.16
+cell_height = 0.5
+agent_radius = 0.32
+agent_max_climb = 1.0
+agent_max_slope = 90.0
+edge_max_length = 49.92
+edge_max_error = 1.0
+vertices_per_polygon = 5.0
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_xylv4"]
+sky_top_color = Color(0.478431, 0.658824, 0.992157, 1)
+sky_horizon_color = Color(0.752941, 0.839216, 1, 1)
+sky_curve = 0.0652915
+ground_bottom_color = Color(0.0871543, 0.0697184, 0.0494625, 1)
+ground_horizon_color = Color(0.752941, 0.839216, 1, 1)
+sun_curve = 0.35
+
+[sub_resource type="Sky" id="Sky_lh600"]
+sky_material = SubResource("ProceduralSkyMaterial_xylv4")
+radiance_size = 4
+
+[sub_resource type="Environment" id="Environment_g8rv3"]
+background_mode = 2
+sky = SubResource("Sky_lh600")
+fog_light_color = Color(0, 0, 0, 1)
+fog_density = 0.04
+volumetric_fog_density = 0.0184
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("5_2riqy")]
+
+[node name="WorldGenerator" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+script = ExtResource("1_yvk30")
+voronoi_noise = SubResource("FastNoiseLite_8mp4y")
+temperature_noise = SubResource("FastNoiseLite_yvk30")
+precipitation_noise = SubResource("FastNoiseLite_h7q52")
+height_noise = SubResource("FastNoiseLite_41cxm")
+
+[node name="LoadingScreen" type="Control" parent="WorldGenerator"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="WorldGenerator/LoadingScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.099986, 0.099986, 0.099986, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="WorldGenerator/LoadingScreen"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="WorldGenerator/LoadingScreen/CenterContainer"]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="WorldGenerator/LoadingScreen/CenterContainer/MarginContainer"]
+layout_mode = 2
+expand_mode = 1
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_ol1lb")
+script = ExtResource("1_8mp4y")
+
+[node name="BlockManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("2_yvk30")
+
+[node name="ChunkManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("3_igfuc")
+ChunkScene = ExtResource("4_b2ttj")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_g8rv3")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.91706, -0.12982, -0.377025, 0, -0.945519, 0.325568, -0.398749, 0.298566, 0.867098, 0, 0, 0)
+light_angular_distance = 2.27
+shadow_enabled = true
+shadow_blur = 0.0
+directional_shadow_mode = 0
+directional_shadow_split_1 = 0.0
+directional_shadow_split_2 = 0.0
+
+[node name="Player" parent="." instance=ExtResource("6_0r4rx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+
+[node name="NPC" parent="." instance=ExtResource("8_kitc0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+
+[node name="NPCZombie" parent="." instance=ExtResource("10_ffu4t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 70, 0)
+
+[node name="npc_animal" parent="." instance=ExtResource("10_mcsb2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85, 50.5848, -0.110495)
+metadata/_custom_type_script = "uid://dlr6a1ejkp2mu"
+
+[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]

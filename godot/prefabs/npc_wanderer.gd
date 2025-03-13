@@ -44,3 +44,7 @@ func _generate_wander_target() -> Vector3:
 	)
 	
 	return wander_target
+
+func _on_player_death():
+	super()
+	queue_free()

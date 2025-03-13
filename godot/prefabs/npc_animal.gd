@@ -4,6 +4,7 @@ extends NPC
 enum BehaviorModes {Wandering, Scared, Curious}
 @onready var oldBehavior = BehaviorModes.Scared
 @onready var behavior:BehaviorModes = BehaviorModes.Curious
+# TODO: Remove this line and update logic to use entity detector for players
 @onready var player = $"../Player"
 @onready var oldHealth = health
 
@@ -11,7 +12,7 @@ var _wandering_timer : Timer
 var _scared_timer : Timer
 var _wandering_duration: float = 5
 var _scared_duration: float = 7
-var detection_range = 25
+#var detection_range = 25
 	
 func _ready():
 	max_health = 50
@@ -102,7 +103,7 @@ func _wandering_movement():
 		var chance = randf_range(0, 1)
 		# randomly change direction
 		if chance < 0.02:
-			set_movement_target(global_position + Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
+			set_movement_target(global_position + Vector3(randf_range	(-10, 10), 0, randf_range(-10, 10)))
 				
 func _on_wandering_timer_timeout():
 	# Wandering is an endless behavior, so just finds somewhere new to wander towards on timer end.
@@ -117,4 +118,9 @@ func _on_scared_timer_timeout():
 
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
+	# Removing the PI fixes raycast emitted by animal
 	rotation.y = atan2(direction.x, direction.z)
+
+func _on_player_death():
+	super()
+	queue_free()
