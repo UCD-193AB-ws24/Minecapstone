@@ -338,7 +338,6 @@ func _break_block():
 
 func _handle_attacking():
 	if raycast.is_colliding() and raycast.get_collider() is Player:
-		print("Attack!")
 		var target = raycast.get_collider()
 		if Input.is_action_just_pressed("mouse1"):
 			target.damage(10)

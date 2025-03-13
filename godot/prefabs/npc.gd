@@ -1,8 +1,6 @@
 class_name NPC
 extends Player
 
-signal attack_completed
-
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 var agent_manager
@@ -178,9 +176,6 @@ func _handle_attacking(c : int = 1):
 			await get_tree().create_timer(attack_cooldown).timeout
 			can_attack = true
 	
-	print("finished attack")
-	attack_completed.emit()
-
 func _attack_entity():
 	print("attempting to attack 1")
 	if target_entity and global_position.distance_to(target_entity.global_position) <= attack_range:

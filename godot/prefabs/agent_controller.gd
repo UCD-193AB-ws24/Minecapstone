@@ -42,7 +42,7 @@ func select_nearest_entity_type(target: String):
 func attack_selected_target(count: int = 1):
 	label.text = "Attacking entity " + str(count) + " times."
 	
-	agent._handle_attacking(count)
+	await agent._handle_attacking(count)
 
 # Need to implement attacking specific entities
 #func attack_target_entity():
