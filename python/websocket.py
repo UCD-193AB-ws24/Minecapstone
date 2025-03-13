@@ -32,11 +32,10 @@ FUNCTION REFERENCE:
 - say_to(message, target_id) - Send a message to a specific agent
 - get_nearby_agents() -> Array[int] - Get IDs of nearby agents
 - select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If no value is specified it will attack the nearest target
-- move_to_position(float x, float y) - Move the agent to the specified coordinates.
 - move_to_current_target() - Move the agent to the current target position.
-- await agent.movement_completed - Wait for the agent to reach the position, must be directly after move_to_position.
 - attack_selected_target(int c) - Attack the currently selected target. The argument c provides the number of times to attack.
 - await agent.attack_completed - Wait for the agent to complete the attack.
+- eat_food() - Restore your hunger by 10 points
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
 CORRECT EXAMPLE:
