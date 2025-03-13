@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
-[ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="7_ocfjn"]
+[ext_resource type="Environment" uid="uid://0gvumcxkr4dg" path="res://world/sky/nosky.tres" id="8_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="11_mcsb2"]
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
@@ -107,14 +107,14 @@ script = ExtResource("3_igfuc")
 ChunkScene = ExtResource("4_b2ttj")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("7_ocfjn")
+environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
-low_graphics_mode = false
 day_duration_seconds = 60.0
 night_duration_seconds = 60.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+visible = false
 mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
@@ -130,7 +130,6 @@ directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 0.948324, -0.317305, 0, 0.317305, 0.948324, -0.0167961, 35, 0.0408497)
-light_energy = 0.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
@@ -150,6 +149,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 
 [node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
+collision_layer = 1
 detection_range = 100.0
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
