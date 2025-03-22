@@ -6,8 +6,11 @@ from dotenv import load_dotenv
 import json
 import os
 
+status = load_dotenv("./.env.development.local")
+#load_dotenv(".env")
+if not status : # load_dotenv couldn't find .env.development.local
+	load_dotenv("./.env") # try loading .env instead
 
-load_dotenv("./.env.development.local")
 client = OpenAI()
 
 
