@@ -62,8 +62,8 @@ process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
 
 [node name="NPCZombie" parent="." instance=ExtResource("9_pcqhl")]
+process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 30, 0)
-collision_layer = 1
 attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]

@@ -18,7 +18,7 @@ var detected_entities: Array = []
 var targeting : bool = false
 @onready var detection_area: Area3D = $DetectionSphere
 
-@export var detection_range: float = 100.0
+@export var detection_range: float = 10.0 # detecttion radius for the DetectionSphere area3d
 @export var attack_range: float = 2.0
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0 
@@ -125,8 +125,12 @@ func _input(_event):
 	# 	set_look_target(Vector3(-10,99,-20))
 	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_X:
 	# 	set_look_target(Vector3(26, 24, 0))
-	if _event is InputEventKey and _event.pressed and _event.keycode == KEY_C:		
-		give_to("Player", "Grass", 1)
+	if _event is InputEventKey and _event.pressed and _event.keycode == KEY_V:
+		_select_nearest_target("Player")
+		#_handle_attacking()
+
+	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_C:		
+	# 	give_to("Player", "Grass", 1)
 	return
 
 
@@ -194,15 +198,20 @@ func _on_body_entered(body: Node):
 func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
+		print("removed entity: ", body.name)
 
-func _select_nearest_target(target:String = "npc"):
+#set target_entity to the nearest entity with the name that matches target_string
+#PARAMETERS:
+#	target: name of target to set as target_entity 
+func _select_nearest_target(target:String):
 	if detected_entities.is_empty():
 		target_entity = null
 		return
-		
-	var target_string = "NPC"
-	if target != "npc":
-		target_string += target
+	var target_string = target
+	print("target_string is set to ", target_string)
+	# var target_string = "NPC"
+	# if target != "npc":
+	# 	target_string += target
 
 	var nearest_entity: Player = detected_entities[0]
 	var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
@@ -210,7 +219,10 @@ func _select_nearest_target(target:String = "npc"):
 	for entity in detected_entities:
 		print("checking entity: " + entity.name)
 		var distance = global_position.distance_to(entity.global_position)
-		if distance < nearest_distance and entity.name == target_string:
+		print("comparing to " + target_string)
+		#if distance < nearest_distance and entity.name == target_string:
+		if entity.name == target_string:
+			print("set entity")
 			nearest_distance = distance
 			nearest_entity = entity
 	

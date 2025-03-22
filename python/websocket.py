@@ -7,8 +7,8 @@ import json
 import os
 
 
-load_dotenv("./.env.development.local")
-client = OpenAI()
+load_dotenv("./.env.development")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # TODO: split websocket & LLM into separate files

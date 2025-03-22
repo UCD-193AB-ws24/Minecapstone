@@ -10,9 +10,7 @@ albedo_color = Color(0.324917, 0.249988, 0.114357, 1)
 albedo_color = Color(2.26215e-06, 0.466749, 0.271119, 1)
 
 [node name="NPCZombie" instance=ExtResource("1_h0f8g")]
-collision_layer = 1
 script = ExtResource("2_gbegp")
-detection_range = 10.0
 
 [node name="Body" parent="." index="2"]
 material = SubResource("StandardMaterial3D_pld1n")
