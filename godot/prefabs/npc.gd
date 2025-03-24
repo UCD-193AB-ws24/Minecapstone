@@ -13,10 +13,11 @@ signal target_reached
 var cur_target:Node = null
 var can_attack = true
 
-var target_entity: Player = null
+var target_entity: Player = null #entity agent focuses on. Necessary for attacking
 var detected_entities: Array = []
 var targeting : bool = false
 @onready var detection_area: Area3D = $DetectionSphere
+
 
 @export var detection_range: float = 10.0 # detecttion radius for the DetectionSphere area3d
 @export var attack_range: float = 2.0
@@ -67,18 +68,43 @@ func _moving_target_process():
 	if navigation_agent.target_position.distance_to(target_pos) > 1:
 		# print("updating cur_target position")
 		set_movement_target(target_pos)
-		set_look_target(target_pos)
+		set_look_position(target_pos)
 	if navigation_agent.is_target_reached():
 		# print("target reached")
 		cur_target = null # stop following target
 		navigation_agent.target_desired_distance = 1.0
 		target_reached.emit()
 
-func set_look_target(look_target: Vector3):
+#looks at position of look_pos
+#NOTE: If you pass position of an entity, the look_pos will be at the feet. Use look_at_target instead
+func set_look_position(look_pos: Vector3):
 	#head.look_at(look_target, Vector3(0,1,0))
-	var new_dir:Vector3 = head.global_position - look_target
+	var new_dir:Vector3 = head.global_position - look_pos
 	new_dir = new_dir.normalized()
-	head.look_at(look_target)
+	head.look_at(look_pos)
+
+func look_at_target(look_target: Node3D):
+	#temp implementation. Will replace with solution of targeting closest point of look_target's collision shape to npc's head
+	#TODO: implement https://stackoverflow.com/questions/44824512/how-to-find-the-closest-point-on-a-right-rectangular-prism-3d-rectangle
+	#var new_dir:Vector3 = head.global_position - look_target.global_position
+	var direction = (look_target.global_position - global_position).normalized()
+
+	# for calculatinig the head rotation
+	var abs_z = abs(direction.z) 
+	var hypotenuse = sqrt((direction.y ** 2) + (direction.z ** 2))
+	var y_normal = direction.y / hypotenuse
+	var z_normal = abs_z / hypotenuse
+	var hypo_normal = sqrt((y_normal ** 2) + (z_normal ** 2)) # equals 1
+
+	print("hypotenuse: ", hypo_normal)
+	rotation.y = atan2(direction.x, direction.z) + PI
+	var head_rad = asin(y_normal / hypo_normal) 
+	
+	head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
+	print("degrees: ", head_rad * (180/PI));
+	print("direction.y ", direction.y)
+	print("direction.z ", direction.z)
+	print("abs z ", abs_z)
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
@@ -97,7 +123,7 @@ func give_to(agent_name: String, item_name:String, amount:int):
 	elif (round(agent_ref.global_position.y - self.global_position.y)) <= -2:
 		# receiving agent is above this agent by 2- blocks
 		look_pos.y += 1
-	set_look_target(look_pos)
+	set_look_position(look_pos)
 	inventory_manager.DropItem(item_name, amount)
 	# print(round(agent_ref.global_position.y - self.global_position.y))
 
@@ -122,11 +148,13 @@ func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
 	#You can delete the commented out code below
 	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_Z:
-	# 	set_look_target(Vector3(-10,99,-20))
+	# 	set_look_position(Vector3(-10,99,-20))
 	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_X:
-	# 	set_look_target(Vector3(26, 24, 0))
+	# 	set_look_position(Vector3(26, 24, 0))
 	if _event is InputEventKey and _event.pressed and _event.keycode == KEY_V:
 		_select_nearest_target("Player")
+		look_at_target(target_entity)
+		#_attack_entity()
 		#_handle_attacking()
 
 	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_C:		
@@ -170,6 +198,7 @@ func _handle_movement(delta, desired_dist:float = 1):
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
 	rotation.y = atan2(direction.x, direction.z) + PI
+	
 
 func _handle_attacking(c : int = 1):
 	navigation_agent.target_position = target_entity.global_position
@@ -182,12 +211,17 @@ func _handle_attacking(c : int = 1):
 	
 func _attack_entity():
 	print("attempting to attack 1")
-	if target_entity and global_position.distance_to(target_entity.global_position) <= attack_range:
+	var dist_from_target = global_position.distance_to(target_entity.global_position)
+	if target_entity and dist_from_target <= attack_range:
 		print("attempting to attack 2")
 		if raycast.is_colliding() and raycast.get_collider() == target_entity:
 			print("targeting: " + raycast.get_collider().name)
 			target_entity.damage(attack_damage)
 			_apply_knockback(target_entity)
+	else:
+		print("Can't hit target")
+		print("target entity: ", target_entity)
+		print("dist from target: ", dist_from_target)
 
 func _on_body_entered(body: Node):
 	if is_instance_of(body, Player):
@@ -203,31 +237,39 @@ func _on_body_exited(body: Node):
 #set target_entity to the nearest entity with the name that matches target_string
 #PARAMETERS:
 #	target: name of target to set as target_entity 
-func _select_nearest_target(target:String):
+#RETURN:
+	#True if there is a valid target. False if no target
+func _select_nearest_target(target:String) -> bool:
 	if detected_entities.is_empty():
 		target_entity = null
-		return
+		return false
 	var target_string = target
-	print("target_string is set to ", target_string)
+	#print("target_string is set to ", target_string)
 	# var target_string = "NPC"
 	# if target != "npc":
 	# 	target_string += target
 
-	var nearest_entity: Player = detected_entities[0]
-	var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
-	
+	#var nearest_entity: Player = detected_entities[0]
+	var nearest_entity: Player = null
+	#var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
+	var nearest_distance: float = -1
 	for entity in detected_entities:
-		print("checking entity: " + entity.name)
+		#print("checking entity: " + entity.name)
 		var distance = global_position.distance_to(entity.global_position)
-		print("comparing to " + target_string)
+		#print("comparing to " + target_string)
 		#if distance < nearest_distance and entity.name == target_string:
 		if entity.name == target_string:
-			print("set entity")
+			#print("set entity")
 			nearest_distance = distance
 			nearest_entity = entity
 	
 	target_entity = nearest_entity
-	print("New target: ", target_entity.name, " at distance: ", nearest_distance)
+	
+	if target_entity != null:
+		#print("New target: ", target_entity.name, " at distance: ", nearest_distance)
+		return true
+	#print("No target nearby")
+	return false
 
 func _set_chase_target_position():
 	navigation_agent.target_position = target_entity.global_position
