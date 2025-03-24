@@ -1,6 +1,6 @@
 [gd_resource type="Environment" load_steps=7 format=3 uid="uid://dduchnkkscoka"]
 
-[ext_resource type="Shader" uid="uid://xxsy78ugnrrd" path="res://world/sky/sky.gdshader" id="1_owfsy"]
+[ext_resource type="Shader" uid="uid://dy517bcconjr8" path="res://world/sky/sky.gdshader" id="1_owfsy"]
 [ext_resource type="Texture2D" uid="uid://dscjsyn150ixv" path="res://world/sky/stars.png" id="2_eciw1"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ysn08"]

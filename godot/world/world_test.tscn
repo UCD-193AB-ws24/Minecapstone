@@ -68,6 +68,7 @@ attack_damage = 0.0
 
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
+goal = "Attack the nearest entity."
 _speed = 2.0
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]

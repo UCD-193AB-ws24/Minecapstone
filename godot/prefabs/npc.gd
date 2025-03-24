@@ -101,10 +101,10 @@ func look_at_target(look_target: Node3D):
 	var head_rad = asin(y_normal / hypo_normal) 
 	
 	head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
-	print("degrees: ", head_rad * (180/PI));
-	print("direction.y ", direction.y)
-	print("direction.z ", direction.z)
-	print("abs z ", abs_z)
+	#print("degrees: ", head_rad * (180/PI));
+	#print("direction.y ", direction.y)
+	#print("direction.z ", direction.z)
+	#print("abs z ", abs_z)
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
