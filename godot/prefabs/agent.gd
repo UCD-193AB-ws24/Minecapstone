@@ -28,8 +28,10 @@ func _input(_event):
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
 	select_nearest_entity_type("")
-	await attack_current_target(10)
+	move_to_current_target()
 			""")
+			# select_nearest_target("Player")
+			# get_closest_point_target()
 		elif _event.keycode == KEY_C:
 			give_to("Player", "Grass", 1)
 

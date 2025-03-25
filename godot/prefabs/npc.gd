@@ -66,6 +66,19 @@ func look_at_target(look_target: Node3D):
 
 	head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
 
+#gets the closest point of current_target's hurtbox
+
+func get_closest_point_target():
+	var node = current_target.get_node("CollisionShape3D") # assumes the CollisionShape3D is a direct child of the current_target in the tree hierarchy
+	if node.get_class() != "CollisionShape3D":
+		print("node is not a CollisionShape3D. Returning")
+		return
+	print("node is ColiisonShape3D")
+	var hurtbox:CollisionShape3D = node
+	#var hurtbox
+
+
+
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
@@ -124,15 +137,15 @@ func move_to_current_target(distance_away:float=1.0):
 func _moving_target_process():
 	var target_pos = current_target.global_position
 	if !navigation_agent.is_target_reached():
-		# print("updating cur_target position")
+		print("updating cur_target position")
 		set_target_position(target_pos, navigation_agent.target_desired_distance)
 		set_look_position(target_pos)
 
 
 func _physics_process(delta):
-	if current_target != null:
-		_moving_target_process()
-	_handle_movement(delta)
+	if current_target != null and !navigation_agent.get_current_navigation_path().is_empty():
+		_moving_target_process() # sets destination
+	_handle_movement(delta) # actual moving
 	super(delta)
 
 
@@ -140,7 +153,7 @@ func _handle_movement(delta):
 	if not navigation_ready:
 		return
 	if navigation_agent.is_target_reached():
-		move_to(Vector2(0,0), false,_speed, delta)
+		move_to(Vector2(0,0), false,_speed, delta) #for early stopping
 		return
 	var current_pos = global_position
 	var next_path_position: Vector3 = navigation_agent.get_next_path_position()
