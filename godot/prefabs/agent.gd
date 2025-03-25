@@ -28,7 +28,7 @@ func _input(_event):
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
 	select_nearest_entity_type("")
-	move_to_current_target()
+	look_at_current_target()
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()

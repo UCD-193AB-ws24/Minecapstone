@@ -46,45 +46,86 @@ func set_look_position(look_pos: Vector3):
 	new_dir = new_dir.normalized()
 	head.look_at(look_pos)
 
+func look_at_current_target():
+	look_at_target(current_target)
 
-func look_at_target(look_target: Node3D):
+# rotate body and head to look at look_target
+func look_at_target(look_target:Node3D):
 	#temp implementation. Will replace with solution of targeting closest point of look_target's collision shape to npc's head
 	#TODO: implement https://stackoverflow.com/questions/44824512/how-to-find-the-closest-point-on-a-right-rectangular-prism-3d-rectangle
 	#var new_dir:Vector3 = head.global_position - look_target.global_position
 	var direction = (look_target.global_position - global_position).normalized()
+	var point_array = get_closest_point_target(look_target)
+	
+	if !point_array[0]:
+		print("Can't get closest point of look_target")
+		return
+	var point:Vector3 = point_array[1]
+	
+	
 
-	# for calculatinig the head rotation
-	var abs_z = abs(direction.z)
-	var hypotenuse = sqrt((direction.y ** 2) + (direction.z ** 2))
-	var y_normal = direction.y / hypotenuse
-	var z_normal = abs_z / hypotenuse
-	var hypo_normal = sqrt((y_normal ** 2) + (z_normal ** 2)) # equals 1
+	# # for calculatinig the head rotation
+	# var abs_z = abs(direction.z)
+	# var hypotenuse = sqrt((direction.y ** 2) + (direction.z ** 2))
+	# var y_normal = direction.y / hypotenuse
+	# var z_normal = abs_z / hypotenuse
+	# var hypo_normal = sqrt((y_normal ** 2) + (z_normal ** 2)) # equals 1
 
-	print("hypotenuse: ", hypo_normal)
+	# print("hypotenuse: ", hypo_normal)
 	rotation.y = atan2(direction.x, direction.z) + PI
-	var head_rad = asin(y_normal / hypo_normal)
+	# var head_rad = asin(y_normal / hypo_normal)
 
-	head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
+	# head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
+	print("cur target position is", look_target.global_position)
+	print("looking at ", point)
+	head.look_at(point)
 
-#gets the closest point of current_target's hurtbox
-
-func get_closest_point_target():
-	var node = current_target.get_node("CollisionShape3D") # assumes the CollisionShape3D is a direct child of the current_target in the tree hierarchy
+#gets the closest point of look_target's hurtbox. Target MUST have a BoxShape3D for their CollisionShape3D
+func get_closest_point_target(look_target:Node3D) -> Array:
+	var node = look_target.get_node("CollisionShape3D") # assumes the CollisionShape3D is a direct child of the current_target in the tree hierarchy
 	if node.get_class() != "CollisionShape3D":
 		print("node is not a CollisionShape3D. Returning")
-		return
-	print("node is ColiisonShape3D")
-	var hurtbox:CollisionShape3D = node
-	#var hurtbox
+		return [false, Vector3.ZERO] #No closest point due to no CollisionShape3D
+	#print("node is ColiisonShape3D")
+	var hurt_box:CollisionShape3D = node
+	var hurt_box_shape:BoxShape3D = hurt_box.shape #assumes the shape is BoxShape3D
+	# origin should be the bottom left corner of the target's hurtbox (the corner which is in the negative of all 3 axis)
+	var origin:Vector3 = hurt_box.global_transform * Vector3(-hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2)
+	var px:Vector3 = hurt_box.global_transform * Vector3(hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2) # x-positive corner of the box
+	var py:Vector3 = hurt_box.global_transform * Vector3(-hurt_box_shape.size.x/2, hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2)	# y-positive corner of the box
+	var pz:Vector3 = hurt_box.global_transform* Vector3(-hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, hurt_box_shape.size.z/2)	# z_positive corner of the box
+	var vx:Vector3 = (px - origin) # vector from origin to px
+	var vy:Vector3 = (py - origin) # vector from origin to py
+	var vz:Vector3 = (pz - origin) # vector from origin to pz
 
+	var tx = vx.dot(head.global_position - origin) / vx.length_squared() # how far along the x axis the center point of agent's head lies
+	var ty = vy.dot(head.global_position - origin) / vy.length_squared() # how far along the y axis the center point of agent's head lies
+	var tz = vz.dot(head.global_position - origin) / vz.length_squared() # how far along the z axis the center point of agent's head lies
 
+	#constrain tx ty and tz to [0, 1]
+	if tx < 0:
+		tx = 0
+	elif tx > 1:
+		tx = 1
+	
+	if ty < 0:
+		ty = 0
+	elif ty > 1:
+		ty = 1
 
+	if tz < 0:
+		tz = 0
+	elif tz > 1:
+		tz = 1	 
+	
+	# scale the vs' with their respective ts', sum them up, and add the origin point to get the closest point on the box to the agent's head 
+	var result_point:Vector3 = tx * vx + ty * vy + tz * vz + origin
+	return [true, result_point] 
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
 	inventory_manager.DropItem(item_name, amount)
 	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
-
 
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = agent_manager.get_agent(agent_name)
