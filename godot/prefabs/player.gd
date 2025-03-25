@@ -125,7 +125,6 @@ func _process(_delta):
 
 		# Highlight block player is looking at, and place or remove blocks
 		_handle_block_interaction()
-		
 		_handle_attacking()
 		
 	if _is_breaking:
@@ -336,6 +335,7 @@ func _break_block():
 		_break_timer.queue_free()
 		_update_navmesh()
 
+
 func _handle_attacking():
 	if raycast.is_colliding() and raycast.get_collider() is Player:
 		var target = raycast.get_collider()
@@ -343,12 +343,14 @@ func _handle_attacking():
 			target.damage(10)
 			print("Entity has been attacked -- health is now: ", target.health)
 			_apply_knockback(target)
-			
+
+
 func _apply_knockback(target):
 	var knockback_direction = (target.global_position - global_position).normalized()
 	var knockback_strength = 10.0
 	target.velocity += knockback_direction * knockback_strength
 	target.velocity.y += 3.5
+
 
 func _spectator_movement(_delta):
 	var cameraSpeed = 10;

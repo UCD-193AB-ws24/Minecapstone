@@ -98,6 +98,9 @@ func _execute_script() -> void:
 
 # Do not modify this function, it is used to run the script created by the LLM
 func run_script(input: String):
+
+	# TODO: replace RefCounted replacement with something that extends AgentController,
+	# so that the debugger works properly on AgentController
 	var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node", 
 		"extends RefCounted").replace(

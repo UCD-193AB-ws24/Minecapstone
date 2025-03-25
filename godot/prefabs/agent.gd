@@ -1,21 +1,18 @@
 class_name Agent extends NPC
 
 
-# Config and export variables
 @export var goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
 @export var infinite_decisions: bool = false
-
 @onready var hash_id : int = hash(self)
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
 @onready var memories: Memory = Memory.new(max_memories)
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
-
 static var _command = preload("command.gd")
 
-# Initialize the agent
+
 func _ready() -> void:
 	super()
 
@@ -24,30 +21,44 @@ func _ready() -> void:
 	MessageBroker.message.connect(_on_message_received)
 
 
+func _input(_event):
+	# Override the default input function to prevent the NPC from being controlled by the player
+	if _event is InputEventKey and _event.pressed:
+		if _event.keycode == KEY_V:
+			_command_queue.clear()
+			add_command(Command.CommandType.SCRIPT, """
+	select_nearest_entity_type("")
+	await attack_current_target(10)
+			""")
+		elif _event.keycode == KEY_C:
+			give_to("Player", "Grass", 1)
+
+
 func _physics_process(delta):
 	super(delta)
 	_process_command_queue()
 
 	# Print debug information about commands in the queue
-	# if not _command_queue.is_empty():
-		# for i in range(_command_queue.size()):
-		# 	var cmd = _command_queue[i]
-		# 	var status_text = "WAITING"
-		# 	if cmd.command_status == Command.CommandStatus.EXECUTING:
-		# 		status_text = "EXECUTING"
-		# 	elif cmd.command_status == Command.CommandStatus.DONE:
-		# 		status_text = "DONE"
+	if false:
+		if not _command_queue.is_empty():
+			for i in range(_command_queue.size()):
+				var cmd = _command_queue[i]
+				var status_text = "WAITING"
+				if cmd.command_status == Command.CommandStatus.EXECUTING:
+					status_text = "EXECUTING"
+				elif cmd.command_status == Command.CommandStatus.DONE:
+					status_text = "DONE"
+					
+				var type_text = "UNKNOWN"
+				match cmd.command_type:
+					Command.CommandType.GENERATE_GOAL:
+						type_text = "GENERATE_GOAL"
+					Command.CommandType.GENERATE_SCRIPT:
+						type_text = "GENERATE_SCRIPT"
+					Command.CommandType.SCRIPT:
+						type_text = "SCRIPT"
 				
-		# 	var type_text = "UNKNOWN"
-		# 	match cmd.command_type:
-		# 		Command.CommandType.GENERATE_GOAL:
-		# 			type_text = "GENERATE_GOAL"
-		# 		Command.CommandType.GENERATE_SCRIPT:
-		# 			type_text = "GENERATE_SCRIPT"
-		# 		Command.CommandType.SCRIPT:
-		# 			type_text = "SCRIPT"
-			
-		# 	print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
+				print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
 
 
 # Gets call-deferred in _ready of npc

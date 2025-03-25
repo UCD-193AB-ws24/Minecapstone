@@ -3,37 +3,25 @@ extends Player
 
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
+@onready var detection_area: Area3D = $DetectionSphere
 var agent_manager
 var just_jumped = false
-var cached_npc_pos
-
-signal target_reached
-
-#for navigating to a moving target
-var cur_target:Node = null
-var can_attack = true
-
-var target_entity: Player = null #entity agent focuses on. Necessary for attacking
+var current_target: Node = null
 var detected_entities: Array = []
-var targeting : bool = false
-@onready var detection_area: Area3D = $DetectionSphere
-
-
 @export var detection_range: float = 10.0 # detecttion radius for the DetectionSphere area3d
-@export var attack_range: float = 2.0
 @export var attack_damage: float = 25.0 # current 4 shots player
-@export var attack_cooldown: float = 2.0 
+@export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
+
 
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
 	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
 	agent_manager = $"../AgentManager"
-	cached_npc_pos = self.global_position
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
-		
+
 	detection_area.body_entered.connect(_on_body_entered)
 	detection_area.body_exited.connect(_on_body_exited)
 
@@ -43,45 +31,21 @@ func actor_setup():
 	# Do not await inside ready.
 	await get_tree().physics_frame
 	navigation_ready = true
-	#set_movement_target(Vector3(-10,0,-10))
 
 
-func set_movement_target(movement_target: Vector3):
-	# TODO: replace this with a query to the closest point on the navmesh
-	if movement_target.y == 0:
-		# Sample the navigation map to find the closest point to the target
-		var nav_map_rid = navigation_agent.get_navigation_map()
-		var from = Vector3(movement_target.x, 1000, movement_target.y)  # Start high above target position
-		var to = Vector3(movement_target.x, -1000, movement_target.y)    # End deep below target position
-		movement_target = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, from, to)
-	
-	navigation_agent.set_target_position(movement_target)
+func _input(_event):
+	# Override the default input function to prevent the NPC from being controlled by the player
+	return
 
-func set_moving_target(moving_target: Node):
-	navigation_agent.target_desired_distance = 5.0
-	cur_target = moving_target #set moving target to follow
-	# print("setting cur_target to ", cur_target.name)
-	
 
-func _moving_target_process():
-	var target_pos = cur_target.global_position
-	if navigation_agent.target_position.distance_to(target_pos) > 1:
-		# print("updating cur_target position")
-		set_movement_target(target_pos)
-		set_look_position(target_pos)
-	if navigation_agent.is_target_reached():
-		# print("target reached")
-		cur_target = null # stop following target
-		navigation_agent.target_desired_distance = 1.0
-		target_reached.emit()
-
-#looks at position of look_pos
 #NOTE: If you pass position of an entity, the look_pos will be at the feet. Use look_at_target instead
+# TODO: in this case, can't you just use this look at the position of the head?
 func set_look_position(look_pos: Vector3):
 	#head.look_at(look_target, Vector3(0,1,0))
 	var new_dir:Vector3 = head.global_position - look_pos
 	new_dir = new_dir.normalized()
 	head.look_at(look_pos)
+
 
 func look_at_target(look_target: Node3D):
 	#temp implementation. Will replace with solution of targeting closest point of look_target's collision shape to npc's head
@@ -90,7 +54,7 @@ func look_at_target(look_target: Node3D):
 	var direction = (look_target.global_position - global_position).normalized()
 
 	# for calculatinig the head rotation
-	var abs_z = abs(direction.z) 
+	var abs_z = abs(direction.z)
 	var hypotenuse = sqrt((direction.y ** 2) + (direction.z ** 2))
 	var y_normal = direction.y / hypotenuse
 	var z_normal = abs_z / hypotenuse
@@ -98,84 +62,92 @@ func look_at_target(look_target: Node3D):
 
 	print("hypotenuse: ", hypo_normal)
 	rotation.y = atan2(direction.x, direction.z) + PI
-	var head_rad = asin(y_normal / hypo_normal) 
-	
+	var head_rad = asin(y_normal / hypo_normal)
+
 	head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
-	#print("degrees: ", head_rad * (180/PI));
-	#print("direction.y ", direction.y)
-	#print("direction.z ", direction.z)
-	#print("abs z ", abs_z)
+
 
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
 	inventory_manager.DropItem(item_name, amount)
 	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
 
+
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = agent_manager.get_agent(agent_name)
-	set_moving_target(agent_ref)
-	await target_reached
-	 # standard head angle for dropping item towards receiving agent who is [-1, 1] block level
+	# set_moving_target(agent_ref)
+	# await target_reached
+	
+	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
 	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
 	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
-		# receiving agent is above this agent by 2+ blocks
+		# Receiving agent is above this agent by 2+ blocks
 		look_pos.y += 1
 	elif (round(agent_ref.global_position.y - self.global_position.y)) <= -2:
-		# receiving agent is above this agent by 2- blocks
+		# Receiving agent is above this agent by 2- blocks
 		look_pos.y += 1
 	set_look_position(look_pos)
 	inventory_manager.DropItem(item_name, amount)
 	# print(round(agent_ref.global_position.y - self.global_position.y))
 
-func _physics_process(delta):
-	if cur_target != null:
-		_moving_target_process()
-		_handle_movement(delta, 3)
-	else:
-		# specifically for agents, we need to constantly update the target position (using _set_chase_target_position) and then check if were within attack range
-		if targeting:
-			_set_chase_target_position()
-			
-		if target_entity and position.distance_to(target_entity.position) <= attack_range:
-				targeting = false
 
-		_handle_movement(delta)
+func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
+	navigation_agent.target_desired_distance = distance_away
+	 # standard head angle for dropping item towards receiving agent who is [-1, 1] block level
+
+	# Query to the closest point on the navmesh if 1000 given
+	if movement_target.y == 1000:
+		# Sample the navigation map to find the closest point to the target
+		var nav_map_rid = navigation_agent.get_navigation_map()
+		var from = Vector3(movement_target.x, 1000, movement_target.y)  # Start high above target position
+		var to = Vector3(movement_target.x, -1000, movement_target.y)    # End deep below target position
+		movement_target = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, from, to)
+
+	navigation_agent.set_target_position(movement_target)
+
+
+func move_to_position(x: float, y: float, distance_away:float=1.0):
+	set_target_position(Vector3(x,1000,y), distance_away)
+
+	# TODO: replace with a loop that checks if the agent has reached the target, instead of waiting for a signal
+	# Waiting for signal blocks the agent from doing anything else?... i had a better reason... it's 12 am..
+	await navigation_agent.target_reached
+	# return true
+
+
+func move_to_current_target(distance_away:float=1.0):
+	if current_target:
+		var target_pos = current_target.global_position
+		await move_to_position(target_pos.x, target_pos.z, distance_away)
+
+
+func _moving_target_process():
+	var target_pos = current_target.global_position
+	if !navigation_agent.is_target_reached():
+		# print("updating cur_target position")
+		set_target_position(target_pos, navigation_agent.target_desired_distance)
+		set_look_position(target_pos)
+
+
+func _physics_process(delta):
+	if current_target != null:
+		_moving_target_process()
+	_handle_movement(delta)
 	super(delta)
 
 
-
-func _input(_event):
-	# Override the default input function to prevent the NPC from being controlled by the player
-	#You can delete the commented out code below
-	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_Z:
-	# 	set_look_position(Vector3(-10,99,-20))
-	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_X:
-	# 	set_look_position(Vector3(26, 24, 0))
-	if _event is InputEventKey and _event.pressed and _event.keycode == KEY_V:
-		_select_nearest_target("Player")
-		look_at_target(target_entity)
-		#_attack_entity()
-		#_handle_attacking()
-
-	# if _event is InputEventKey and _event.pressed and _event.keycode == KEY_C:		
-	# 	give_to("Player", "Grass", 1)
-	return
-
-
-func _handle_movement(delta, desired_dist:float = 1):
+func _handle_movement(delta):
 	if not navigation_ready:
 		return
 	if navigation_agent.is_target_reached():
 		move_to(Vector2(0,0), false,_speed, delta)
 		return
-	navigation_agent.path_desired_distance = desired_dist
-	navigation_agent.target_desired_distance = desired_dist
 	var current_pos = global_position
 	var next_path_position: Vector3 = navigation_agent.get_next_path_position()
 	var path_direction = current_pos.direction_to(next_path_position)
 	var path_direction_2d = Vector2(path_direction.x, path_direction.z) * _speed
 	var height_diff = current_pos.y - next_path_position.y
-	
+
 	if height_diff > 0 and height_diff <= 3.0:
 		move_to(path_direction_2d, false, _speed, delta)
 	elif velocity.length() < 0.1 and is_on_floor() and next_path_position.y > current_pos.y + 0.5:
@@ -198,82 +170,76 @@ func _handle_movement(delta, desired_dist:float = 1):
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
 	rotation.y = atan2(direction.x, direction.z) + PI
-	
 
-func _handle_attacking(c : int = 1):
-	navigation_agent.target_position = target_entity.global_position
-	for i in range(0, c):
-		if can_attack:
-			_attack_entity()
-			can_attack = false
-			await get_tree().create_timer(attack_cooldown).timeout
-			can_attack = true
-	
-func _attack_entity():
-	print("attempting to attack 1")
-	var dist_from_target = global_position.distance_to(target_entity.global_position)
-	if target_entity and dist_from_target <= attack_range:
-		print("attempting to attack 2")
-		if raycast.is_colliding() and raycast.get_collider() == target_entity:
-			print("targeting: " + raycast.get_collider().name)
-			target_entity.damage(attack_damage)
-			_apply_knockback(target_entity)
-	else:
-		print("Can't hit target")
-		print("target entity: ", target_entity)
-		print("dist from target: ", dist_from_target)
+
+func _attack_current_target(num_attacks : int = 1):
+	if current_target == null: return
+
+	var successful_attacks = 0
+	while successful_attacks < num_attacks:
+		await move_to_current_target()
+		var hit = await _attack()
+		if hit: successful_attacks += 1
+		
+		# Wait for the cooldown before the next attack
+		await get_tree().create_timer(attack_cooldown).timeout
+
+	current_target = null
+
+
+# Attacks specificaly the current target
+func _attack():
+	var hit = raycast.is_colliding() and raycast.get_collider() == current_target
+
+	if hit:
+		current_target.damage(attack_damage)
+		_apply_knockback(current_target)
+		
+	return hit
+
 
 func _on_body_entered(body: Node):
 	if is_instance_of(body, Player):
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
 		print("added entity: ", body.name)
-		
+
+
 func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 		print("removed entity: ", body.name)
 
-#set target_entity to the nearest entity with the name that matches target_string
-#PARAMETERS:
-#	target: name of target to set as target_entity 
-#RETURN:
-	#True if there is a valid target. False if no target
-func _select_nearest_target(target:String) -> bool:
-	if detected_entities.is_empty():
-		target_entity = null
-		return false
-	var target_string = target
-	#print("target_string is set to ", target_string)
-	# var target_string = "NPC"
-	# if target != "npc":
-	# 	target_string += target
 
-	#var nearest_entity: Player = detected_entities[0]
+# Sets target_entity to the nearest entity with the name that matches target_string
+# RETURNs True if there is a valid target. False if no target
+func select_nearest_target(target_name:String) -> bool:
+	if detected_entities.is_empty():
+		current_target = null
+		return false
+
+	# Find the nearest entity that matches the target name
 	var nearest_entity: Player = null
-	#var nearest_distance: float = global_position.distance_to(detected_entities[0].global_position)
-	var nearest_distance: float = -1
+	var nearest_distance: float = INF
 	for entity in detected_entities:
-		#print("checking entity: " + entity.name)
-		var distance = global_position.distance_to(entity.global_position)
-		#print("comparing to " + target_string)
-		#if distance < nearest_distance and entity.name == target_string:
-		if entity.name == target_string:
-			#print("set entity")
-			nearest_distance = distance
-			nearest_entity = entity
-	
-	target_entity = nearest_entity
-	
-	if target_entity != null:
-		#print("New target: ", target_entity.name, " at distance: ", nearest_distance)
+		if entity != self and (target_name in entity.name or target_name == ""):
+			var distance = global_position.distance_to(entity.global_position)
+			if nearest_entity == null or distance < nearest_distance:
+				nearest_distance = distance
+				nearest_entity = entity
+
+	current_target = nearest_entity
+
+	if current_target != null:
 		return true
-	#print("No target nearby")
-	return false
+	else:
+		return false
+
 
 func _set_chase_target_position():
-	navigation_agent.target_position = target_entity.global_position
+	navigation_agent.target_position = current_target.global_position
 	_speed = chase_speed
+
 
 func _on_player_death():
 	# Want to despawn instead of respawning at spawn point

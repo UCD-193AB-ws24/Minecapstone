@@ -24,7 +24,7 @@ func _set_wander_target_position(delta):
 		wander_timer += delta
 		
 		if wander_timer >= wander_change_time or navigation_agent.is_navigation_finished():
-			set_movement_target(_generate_wander_target())
+			set_target_position(_generate_wander_target())
 			wander_timer = 0.0
 
 
