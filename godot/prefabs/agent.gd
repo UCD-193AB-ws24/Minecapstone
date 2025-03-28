@@ -27,8 +27,8 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	select_nearest_entity_type("")
-	look_at_current_target()
+	select_nearest_entity_type("Player")
+	attack_current_target()
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()

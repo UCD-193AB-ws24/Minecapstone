@@ -51,16 +51,9 @@ func look_at_current_target():
 
 # rotate body and head to look at look_target
 func look_at_target(look_target:Node3D):
-	#temp implementation. Will replace with solution of targeting closest point of look_target's collision shape to npc's head
-	#TODO: implement https://stackoverflow.com/questions/44824512/how-to-find-the-closest-point-on-a-right-rectangular-prism-3d-rectangle
 	#var new_dir:Vector3 = head.global_position - look_target.global_position
 	var direction = (look_target.global_position - global_position).normalized()
-	var point_array = get_closest_point_target(look_target)
-	
-	if !point_array[0]:
-		print("Can't get closest point of look_target")
-		return
-	var point:Vector3 = point_array[1]
+
 	
 	
 
@@ -76,11 +69,23 @@ func look_at_target(look_target:Node3D):
 	# var head_rad = asin(y_normal / hypo_normal)
 
 	# head.rotation.x = clamp(head_rad, -89.5 * (PI/180), 89.5 * (PI/180))
+	var point_array = get_closest_point_target(look_target)
+	
+	if !point_array[0]:
+		print("Can't get closest point of look_target")
+		return
+	var point:Vector3 = point_array[1]
 	print("cur target position is", look_target.global_position)
 	print("looking at ", point)
 	head.look_at(point)
 
 #gets the closest point of look_target's hurtbox. Target MUST have a BoxShape3D for their CollisionShape3D
+#https://stackoverflow.com/questions/44824512/how-to-find-the-closest-point-on-a-right-rectangular-prism-3d-rectangle
+#https://forum.godotengine.org/t/find-the-closest-point-inside-a-rotated-boxshape-towards-another-point-outside/3306/2
+#includes logic to account for elevation differences
+
+#TODO: get_closest_point_target crashes the game if it is called every physics frame (probably get_node is the root of the cause). 
+#Figure out how to make function more efficient 
 func get_closest_point_target(look_target:Node3D) -> Array:
 	var node = look_target.get_node("CollisionShape3D") # assumes the CollisionShape3D is a direct child of the current_target in the tree hierarchy
 	if node.get_class() != "CollisionShape3D":
@@ -93,7 +98,7 @@ func get_closest_point_target(look_target:Node3D) -> Array:
 	var origin:Vector3 = hurt_box.global_transform * Vector3(-hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2)
 	var px:Vector3 = hurt_box.global_transform * Vector3(hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2) # x-positive corner of the box
 	var py:Vector3 = hurt_box.global_transform * Vector3(-hurt_box_shape.size.x/2, hurt_box_shape.size.y/2, -hurt_box_shape.size.z/2)	# y-positive corner of the box
-	var pz:Vector3 = hurt_box.global_transform* Vector3(-hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, hurt_box_shape.size.z/2)	# z_positive corner of the box
+	var pz:Vector3 = hurt_box.global_transform * Vector3(-hurt_box_shape.size.x/2, -hurt_box_shape.size.y/2, hurt_box_shape.size.z/2)	# z_positive corner of the box
 	var vx:Vector3 = (px - origin) # vector from origin to px
 	var vy:Vector3 = (py - origin) # vector from origin to py
 	var vz:Vector3 = (pz - origin) # vector from origin to pz
@@ -120,6 +125,17 @@ func get_closest_point_target(look_target:Node3D) -> Array:
 	
 	# scale the vs' with their respective ts', sum them up, and add the origin point to get the closest point on the box to the agent's head 
 	var result_point:Vector3 = tx * vx + ty * vy + tz * vz + origin
+	#account for elevation in point
+	var elevation_diff:float = look_target.global_position.y - global_position.y
+	var target_dist:float = global_position.distance_to(look_target.global_position)
+	var y_mod:float = 0 # modifier that will raise or lower the head to aim the raycast directly at look_target
+	#1/4 is 1/4 of a block
+	if elevation_diff > 0.01: # look_target is at a higher elevation
+		y_mod = 0.25 * (elevation_diff / 2) ** 2 # (elevation_diff / 2) increases y_mod based on how big the difference in elevation is
+	elif elevation_diff < 0.01: # look_target is at a lower elevation
+		y_mod = 0.25 * (-elevation_diff / 2) ** 2
+	result_point.y += y_mod
+
 	return [true, result_point] 
 
 func discard_item(item_name: String, amount: int):
@@ -232,6 +248,7 @@ func _attack_current_target(num_attacks : int = 1):
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
 		await move_to_current_target()
+		await look_at_current_target()
 		var hit = await _attack()
 		if hit: successful_attacks += 1
 		
