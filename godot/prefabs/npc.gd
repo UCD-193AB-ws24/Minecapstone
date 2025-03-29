@@ -52,6 +52,8 @@ func look_at_current_target():
 # rotate body and head to look at look_target
 func look_at_target(look_target:Node3D):
 	#var new_dir:Vector3 = head.global_position - look_target.global_position
+	if look_target == null:
+		return 
 	var direction = (look_target.global_position - global_position).normalized()
 
 	
@@ -87,6 +89,8 @@ func look_at_target(look_target:Node3D):
 #TODO: get_closest_point_target crashes the game if it is called every physics frame (probably get_node is the root of the cause). 
 #Figure out how to make function more efficient 
 func get_closest_point_target(look_target:Node3D) -> Array:
+	if look_target == null:
+		return [false, Vector3.ZERO]
 	var node = look_target.get_node("CollisionShape3D") # assumes the CollisionShape3D is a direct child of the current_target in the tree hierarchy
 	if node.get_class() != "CollisionShape3D":
 		print("node is not a CollisionShape3D. Returning")
@@ -127,7 +131,6 @@ func get_closest_point_target(look_target:Node3D) -> Array:
 	var result_point:Vector3 = tx * vx + ty * vy + tz * vz + origin
 	#account for elevation in point
 	var elevation_diff:float = look_target.global_position.y - global_position.y
-	var target_dist:float = global_position.distance_to(look_target.global_position)
 	var y_mod:float = 0 # modifier that will raise or lower the head to aim the raycast directly at look_target
 	#1/4 is 1/4 of a block
 	if elevation_diff > 0.01: # look_target is at a higher elevation
@@ -136,8 +139,7 @@ func get_closest_point_target(look_target:Node3D) -> Array:
 		y_mod = 0.25 * (-elevation_diff / 2) ** 2
 	result_point.y += y_mod
 
-	return [true, result_point] 
-
+	return [true, result_point] 	
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
 	inventory_manager.DropItem(item_name, amount)
@@ -194,9 +196,10 @@ func move_to_current_target(distance_away:float=1.0):
 func _moving_target_process():
 	var target_pos = current_target.global_position
 	if !navigation_agent.is_target_reached():
-		print("updating cur_target position")
+		#print("updating cur_target position")
 		set_target_position(target_pos, navigation_agent.target_desired_distance)
 		set_look_position(target_pos)
+		#look_at_current_target()
 
 
 func _physics_process(delta):
@@ -300,7 +303,7 @@ func select_nearest_target(target_name:String) -> bool:
 				nearest_entity = entity
 
 	current_target = nearest_entity
-
+	print("current target: ", current_target)
 	if current_target != null:
 		return true
 	else:
