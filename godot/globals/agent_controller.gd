@@ -19,33 +19,33 @@ func get_position() -> Vector3:
 	return agent.global_position
 
 
-func move_to_position(x: float, y: float):
-	# print("Moving to position: ", x, " ", y)
+func move_to_position(x: float, y: float, distance_away:float=1.0):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-	agent.set_movement_target(Vector3(x,0,y))
+	await agent.move_to_position(x, y, distance_away)
 
-	await agent.navigation_agent.target_reached
-	return true
+
+func select_nearest_entity_type(target: String=""):
+	label.text = "Selecting nearest target of type: " + target
+	agent.select_nearest_target(target)
+
+
+func move_to_current_target(distance_away:float=1.0):
+	label.text = "Moving to position of target: " + agent.current_target.name 
+	await agent.move_to_current_target(distance_away)
+
+
+func look_at_current_target():
+	agent.look_at_current_target()
+
+
+func attack_current_target(num_attacks: int = 1):	
+	label.text = "Attacking entity " + str(num_attacks) + " times."
+	await agent._attack_current_target(num_attacks)
+
 
 func discard(itemName: String, amount: int):
-	# TODO: remove debug print
-	print("dropping ", amount , " ", itemName, )
+	label.text = "Discarding item: " + itemName + ", amount: " + str(amount)
 	agent.discard_item(itemName, amount)
-
-
-func get_nearby_agents() -> Array:
-	var nearby = []
-	var all_ids = message_broker.get_all_agent_ids()
-	
-	for id in all_ids:
-		if id != agent.hash_id:
-			var other_agent = message_broker.get_agent_by_id(id)
-			if other_agent:
-				var distance = agent.global_position.distance_to(other_agent.global_position)
-				if distance < 30:
-					nearby.append(id)
-
-	return nearby
 
 
 func say(msg: String) -> void:
@@ -56,12 +56,12 @@ func say(msg: String) -> void:
 func say_to(msg: String, target_id: int) -> void:
 	message_broker.send_message(msg, agent.hash_id, target_id)
 	# agent.record_action("Said to " + str(target_id) + ": " + msg)
-	
+
+
 func eat_food():
 	# Currently hardcoded to restore 10 hunger
-	agent.eat_food(10)
 	label.text = "Eating food, restored 10 hunger"
-	return true
+	agent.eat_food(10)
 
 
 func eval():

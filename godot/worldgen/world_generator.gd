@@ -36,12 +36,13 @@ const BIOME_COLORS = [
 
 var biome_indices = []
 var generation_thread: Thread
-var debug = false
+var debug = true
 
 var temperature_averages
 var precipitation_averages
 var combined_height_image
 var land_ocean_mask
+
 
 func _get_biome_index(x: int, y: int) -> int:
 	var pos = Vector2(x, y)
@@ -65,23 +66,16 @@ func _get_biome_index(x: int, y: int) -> int:
 	var index = biome_indices[quant_temp][quant_precip]
 	return index
 
+
 func get_biome_color(x: int, y: int) -> Color:
 	var index = _get_biome_index(x, y)
 	return BIOME_COLORS[index]
 
+
 func get_biome(x: int, y: int) -> String:
 	var index = _get_biome_index(x, y)
 	return BIOME_NAMES[index]
-	
-func _ready() -> void:
-	# Allows for debug in world_generator scene
-	if get_tree().current_scene.name == "WorldGenerator":
-		generate()
-		debug = true
 
-func _input(event):
-	if debug and event is InputEventKey and event.pressed and event.keycode == KEY_G:
-		generate()
 
 var tp_image = preload("res://assets/TP_map.png")
 func generate():
@@ -115,6 +109,7 @@ func generate():
 	generation_thread = Thread.new()
 	generation_thread.start(Callable(self, "_threaded_generate"))
 
+
 func _threaded_generate():
 	# Debug voronoi noise
 	_display_voronoi()
@@ -142,13 +137,13 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	_display_image(biome_map)
 
+	# Wait for user input before completing world generation
 	await get_tree().create_timer(1.0).timeout
 
-	if not debug:
-		call_deferred("_handle_loading_screen", null, false)
-
 	# Emit signal when world generation is complete
+	call_deferred("_handle_loading_screen", null, false)
 	call_deferred("emit_signal", "world_generated")
+
 
 func _create_combined_height_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RF)
@@ -170,6 +165,7 @@ func _create_combined_height_image() -> Image:
 			image.set_pixel(x, y, Color(normalized_value, normalized_value, normalized_value))
 
 	return image
+
 
 func _create_biome_map_image() -> Image:
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
@@ -211,6 +207,7 @@ func _create_biome_map_image() -> Image:
 	call_deferred("_handle_loading_screen", ImageTexture.create_from_image(image))
 	return image
 
+
 func _get_biome_index_from_color(color: Color) -> int:
 	var min_dist = INF
 	var best_index = 0
@@ -221,6 +218,7 @@ func _get_biome_index_from_color(color: Color) -> int:
 			min_dist = dist
 			best_index = i
 	return best_index
+
 
 func _average_voronoi(data):
 	var sums = {}      # key: voronoi hash, value: sum of noise values
@@ -253,6 +251,7 @@ func _average_voronoi(data):
 
 	return result
 
+
 func _display_noise(data:Noise):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 
@@ -265,9 +264,11 @@ func _display_noise(data:Noise):
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
 
+
 func _display_dict(dict):
 	var texture = ImageTexture.create_from_image(_dict_to_image(dict))
 	call_deferred("_handle_loading_screen", texture)
+
 
 func _dict_to_image(data):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
@@ -278,9 +279,11 @@ func _dict_to_image(data):
 			image.set_pixel(x, y, Color(color_value, color_value, color_value, 1.0))
 	return image
 
+
 func _display_image(image):
 	var texture = image if image is ImageTexture else ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
+
 
 func _display_voronoi():
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
@@ -298,6 +301,7 @@ func _display_voronoi():
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
 
+
 func _create_land_ocean_mask(data: Noise):
 	var mask = {}
 	for x in range(SIZE):
@@ -305,6 +309,7 @@ func _create_land_ocean_mask(data: Noise):
 			var value = data.get_noise_2d(x, y)
 			mask[Vector2(x, y)] = value > 0.0 # Land if value > 0, ocean otherwise
 	return mask
+
 
 func _display_land_ocean(mask):
 	var image = Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
@@ -315,6 +320,7 @@ func _display_land_ocean(mask):
 			image.set_pixel(x, y, color)
 	var texture = ImageTexture.create_from_image(image)
 	call_deferred("_handle_loading_screen", texture)
+
 
 func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) -> void:
 	if enabled:

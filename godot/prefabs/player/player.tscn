@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://0ypfn26rapdv"]
+[gd_scene load_steps=6 format=3 uid="uid://0ypfn26rapdv"]
 
-[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://prefabs/player.gd" id="1_4flbx"]
-[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="2_onrkg"]
-[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="3_i3pqv"]
+[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://prefabs/player/player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://items/InventoryManager.cs" id="3_i3pqv"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
 radius = 0.3
@@ -22,10 +21,6 @@ metadata/Name = "agent"
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("3_i3pqv")
-
-[node name="AIController" type="Node" parent="."]
-script = ExtResource("2_onrkg")
-metadata/_custom_type_script = "uid://da2vclwxlejcg"
 
 [node name="Body" type="CSGMesh3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)

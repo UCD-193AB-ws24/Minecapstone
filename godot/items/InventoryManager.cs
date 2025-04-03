@@ -40,15 +40,7 @@ public partial class InventoryManager : Node
 		if (!_inventorySlots[_selectedSlot]) return;
 		DecrementItemInSlot(_selectedSlot);
 	}
-	
-	public bool DropSelectedItem() {
-		if (!_inventorySlots[_selectedSlot]) return false;
-		
-		var item = _slotsToItems[_selectedSlot];
-		var droppedItem = SpawnDroppedItem(item.item);
-		DecrementItemInSlot(_selectedSlot);
-		return true;
-	}
+
 	public bool DropItem(String itemName, int amount) {
 		int currentAmount = amount;
 		if(!_nameToSlots.ContainsKey(itemName))
@@ -100,6 +92,31 @@ public partial class InventoryManager : Node
 		//return true because the agent drops all quantities of the item 
 		return true;
 	}
+	
+	public bool DropSelectedItem() {
+		if (!_inventorySlots[_selectedSlot]) return false;
+		
+		var item = _slotsToItems[_selectedSlot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		DecrementItemInSlot(_selectedSlot);
+		return true;
+	}
+	
+	public bool DropSelectedStack() {
+		if (!_inventorySlots[_selectedSlot]) return false;
+		
+		var item = _slotsToItems[_selectedSlot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		RemoveItemInSlot(_selectedSlot);
+		return true;
+	}
+	public void DropAllItems() {
+		for (int i = 0; i < _inventorySlots.Length; i++) {
+			if (_inventorySlots[i]) {
+				RemoveItemInSlot(i);
+			}
+		}
+	}
 
 	public bool AddItem(Item item, int amount) {
 		if (TryAddToExistingStack(item, amount)) return true;
@@ -131,7 +148,7 @@ public partial class InventoryManager : Node
 	}
 
 	private bool TryAddToNewSlot(Item item, int amount) {
-		// At this point, we know there is no room in any of the existing slots. Find a new slot and add to the slotNums list
+		// At this point, we know there is no room in any of the slots. Find a new slot and add to the slotNums list
 		int slot = GetSpace();
 
 		// Return false if inventory is full
@@ -168,17 +185,33 @@ public partial class InventoryManager : Node
 		
 		return droppedItem;
 	}
-
+	
+	private void SpawnMultipleDroppedItems(Item item, int count) {
+		for(int i = 0; i < count; i++) {
+			var droppedItem = SpawnDroppedItem(item);
+		}
+	}
+	
+	private void RemoveItemInSlot(int slot) {
+		var item = _slotsToItems[slot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		item.count = 0;
+		
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		_nameToSlots[item.item.Name].Remove(slot);
+	}
+	
 	private void DecrementItemInSlot(int slot) {
 		var item = _slotsToItems[slot];
 		item.count--;
 		if (item.count > 0) return;
 		
-		// _inventorySlots[slot] = false;
-		// _slotsToItems.Remove(slot);
-		// _nameToSlots[item.item.Name].Remove(slot);
-		ReleaseItemSlot(item.item.Name, slot);
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		_nameToSlots[item.item.Name].Remove(slot);
 	}
+
 	private void ReleaseItemSlot(String itemName, int slotNum)
 	{
 		_inventorySlots[slotNum] = false;

@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://dlo1q4o5o5np"]
 
-[ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://prefabs/item_collect.gd" id="1_an6nj"]
-[ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://prefabs/time_monitor.gd" id="2_6tdqx"]
-[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_g4j5n"]
+[ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://items/item_collect.gd" id="1_an6nj"]
+[ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://items/time_monitor.gd" id="2_6tdqx"]
+[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/placeholder.jpg" id="2_g4j5n"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6tdqx"]
 
@@ -44,7 +44,7 @@ shape = SubResource("BoxShape3D_6tdqx")
 script = ExtResource("2_6tdqx")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(0.899287, 0, 0.097835, 0, 0.904594, 0, -0.097835, 0, 0.899287, 0, 0, 0)
+transform = Transform3D(0.734514, 0, 0.527975, 0, 0.904594, 0, -0.527975, 0, 0.734514, 0, 0.234631, 0)
 pixel_size = 0.0005
 render_priority = 2
 texture = ExtResource("2_g4j5n")

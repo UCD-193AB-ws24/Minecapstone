@@ -1,10 +1,10 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class ItemDictionary : Resource
+public partial class ItemDictionary : Node
 {
 	private static ItemDictionary instance = null;
-	private static string Path = "res://assets/icons/placeholder.jpg";
+	private static string Path = "res://assets/placeholder.jpg";
 	private static Texture2D Placeholder = GD.Load<Texture2D>(Path);
 	private static Dictionary<string, Item> ItemDict = new Dictionary<string, Item>() {
 		{"Air", new Block("Air", Placeholder, 0, false, null, null, null)},

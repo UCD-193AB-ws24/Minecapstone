@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2lhqm3m0y0kw"]
+
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="1_7pkjh"]
+[ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/player/npc/npc_animal.gd" id="1_v1rpo"]
+
+[node name="NPC" instance=ExtResource("1_7pkjh")]
+script = ExtResource("1_v1rpo")
+
+[node name="Body" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.4, 0)
+height = 0.8
+
+[node name="Head" parent="." index="3"]
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0.5, 0.4)
