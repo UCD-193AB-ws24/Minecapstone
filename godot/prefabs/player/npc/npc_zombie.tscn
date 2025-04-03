@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://r2bjifgkjyun"]
 
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="1_h0f8g"]
-[ext_resource type="Script" uid="uid://maufokpkl5w6" path="res://prefabs/npc_zombie.gd" id="2_gbegp"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="1_h0f8g"]
+[ext_resource type="Script" uid="uid://maufokpkl5w6" path="res://prefabs/player/npc/npc_zombie.gd" id="2_gbegp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pld1n"]
 albedo_color = Color(0.324917, 0.249988, 0.114357, 1)

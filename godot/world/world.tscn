@@ -1,18 +1,18 @@
 [gd_scene load_steps=24 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
-[ext_resource type="PackedScene" uid="uid://qv6r47xs88ux" path="res://prefabs/agent_manager.tscn" id="1_dqqhb"]
+[ext_resource type="PackedScene" path="res://globals/agent_manager.tscn" id="1_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="11_mcsb2"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="12_a6p7n"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="13_abtfq"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="12_a6p7n"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="13_abtfq"]
 [ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://world/water/water.gdshader" id="14_dqqhb"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
@@ -154,7 +154,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
 goal = "Attack the nearest zombie 100 times."
+scenario_goal = null
+max_memories = null
+infinite_decisions = null
+detection_range = null
+attack_damage = null
+attack_cooldown = null
+chase_speed = null
 _speed = 2.0
+_jump_velocity = null
+_acceleration = null
+normal_fov = null
+fov_transition_speed = null
+double_tap_time = null
+max_health = null
+max_hunger = null
+max_thirst = null
+hunger_decrease_rate = null
+thirst_decrease_rate = null
+sprint_hunger = null
+sprint_thirst = null
+health_decrease_rate = null
+natural_healing_rate = null
+_mouse_sensitivity = null
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

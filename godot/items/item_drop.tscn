@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://dlo1q4o5o5np"]
 
-[ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://prefabs/item_collect.gd" id="1_an6nj"]
-[ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://prefabs/time_monitor.gd" id="2_6tdqx"]
-[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/icons/placeholder.jpg" id="2_g4j5n"]
+[ext_resource type="Script" uid="uid://xrabtnltjbfx" path="res://items/item_collect.gd" id="1_an6nj"]
+[ext_resource type="Script" uid="uid://l40id3t6hx1o" path="res://items/time_monitor.gd" id="2_6tdqx"]
+[ext_resource type="Texture2D" uid="uid://c17eqa6l2upgd" path="res://assets/placeholder.jpg" id="2_g4j5n"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_6tdqx"]
 

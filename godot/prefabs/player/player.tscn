@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://0ypfn26rapdv"]
 
-[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://prefabs/player.gd" id="1_4flbx"]
-[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://prefabs/ai_controller.gd" id="2_onrkg"]
-[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://prefabs/InventoryManager.cs" id="3_i3pqv"]
+[ext_resource type="Script" uid="uid://cixtqd2u5mfhy" path="res://prefabs/player/player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://da2vclwxlejcg" path="res://globals/ai_controller.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://items/InventoryManager.cs" id="3_i3pqv"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_i3pqv"]
 radius = 0.3

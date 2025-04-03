@@ -1,16 +1,16 @@
 [gd_scene load_steps=15 format=3 uid="uid://cgb063gab15jv"]
 
-[ext_resource type="PackedScene" uid="uid://qv6r47xs88ux" path="res://prefabs/agent_manager.tscn" id="1_t5wr3"]
+[ext_resource type="PackedScene" path="res://globals/agent_manager.tscn" id="1_t5wr3"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_t5wr3"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_r23cj"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="4_34trn"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_wwssr"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_0lc8j"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="7_3dg17"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="8_wvq50"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="9_pcqhl"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/agent.tscn" id="10_a8v0b"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_3dg17"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="8_wvq50"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="9_pcqhl"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="10_a8v0b"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
 vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)

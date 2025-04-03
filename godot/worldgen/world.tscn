@@ -6,10 +6,10 @@
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="4_b2ttj"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="5_2riqy"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player.tscn" id="6_0r4rx"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/npc.tscn" id="8_kitc0"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/npc_zombie.tscn" id="10_ffu4t"]
-[ext_resource type="PackedScene" path="res://prefabs/npc_animal.tscn" id="10_mcsb2"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="6_0r4rx"]
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="8_kitc0"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_ffu4t"]
+[ext_resource type="PackedScene" uid="uid://d3bafosjkurl4" path="res://prefabs/player/npc/npc_animal.tscn" id="10_mcsb2"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_8mp4y"]
 noise_type = 2
