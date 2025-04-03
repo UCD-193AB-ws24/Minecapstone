@@ -2,6 +2,7 @@ class_name Agent extends NPC
 
 
 @export var goal : String = "Move to (30,0)."
+@export var scenario_goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
 @export var infinite_decisions: bool = false
 @onready var hash_id : int = hash(self)
@@ -139,6 +140,7 @@ func build_prompt_context() -> String:
 	var context = "Current situation\n"
 	# context += "- Position: " + str(global_position) + "\n"
 	
+	context += scenario_goal + "\n"
 	context += memories.format_recent_for_prompt(5)
 	
 	return context
