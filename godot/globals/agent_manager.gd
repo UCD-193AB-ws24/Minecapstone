@@ -2,7 +2,7 @@ extends Node
 
 var agent_dict = {}
 var world
-var agent_scene = preload("res://prefabs/agent.tscn")
+var agent_scene = preload("res://prefabs/player/agent.tscn")
 
 func _ready() -> void:
 	world = self.get_parent()

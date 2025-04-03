@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_t5wr3"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_r23cj"]
-[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://world/BlockManager.cs" id="4_34trn"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://worldgen/BlockManager.cs" id="4_34trn"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_wwssr"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_0lc8j"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_3dg17"]
