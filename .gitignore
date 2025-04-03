@@ -4,3 +4,4 @@
 *.local
 .env
 .env.development.local
+godot/.vscode/*
