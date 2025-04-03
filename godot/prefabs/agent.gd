@@ -4,7 +4,7 @@ class_name Agent extends NPC
 # Config and export variables
 @export var goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
-@export var infinite_decisions: bool = false
+@export var infinite_decisions: bool = true
 
 @onready var hash_id : int = hash(self)
 @onready var debug_id : String = str(hash_id).substr(0, 3)

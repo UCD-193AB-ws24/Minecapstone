@@ -106,6 +106,7 @@ def generate_script(prompt: str):
  
 	# Add a newline and tab to the beginning of each line
 	formatted_code = "\n\t" + "\n\t".join(code_lines)
+	print(formatted_code)
 	return formatted_code
 
 
@@ -123,7 +124,7 @@ def generate_goal(context: str):
 
 def LLM_generate(messages: list[dict[str, str]], response_format: BaseModel):
 	completion = client.beta.chat.completions.parse(
-		model="gpt-4o-mini",
+		model="gpt-4o",
 		messages=messages,
 		response_format=response_format,
 	)
