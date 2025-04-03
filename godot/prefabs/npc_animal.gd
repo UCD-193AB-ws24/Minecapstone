@@ -4,6 +4,7 @@ extends NPC
 enum BehaviorModes {Wandering, Scared, Curious}
 @onready var oldBehavior = BehaviorModes.Scared
 @onready var behavior:BehaviorModes = BehaviorModes.Curious
+# TODO: Remove this line and update logic to use entity detector for players
 @onready var player = $"../Player"
 @onready var oldHealth = health
 
@@ -11,7 +12,7 @@ var _wandering_timer : Timer
 var _scared_timer : Timer
 var _wandering_duration: float = 5
 var _scared_duration: float = 7
-var detection_range = 25
+#var detection_range = 25
 	
 func _ready():
 	max_health = 50
@@ -37,7 +38,7 @@ func _physics_process(delta):
 	super(delta)
 	oldHealth = health
 	
-func set_movement_target(movement_target: Vector3):
+func set_target_position(movement_target: Vector3, _distance_away: float = 1.0):
 	_rotate_toward(movement_target)
 	super(movement_target)
 	
@@ -65,7 +66,7 @@ func _target_logic():
 	
 	match behavior:
 		BehaviorModes.Curious:
-			set_movement_target(player.global_position)
+			set_target_position(player.global_position)
 			_speed = 2
 			_rotate_toward(player.global_position)
 		BehaviorModes.Wandering:
@@ -95,20 +96,20 @@ func _generate_scared_target():
 			z_offset = randf_range(-10, 10)
 		
 		var random_offset = Vector3(x_offset, global_position.y, z_offset)
-		set_movement_target(global_position + random_offset)
+		set_target_position(global_position + random_offset)
 
 func _wandering_movement():
 		_speed = 1.5
 		var chance = randf_range(0, 1)
 		# randomly change direction
 		if chance < 0.02:
-			set_movement_target(global_position + Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
+			set_target_position(global_position + Vector3(randf_range	(-10, 10), 0, randf_range(-10, 10)))
 				
 func _on_wandering_timer_timeout():
 	# Wandering is an endless behavior, so just finds somewhere new to wander towards on timer end.
 	if behavior == BehaviorModes.Wandering:
 		var random_offset = Vector3(randf_range(-10, 10), 0, randf_range(-10, 10))
-		set_movement_target(global_position + random_offset)
+		set_target_position(global_position + random_offset)
 		_wandering_timer.start()
 
 func _on_scared_timer_timeout():
@@ -117,4 +118,9 @@ func _on_scared_timer_timeout():
 
 func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
+	# Removing the PI fixes raycast emitted by animal
 	rotation.y = atan2(direction.x, direction.z)
+
+func _on_player_death():
+	super()
+	queue_free()

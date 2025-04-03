@@ -24,16 +24,17 @@ class LinesOfCodeWithinFunction(BaseModel):
 class Goal(BaseModel):
 	plaintext_goal: str
 
-
 system_prompt = """
 You are an autonomous agent in a 3D world. You'll be called after completing previous actions to decide what to do next.
 
 FUNCTION REFERENCE:
 - get_position() -> Vector3 - Get your current position
-- move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
-- get_nearby_agents() -> Array[int] - Get IDs of nearby agents
+- select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected.
+- move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
+- move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
+- attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
 - eat_food() - Restore your hunger by 10 points
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
@@ -41,6 +42,12 @@ CORRECT EXAMPLE:
 var reached = await move_to_position(30, 0)
 if reached:
 	say("I've arrived!")
+
+CORRECT EXAMPLE: Attacking functions are sensitive to how they are called:
+Example Prompt: "Attack the nearest zombie 3 times"
+CORRECT EXAMPLE:
+select_nearest_entity_type("zombie")
+await attack_current_target(3)
 
 INCORRECT EXAMPLE:
 var reached = move_to_position(30, 0)  # ERROR: Missing await!
@@ -54,6 +61,7 @@ Remember:
 4. You don't need to explicitly complete goals - the game will handle that for you.
 5. If you receive messages from other agents, you can choose how to respond based on your current goal.
 """
+
 
 user_preprompt = """
 Provide the list of functions you would like to call to achieve the goal.
