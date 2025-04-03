@@ -2,8 +2,6 @@ class_name Player
 extends CharacterBody3D
 
 
-@onready var ai_controller: AIController = $AIController
-
 # ======================= Movement and camera settings =======================
 @export var _speed = 4.317
 var _sprint_speed = _speed * 1.3
@@ -64,7 +62,9 @@ var thirst_timer = 0.0
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
-# ========================= Item dictionary ===================
+# ========================= AI Control related ===================
+@export var ai_control_enabled = false
+
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -75,7 +75,7 @@ func _ready():
 
 # Called on input event
 func _input(event):
-	if not ai_controller.ai_control_enabled:
+	if not ai_control_enabled:
 		if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			var deltaX = -event.relative.y * _mouse_sensitivity
 			var deltaY = -event.relative.x * _mouse_sensitivity
@@ -119,7 +119,7 @@ func _process(_delta):
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
 
-	if not ai_controller.ai_control_enabled:
+	if not ai_control_enabled:
 		if view == ViewMode.SPECTATOR: _spectator_movement(_delta);
 
 		# Highlight block player is looking at, and place or remove blocks
@@ -131,7 +131,7 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-	if not ai_controller.ai_control_enabled:
+	if not ai_control_enabled:
 		_handle_player_input(_delta)
 
 	_apply_gravity(_delta)
