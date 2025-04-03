@@ -1,6 +1,7 @@
 class_name Pearl
 extends RigidBody3D
 
+
 # TODO: improve code for playing audio, sometimes sounds like it's inside the ground
 @onready var player:Player
 

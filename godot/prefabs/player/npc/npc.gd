@@ -1,6 +1,7 @@
 class_name NPC
 extends Player
 
+
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 @onready var detection_area: Area3D = $DetectionSphere
@@ -44,8 +45,10 @@ func set_look_position(look_pos: Vector3):
 	new_dir = new_dir.normalized()
 	head.look_at(look_pos)
 
+
 func look_at_current_target():
 	look_at_target(current_target)
+
 
 # rotate body and head to look at look_target
 func look_at_target(look_target:Node3D):
@@ -53,10 +56,7 @@ func look_at_target(look_target:Node3D):
 	if look_target == null:
 		return 
 	var direction = (look_target.global_position - global_position).normalized()
-
 	
-	
-
 	# # for calculatinig the head rotation
 	# var abs_z = abs(direction.z)
 	# var hypotenuse = sqrt((direction.y ** 2) + (direction.z ** 2))
@@ -83,7 +83,6 @@ func look_at_target(look_target:Node3D):
 #https://stackoverflow.com/questions/44824512/how-to-find-the-closest-point-on-a-right-rectangular-prism-3d-rectangle
 #https://forum.godotengine.org/t/find-the-closest-point-inside-a-rotated-boxshape-towards-another-point-outside/3306/2
 #includes logic to account for elevation differences
-
 #TODO: get_closest_point_target crashes the game if it is called every physics frame (probably get_node is the root of the cause). 
 #Figure out how to make function more efficient 
 func get_closest_point_target(look_target:Node3D) -> Array:
@@ -137,11 +136,14 @@ func get_closest_point_target(look_target:Node3D) -> Array:
 		y_mod = 0.25 * (-elevation_diff / 2) ** 2
 	result_point.y += y_mod
 
-	return [true, result_point] 	
+	return [true, result_point]
+
+
 func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(30)) #angles head to throw items away from body
 	inventory_manager.DropItem(item_name, amount)
 	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
+
 
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = AgentManager.get_agent(agent_name)

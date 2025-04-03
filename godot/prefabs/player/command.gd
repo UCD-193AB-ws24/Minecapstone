@@ -1,6 +1,7 @@
 class_name Command
 extends Node
 
+
 enum CommandType {
 	GENERATE_GOAL,		# Generates a new goal using current context
 	GENERATE_SCRIPT,	# Generates a script using the given goal
@@ -11,7 +12,6 @@ enum CommandStatus {
 	EXECUTING,
 	DONE,
 }
-
 var agent: Agent	# Used to access hash to send to API and agent_controller
 var command_type: CommandType
 var command_status: CommandStatus

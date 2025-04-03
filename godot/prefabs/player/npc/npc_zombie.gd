@@ -60,9 +60,9 @@ func _physics_process(delta):
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)
 
+
 # note to ryan: don't call _handle_movement(delta) inside of handle_chasing and _handle attacking, 
 # when it could be called externally or by a super class
 # use descriptive function names instead of "_handle..." when possible
-
 func _input(_event):
 	pass

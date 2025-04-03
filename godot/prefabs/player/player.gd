@@ -8,7 +8,6 @@ var _sprint_speed = _speed * 1.3
 @export var _jump_velocity = 10.0
 @export var _acceleration = 0.15
 var current_acceleration = 0.15
-
 # ============================ FOV and sprinting ============================
 @export var normal_fov = 70.0
 @export var fov_transition_speed = 7.5
@@ -16,11 +15,9 @@ var current_acceleration = 0.15
 var sprint_fov = normal_fov + 20
 var _is_sprinting = false
 var last_forward_press = 0.0 			# Make note and update the time for last "W" press
-
 # ============================= Alternate views ============================
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 @onready var view:ViewMode = ViewMode.NORMAL
-
 # ========================= Block Breaking =================================
 var _is_breaking : bool = false
 var _break_timer : Timer
@@ -28,7 +25,6 @@ var _block_breaking						# position of the block attempting to break or null (no
 var _released : bool = true
 var _tool_breaking : Resource
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
-
 # ============================ Health, Hunger, Thirst =====================
 @export var max_health = 100
 @export var max_hunger = 100
@@ -36,18 +32,15 @@ var _tool_breaking : Resource
 var health = max_health
 var hunger = max_hunger
 var thirst = max_thirst
-
 @export var hunger_decrease_rate = 0.01 # Default hunger decrease
 @export var thirst_decrease_rate = 0.015 # Default thirst decrease
 @export var sprint_hunger = 0.09 # Additional hunger decrease when sprinting
 @export var sprint_thirst = 0.035 # Additional thirst decrease when sprinting
 @export var health_decrease_rate = 2.5 # Lose 1 health per second if hunger/thirst is 0
 @export var natural_healing_rate = 5.0 # Health regeneration when hunger and thirst are full
-
 # TODO: investigate using an actual timer rather than delta time (framerate dependent)
 var hunger_timer = 0.0
 var thirst_timer = 0.0
-
 # ============================ Body related ============================
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
@@ -55,13 +48,11 @@ var thirst_timer = 0.0
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
-
 # ======================= Inventory =========================
 @onready var inventory_manager: Node = $InventoryManager
 @onready var block_highlight: CSGBox3D = $BlockHighlight
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
-
 # ========================= AI Control related ===================
 @export var ai_control_enabled = false
 
@@ -465,16 +456,20 @@ func _update_health_hunger_thirst(_delta):
 func eat_food(amount):
 	hunger = min(hunger + amount, max_hunger)
 
+
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)
-	
+
+
 func heal(amount):
 	health = min(health + amount, max_health)
+
 
 func damage(damage_amount: float):
 	health = max(health - damage_amount, 0)
 	if health <= 0:
 		_on_player_death()
+
 
 func _on_player_death():
 	print(str(self) + " has died!")

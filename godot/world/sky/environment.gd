@@ -1,11 +1,11 @@
 @tool
-
 extends WorldEnvironment
 
+enum SunPhase { Day, Night, Sunrise, Sunset }
+
+# Sun & Moon
 @onready var sun: DirectionalLight3D = $Sun
 @onready var moon: DirectionalLight3D = $Moon
-
-enum SunPhase { Day, Night, Sunrise, Sunset }
 
 # Low graphics mode
 @export var low_graphics_mode: bool = true
@@ -26,8 +26,10 @@ enum SunPhase { Day, Night, Sunrise, Sunset }
 # Shader control
 @export var use_elapsed_time_for_shader: bool = false
 
+
 var elapsed_time: float = 0.0
 var previous_elevation: float = 0.0
+
 
 func _ready():
 	if low_graphics_mode:
@@ -37,6 +39,7 @@ func _ready():
 		self.environment = load("res://world/sky/sky.tres")
 		$Water.visible = true
 	_update_shader_parameters()
+
 
 func _process(delta):
 	if Engine.is_editor_hint(): return
@@ -63,6 +66,7 @@ func _process(delta):
 	# var current_phase = determine_sun_phase()
 	#modify_sky(current_phase)
 	_update_shader_parameters()
+
 
 func determine_sun_phase() -> SunPhase:
 	var sun_direction = sun.global_transform.basis.z.normalized()
@@ -94,12 +98,6 @@ func determine_sun_phase() -> SunPhase:
 	previous_elevation = elevation
 	return phase
 
-# func modify_sky(phase: SunPhase):
-# 	# Sky modification logic here based on phase
-# 	# eg adjust light energy based on sun elevation
-# 	var sun_direction = sun.global_transform.basis.z.normalized()
-# 	sun.light_energy = smoothstep(-0.1, 0.1, sun_direction.y)
-# 	moon.light_energy = smoothstep(-0.1, 0.1, moon.global_transform.basis.z.normalized().y)
 
 func _update_shader_parameters():
 	if not environment.sky: return
