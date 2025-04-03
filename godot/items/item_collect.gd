@@ -1,6 +1,7 @@
 @tool
 extends RigidBody3D
 
+
 func _ready() -> void:
 	var texture = $Sprite3D.texture
 	$Sprite3D.position = Vector3.ZERO

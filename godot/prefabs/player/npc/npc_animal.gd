@@ -1,4 +1,4 @@
-class_name npc_animal
+class_name NPC_Animal
 extends NPC
 
 enum BehaviorModes {Wandering, Scared, Curious}
