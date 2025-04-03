@@ -17,9 +17,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+ItemDictionary="*res://items/ItemDictionary.cs"
+AgentManager="*res://globals/agent_manager.gd"
 API="*res://websocket/websocket.gd"
 MessageBroker="*res://globals/message_broker.gd"
-AgentManager="*res://globals/agent_manager.gd"
 
 [dotnet]
 

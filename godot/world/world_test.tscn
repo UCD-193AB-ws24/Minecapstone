@@ -1,6 +1,5 @@
-[gd_scene load_steps=15 format=3 uid="uid://cgb063gab15jv"]
+[gd_scene load_steps=14 format=3 uid="uid://cgb063gab15jv"]
 
-[ext_resource type="PackedScene" path="res://globals/agent_manager.tscn" id="1_t5wr3"]
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_t5wr3"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_r23cj"]
@@ -23,8 +22,6 @@ albedo_color = Color(1, 0, 0, 1)
 albedo_color = Color(0, 0, 1, 1)
 
 [node name="World" type="Node3D"]
-
-[node name="AgentManager" parent="." instance=ExtResource("1_t5wr3")]
 
 [node name="UI" parent="." instance=ExtResource("1_w4vno")]
 
@@ -69,6 +66,7 @@ attack_damage = 0.0
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
 goal = "Attack the nearest entity."
+scenario_goal = "Move to (30,0)."
 _speed = 2.0
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]

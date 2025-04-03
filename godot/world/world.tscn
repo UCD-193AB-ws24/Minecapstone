@@ -1,7 +1,6 @@
-[gd_scene load_steps=24 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=23 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
-[ext_resource type="PackedScene" path="res://globals/agent_manager.tscn" id="1_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
 [ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://worldgen/BlockManager.cs" id="2_yvk30"]
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="3_igfuc"]
@@ -88,8 +87,6 @@ orientation = 1
 
 [node name="World" type="Node3D"]
 
-[node name="AgentManager" parent="." instance=ExtResource("1_dqqhb")]
-
 [node name="UI" parent="." instance=ExtResource("5_2riqy")]
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
@@ -154,29 +151,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
 goal = "Attack the nearest zombie 100 times."
-scenario_goal = null
-max_memories = null
-infinite_decisions = null
-detection_range = null
-attack_damage = null
-attack_cooldown = null
-chase_speed = null
+scenario_goal = "Move to (30,0)."
 _speed = 2.0
-_jump_velocity = null
-_acceleration = null
-normal_fov = null
-fov_transition_speed = null
-double_tap_time = null
-max_health = null
-max_hunger = null
-max_thirst = null
-hunger_decrease_rate = null
-thirst_decrease_rate = null
-sprint_hunger = null
-sprint_thirst = null
-health_decrease_rate = null
-natural_healing_rate = null
-_mouse_sensitivity = null
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

@@ -51,7 +51,7 @@ func _behavior_logic():
 		if oldHealth > health:
 			behavior = BehaviorModes.Scared
 			_scared_timer.start()
-		if player.inventory_manager.GetSelectedItem() == itemdict_instance.Get("Grass") and _scared_timer.is_stopped():
+		if player.inventory_manager.GetSelectedItem() == ItemDictionary.Get("Grass") and _scared_timer.is_stopped():
 			# Eventually change from grass to certain items once those are implemented
 			behavior = BehaviorModes.Curious
 		elif _scared_timer.is_stopped():

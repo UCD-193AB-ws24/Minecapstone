@@ -65,13 +65,12 @@ var thirst_timer = 0.0
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
 
 # ========================= Item dictionary ===================
-@onready var itemdict_instance = load("res://world/ItemDictionary.cs").new()
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
-	inventory_manager.AddItem(itemdict_instance.Get("Stone"), 64)
-	inventory_manager.AddItem(itemdict_instance.Get("Wood Pickaxe"), 1)
+	inventory_manager.AddItem(ItemDictionary.Get("Stone"), 64)
+	inventory_manager.AddItem(ItemDictionary.Get("Wood Pickaxe"), 1)
 
 
 # Called on input event
@@ -321,7 +320,7 @@ func _break_block():
 	# when timer stops break the block (set it to air)
 	if _break_timer.is_stopped():
 		block_progress.visible = false
-		chunk.SetBlock(_block_breaking, itemdict_instance.Get("Air"))
+		chunk.SetBlock(_block_breaking, ItemDictionary.Get("Air"))
 		
 		# TODO: Fix this
 		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() >= block.GetHarvestLevel() and _tool_breaking.GetProficency() == block.GetProficency()) or block.GetHarvestLevel() == 0:

@@ -1,3 +1,4 @@
+# Global Autoloaded Singleton Class: AgentManager
 extends Node
 
 var agent_dict = {}

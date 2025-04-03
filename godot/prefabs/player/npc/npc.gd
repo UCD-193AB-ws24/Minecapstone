@@ -4,7 +4,6 @@ extends Player
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 @onready var detection_area: Area3D = $DetectionSphere
-var agent_manager
 var just_jumped = false
 var current_target: Node = null
 var detected_entities: Array = []
@@ -17,8 +16,7 @@ var detected_entities: Array = []
 func _ready():
 	actor_setup.call_deferred()
 	ai_controller.ai_control_enabled = true
-	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
-	agent_manager = $"../AgentManager"
+	inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
 
@@ -146,7 +144,7 @@ func discard_item(item_name: String, amount: int):
 	head.rotate_x(deg_to_rad(-30)) #angles head back to original position
 
 func give_to(agent_name: String, item_name:String, amount:int):
-	var agent_ref = agent_manager.get_agent(agent_name)
+	var agent_ref = AgentManager.get_agent(agent_name)
 	# set_moving_target(agent_ref)
 	# await target_reached
 	

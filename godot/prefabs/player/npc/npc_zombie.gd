@@ -18,8 +18,8 @@ func _init() -> void:
 
 func _ready():
 	super()
-	inventory_manager.AddItem(itemdict_instance.Get("Grass"), 64)
-	inventory_manager.AddItem(itemdict_instance.Get("Dirt"), 64)
+	inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
+	inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
 
 func _physics_process(delta):
