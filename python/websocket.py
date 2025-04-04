@@ -129,20 +129,20 @@ def generate_script(prompt: str, image_data: str = None):
 	return formatted_code
 
 
-def generate_goal(context: str, image: str = None):
+def generate_goal(context: str, image_data: str = None):
 	# TODO: send just the information instead of the list[dict[str, str]
 	response = LLM_generate(
 		messages=[
 			{"role": "system", "content": system_prompt},
 			{"role": "user", "content": context},
-		] if image is None else [
+		] if image_data is None else [
 			{"role": "system", "content": system_prompt},
 			{"role": "user", "content": [
 				{ "type": "text", "text": f"{context}" },
 				{
 					"type": "image_url",
 					"image_url": {
-						"url": f"data:image/png;base64,{image}",
+						"url": f"data:image/png;base64,{image_data}",
 					}
 				}
 			]
