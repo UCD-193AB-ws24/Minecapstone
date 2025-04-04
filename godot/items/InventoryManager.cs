@@ -93,11 +93,11 @@ public partial class InventoryManager : Node
 		return true;
 	}
 	
+	//FUNCTION FOR PLAYER: Drop one of the item currently selected in the hotbar
 	public bool DropSelectedItem() {
 		if (!_inventorySlots[_selectedSlot]) return false;
-		
 		var item = _slotsToItems[_selectedSlot];
-		SpawnMultipleDroppedItems(item.item, item.count);
+		SpawnDroppedItem(item.item);
 		DecrementItemInSlot(_selectedSlot);
 		return true;
 	}
