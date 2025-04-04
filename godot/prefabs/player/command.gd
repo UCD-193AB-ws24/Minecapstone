@@ -28,31 +28,25 @@ func execute(_agent: Agent):
 		CommandType.GENERATE_GOAL:
 			# Will call _LLM_set_goal when response is received
 			var context = agent.build_prompt_context()
-			
-			# Get the camera image data if visual mode is enabled
-			var image_data = ""
+
+			# Generate goal using LLM, passing context and image data if visual mode is enabled
 			if agent.visual_mode:
-				image_data = await agent.get_camera_view()
-			
-			if image_data.is_empty():
-				API.generate_goal(context, agent.hash_id)
-			else:
+				var image_data = await agent.get_camera_view()
 				API.generate_goal(context, agent.hash_id, image_data)
+			else:
+				API.generate_goal(context, agent.hash_id)
 		CommandType.GENERATE_SCRIPT:
 			# Will call _LLM_execute_script when response is received
 			var goal = command_input
 			var context = agent.build_prompt_context()
 			var full_prompt = "Goal: " + goal + "\n" + context
 			
-			# Get the camera image data if visual mode is enabled
-			var image_data = ""
+			# Generate script using LLM, passing context and image data if visual mode is enabled
 			if agent.visual_mode:
-				image_data = await agent.get_camera_view()
-			
-			if image_data.is_empty():
-				API.generate_script(full_prompt, agent.hash_id)
-			else:
+				var image_data = await agent.get_camera_view()
 				API.generate_script(full_prompt, agent.hash_id, image_data)
+			else:
+				API.generate_script(full_prompt, agent.hash_id)
 		CommandType.SCRIPT:
 			_execute_script()
 

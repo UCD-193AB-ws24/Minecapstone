@@ -58,6 +58,9 @@ scenario_goal = "Describe what you see. Don't do anything other than use say()."
 visual_mode = true
 _speed = 2.0
 
+[node name="Camera3D" parent="Agent/Head" index="1"]
+transform = Transform3D(0.939699, 0, -0.342004, 0, 1, 0, 0.342004, 0, 0.939699, 0, 0, 0)
+
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.25, 15)
 radius = 7.0
