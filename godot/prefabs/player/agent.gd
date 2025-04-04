@@ -15,6 +15,8 @@ class_name Agent extends NPC
 static var _command = preload("command.gd")
 
 
+""" ============================================= GODOT FUNCTIONS ================================================== """
+
 func _ready() -> void:
 	super()
 
@@ -63,6 +65,9 @@ func _physics_process(delta):
 						type_text = "SCRIPT"
 				
 				print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
+
+
+""" ============================================ AGENT FUNCTIONS =================================================== """
 
 
 # Gets call-deferred in _ready of npc
