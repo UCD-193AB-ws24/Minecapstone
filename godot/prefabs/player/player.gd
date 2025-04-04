@@ -73,7 +73,7 @@ func _input(event):
 	if ai_control_enabled:
 		return
 
-	if event is InputEventKey:
+	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_E: _throw_pearl()
 			KEY_F5: 
@@ -93,7 +93,8 @@ func _input(event):
 					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 				else:
 					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	elif event is InputEventMouseButton and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+	
+	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		var deltaX = -event.relative.y * _mouse_sensitivity
 		var deltaY = -event.relative.x * _mouse_sensitivity
 		if view == ViewMode.SPECTATOR:
