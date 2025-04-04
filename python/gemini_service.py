@@ -25,7 +25,7 @@ class Goal(BaseModel):
 class GeminiService:
     """Implementation for Google's Gemini API using the official Google AI SDK"""
     
-    def __init__(self, api_key=None, model="gemini-1.5-pro"):
+    def __init__(self, api_key=None, model="gemini-2.0-flash"):
         """Initialize the Gemini service"""
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         self.model = model
@@ -35,11 +35,18 @@ class GeminiService:
         # Initialize the Gemini client with correct API
         genai.configure(api_key=self.api_key)
         
-        # Configure generation settings
-        self.generation_config = genai.GenerationConfig(
-            temperature=0.7,
+        # Configure generation settings for code generation (low temperature for predictability)
+        self.code_generation_config = genai.GenerationConfig(
+            temperature=0.2,  # Low temperature for consistent, predictable code
+            top_p=0.9,
+            top_k=20
+        )
+        
+        # Configure generation settings for goal generation (higher temperature for creativity)
+        self.goal_generation_config = genai.GenerationConfig(
+            temperature=0.8,  # Higher temperature for more creative goals
             top_p=0.95,
-            top_k=40
+            top_k=50
         )
         
         # System prompt - keeping the same one you use for OpenAI
@@ -120,11 +127,12 @@ class GeminiService:
             print(f"Error in Gemini service: {e}")
 
     async def generate_script(self, prompt: str):
-        """Generate a script using Gemini"""
+        """Generate a script using Gemini with low temperature for consistency"""
         try:
             # Format the prompt with system instructions and user prompt
             full_prompt = f"{self.system_prompt}\n\n{prompt}\n{self.user_preprompt}"
             print(f"[DEBUG] Sending script prompt to Gemini (length: {len(full_prompt)} chars)")
+            print(f"[DEBUG] Using low temperature: {self.code_generation_config.temperature} for stable code generation")
             
             # Get Gemini model
             model = genai.GenerativeModel(self.model)
@@ -134,7 +142,7 @@ class GeminiService:
             response = await asyncio.to_thread(
                 model.generate_content,
                 full_prompt,
-                generation_config=self.generation_config
+                generation_config=self.code_generation_config  # Use code-specific config
             )
             
             # Extract the text from the response
@@ -187,7 +195,7 @@ class GeminiService:
             return "\n\t# Exception in Gemini script generation"
 
     async def generate_goal(self, context: str):
-        """Generate a goal using Gemini"""
+        """Generate a goal using Gemini with higher temperature for creativity"""
         try:
             # Format the prompt for goal generation
             full_prompt = f"""{self.system_prompt}
@@ -195,12 +203,14 @@ class GeminiService:
 {context}
 
 Based on the situation described, provide a single plain text goal that you will pursue. 
+Be creative and ambitious with your goals while staying within your capabilities.
 Respond with your goal in the following JSON format:
 {{
     "plaintext_goal": "Your goal here"
 }}
 """
             print(f"[DEBUG] Sending goal prompt to Gemini (length: {len(full_prompt)} chars)")
+            print(f"[DEBUG] Using higher temperature: {self.goal_generation_config.temperature} for creative goal generation")
             
             # Get Gemini model
             model = genai.GenerativeModel(self.model)
@@ -210,7 +220,7 @@ Respond with your goal in the following JSON format:
             response = await asyncio.to_thread(
                 model.generate_content,
                 full_prompt,
-                generation_config=self.generation_config
+                generation_config=self.goal_generation_config  # Use goal-specific config
             )
             
             # Extract the text from the response
