@@ -17,7 +17,7 @@ var detected_entities: Array = []
 func _ready():
 	actor_setup.call_deferred()
 	ai_control_enabled = true
-	inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
+	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
 

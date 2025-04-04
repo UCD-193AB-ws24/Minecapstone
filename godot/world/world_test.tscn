@@ -67,6 +67,7 @@ attack_damage = 0.0
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
 goal = "Attack the nearest entity."
 scenario_goal = "Move to (30,0)."
+prompt_allowance = -1
 _speed = 2.0
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]

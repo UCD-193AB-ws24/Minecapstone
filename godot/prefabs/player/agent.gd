@@ -5,6 +5,7 @@ class_name Agent extends NPC
 @export var scenario_goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
 @export var infinite_decisions: bool = false
+@export var prompt_allowance: int = -1 #negative numbers mean infinite allowance
 @onready var hash_id : int = hash(self)
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
@@ -35,6 +36,8 @@ func _input(_event):
 			# get_closest_point_target()
 		elif _event.keycode == KEY_C:
 			give_to("Player", "Grass", 1)
+		# elif _event.keycode == KEY_Z:
+		# 	add_command(Command.CommandType.Script, """""")
 
 
 func _physics_process(delta):

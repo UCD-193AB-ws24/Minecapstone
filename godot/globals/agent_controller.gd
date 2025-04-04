@@ -47,6 +47,10 @@ func discard(itemName: String, amount: int):
 	label.text = "Discarding item: " + itemName + ", amount: " + str(amount)
 	agent.discard_item(itemName, amount)
 
+func give_to(agent_name:String, item_name:String, amount:int = 1):
+	label.text = "Giving " + str(amount) + " "+ item_name + " to " + agent_name
+	agent.give_to(agent_name, item_name, amount)
+
 
 func say(msg: String) -> void:
 	message_broker.send_message(msg, agent.hash_id)
