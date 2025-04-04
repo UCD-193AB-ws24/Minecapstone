@@ -5,6 +5,7 @@ class_name Agent extends NPC
 @export var scenario_goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
 @export var infinite_decisions: bool = false
+@export var visual_mode:bool = false
 @onready var hash_id : int = hash(self)
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
@@ -146,10 +147,62 @@ func build_prompt_context() -> String:
 	return context
 
 
+func get_camera_view() -> String:
+	"""
+	Captures an image from the agent's camera and returns it as base64 encoded string.
+	Returns empty string if camera is not available.
+	"""
+	if not camera:
+		print_rich("[Agent %s] [color=red]Camera3D not found for visual mode[/color]" % debug_id)
+		return ""
+	
+	# Create a viewport to render the camera view
+	var viewport = SubViewport.new()
+	add_child(viewport)
+	viewport.size = Vector2i(512, 512)
+	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	
+	# Set up the viewport camera to match the agent's camera
+	var viewport_camera = Camera3D.new()
+	viewport.add_child(viewport_camera)
+	viewport_camera.global_transform = camera.global_transform
+	viewport_camera.fov = camera.fov
+	viewport_camera.near = camera.near
+	viewport_camera.far = camera.far
+	
+	# Wait for the viewport to render DO NOT USE PROCESS_FRAME!
+	await get_tree().physics_frame
+	
+	# Get the rendered image
+	var viewport_texture = viewport.get_texture()
+	var image: Image = viewport_texture.get_image()
+	
+	# Save the image to a file
+	# var filename = "agent_view.png"
+	# var err = image.save_png(filename)
+	# if err != OK:
+	# 	print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
+	# else:
+	# 	print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
+
+	# Clean up
+	viewport.queue_free()
+	
+	# Convert to base64
+	return encode_image_to_base64(image)
+
+func encode_image_to_base64(image: Image) -> String:
+	"""
+	Encodes an Image to base64 string
+	"""
+	# Save image to a buffer in PNG format
+	var buffer = image.save_png_to_buffer()
+	# Convert the buffer to base64
+	return Marshalls.raw_to_base64(buffer)
+
 # Get all memories of a specific type
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 	return memories.get_by_type(memory_type)
-
 
 # TODO: investigate effectiveness of recording actions taken by agent
 # func record_action(action_description: String):

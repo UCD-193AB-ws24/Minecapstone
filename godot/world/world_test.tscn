@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cgb063gab15jv"]
+[gd_scene load_steps=12 format=3 uid="uid://cgb063gab15jv"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_w4vno"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_t5wr3"]
@@ -7,8 +7,6 @@
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_wwssr"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_0lc8j"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_3dg17"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="8_wvq50"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="9_pcqhl"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="10_a8v0b"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
@@ -54,19 +52,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
 [node name="Player" parent="." instance=ExtResource("7_3dg17")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
 
-[node name="NPC" parent="." instance=ExtResource("8_wvq50")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
-
-[node name="NPCZombie" parent="." instance=ExtResource("9_pcqhl")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0502853, 30, 0)
-attack_damage = 0.0
-
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
-goal = "Attack the nearest entity."
-scenario_goal = "Move to (30,0)."
+goal = "Describe what you see. Don't do anything other than use say()."
+scenario_goal = "Describe what you see. Don't do anything other than use say()."
+visual_mode = true
 _speed = 2.0
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
