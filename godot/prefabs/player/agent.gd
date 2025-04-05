@@ -182,12 +182,12 @@ func get_camera_view() -> String:
 	var image: Image = viewport_texture.get_image()
 	
 	# Save the image to a file
-	var filename = "agent_view.png"
-	var err = image.save_png(filename)
-	if err != OK:
-		print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
-	else:
-		print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
+	# var filename = "agent_view.png"
+	# var err = image.save_png(filename)
+	# if err != OK:
+	# 	print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
+	# else:
+	# 	print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
 
 	# Clean up
 	viewport.queue_free()
