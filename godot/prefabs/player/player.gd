@@ -2,30 +2,31 @@ class_name Player
 extends CharacterBody3D
 
 
-# ======================= Movement and camera settings =======================
+@export var ai_control_enabled = false
+""" ================================================ MOVEMENT ====================================================== """
 @export var _speed = 4.317
 var _sprint_speed = _speed * 1.3
 @export var _jump_velocity = 10.0
 @export var _acceleration = 0.15
 var current_acceleration = 0.15
-# ============================ FOV and sprinting ============================
+""" =========================================== FOV AND SPRINTING ================================================== """
 @export var normal_fov = 70.0
 @export var fov_transition_speed = 7.5
 @export var double_tap_time = 0.3 		# Time in between "W" presses
 var sprint_fov = normal_fov + 20
 var _is_sprinting = false
 var last_forward_press = 0.0 			# Make note and update the time for last "W" press
-# ============================= Alternate views ============================
+""" =========================================== ALTERNATVE VIEWS =================================================== """
 enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
 @onready var view:ViewMode = ViewMode.NORMAL
-# ========================= Block Breaking =================================
+""" ============================================ BLOCK BREAKING ==================================================== """
 var _is_breaking : bool = false
 var _break_timer : Timer
 var _block_breaking						# position of the block attempting to break or null (not attempted block)
 var _released : bool = true
 var _tool_breaking : Resource
 @onready var block_progress : Label = $"../UI/Control/BlockProgress"
-# ============================ Health, Hunger, Thirst =====================
+""" ================================================ NEEDS ========================================================= """
 @export var max_health = 100
 @export var max_hunger = 100
 @export var max_thirst = 100
@@ -41,22 +42,22 @@ var thirst = max_thirst
 # TODO: investigate using an actual timer rather than delta time (framerate dependent)
 var hunger_timer = 0.0
 var thirst_timer = 0.0
-# ============================ Body related ============================
+""" ============================================ BODY RELATED ====================================================== """
 @onready var head:Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
 @onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
-# ======================= Inventory =========================
+""" ============================================== INVENTORY ======================================================= """
 @onready var inventory_manager: Node = $InventoryManager
 @onready var block_highlight: CSGBox3D = $BlockHighlight
 @onready var block_manager: Node = $"../NavigationMesher/BlockManager"
 @onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
-# ========================= AI Control related ===================
-@export var ai_control_enabled = false
 
+""" =========================================== GODOT FUNCTIONS ==================================================== """
 
+# Called when the node enters the scene tree for the first time.
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
@@ -66,37 +67,45 @@ func _ready():
 
 # Called on input event
 func _input(event):
-	if not ai_control_enabled:
-		if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			var deltaX = -event.relative.y * _mouse_sensitivity
-			var deltaY = -event.relative.x * _mouse_sensitivity
-			if view == ViewMode.SPECTATOR:
-				camera.global_rotation_degrees.x = clamp(camera.global_rotation_degrees.x + deltaX, -89.5, 89.5)
-				camera.global_rotation_degrees.y += deltaY
-				camera.global_rotation_degrees.z = 0
-			else:
-				rotate_y(deg_to_rad(deltaY))
-				head.rotate_x(deg_to_rad(deltaX))
-				head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
-		elif event is InputEventKey and event.pressed and event.keycode == KEY_E:
-			_throw_pearl()
-	if event is InputEventKey and event.pressed and event.keycode == KEY_F5:
-		match view:
-			ViewMode.NORMAL:
-				view = ViewMode.THIRDPERSON
-				camera.global_position += camera.global_transform.basis.z * 3.5
-			ViewMode.THIRDPERSON:
-				view = ViewMode.SPECTATOR
-				camera.global_position = global_position + Vector3(0, 1.66, 0)
-			ViewMode.SPECTATOR:
-				view = ViewMode.NORMAL
-				camera.rotation_degrees = Vector3(0, 0, 0)
-				camera.global_position = global_position + Vector3(0, 1.66, 0)
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	""" Handles the keyboard input of the player.
+		Does nothing if the player is an AI.
+	"""
+	if ai_control_enabled:
+		return
+
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_E: _throw_pearl()
+			KEY_F5: 
+				match view:
+					ViewMode.NORMAL:
+						view = ViewMode.THIRDPERSON
+						camera.global_position += camera.global_transform.basis.z * 3.5
+					ViewMode.THIRDPERSON:
+						view = ViewMode.SPECTATOR
+						camera.global_position = global_position + Vector3(0, 1.66, 0)
+					ViewMode.SPECTATOR:
+						view = ViewMode.NORMAL
+						camera.rotation_degrees = Vector3(0, 0, 0)
+						camera.global_position = global_position + Vector3(0, 1.66, 0)
+			KEY_ESCAPE:
+				if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+				else:
+					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		var deltaX = -event.relative.y * _mouse_sensitivity
+		var deltaY = -event.relative.x * _mouse_sensitivity
+		if view == ViewMode.SPECTATOR:
+			camera.global_rotation_degrees.x = clamp(camera.global_rotation_degrees.x + deltaX, -89.5, 89.5)
+			camera.global_rotation_degrees.y += deltaY
+			camera.global_rotation_degrees.z = 0
 		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			rotate_y(deg_to_rad(deltaY))
+			head.rotate_x(deg_to_rad(deltaX))
+			head.rotation_degrees.x = clamp(head.rotation_degrees.x, -89.9, 89.9)
+
 	if Input.is_action_just_released("inventory_up"):
 		inventory_manager.CycleUp()
 	if Input.is_action_just_released("inventory_down"):
@@ -106,6 +115,8 @@ func _input(event):
 
 
 func _process(_delta):
+	""" Called every frame. 'delta' is the elapsed time since the previous frame.
+	"""
 	# Moves the player and child nodes
 	# Called here instead to ensure smooth camera movement
 	move_and_slide()
@@ -122,6 +133,8 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
+	""" Called every physics frame. 'delta' is the elapsed time since the previous frame.
+	"""
 	if not ai_control_enabled:
 		_handle_player_input(_delta)
 
@@ -129,11 +142,16 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < 0:
+	if global_position.y < -5:
 		_on_out_of_bounds()
 
 
+""" ============================================ MOVEMENT ========================================================== """
+
+
 func _apply_gravity(delta):
+	""" Applies gravity to the body every physics frame """
+
 	if not is_on_floor():
 		velocity.y -= 35 * delta
 		current_acceleration = _acceleration * 0.25
@@ -142,6 +160,12 @@ func _apply_gravity(delta):
 
 
 func move_to(direction: Vector2, jump: bool, speed: float, _delta):
+	""" Moves the player in the direction of the input vector
+		- direction: Vector2 - The direction to move in
+		- jump: bool - Whether or not to jump
+		- speed: float - The speed to move at
+	"""
+
 	# Disable movement if spectator mode
 	if view == ViewMode.SPECTATOR: direction = Vector2.ZERO
 
@@ -168,6 +192,8 @@ func move_to(direction: Vector2, jump: bool, speed: float, _delta):
 
 
 func _handle_block_interaction():
+	""" Handles block breaking and placing
+	"""
 	# Allows for multiple blocks to be broken while mouse1 is held down
 	if not Input.is_action_pressed("mouse1"): _released = true
 	if Input.is_action_just_pressed("mouse1"): _released = false
@@ -205,7 +231,10 @@ func _handle_block_interaction():
 
 
 func _block_position_intersect_player(new_block_position:Vector3) -> bool:
-	# Creates a collision box to check if the new block position would intersects the player
+	""" Checks if the new block position intersects with the player
+		- new_block_position: Vector3 - The position of the new block
+	"""
+	# Creates a collision box in the location of the new block
 	var collision_box = BoxShape3D.new()
 	collision_box.extents = Vector3(0.5, 0.5, 0.5)
 
@@ -227,8 +256,9 @@ func _update_navmesh():
 	nav_mesher.call_deferred("GenerateNavmesh")
 
 
-# Checks if inputted to break block
 func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
+	""" Checks if the player toggled breaking
+	"""
 	if not Input.is_action_pressed("mouse1"): _released = true
 
 	# if pressed left mouse prepare for block breaking
@@ -239,8 +269,10 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
 
 
-# Prepares timer for block breaking
 func _begin_block_break(pos:Vector3i):
+	""" Begins the target block breaking process,
+		Prepares a timer for block breaking
+	"""
 	_is_breaking = true
 	_block_breaking = pos 
 	# get block data, time to break
@@ -264,8 +296,10 @@ func _begin_block_break(pos:Vector3i):
 	block_progress.visible = true
 
 
-# Determines if looking at the right block and breaks it after timeout
 func _break_block():
+	""" Determines if the player is looking at the right block and breaks it after timeout
+	"""
+
 	# Get initial raycast data from player
 	var chunk = raycast.get_collider()
 	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()

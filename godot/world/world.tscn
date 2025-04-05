@@ -51,7 +51,7 @@ seamless = true
 noise = SubResource("FastNoiseLite_b2suy")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dqqhb"]
-render_priority = 1
+render_priority = -1
 shader = ExtResource("14_dqqhb")
 shader_parameter/depth_fade_distance = 4.605
 shader_parameter/absorbance = 0.639
@@ -107,8 +107,8 @@ ChunkScene = ExtResource("4_b2ttj")
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
 low_graphics_mode = false
-day_duration_seconds = 60.0
-night_duration_seconds = 60.0
+day_duration_seconds = 120.0
+night_duration_seconds = 120.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
@@ -116,7 +116,7 @@ mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.29051e-08, -0.948324, 0.317305, 2.77397e-08, 0.317305, 0.948324, 0, 35, 0)
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 35, 0)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -150,8 +150,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
-goal = "Attack the nearest zombie 100 times."
-scenario_goal = "Move to (30,0)."
+visual_mode = true
 _speed = 2.0
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]

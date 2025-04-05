@@ -19,6 +19,9 @@ var command_input: String
 
 
 func execute(_agent: Agent):
+	"""This function is called by the agent to execute the command.
+		It will call the appropriate function based on the command type.
+	"""
 	if command_status != CommandStatus.WAITING:
 		return command_status
 
@@ -28,21 +31,39 @@ func execute(_agent: Agent):
 		CommandType.GENERATE_GOAL:
 			# Will call _LLM_set_goal when response is received
 			var context = agent.build_prompt_context()
-			API.generate_goal(context, agent.hash_id)
+
+			# Generate goal using LLM, passing context and image data if visual mode is enabled
+			if agent.visual_mode:
+				var image_data = await agent.get_camera_view()
+				API.generate_goal(context, agent.hash_id, image_data)
+			else:
+				API.generate_goal(context, agent.hash_id)
 		CommandType.GENERATE_SCRIPT:
 			# Will call _LLM_execute_script when response is received
 			var goal = command_input
 			var context = agent.build_prompt_context()
 			var full_prompt = "Goal: " + goal + "\n" + context
-			API.generate_script(full_prompt, agent.hash_id)
+			
+			# Generate script using LLM, passing context and image data if visual mode is enabled
+			if agent.visual_mode:
+				var image_data = await agent.get_camera_view()
+				API.generate_script(full_prompt, agent.hash_id, image_data)
+			else:
+				API.generate_script(full_prompt, agent.hash_id)
 		CommandType.SCRIPT:
 			_execute_script()
-
 
 	return command_status
 
 
 func create_with(command_info: Dictionary) -> Command:
+	""" Creates a new command with the given information.
+		Used to create a command from the agent's command queue.
+		- command_info: a dictionary containing the command information
+			- agent: the agent that created this command
+			- type: the type of command (CommandType)
+			- input: the input for the command (String)
+	"""
 	command_type = command_info["type"]
 	command_status = CommandStatus.WAITING
 	command_input = command_info["input"]
@@ -57,8 +78,11 @@ func create_with(command_info: Dictionary) -> Command:
 	return self
 
 
-# Handles the response from API, used only if this command is a GENERATE_GOAL
 func _LLM_set_goal(key: int, response: String):
+	""" Handles the response from API, used only if this command is a GENERATE_GOAL
+		- key: the agent's hash_id
+		- response: the generated goal
+	"""
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
 
@@ -72,8 +96,11 @@ func _LLM_set_goal(key: int, response: String):
 	command_status = CommandStatus.DONE
 
 
-# Sets the goal to the LLM generated one, used only if this command is a GENERATE_SCRIPT
 func _LLM_execute_script(key: int, response: String):
+	""" Handles the response from API, used only if this command is a GENERATE_SCRIPT
+		- key: the agent's hash_id
+		- response: the generated script
+	"""
 	# Ensure the response is for this agent
 	if !agent or key != agent.hash_id: return
 
@@ -88,8 +115,10 @@ func _LLM_execute_script(key: int, response: String):
 	command_status = CommandStatus.DONE
 
 
-# Executes the generated script, used only if this command is a SCRIPT
 func _execute_script() -> void:
+	""" Executes the generated script where command_input is the script to be executed.
+		- command_input: the script to be executed
+	"""
 	# Run script
 	await self.run_script(command_input)
 	
@@ -98,9 +127,11 @@ func _execute_script() -> void:
 	agent.script_execution_completed()
 
 
-# Do not modify this function, it is used to run the script created by the LLM
 func run_script(input: String):
-
+	""" Runs the script created by the LLM.
+		Do not modify this function unless you know what you are doing.
+		- input: the script to be executed
+	"""
 	# TODO: replace RefCounted replacement with something that extends AgentController,
 	# so that the debugger works properly on AgentController
 	var source = agent.agent_controller.get_script().get_source_code().replace(
