@@ -142,7 +142,7 @@ func _physics_process(_delta):
 	_update_fov(_delta)
 	_update_health_hunger_thirst(_delta)
 
-	if global_position.y < -5:
+	if global_position.y < 0:
 		_on_out_of_bounds()
 
 
@@ -189,6 +189,8 @@ func move_to(direction: Vector2, jump: bool, speed: float, _delta):
 			var horizontal_velocity = Vector3(velocity.x, 0, velocity.z)
 			var impulse = horizontal_velocity.normalized() * 0 * horizontal_velocity.length()
 			velocity += impulse
+
+""" ==================================== BLOCK BREAKING ======================================== """
 
 
 func _handle_block_interaction():

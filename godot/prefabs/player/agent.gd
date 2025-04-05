@@ -14,7 +14,6 @@ class_name Agent extends NPC
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
 
-
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
 func _ready() -> void:
@@ -32,7 +31,7 @@ func _input(_event):
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
 	select_nearest_entity_type("Player")
-	attack_current_target()
+	attack_current_target(10)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
