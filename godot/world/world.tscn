@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=22 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -10,20 +10,23 @@
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="12_a6p7n"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="13_abtfq"]
 [ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://shaders/water.gdshader" id="14_dqqhb"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ov2xu"]
+seed = 8600
+frequency = 0.0084
+domain_warp_amplitude = 0.5
+domain_warp_frequency = 1.0
+domain_warp_fractal_octaves = 10
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
-cell_size = 0.16
 cell_height = 0.5
 agent_radius = 0.32
 agent_max_climb = 1.0
 agent_max_slope = 90.0
-edge_max_length = 49.92
+edge_max_length = 10.0
 edge_max_error = 1.0
-vertices_per_polygon = 5.0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
 frequency = 0.0323
@@ -91,6 +94,7 @@ orientation = 1
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+height_noise = SubResource("FastNoiseLite_ov2xu")
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
@@ -137,21 +141,13 @@ directional_shadow_max_distance = 250.0
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.7702, 33.2671, 0)
 
-[node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
-
-[node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
-
-[node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
-
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 23.0262, -1.72397)
 visual_mode = true
 _speed = 2.0
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
