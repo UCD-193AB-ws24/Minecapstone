@@ -49,9 +49,6 @@ CORRECT EXAMPLE:
 select_nearest_entity_type("zombie")
 await attack_current_target(3)
 
-INCORRECT EXAMPLE:
-var reached = move_to_position(30, 0)  # ERROR: Missing await!
-
 Distances are meters, so anything within 1 meter is considered "nearby".
 
 Remember:

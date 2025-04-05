@@ -31,7 +31,7 @@ edge_max_error = 1.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_dqqhb"]
 material = ExtResource("9_ov2xu")
-size = Vector2(4000, 4000)
+size = Vector2(2500, 2500)
 subdivide_width = 400
 subdivide_depth = 400
 orientation = 1
@@ -43,7 +43,7 @@ orientation = 1
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
 height_noise = SubResource("FastNoiseLite_ov2xu")
-VIEW_DISTANCE = 16
+VIEW_DISTANCE = 10
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
