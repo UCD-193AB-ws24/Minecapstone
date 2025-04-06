@@ -22,7 +22,7 @@ public partial class ItemDictionary : Node
 		{"CoalOre", new Block("Coal Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/coal_ore.png"),  HarvestLevel: 1, Proficency: Proficency.STONE)},
 		{"GoldOre", new Block("Gold Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/gold_ore.png"),  HarvestLevel: 3, Proficency: Proficency.STONE)},
 		{"DiamondOre", new Block("Diamond Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/diamond_ore.png"),  HarvestLevel: 3, Proficency: Proficency.STONE)},
-		{"Meat", new Item("Meat", Placeholder, 64, true)},
+		{"Meat", new Food("Meat", Placeholder, 64, true, 10)},
 	};
 	
 	

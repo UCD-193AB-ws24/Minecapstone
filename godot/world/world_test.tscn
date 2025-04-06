@@ -21,7 +21,7 @@ albedo_color = Color(1, 0, 0, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r23cj"]
 albedo_color = Color(0, 0, 1, 1)
 
-[node name="World" type="Node3D"]
+[node name="World2" type="Node3D"]
 
 [node name="UI" parent="." instance=ExtResource("1_w4vno")]
 
@@ -66,8 +66,6 @@ attack_damage = 0.0
 [node name="Agent" parent="." instance=ExtResource("10_a8v0b")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 20.9796, 0)
 goal = "Attack the nearest entity."
-scenario_goal = "Move to (30,0)."
-prompt_allowance = -1
 _speed = 2.0
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]

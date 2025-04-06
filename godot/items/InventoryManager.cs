@@ -223,4 +223,11 @@ public partial class InventoryManager : Node
 			_nameToSlots.Remove(itemName);
 		}
 	}
+	public void PrintInventory() {
+		GD.Print("Printing inventory");
+		for (int i = 0; i < InventorySlots; i++) 
+		{
+			GD.Print(i.ToString() + " " + _slotsToItems[i].PrintInventoryItem() + " " + _slotsToItems[i].PrintAmount());
+		}
+	}
 }
