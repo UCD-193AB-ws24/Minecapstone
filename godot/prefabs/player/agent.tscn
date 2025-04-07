@@ -7,8 +7,10 @@
 [node name="Agent" instance=ExtResource("1_360ac")]
 script = ExtResource("2_360ac")
 goal = "Move to (30,0)."
+scenario_goal = "Move to (30,0)."
 max_memories = 20
 infinite_decisions = false
+visual_mode = false
 metadata/Name = "agent"
 
 [node name="AgentController" type="Node" parent="." index="0"]
@@ -22,5 +24,8 @@ text = "waiting..."
 font_size = 50
 outline_size = 16
 
-[node name="DetectionSphere" parent="." index="9"]
+[node name="Camera3D" parent="Head" index="1"]
+fov = 120.0
+
+[node name="DetectionSphere" parent="." index="8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)

@@ -49,9 +49,6 @@ CORRECT EXAMPLE:
 select_nearest_entity_type("zombie")
 await attack_current_target(3)
 
-INCORRECT EXAMPLE:
-var reached = move_to_position(30, 0)  # ERROR: Missing await!
-
 Distances are meters, so anything within 1 meter is considered "nearby".
 
 Remember:
@@ -81,28 +78,40 @@ Ensure the code is Godot 4.3 compatible.
 async def server(websocket):
 	try:
 		async for message in websocket:
-			prompt = ""
+			# Check if message is JSON containing image data
+			message_obj = json.loads(message)
+			message = message_obj.get("prompt", "")
+			image_data = message_obj.get("image_data", None)
 
-			# TODO: make this look prettier
-			if message.startswith("GOAL "):
-				prompt = message[len("GOAL "):]
-				goal = generate_goal(context=prompt)
+			# Send the prompt to the LLM and get the response
+			if message_obj.get("type") == "GOAL":
+				goal = generate_goal(context=message, image_data=image_data)
 				await websocket.send(goal)
-				print(f"Generated goal: {goal}")
-			elif message.startswith("SCRIPT "):
-				prompt = message[len("SCRIPT "):]
-				code = generate_script(prompt=prompt)
-				await websocket.send(code)  # Send raw code, no JSON wrapping
-				# print(f"Generated code.")
+			elif message_obj.get("type") == "SCRIPT":
+				script = generate_script(prompt=message, image_data=image_data)
+				await websocket.send(script)
 	except Exception as e:
 		print(f"Error: {e}")
 
 
-def generate_script(prompt: str):
+def generate_script(prompt: str, image_data: str = None):
+	# TODO: send just the information instead of the list[dict[str, str]
 	response = LLM_generate(
 		messages=[
 			{"role": "system", "content": system_prompt},
-			{"role": "user", "content": prompt + "\n" + user_preprompt},
+			{"role": "user", "content": f"{prompt}\n{user_preprompt}"},
+		] if image_data is None else [
+			{"role": "system", "content": system_prompt},
+			{"role": "user", "content": [
+				{ "type": "text", "text": f"{prompt}\n{user_preprompt}" },
+				{
+					"type": "image_url",
+					"image_url": {
+						"url": f"data:image/png;base64,{image_data}",
+					}
+				}
+			]
+			}
 		],
 		response_format=LinesOfCodeWithinFunction,
 	)
@@ -118,11 +127,24 @@ def generate_script(prompt: str):
 	return formatted_code
 
 
-def generate_goal(context: str):
+def generate_goal(context: str, image_data: str = None):
+	# TODO: send just the information instead of the list[dict[str, str]
 	response = LLM_generate(
 		messages=[
 			{"role": "system", "content": system_prompt},
 			{"role": "user", "content": context},
+		] if image_data is None else [
+			{"role": "system", "content": system_prompt},
+			{"role": "user", "content": [
+				{ "type": "text", "text": f"{context}" },
+				{
+					"type": "image_url",
+					"image_url": {
+						"url": f"data:image/png;base64,{image_data}",
+					}
+				}
+			]
+			}
 		],
 		response_format=Goal,
 	)

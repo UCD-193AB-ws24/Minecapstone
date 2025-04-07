@@ -171,10 +171,7 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
 	if movement_target.y == 1000:
 		# Sample the navigation map to find the closest point to the target
 		var nav_map_rid = navigation_agent.get_navigation_map()
-		var from = Vector3(movement_target.x, 1000, movement_target.y)  # Start high above target position
-		var to = Vector3(movement_target.x, -1000, movement_target.y)    # End deep below target position
-		movement_target = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, from, to)
-
+		movement_target = NavigationServer3D.map_get_closest_point(nav_map_rid, movement_target)
 	navigation_agent.set_target_position(movement_target)
 
 
