@@ -1,64 +1,47 @@
-# gemini_service.py
-import asyncio
-import websockets
 import json
-import os
 import re
-from pydantic import BaseModel
-from dotenv import load_dotenv
-
-# Import the Google GenerativeAI library correctly
+import asyncio
 import google.generativeai as genai
+from typing import Optional
+from llm_service import LLMService
 
-# Load environment variables for API key
-load_dotenv("./.env.development.local")
-if not os.path.exists("./.env.development.local"):
-    load_dotenv("./.env")
-
-# Define response models similar to your OpenAI implementation
-class LinesOfCodeWithinFunction(BaseModel):
-    line_of_code_of_function: list[str]
-
-class Goal(BaseModel):
-    plaintext_goal: str
-
-class GeminiService:
-    """Implementation for Google's Gemini API using the official Google AI SDK"""
+class GeminiServiceAdapter(LLMService):
+    """Adapter for Google's Gemini API with vision support"""
     
-    def __init__(self, api_key=None, model="gemini-2.0-flash"):
-        """Initialize the Gemini service"""
-        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
-        self.model = model
+    def __init__(self, model="gemini-2.0-flash", settings=None):
+        """Initialize the Gemini service adapter"""
+        self.model_name = model
+        self.settings = settings or {}
         
-        print(f"Initializing GeminiService with model: {self.model}")
-        
-        # Initialize the Gemini client with correct API
-        genai.configure(api_key=self.api_key)
+        # Initialize the Gemini client
+        genai.configure(api_key=self.settings.get("api_key") or "")
         
         # Configure generation settings for code generation (low temperature for predictability)
         self.code_generation_config = genai.GenerationConfig(
-            temperature=0.2,  # Low temperature for consistent, predictable code
-            top_p=0.9,
-            top_k=20
+            temperature=self.settings.get("code_temperature", 0.2),
+            top_p=self.settings.get("code_top_p", 0.9),
+            top_k=self.settings.get("code_top_k", 20)
         )
         
         # Configure generation settings for goal generation (higher temperature for creativity)
         self.goal_generation_config = genai.GenerationConfig(
-            temperature=0.8,  # Higher temperature for more creative goals
-            top_p=0.95,
-            top_k=50
+            temperature=self.settings.get("goal_temperature", 0.8),
+            top_p=self.settings.get("goal_top_p", 0.95),
+            top_k=self.settings.get("goal_top_k", 50)
         )
         
-        # System prompt - keeping the same one you use for OpenAI
+        # System prompt - keeping the same one used for OpenAI
         self.system_prompt = """
         You are an autonomous agent in a 3D world. You'll be called after completing previous actions to decide what to do next.
 
         FUNCTION REFERENCE:
         - get_position() -> Vector3 - Get your current position
-        - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
         - say(message) - Broadcast a message to all nearby agents
         - say_to(message, target_id) - Send a message to a specific agent
-        - get_nearby_agents() -> Array[int] - Get IDs of nearby agents
+        - select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected.
+        - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
+        - move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
+        - attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
         - eat_food() - Restore your hunger by 10 points
 
         IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
@@ -66,6 +49,12 @@ class GeminiService:
         var reached = await move_to_position(30, 0)
         if reached:
             say("I've arrived!")
+
+        CORRECT EXAMPLE: Attacking functions are sensitive to how they are called:
+        Example Prompt: "Attack the nearest zombie 3 times"
+        CORRECT EXAMPLE:
+        select_nearest_entity_type("zombie")
+        await attack_current_target(3)
 
         INCORRECT EXAMPLE:
         var reached = move_to_position(30, 0)  # ERROR: Missing await!
@@ -105,65 +94,72 @@ class GeminiService:
         }
         """
         
-    async def server(self, websocket):
-        """Handle websocket messages"""
-        try:
-            async for message in websocket:
-                prompt = ""
-
-                if message.startswith("GOAL "):
-                    prompt = message[len("GOAL "):]
-                    print(f"\n[DEBUG] Received GOAL request with prompt: {prompt[:50]}...")
-                    goal = await self.generate_goal(context=prompt)
-                    await websocket.send(goal)
-                    print(f"[DEBUG] Generated goal: {goal}")
-                elif message.startswith("SCRIPT "):
-                    prompt = message[len("SCRIPT "):]
-                    print(f"\n[DEBUG] Received SCRIPT request with prompt: {prompt[:50]}...")
-                    code = await self.generate_script(prompt=prompt)
-                    await websocket.send(code)
-                    print(f"[DEBUG] Generated script:\n{code}")
-        except Exception as e:
-            print(f"Error in Gemini service: {e}")
-
-    async def generate_script(self, prompt: str):
-        """Generate a script using Gemini with low temperature for consistency"""
+        print(f"Initialized Gemini service with model: {self.model_name}")
+    
+    @property
+    def supports_vision(self) -> bool:
+        """Return whether this model supports vision"""
+        # Gemini 1.5/2.0 models support vision
+        return "gemini" in self.model_name and any(version in self.model_name for version in ["1.5", "2.0"])
+    
+    async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
+        """Generate a script using Gemini with optional image data"""
         try:
             # Format the prompt with system instructions and user prompt
             full_prompt = f"{self.system_prompt}\n\n{prompt}\n{self.user_preprompt}"
-            print(f"[DEBUG] Sending script prompt to Gemini (length: {len(full_prompt)} chars)")
-            print(f"[DEBUG] Using low temperature: {self.code_generation_config.temperature} for stable code generation")
             
             # Get Gemini model
-            model = genai.GenerativeModel(self.model)
+            model = genai.GenerativeModel(self.model_name)
             
             # Make request to Gemini API through the client
-            print("[DEBUG] Calling Gemini API...")
-            response = await asyncio.to_thread(
-                model.generate_content,
-                full_prompt,
-                generation_config=self.code_generation_config  # Use code-specific config
-            )
+            if image_data and self.supports_vision:
+                try:
+                    # For Gemini with vision capabilities
+                    import base64
+                    import io
+                    from PIL import Image
+                    
+                    # Decode base64 image
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(io.BytesIO(image_bytes))
+                    
+                    # Generate content with text and image
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        [full_prompt, image],
+                        generation_config=self.code_generation_config
+                    )
+                except Exception as e:
+                    print(f"Error processing image with Gemini: {e}")
+                    # Fall back to text-only if image processing fails
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        full_prompt,
+                        generation_config=self.code_generation_config
+                    )
+            else:
+                # Text-only request
+                response = await asyncio.to_thread(
+                    model.generate_content,
+                    full_prompt,
+                    generation_config=self.code_generation_config
+                )
             
             # Extract the text from the response
             content = response.text
-            print(f"\n[DEBUG] Raw Gemini response:\n{'-'*40}\n{content}\n{'-'*40}")
             
             # Try to parse as JSON
             try:
                 # First, find JSON blocks if the response has markdown formatting
                 json_match = re.search(r'```(?:json)?\s*({.*?})\s*```', content, re.DOTALL)
                 if json_match:
-                    print("[DEBUG] Found JSON block in markdown")
                     content = json_match.group(1)
                 
-                print(f"[DEBUG] Attempting to parse as JSON: {content[:100]}...")
                 content_json = json.loads(content)
                 code_lines = content_json.get("line_of_code_of_function", [])
-                print(f"[DEBUG] Successfully parsed JSON, found {len(code_lines)} lines of code")
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 # Fall back to extracting code directly
-                print(f"[DEBUG] JSON parse error: {e}. Extracting code directly...")
+                print("Warning: Gemini didn't return proper JSON. Extracting code directly...")
                 lines = content.split("\n")
                 # Filter for code-like lines (basic heuristic)
                 code_lines = []
@@ -179,23 +175,21 @@ class GeminiService:
                         
                     if in_code_block or (not stripped.startswith("#") and stripped and not stripped.startswith("```")):
                         code_lines.append(line)
-                print(f"[DEBUG] Extracted {len(code_lines)} lines of code from text")
             
             # Process the code lines
-            print(f"[DEBUG] Processing code lines: replacing tabs and deg2rad references")
             code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
             formatted_code = "\n\t" + "\n\t".join(code_lines)
-            print(f"[DEBUG] Final formatted code (length: {len(formatted_code)} chars)")
+            print(f"Gemini generated script (length: {len(formatted_code)} chars)")
             return formatted_code
                 
         except Exception as e:
-            print(f"[DEBUG] Error generating script with Gemini: {e}")
+            print(f"Error generating script with Gemini: {e}")
             import traceback
             traceback.print_exc()
             return "\n\t# Exception in Gemini script generation"
 
-    async def generate_goal(self, context: str):
-        """Generate a goal using Gemini with higher temperature for creativity"""
+    async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
+        """Generate a goal using Gemini with optional image data"""
         try:
             # Format the prompt for goal generation
             full_prompt = f"""{self.system_prompt}
@@ -209,41 +203,62 @@ Respond with your goal in the following JSON format:
     "plaintext_goal": "Your goal here"
 }}
 """
-            print(f"[DEBUG] Sending goal prompt to Gemini (length: {len(full_prompt)} chars)")
-            print(f"[DEBUG] Using higher temperature: {self.goal_generation_config.temperature} for creative goal generation")
             
             # Get Gemini model
-            model = genai.GenerativeModel(self.model)
+            model = genai.GenerativeModel(self.model_name)
             
             # Make request to Gemini API through the client
-            print("[DEBUG] Calling Gemini API for goal...")
-            response = await asyncio.to_thread(
-                model.generate_content,
-                full_prompt,
-                generation_config=self.goal_generation_config  # Use goal-specific config
-            )
+            if image_data and self.supports_vision:
+                try:
+                    # For Gemini with vision capabilities
+                    import base64
+                    import io
+                    from PIL import Image
+                    
+                    # Decode base64 image
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(io.BytesIO(image_bytes))
+                    
+                    # Generate content with text and image
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        [full_prompt, image],
+                        generation_config=self.goal_generation_config
+                    )
+                except Exception as e:
+                    print(f"Error processing image with Gemini: {e}")
+                    # Fall back to text-only if image processing fails
+                    response = await asyncio.to_thread(
+                        model.generate_content,
+                        full_prompt,
+                        generation_config=self.goal_generation_config
+                    )
+            else:
+                # Text-only request
+                response = await asyncio.to_thread(
+                    model.generate_content,
+                    full_prompt,
+                    generation_config=self.goal_generation_config
+                )
             
             # Extract the text from the response
             content = response.text
-            print(f"\n[DEBUG] Raw Gemini goal response:\n{'-'*40}\n{content}\n{'-'*40}")
             
             # Try to parse as JSON
             try:
                 # First, find JSON blocks if the response has markdown formatting
                 json_match = re.search(r'```(?:json)?\s*({.*?})\s*```', content, re.DOTALL)
                 if json_match:
-                    print("[DEBUG] Found JSON block in markdown")
                     content = json_match.group(1)
                 
-                print(f"[DEBUG] Attempting to parse goal as JSON: {content[:100]}...")
                 content_json = json.loads(content)
                 goal = content_json.get("plaintext_goal", "")
                 if goal:
-                    print(f"[DEBUG] Successfully parsed JSON goal: {goal}")
+                    print(f"Gemini generated goal: {goal}")
                     return goal
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 # If not valid JSON, extract first line as goal
-                print(f"[DEBUG] JSON parse error for goal: {e}. Extracting text directly...")
+                pass
                 
             # Fallback: extract a reasonable goal from text
             lines = content.split("\n")
@@ -251,37 +266,25 @@ Respond with your goal in the following JSON format:
                 line = line.strip()
                 if line and not line.startswith("#") and not line.startswith("```"):
                     # Basic heuristic: first non-empty, non-comment line is probably the goal
-                    print(f"[DEBUG] Extracted goal from text: {line}")
+                    print(f"Gemini extracted goal from text: {line}")
                     return line
-            
-            print("[DEBUG] No suitable goal found, using default")        
+                    
             return "Explore the world"
                 
         except Exception as e:
-            print(f"[DEBUG] Error generating goal with Gemini: {e}")
+            print(f"Error generating goal with Gemini: {e}")
             import traceback
             traceback.print_exc()
             return "Explore the world"
-
-    async def start(self, host="localhost", port=5000):
-        """Start the websocket server"""
-        server = await websockets.serve(
-            self.server, 
-            host, 
-            port, 
-            ping_interval=30, 
-            ping_timeout=10, 
-            max_size=1024*1024
-        )
-        print(f"Gemini service started on {host}:{port}")
-        await server.wait_closed()
-
-# Example usage
-async def main():
-    print("Starting Gemini Service...")
-    gemini_service = GeminiService()
-    print("Gemini Service initialized, starting server...")
-    await gemini_service.start()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+    
+    async def handle_websocket_message(self, message_obj: dict) -> str:
+        """Handle a websocket message with possible image data"""
+        message = message_obj.get("prompt", "")
+        image_data = message_obj.get("image_data", None)
+        
+        if message_obj.get("type") == "GOAL":
+            return await self.generate_goal(message, image_data)
+        elif message_obj.get("type") == "SCRIPT":
+            return await self.generate_script(message, image_data)
+        else:
+            return "Error: Unknown message type"

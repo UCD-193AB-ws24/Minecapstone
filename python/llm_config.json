@@ -1,0 +1,25 @@
+{
+    "service": "openai",
+    "model": "gpt-4o",
+    "settings": {
+      "temperature": 0.7,
+      "top_p": 0.95,
+      "top_k": 40,
+      "code_temperature": 0.2,
+      "goal_temperature": 0.8
+    },
+    "available_services": {
+      "openai": {
+        "models": [
+          {"name": "gpt-4o", "supports_vision": true},
+          {"name": "gpt-4o-mini", "supports_vision": true}
+        ]
+      },
+      "gemini": {
+        "models": [
+          {"name": "gemini-1.5-pro", "supports_vision": true},
+          {"name": "gemini-2.0-flash", "supports_vision": true}
+        ]
+      }
+    }
+  }
