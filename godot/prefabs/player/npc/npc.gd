@@ -147,6 +147,7 @@ func discard_item(item_name: String, amount: int):
 
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = AgentManager.get_agent(agent_name)
+	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.y, 3)
 	# set_moving_target(agent_ref)
 	# await target_reached
 	

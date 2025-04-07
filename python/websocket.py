@@ -32,6 +32,9 @@ FUNCTION REFERENCE:
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
 - select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected.
+The function is important to call first before using any of the following functions:
+	1) move_to_current_target()
+	2) attack_current_target(int c)
 - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
 - attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
