@@ -30,8 +30,8 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	select_nearest_entity_type("Player")
-	attack_current_target(10)
+	select_nearest_entity_type("Zombie")
+	attack_current_target(4)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
@@ -143,10 +143,11 @@ func script_execution_completed():
 
 func build_prompt_context() -> String:
 	var context = "Current situation\n"
-	# context += "- Position: " + str(global_position) + "\n"
 	
 	context += scenario_goal + "\n"
 	context += memories.format_recent_for_prompt(5)
+	context += "Self Position: (" + str(global_position.x) + ", " + str(global_position.z) + ") \n"
+	context += _get_all_detected_entities()
 	
 	return context
 

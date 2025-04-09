@@ -32,6 +32,7 @@ FUNCTION REFERENCE:
 - say(message) - Broadcast a message to all nearby agents
 - say_to(message, target_id) - Send a message to a specific agent
 - select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected.
+	- Available valid target strings are: "Player", "Zombie", "Animal"
 - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
 - attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
@@ -44,10 +45,10 @@ if reached:
 	say("I've arrived!")
 
 CORRECT EXAMPLE: Attacking functions are sensitive to how they are called:
-Example Prompt: "Attack the nearest zombie 3 times"
+Example Prompt: "Attack the nearest zombie 4 times"
 CORRECT EXAMPLE:
-select_nearest_entity_type("zombie")
-await attack_current_target(3)
+select_nearest_entity_type("Zombie")
+await attack_current_target(4)
 
 Distances are meters, so anything within 1 meter is considered "nearby".
 
@@ -57,6 +58,7 @@ Remember:
 3. Your code will execute fully before you're called again for the next action.
 4. You don't need to explicitly complete goals - the game will handle that for you.
 5. If you receive messages from other agents, you can choose how to respond based on your current goal.
+6. You receive context of nearby entities, therefore you can only target entities within that list.
 """
 
 
