@@ -39,6 +39,7 @@ The function is important to call first before using any of the following functi
 - move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
 - attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
 - eat_food() - Restore your hunger by 10 points
+- give_to(agent_name, item_name, amount) - Move to agent, named agent_name, and give item, named item_name, to the agent at the specified amount. The default value for amount is 1. 
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
 CORRECT EXAMPLE:
@@ -105,6 +106,7 @@ def generate_script(prompt: str):
 	response = LLM_generate(
 		messages=[
 			{"role": "system", "content": system_prompt},
+			# TODO: inject game state data at the end of user_preprompt
 			{"role": "user", "content": prompt + "\n" + user_preprompt},
 		],
 		response_format=LinesOfCodeWithinFunction,

@@ -223,11 +223,23 @@ public partial class InventoryManager : Node
 			_nameToSlots.Remove(itemName);
 		}
 	}
-	public void PrintInventory() {
+	public void PrintInventory() 
+	{
 		GD.Print("Printing inventory");
 		for (int i = 0; i < InventorySlots; i++) 
 		{
 			GD.Print(i.ToString() + " " + _slotsToItems[i].PrintInventoryItem() + " " + _slotsToItems[i].PrintAmount());
 		}
+	}
+	
+	public String GetInventoryData() 
+	{
+		//This function is for providing the inventory content to the LLM
+		string inventory_str = "Items in your inventory:\n";
+		for (int i =0; i < InventorySlots; i++)
+		{
+			inventory_str += "Item Name: " + _slotsToItems[i].PrintInventoryItem() + " Quantity: " + _slotsToItems[i].PrintAmount() + "\n";
+		}
+		return inventory_str;
 	}
 }
