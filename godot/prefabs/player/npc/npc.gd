@@ -277,7 +277,7 @@ func _on_body_entered(body: Node):
 	if is_instance_of(body, Player) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
-		# print("added entity: ", body.name)
+		#print("added entity: ", body.name)
 		_get_all_detected_entities()
 
 
@@ -317,22 +317,19 @@ func select_nearest_target(target_name:String) -> bool:
 	if detected_entities.is_empty():
 		current_target = null
 		return false
-
 	# Find the nearest entity that matches the target name
 	var nearest_entity: Player = null
 	var nearest_distance: float = INF
 
 
 	# Funky formatting stuff to make sure the command is properly parsed even if LLM incorrectly calls it
-	var search_name = target_name
-	if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
-		search_name = target_name[0].to_upper() + target_name.substr(1)
-		search_name = "NPC" + target_name
-
-
+	# var search_name = target_name
+	# if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
+	# 	search_name = target_name[0].to_upper() + target_name.substr(1)
+	# 	search_name = "NPC" + target_name
 
 	for entity in detected_entities:
-		if entity != self and (search_name in entity.name or search_name == ""):
+		if entity != self and entity.name == target_name:
 			var distance = global_position.distance_to(entity.global_position)
 			if nearest_entity == null or distance < nearest_distance:
 				nearest_distance = distance
