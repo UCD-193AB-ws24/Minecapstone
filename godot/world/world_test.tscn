@@ -33,7 +33,7 @@ albedo_color = Color(0, 0, 1, 1)
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_t5wr3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
-VIEW_DISTANCE = 0
+VIEW_DISTANCE = 1
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_u0vnw")
