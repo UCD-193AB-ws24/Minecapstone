@@ -144,7 +144,9 @@ func build_prompt_context() -> String:
 	# context += "- Position: " + str(global_position) + "\n"
 	
 	context += scenario_goal + "\n"
-	context += memories.format_recent_for_prompt(5)
+	context += memories.format_recent_for_prompt(5) + "\n"
+	context += inventory_manager.GetInventoryData()
+	context += "Your name is " + self.name
 	
 	return context
 	

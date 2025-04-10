@@ -65,7 +65,7 @@ material = SubResource("StandardMaterial3D_r23cj")
 
 [node name="Agent2" parent="." instance=ExtResource("10_ibdnm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.1645, 21.9819, -15.0006)
-goal = "Have Agent2 hold the most quantity of meat"
+goal = "Tell agent named Agent you want meat"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 
 [node name="ScenarioManager" type="Node" parent="."]

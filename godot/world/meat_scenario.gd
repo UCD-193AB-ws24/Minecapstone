@@ -14,4 +14,4 @@ func _ready() -> void:
 	var inventory = giver_ref.get_node("InventoryManager")
 	
 	print(inventory.AddItem(ItemDictionary.Get("Meat"), 5))
-	inventory.PrintInventory()
+	print(inventory.GetInventoryData())

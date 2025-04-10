@@ -31,11 +31,11 @@ public partial class BlockManager : Node {
 			(Block)ItemDictionary.Get("Dirt"),
 			(Block)ItemDictionary.Get("Grass"),
 			(Block)ItemDictionary.Get("Sand"),
-			(Block)ItemDictionary.Get("IronOre"),
-			(Block)ItemDictionary.Get("CopperOre"),
-			(Block)ItemDictionary.Get("CoalOre"),
-			(Block)ItemDictionary.Get("GoldOre"),
-			(Block)ItemDictionary.Get("DiamondOre")
+			(Block)ItemDictionary.Get("Iron Ore"),
+			(Block)ItemDictionary.Get("Copper Ore"),
+			(Block)ItemDictionary.Get("Coal Ore"),
+			(Block)ItemDictionary.Get("Gold Ore"),
+			(Block)ItemDictionary.Get("Diamond Ore")
 		);
 
 		// Array of all block textures

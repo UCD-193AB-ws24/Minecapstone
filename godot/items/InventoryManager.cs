@@ -236,10 +236,14 @@ public partial class InventoryManager : Node
 	{
 		//This function is for providing the inventory content to the LLM
 		string inventory_str = "Items in your inventory:\n";
-		for (int i =0; i < InventorySlots; i++)
+		for (int i = 0; i < InventorySlots; i++)
 		{
-			inventory_str += "Item Name: " + _slotsToItems[i].PrintInventoryItem() + " Quantity: " + _slotsToItems[i].PrintAmount() + "\n";
+			if (_inventorySlots[i])
+			{
+				inventory_str += "Item Name: " + _slotsToItems[i].PrintInventoryItem() + " Quantity: " + _slotsToItems[i].PrintAmount() + "\n";
+			}
 		}
+		
 		return inventory_str;
 	}
 }

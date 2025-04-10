@@ -304,7 +304,6 @@ func select_nearest_target(target_name:String) -> bool:
 				nearest_entity = entity
 
 	current_target = nearest_entity
-	print("current target: ", current_target)
 	if current_target != null:
 		return true
 	else:

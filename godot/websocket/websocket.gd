@@ -35,6 +35,7 @@ func _ready():
 
 
 func generate_script(prompt: String, key: int):
+	print("Generating script for agent ", key, " with prompt: ", prompt)
 	_prompt_LLM("SCRIPT " + prompt, key)
 
 
@@ -55,7 +56,8 @@ func _prompt_LLM(prompt: String, key: int):
 	while response_string == "":
 		await response_received
 		response_string = socket.get_packet().get_string_from_utf8()
-		response.emit(key, response_string)
+		if response_string != "":
+			response.emit(key, response_string)
 		# TODO: add timeout?
 
 
