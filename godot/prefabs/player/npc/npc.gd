@@ -8,7 +8,7 @@ extends Player
 var just_jumped = false
 var current_target: Node = null
 var detected_entities: Array = []
-@export var detection_range: float = 10.0 # detecttion radius for the DetectionSphere area3d
+@export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
@@ -75,8 +75,8 @@ func look_at_target(look_target:Node3D):
 		print("Can't get closest point of look_target")
 		return
 	var point:Vector3 = point_array[1]
-	print("cur target position is", look_target.global_position)
-	print("looking at ", point)
+	# print("cur target position is", look_target.global_position)
+	# print("looking at ", point)
 	head.look_at(point)
 
 #gets the closest point of look_target's hurtbox. Target MUST have a BoxShape3D for their CollisionShape3D
@@ -248,12 +248,15 @@ func _attack_current_target(num_attacks : int = 1):
 
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
+		if current_target == null: return
 		await move_to_current_target()
 		await look_at_current_target()
 		var hit = await _attack()
 		if hit: successful_attacks += 1
 		
 		# Wait for the cooldown before the next attack
+
+		print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
 
 	current_target = null
@@ -271,17 +274,42 @@ func _attack():
 
 
 func _on_body_entered(body: Node):
-	if is_instance_of(body, Player):
+	if is_instance_of(body, Player) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
-		print("added entity: ", body.name)
+		# print("added entity: ", body.name)
+		_get_all_detected_entities()
 
 
 func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
-		print("removed entity: ", body.name)
+		# print("removed entity: ", body.name)
+		_get_all_detected_entities()
 
+func  _get_all_detected_entities():
+	""" This creates a formatted string of all the detected entities within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed 
+	Also has the fortunate side effect of making targeting specific entities easier
+	Due to the LLM being able to just see the specific entity.name 
+	and correctly calling select_nearest_target() with that information
+	"""
+
+	var context = ""
+
+	if detected_entities.size() > 0:
+		context += "Nearby entities:\n"
+		for entity in detected_entities:
+			#var entity_type = entity.get_class()
+			
+			context += "- " + entity.name + " \n"
+			context += "Current HP: " + str(entity.health) + "\n"
+			context += "Distance To: " + str(int(global_position.distance_to(entity.global_position))) + " units, "
+			context += "Coordinates: (" + str(int(entity.global_position.x)) + ", " + str(int(entity.global_position.z)) + ")\n"
+	else:
+		context += "There are no entities nearby.\n"
+	
+	return context
 
 # Sets target_entity to the nearest entity with the name that matches target_string
 # RETURNs True if there is a valid target. False if no target
@@ -293,8 +321,18 @@ func select_nearest_target(target_name:String) -> bool:
 	# Find the nearest entity that matches the target name
 	var nearest_entity: Player = null
 	var nearest_distance: float = INF
+
+
+	# Funky formatting stuff to make sure the command is properly parsed even if LLM incorrectly calls it
+	var search_name = target_name
+	if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
+		search_name = target_name[0].to_upper() + target_name.substr(1)
+		search_name = "NPC" + target_name
+
+
+
 	for entity in detected_entities:
-		if entity != self and (target_name in entity.name or target_name == ""):
+		if entity != self and (search_name in entity.name or search_name == ""):
 			var distance = global_position.distance_to(entity.global_position)
 			if nearest_entity == null or distance < nearest_distance:
 				nearest_distance = distance
