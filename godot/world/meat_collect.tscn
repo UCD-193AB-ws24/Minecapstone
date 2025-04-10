@@ -48,7 +48,7 @@ size = Vector3(100, 1, 100)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.152, 23.8613, -11.3878)
 
 [node name="Player" parent="." instance=ExtResource("7_w4j5f")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.1122, 23.1578, -10.0067)
+transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 23.1578, -10.0067)
 
 [node name="Agent" parent="." instance=ExtResource("10_ibdnm")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -33.209, 20.9796, -7.44192)

@@ -213,5 +213,7 @@ func encode_image_to_base64(image: Image) -> String:
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 	return memories.get_by_type(memory_type)
 
+
+
 # TODO: investigate effectiveness of recording actions taken by agent
 # func record_action(action_description: String):

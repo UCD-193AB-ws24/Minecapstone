@@ -57,10 +57,13 @@ func say(msg: String) -> void:
 	# agent.record_action("Said: " + msg)
 
 
-func say_to(msg: String, target_id: int) -> void:
-	message_broker.send_message(msg, agent.hash_id, target_id)
+# func say_to(msg: String, target_id: int) -> void:
+# 	message_broker.send_message(msg, agent.hash_id, target_id)
 	# agent.record_action("Said to " + str(target_id) + ": " + msg)
 
+func say_to(msg: String, target_agent: String) -> void:
+	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
+	message_broker.send_message(msg, agent.hash_id, target_id)
 
 func eat_food():
 	# Currently hardcoded to restore 10 hunger

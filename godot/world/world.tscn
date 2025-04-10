@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
-[ext_resource type="Material" uid="uid://yuukpsswd7yy" path="res://shaders/water.tres" id="9_ov2xu"]
+[ext_resource type="Material" uid="uid://coaww57b48oh1" path="res://shaders/water.tres" id="9_ov2xu"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ov2xu"]
@@ -91,10 +91,8 @@ directional_shadow_max_distance = 250.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5275, 19.5108, -62.0236)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
-goal = "Attack the nearest zombie 100 times."
-
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 19.3368, -67.8958)
+goal = "Attack the nearest zombie 100 times."
 visual_mode = true
 _speed = 2.0
 
