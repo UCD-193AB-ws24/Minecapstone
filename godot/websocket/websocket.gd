@@ -9,6 +9,7 @@ extends Node
 
 var socket = WebSocketPeer.new()
 
+
 signal connected
 signal response_received
 signal response(key, response: String)
@@ -34,22 +35,32 @@ func _ready():
 		connected.emit()
 
 
-func generate_script(prompt: String, key: int):
-	print("Generating script for agent ", key, " with prompt: ", prompt)
-	_prompt_LLM("SCRIPT " + prompt, key)
+func generate_script(prompt: String, key: int, image_data: String = ""):
+	_prompt_LLM(prompt, key, "SCRIPT", image_data)
+
+func generate_goal(prompt: String, key: int, image_data: String = ""):
+	_prompt_LLM(prompt, key, "GOAL", image_data)
 
 
-func generate_goal(prompt: String, key: int):
-	_prompt_LLM("GOAL " + prompt, key)
-
-
-func _prompt_LLM(prompt: String, key: int):
+func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""):
 	# Wait until the socket is open before sending the prompt.
 	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await connected
 	
-	# Send the prompt to the LLM
-	socket.send_text(prompt)
+	# Send the prompt to the LLM using a JSON payload.
+	var payload
+	if image_data != "":
+		payload = JSON.stringify({
+			"type": type,
+			"prompt": prompt,
+			"image_data": image_data
+		})
+	else:
+		payload = JSON.stringify({
+			"type": type,
+			"prompt": prompt
+		})
+	socket.send_text(payload)
 
 	# Wait for a non-empty response.
 	var response_string = ""

@@ -137,7 +137,7 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	_display_image(biome_map)
 
-	# Wait for user input before completing world generation
+	# TODO: Wait for user input before completing world generation
 	await get_tree().create_timer(1.0).timeout
 
 	# Emit signal when world generation is complete

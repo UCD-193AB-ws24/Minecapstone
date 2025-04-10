@@ -127,8 +127,8 @@ public partial class Chunk : StaticBody3D
 				float detailedValue = gdHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				float smoothValue = gdSmoothHeightNoise.GetNoise2D(globalPos.X, globalPos.Y);
 				bool isLand = detailedValue > 0.0f;
-				float noiseValue = isLand ? detailedValue : smoothValue;
-				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 1f) * 0.5f));
+				float noiseValue = isLand ? detailedValue : smoothValue + 0.2f;
+				int terrainHeight = (int)(dimensions.Y * ((noiseValue + 2f) * 0.25f));
 				var stoneHeight = terrainHeight / 1.25;
 					
 				// TODO: tweak values

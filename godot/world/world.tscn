@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=15 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -9,10 +9,15 @@
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="6_0r4rx"]
 [ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="7_ffu4t"]
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
+[ext_resource type="Material" uid="uid://yuukpsswd7yy" path="res://shaders/water.tres" id="9_ov2xu"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
-[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="12_a6p7n"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="13_abtfq"]
-[ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://shaders/water.gdshader" id="14_dqqhb"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ov2xu"]
+seed = 8600
+frequency = 0.0084
+domain_warp_amplitude = 0.5
+domain_warp_frequency = 1.0
+domain_warp_fractal_octaves = 10
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -21,66 +26,12 @@ cell_height = 0.5
 agent_radius = 0.32
 agent_max_climb = 1.0
 agent_max_slope = 90.0
-edge_max_length = 49.92
+edge_max_length = 10.0
 edge_max_error = 1.0
-vertices_per_polygon = 5.0
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
-frequency = 0.0323
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dqqhb"]
-noise = SubResource("FastNoiseLite_h8lre")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_dqqhb"]
-frequency = 0.0027
-fractal_type = 2
-fractal_octaves = 7
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b2suy"]
-seamless = true
-seamless_blend_skirt = 0.122
-as_normal_map = true
-bump_strength = 7.4
-noise = SubResource("FastNoiseLite_dqqhb")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_b2suy"]
-fractal_type = 2
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h8lre"]
-seamless = true
-noise = SubResource("FastNoiseLite_b2suy")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_dqqhb"]
-render_priority = 1
-shader = ExtResource("14_dqqhb")
-shader_parameter/depth_fade_distance = 4.605
-shader_parameter/absorbance = 0.639
-shader_parameter/shallow_color = Color(0.217007, 0.537483, 0.785124, 1)
-shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
-shader_parameter/foam_amount = 0.491
-shader_parameter/foam_color = Color(1, 1, 1, 1)
-shader_parameter/foam_noise = SubResource("NoiseTexture2D_dqqhb")
-shader_parameter/roughness = 0.077
-shader_parameter/wave_texture = SubResource("NoiseTexture2D_h8lre")
-shader_parameter/wave_scale = 32.0
-shader_parameter/height_scale = 1.155
-shader_parameter/normal1 = SubResource("NoiseTexture2D_b2suy")
-shader_parameter/wave_dir1 = Vector2(3, 3)
-shader_parameter/normal2 = SubResource("NoiseTexture2D_b2suy")
-shader_parameter/wave_dir2 = Vector2(-3, 3)
-shader_parameter/wave_speed = 0.004
-shader_parameter/shine_strength = 0.214
-shader_parameter/shine_shininess = 13.0
-shader_parameter/shadow = 1.0
-shader_parameter/shadow_width = 0.18
-shader_parameter/wave_amplitude1 = 2.0
-shader_parameter/wave_amplitude2 = 0.5
-shader_parameter/normal_map_w = 256
-shader_parameter/foam_intensity = 3.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_dqqhb"]
-material = SubResource("ShaderMaterial_dqqhb")
-size = Vector2(4000, 4000)
+material = ExtResource("9_ov2xu")
+size = Vector2(2500, 2500)
 subdivide_width = 400
 subdivide_depth = 400
 orientation = 1
@@ -91,6 +42,8 @@ orientation = 1
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+height_noise = SubResource("FastNoiseLite_ov2xu")
+VIEW_DISTANCE = 10
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
@@ -107,16 +60,16 @@ ChunkScene = ExtResource("4_b2ttj")
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
 low_graphics_mode = false
-day_duration_seconds = 60.0
-night_duration_seconds = 60.0
+day_duration_seconds = 240.0
+night_duration_seconds = 240.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94032, 14.035, -2.00584)
 mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.29051e-08, -0.948324, 0.317305, 2.77397e-08, 0.317305, 0.948324, 0, 35, 0)
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 35, 0)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -135,23 +88,18 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Player" parent="." instance=ExtResource("6_0r4rx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
-
-[node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3454, 23.8613, -2.34166)
-
-[node name="NPC" parent="." instance=ExtResource("12_a6p7n")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 45, 0)
-
-[node name="NPCZombie" parent="." instance=ExtResource("13_abtfq")]
-process_mode = 4
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7779, 30, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5275, 19.5108, -62.0236)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 43.1544, -1.72397)
 goal = "Attack the nearest zombie 100 times."
+
+transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 19.3368, -67.8958)
+visual_mode = true
 _speed = 2.0
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1138, 20.7689, -66.8156)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
