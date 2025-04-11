@@ -13,8 +13,19 @@ class GeminiServiceAdapter(LLMService):
         self.model_name = model
         self.settings = settings or {}
         
-        # Initialize the Gemini client
-        genai.configure(api_key=self.settings.get("api_key") or "")
+        # Get API key from settings or environment
+        api_key = self.settings.get("api_key")
+        if not api_key:
+            from llm_service import load_api_keys
+            api_keys = load_api_keys()
+            api_key = api_keys["gemini"]
+        
+        if not api_key:
+            raise ValueError("Gemini API key not found! Please set it in the .env.development.local file or provide it in the settings.")
+        
+        # Initialize the Gemini client with explicit API key
+        print(f"Configuring Gemini with API key")
+        genai.configure(api_key=api_key)
         
         # Configure generation settings for code generation (low temperature for predictability)
         self.code_generation_config = genai.GenerationConfig(
@@ -22,7 +33,7 @@ class GeminiServiceAdapter(LLMService):
             top_p=self.settings.get("code_top_p", 0.9),
             top_k=self.settings.get("code_top_k", 20)
         )
-        
+            
         # Configure generation settings for goal generation (higher temperature for creativity)
         self.goal_generation_config = genai.GenerationConfig(
             temperature=self.settings.get("goal_temperature", 0.8),
@@ -55,9 +66,6 @@ class GeminiServiceAdapter(LLMService):
         CORRECT EXAMPLE:
         select_nearest_entity_type("zombie")
         await attack_current_target(3)
-
-        INCORRECT EXAMPLE:
-        var reached = move_to_position(30, 0)  # ERROR: Missing await!
 
         Distances are meters, so anything within 1 meter is considered "nearby".
 
@@ -176,7 +184,30 @@ class GeminiServiceAdapter(LLMService):
                     if in_code_block or (not stripped.startswith("#") and stripped and not stripped.startswith("```")):
                         code_lines.append(line)
             
-            # Process the code lines
+            fixed_code_lines = []
+            for line in code_lines:
+                # Fix code wrapped in single or double quotes (string literals)
+                if (line.strip().startswith("var ") and 
+                    ("= '" in line or '= "' in line) and
+                    ("await " in line or "move_to_position" in line or "attack_current_target" in line)):
+                    # Extract the actual code from the string literal
+                    quote_start = line.find("'") if "'" in line else line.find('"')
+                    quote_end = line.rfind("'") if "'" in line else line.rfind('"')
+                    if quote_start > 0 and quote_end > quote_start:
+                        actual_code = line[quote_start+1:quote_end]
+                        # Replace the string literal with actual code
+                        fixed_line = actual_code
+                        print(f"Fixed Gemini code: '{line}' → '{fixed_line}'")
+                        fixed_code_lines.append(fixed_line)
+                    else:
+                        fixed_code_lines.append(line)
+                else:
+                    fixed_code_lines.append(line)
+
+            # Use the fixed code lines
+            code_lines = fixed_code_lines
+            
+            # Process the code lines (existing code continues here)
             code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
             formatted_code = "\n\t" + "\n\t".join(code_lines)
             print(f"Gemini generated script (length: {len(formatted_code)} chars)")

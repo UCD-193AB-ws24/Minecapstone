@@ -5,10 +5,46 @@ from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 from typing import Optional
 
-# Load environment variables
-load_dotenv("./.env.development.local")
-if not os.path.exists("./.env.development.local"):
-    load_dotenv("./.env")
+def load_api_keys():
+    """
+    Load API keys from environment files and return them.
+    Prints status messages to help with debugging.
+    """
+    # Try to load from .env.development.local first
+    local_loaded = load_dotenv("./.env.development.local")
+    if local_loaded:
+        print("Loaded environment variables from .env.development.local")
+    else:
+        print("Could not find .env.development.local")
+        
+        # Fallback to .env
+        env_loaded = load_dotenv("./.env")
+        if env_loaded:
+            print("Loaded environment variables from .env")
+        else:
+            print("Could not find .env either")
+    
+    # Get API keys
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    
+    # Print status (with limited visibility for security)
+    if openai_key:
+        masked_key = openai_key[:4] + '*' * (len(openai_key) - 8) + openai_key[-4:]
+        print(f"Found OpenAI API key")
+    else:
+        print("WARNING: OpenAI API key not found in environment variables!")
+        
+    if gemini_key:
+        masked_key = gemini_key[:4] + '*' * (len(gemini_key) - 8) + gemini_key[-4:]
+        print(f"Found Gemini API key")
+    else:
+        print("WARNING: Gemini API key not found in environment variables!")
+    
+    return {
+        "openai": openai_key,
+        "gemini": gemini_key
+    }
 
 class LLMService(ABC):
     """Abstract base class for LLM services"""
