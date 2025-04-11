@@ -147,7 +147,7 @@ func script_execution_completed():
 func build_prompt_context() -> String:
 	var context = "Current situation\n"
 	
-	context += scenario_goal + "\n"
+	context += "Scenario goal: " + scenario_goal + "\n"
 	context += memories.format_recent_for_prompt(5) + "\n"
 	context += inventory_manager.GetInventoryData() + "\n"
 	context += "Your name is " + self.name + "\n"
