@@ -234,8 +234,9 @@ public partial class InventoryManager : Node
 	
 	public String GetInventoryData() 
 	{
-		//This function is for providing the inventory content to the LLM
-		string inventory_str = "Items in your inventory:\n";
+		//This function is for providing the inventory content to the LLM's prompt context
+		//also used for listing out mob drops in _get_all_detected_entities()
+		string inventory_str = "";
 		for (int i = 0; i < InventorySlots; i++)
 		{
 			if (_inventorySlots[i])
