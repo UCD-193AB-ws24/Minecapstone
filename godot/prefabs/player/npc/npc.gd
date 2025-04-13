@@ -147,7 +147,7 @@ func discard_item(item_name: String, amount: int):
 
 
 func give_to(agent_name: String, item_name:String, amount:int):
-	var agent_ref = AgentManager.get_agent(agent_name).agent_ref
+	var agent_ref = AgentManager.get_agent(agent_name).get_ref()
 	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.y, 3)
 	# set_moving_target(agent_ref)
 	# await target_reached
@@ -277,11 +277,11 @@ func _on_body_entered(body: Node):
 	if is_instance_of(body, Player) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
-		print("added entity: ", body.name)
+		#print("added entity: ", body.name)
 		_get_all_detected_entities()
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
-		print("added item: ", body.name)
+		#print("added item: ", body.name)
 
 func _on_body_exited(body: Node):
 	if body in detected_entities:
@@ -290,7 +290,7 @@ func _on_body_exited(body: Node):
 		_get_all_detected_entities()
 	elif body in detected_items:
 		detected_items.erase(body)
-		print("removed item: ", body.name)
+		#print("removed item: ", body.name)
 
 func  _get_all_detected_entities():
 	""" This creates a formatted string of all the detected entities within the detection sphere
@@ -311,18 +311,28 @@ func  _get_all_detected_entities():
 			context += "Current HP: " + str(entity.health) + "\n"
 			context += "Distance To: " + str(int(global_position.distance_to(entity.global_position))) + " units, "
 			context += "Coordinates: (" + str(int(entity.global_position.x)) + ", " + str(int(entity.global_position.z)) + ")\n"
-			context += "Possible item drops:\n" + inventory_manager.GetInventoryData()
+			context += "Possible item drops:\n" + inventory_manager.GetInventoryData() + "\n"
 	else:
 		context += "There are no entities nearby.\n"
 	
 	return context
 
-func _get_all_detected_items():
+func _get_all_detected_items() -> String:
 	"""This creates a formatted string of all the detected entities within the detection sphere
 	Formatted to make it easier for the LLM to process and understand the information being parsed
 	"""
 	var context = ""
-	
+	if detected_items.size() > 0:
+		context += "Nearby items you can pick up. Move to the item's coordinates to pick it up"
+		for item in detected_items:
+			context += "- " + item.get_meta("ItemName") + "\n"
+			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
+			context += "Coordinates: (" + str(int(item.global_position.x)) + ", " + str(int(item.global_position.z)) + ")\n"
+			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
+	else:
+		context += "There are no items nearby to pick up.\n"
+
+	return context
 
 # Sets target_entity to the nearest entity with the name that matches target_string
 # RETURNs True if there is a valid target. False if no target

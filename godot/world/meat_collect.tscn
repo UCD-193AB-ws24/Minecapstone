@@ -54,14 +54,12 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.258
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 prompt_allowance = 10
-detection_range = 25.0
 
 [node name="Agent2" parent="." instance=ExtResource("8_w4j5f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.21699, 21.9819, -15.0006)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 prompt_allowance = 10
-detection_range = 25.0
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("9_b7mka")

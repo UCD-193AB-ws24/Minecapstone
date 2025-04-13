@@ -159,6 +159,7 @@ func build_prompt_context() -> String:
 	context += "Your name is " + self.name + "\n"
 	context += "Self Position: (" + str(global_position.x) + ", " + str(global_position.z) + ") \n"
 	context += _get_all_detected_entities() + "\n"
+	context += _get_all_detected_items() + "\n"
 	
 	return context
 

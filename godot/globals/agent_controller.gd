@@ -28,7 +28,6 @@ func select_nearest_entity_type(target: String=""):
 	label.text = "Selecting nearest target of type: " + target
 	agent.select_nearest_target(target)
 
-
 func move_to_current_target(distance_away:float=1.0):
 	label.text = "Moving to position of target: " + agent.current_target.name 
 	await agent.move_to_current_target(distance_away)
