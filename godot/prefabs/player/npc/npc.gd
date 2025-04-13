@@ -8,6 +8,7 @@ extends Player
 var just_jumped = false
 var current_target: Node = null
 var detected_entities: Array = []
+var detected_items: Array = [] # holds items detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
@@ -272,20 +273,24 @@ func _attack():
 		
 	return hit
 
-
 func _on_body_entered(body: Node):
 	if is_instance_of(body, Player) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
 		detected_entities.push_back(body)
-		#print("added entity: ", body.name)
+		print("added entity: ", body.name)
 		_get_all_detected_entities()
-
+	elif body.has_meta("ItemName"):
+		detected_items.push_back(body)
+		print("added item: ", body.name)
 
 func _on_body_exited(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 		# print("removed entity: ", body.name)
 		_get_all_detected_entities()
+	elif body in detected_items:
+		detected_items.erase(body)
+		print("removed item: ", body.name)
 
 func  _get_all_detected_entities():
 	""" This creates a formatted string of all the detected entities within the detection sphere
@@ -306,10 +311,18 @@ func  _get_all_detected_entities():
 			context += "Current HP: " + str(entity.health) + "\n"
 			context += "Distance To: " + str(int(global_position.distance_to(entity.global_position))) + " units, "
 			context += "Coordinates: (" + str(int(entity.global_position.x)) + ", " + str(int(entity.global_position.z)) + ")\n"
+			context += "Possible item drops:\n" + inventory_manager.GetInventoryData()
 	else:
 		context += "There are no entities nearby.\n"
 	
 	return context
+
+func _get_all_detected_items():
+	"""This creates a formatted string of all the detected entities within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed
+	"""
+	var context = ""
+	
 
 # Sets target_entity to the nearest entity with the name that matches target_string
 # RETURNs True if there is a valid target. False if no target

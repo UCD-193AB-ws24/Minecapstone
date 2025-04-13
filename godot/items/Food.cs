@@ -13,4 +13,8 @@ public partial class Food: Item
 		base.IsConsumable = IsConsumable;
         this.satiety = satiety;
     }
+    public Food() : base("Unnamed Food", null, 1, true)
+    {
+        GD.Print("Food: This is not supposed to happen.");
+    }
 }

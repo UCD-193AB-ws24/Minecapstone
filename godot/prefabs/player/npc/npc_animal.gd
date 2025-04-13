@@ -16,6 +16,7 @@ var _wandering_duration: float = 5
 var _scared_duration: float = 7
 #var detection_range = 25
 
+var drop_list:Array = ["Meat"]
 
 func _ready():
 	max_health = 50
@@ -34,6 +35,9 @@ func _ready():
 	_scared_timer.wait_time = _scared_duration
 	_scared_timer.timeout.connect(_on_scared_timer_timeout)
 	add_child(_scared_timer)
+
+	#inventory
+	inventory_manager.AddItem(ItemDictionary.Get("Meat"), 1)
 
 
 func _physics_process(delta):
@@ -131,7 +135,6 @@ func _rotate_toward(movement_target: Vector3):
 	var direction = (movement_target - global_position).normalized()
 	# Removing the PI fixes raycast emitted by animal
 	rotation.y = atan2(direction.x, direction.z)
-
 
 func _on_player_death():
 	super()

@@ -100,7 +100,10 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
-			if _command_queue.is_empty() and infinite_decisions:
+			if _command_queue.is_empty() and (infinite_decisions or prompt_allowance > 0):
+				#Agent consumes a prompt allowance
+				if prompt_allowance > 0:
+					prompt_allowance -= 1
 				_generate_new_goal()
 		
 		_is_processing_commands = false
@@ -145,11 +148,14 @@ func script_execution_completed():
 
 
 func build_prompt_context() -> String:
+	"""Provides context about the game state for the LLM
+	"""
+
 	var context = "Current situation\n"
 	
 	context += "Scenario goal: " + scenario_goal + "\n"
 	context += memories.format_recent_for_prompt(5) + "\n"
-	context += inventory_manager.GetInventoryData() + "\n"
+	context += "Items in your inventory:\n" + inventory_manager.GetInventoryData() + "\n"
 	context += "Your name is " + self.name + "\n"
 	context += "Self Position: (" + str(global_position.x) + ", " + str(global_position.z) + ") \n"
 	context += _get_all_detected_entities() + "\n"

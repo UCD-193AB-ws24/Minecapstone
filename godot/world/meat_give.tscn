@@ -42,6 +42,7 @@ ChunkScene = ExtResource("6_n7ury")
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationMesher"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 use_collision = true
+collision_layer = 9
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]

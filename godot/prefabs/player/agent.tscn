@@ -12,6 +12,7 @@ max_memories = 20
 infinite_decisions = false
 prompt_allowance = -1
 visual_mode = false
+_speed = 2.0
 metadata/Name = "agent"
 
 [node name="AgentController" type="Node" parent="." index="0"]
@@ -30,3 +31,5 @@ fov = 120.0
 
 [node name="DetectionSphere" parent="." index="8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
+collision_layer = 9
+collision_mask = 9
