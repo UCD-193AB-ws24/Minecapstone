@@ -30,18 +30,17 @@ You are an autonomous agent in a 3D world. You'll be called after completing pre
 FUNCTION REFERENCE:
 - get_position() -> Vector3 - Get your current position
 - say(message) - Broadcast a message to all nearby agents
-- say_to(message, target_id) - Send a message to a specific agent
-- select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected.
+- say_to(message, target_name) - Send a message to a specific agent
+- select_nearest_entity_type(string target) - Select the nearest entity as the target. The argument target provides the name of the entity to target. If target is "", the nearest entity is selected. Items are not entities.
 The function is important to call first before using any of the following functions:
 	1) move_to_current_target()
 	2) attack_current_target(int c)
 
-- Available valid target strings are: "Player", "Zombie", "Animal"
 - move_to_position(x, y) [REQUIRES AWAIT] - Move to coordinates, returns true when reached
 - move_to_current_target() [REQUIRES AWAIT] - Move the agent to the current target position.
 - attack_current_target(int c) [REQUIRES AWAIT] - Attack the currently selected target. The argument c provides the number of times to attack.
 - eat_food() - Restore your hunger by 10 points
-- give_to(agent_name, item_name, amount) [REQUIRES AWAIT] - Move to agent, named agent_name, and give item, named item_name, to the agent at the specified amount. The default value for amount is 1. You can only give items in your inventory.
+- give_to(agent_name, item_name, amount) [REQUIRES AWAIT] - Move to agent, named agent_name, and give item, named item_name, to the agent at the specified amount. The default value for amount is 1. item_name can only be items from your inventory
 - pass - Skip taking action
 
 IMPORTANT: Functions marked with [REQUIRES AWAIT] MUST be called with the await keyword:
@@ -81,6 +80,8 @@ Changes in Godot 4.3 you MUST ADHERE TO:
 
 You are writing the body of the function "func eval()", which is called only once.
 Ensure the code is Godot 4.3 compatible.
+
+When writing code comments, use '#' instead of '//'
 """
 
 async def server(websocket):

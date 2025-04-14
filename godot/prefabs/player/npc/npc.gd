@@ -187,6 +187,7 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 
 
 func move_to_current_target(distance_away:float=1.0):
+	print(current_target)
 	if current_target:
 		var target_pos = current_target.global_position
 		await move_to_position(target_pos.x, target_pos.z, distance_away)
@@ -276,9 +277,11 @@ func _attack():
 func _on_body_entered(body: Node):
 	if is_instance_of(body, Player) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
-		detected_entities.push_back(body)
-		#print("added entity: ", body.name)
-		_get_all_detected_entities()
+		if !body.invisible:
+			#Check if entity is invivible. If it isn't, add to detected_entites
+			detected_entities.push_back(body)
+			#print("added entity: ", body.name)
+			_get_all_detected_entities()
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
