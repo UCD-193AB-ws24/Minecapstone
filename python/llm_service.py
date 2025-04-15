@@ -11,34 +11,18 @@ def load_api_keys():
     Prints status messages to help with debugging.
     """
     # Try to load from .env.development.local first
-    local_loaded = load_dotenv("./.env.development.local")
-    if local_loaded:
-        print("Loaded environment variables from .env.development.local")
-    else:
-        print("Could not find .env.development.local")
-        
-        # Fallback to .env
-        env_loaded = load_dotenv("./.env")
-        if env_loaded:
-            print("Loaded environment variables from .env")
-        else:
-            print("Could not find .env either")
+    if not load_dotenv("./.env.development.local"):
+        load_dotenv("./.env")
     
     # Get API keys
     openai_key = os.environ.get("OPENAI_API_KEY")
     gemini_key = os.environ.get("GEMINI_API_KEY")
     
     # Print status (with limited visibility for security)
-    if openai_key:
-        masked_key = openai_key[:4] + '*' * (len(openai_key) - 8) + openai_key[-4:]
-        print(f"Found OpenAI API key")
-    else:
+    if not openai_key:
         print("WARNING: OpenAI API key not found in environment variables!")
         
-    if gemini_key:
-        masked_key = gemini_key[:4] + '*' * (len(gemini_key) - 8) + gemini_key[-4:]
-        print(f"Found Gemini API key")
-    else:
+    if not gemini_key:
         print("WARNING: Gemini API key not found in environment variables!")
     
     return {
