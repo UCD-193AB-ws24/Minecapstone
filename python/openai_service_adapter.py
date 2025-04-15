@@ -103,15 +103,3 @@ class OpenAIServiceAdapter(LLMService):
         goal = response["plaintext_goal"]
         print(f"OpenAI generated goal: {goal}")
         return goal
-    
-    async def handle_websocket_message(self, message_obj: dict) -> str:
-        """Handle a websocket message with possible image data"""
-        message = message_obj.get("prompt", "")
-        image_data = message_obj.get("image_data", None)
-        
-        if message_obj.get("type") == "GOAL":
-            return await self.generate_goal(message, image_data)
-        elif message_obj.get("type") == "SCRIPT":
-            return await self.generate_script(message, image_data)
-        else:
-            return "Error: Unknown message type"

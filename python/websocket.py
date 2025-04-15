@@ -20,53 +20,28 @@ class WebSocketServer:
         try:
             async for message in websocket:
                 # Parse the JSON message
-                try:
-                    message_obj = json.loads(message)
-                    
-                    # Check if this is the old format
-                    if isinstance(message_obj, str):
-                        # Old format: GOAL or SCRIPT prefix
-                        if message_obj.startswith("GOAL "):
-                            message_obj = {
-                                "type": "GOAL",
-                                "prompt": message_obj[len("GOAL "):]
-                            }
-                        elif message_obj.startswith("SCRIPT "):
-                            message_obj = {
-                                "type": "SCRIPT",
-                                "prompt": message_obj[len("SCRIPT "):]
-                            }
-                        else:
-                            await websocket.send("Error: Unknown message format")
-                            continue
-                except json.JSONDecodeError:
-                    # Old format: GOAL or SCRIPT prefix
-                    if message.startswith("GOAL "):
-                        message_obj = {
-                            "type": "GOAL",
-                            "prompt": message[len("GOAL "):]
-                        }
-                    elif message.startswith("SCRIPT "):
-                        message_obj = {
-                            "type": "SCRIPT",
-                            "prompt": message[len("SCRIPT "):]
-                        }
-                    else:
-                        await websocket.send("Error: Unknown message format")
-                        continue
-                
+                message_obj = json.loads(message)
+                message = message_obj.get("prompt", "")
+                image_data = message_obj.get("image_data", None)
+
+
+            
                 # Check if image is provided but not supported
-                if (message_obj.get("image_data") and 
-                    not self.llm_service.supports_vision):
+                if (image_data and not self.llm_service.supports_vision):
                     print("Warning: Image provided but current LLM service doesn't support vision. Ignoring image.")
                 
-                # Process the request
                 try:
-                    response = await self.llm_service.handle_websocket_message(message_obj)
+                    response = None
+                    if message_obj.get("type") == "GOAL":
+                        response = await self.generate_goal(message, image_data)
+                    elif message_obj.get("type") == "SCRIPT":
+                        response = await self.generate_script(message, image_data)
+                    else:
+                        response = "Error: Unknown message type"
                     await websocket.send(response)
                 except Exception as e:
-                    print(f"Error processing request: {e}")
-                    await websocket.send(f"Error: {str(e)}")
+                    print(f"Error generating response: {e}")
+                    response = f"Error: {str(e)}"
         except Exception as e:
             print(f"Error handling client: {e}")
             import traceback

@@ -45,11 +45,6 @@ class LLMService(ABC):
         """Generate a goal based on the context and optional image data"""
         pass
 
-    @abstractmethod
-    async def handle_websocket_message(self, message_obj: dict) -> str:
-        """Handle a websocket message and return the appropriate response"""
-        pass
-
     @property
     @abstractmethod
     def supports_vision(self) -> bool:
