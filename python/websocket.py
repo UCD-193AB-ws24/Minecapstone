@@ -24,8 +24,6 @@ class WebSocketServer:
                 message = message_obj.get("prompt", "")
                 image_data = message_obj.get("image_data", None)
 
-
-            
                 # Check if image is provided but not supported
                 if (image_data and not self.llm_service.supports_vision):
                     print("Warning: Image provided but current LLM service doesn't support vision. Ignoring image.")
@@ -33,9 +31,9 @@ class WebSocketServer:
                 try:
                     response = None
                     if message_obj.get("type") == "GOAL":
-                        response = await self.generate_goal(message, image_data)
+                        response = await self.llm_service.generate_goal(message, image_data)
                     elif message_obj.get("type") == "SCRIPT":
-                        response = await self.generate_script(message, image_data)
+                        response = await self.llm_service.generate_script(message, image_data)
                     else:
                         response = "Error: Unknown message type"
                     await websocket.send(response)
