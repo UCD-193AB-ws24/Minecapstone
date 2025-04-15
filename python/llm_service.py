@@ -5,30 +5,6 @@ from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 from typing import Optional
 
-def load_api_keys():
-    """
-    Load API keys from environment files and return them.
-    Prints status messages to help with debugging.
-    """
-    # Try to load from .env.development.local first
-    if not load_dotenv("./.env.development.local"):
-        load_dotenv("./.env")
-    
-    # Get API keys
-    openai_key = os.environ.get("OPENAI_API_KEY")
-    gemini_key = os.environ.get("GEMINI_API_KEY")
-    
-    # Print status (with limited visibility for security)
-    if not openai_key:
-        print("WARNING: OpenAI API key not found in environment variables!")
-        
-    if not gemini_key:
-        print("WARNING: Gemini API key not found in environment variables!")
-    
-    return {
-        "openai": openai_key,
-        "gemini": gemini_key
-    }
 
 class LLMService(ABC):
     """Abstract base class for LLM services"""
@@ -53,6 +29,7 @@ class LLMService(ABC):
     def supports_vision(self) -> bool:
         """Return whether this LLM service supports vision/images"""
         pass
+
 
 class LLMServiceFactory:
     """Factory for creating LLM service instances"""
@@ -85,3 +62,29 @@ class LLMServiceFactory:
             return GeminiServiceAdapter(model=model, settings=settings)
         else:
             raise ValueError(f"Unknown service type: {service_type}")
+
+
+def load_api_keys():
+    """
+    Load API keys from environment files and return them.
+    Prints status messages to help with debugging.
+    """
+    # Try to load from .env.development.local first
+    if not load_dotenv("./.env.development.local"):
+        load_dotenv("./.env")
+    
+    # Get API keys
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    
+    # Print status (with limited visibility for security)
+    if not openai_key:
+        print("WARNING: OpenAI API key not found in environment variables!")
+        
+    if not gemini_key:
+        print("WARNING: Gemini API key not found in environment variables!")
+    
+    return {
+        "openai": openai_key,
+        "gemini": gemini_key
+    }
