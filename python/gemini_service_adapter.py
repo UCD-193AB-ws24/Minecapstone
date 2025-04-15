@@ -36,7 +36,6 @@ class GeminiServiceAdapter(LLMService):
         
         print(f"Initialized Gemini service with model: {self.model_name}")
 
-
     @property
     def supports_vision(self) -> bool:
         """Return whether this model supports vision"""

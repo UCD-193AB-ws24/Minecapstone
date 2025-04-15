@@ -28,15 +28,17 @@ class WebSocketServer:
                 if (image_data and not self.llm_service.supports_vision):
                     print("Warning: Image provided but current LLM service doesn't support vision. Ignoring image.")
                 
+                # Send the prompt to the LLM and get the response
                 try:
-                    response = None
                     if message_obj.get("type") == "GOAL":
-                        response = await self.llm_service.generate_goal(message, image_data)
+                        goal = await self.llm_service.generate_goal(message, image_data)
+                        await websocket.send(goal)
                     elif message_obj.get("type") == "SCRIPT":
-                        response = await self.llm_service.generate_script(message, image_data)
+                        script = await self.llm_service.generate_script(message, image_data)
+                        await websocket.send(script)
                     else:
                         response = "Error: Unknown message type"
-                    await websocket.send(response)
+                        await websocket.send(response)
                 except Exception as e:
                     print(f"Error generating response: {e}")
                     response = f"Error: {str(e)}"
