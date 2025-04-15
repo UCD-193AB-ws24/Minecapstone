@@ -6,3 +6,4 @@
 .env.development.local
 godot/.vscode/*
 .venv
+__pycache__/
