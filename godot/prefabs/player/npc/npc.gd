@@ -145,10 +145,8 @@ func discard_item(item_name: String, amount: int):
 
 func give_to(agent_name: String, item_name:String, amount:int):
 	var agent_ref = AgentManager.get_agent(agent_name).get_ref()
-	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.y, 3)
-	# set_moving_target(agent_ref)
-	# await target_reached
-	
+	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.z, 3)
+
 	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
 	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
 	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
