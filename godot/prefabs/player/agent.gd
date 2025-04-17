@@ -157,13 +157,15 @@ func build_prompt_context() -> String:
 
 	var context = """
 # Game Context
-	Your primary goal: %s
+	Your prime directive is to complete the goal: %s
+	The current goal you have set for yourself is to: %s
 	Items in your inventory: %s
 	Your name is %s
 	Self Position: (%s, %s)
 	All detected entities: %s
 	%s""" % [
 	scenario_goal,
+	goal,
 	inventory_manager.GetInventoryData(),
 	self.name,
 	snapped(global_position.x, 0.1), 

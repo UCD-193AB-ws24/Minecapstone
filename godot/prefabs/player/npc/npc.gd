@@ -345,33 +345,33 @@ func _get_all_detected_items() -> String:
 
 # Sets target_entity to the nearest entity with the name that matches target_string
 # RETURNs True if there is a valid target. False if no target
-func select_nearest_target(target_name:String) -> bool:
-	if detected_entities.is_empty():
-		current_target = null
-		return false
-	# Find the nearest entity that matches the target name
-	var nearest_entity: Player = null
-	var nearest_distance: float = INF
+# func select_nearest_target(target_name:String) -> bool:
+# 	if detected_entities.is_empty():
+# 		current_target = null
+# 		return false
+# 	# Find the nearest entity that matches the target name
+# 	var nearest_entity: Player = null
+# 	var nearest_distance: float = INF
 
 
-	# Funky formatting stuff to make sure the command is properly parsed even if LLM incorrectly calls it
-	# var search_name = target_name
-	# if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
-	# 	search_name = target_name[0].to_upper() + target_name.substr(1)
-	# 	search_name = "NPC" + target_name
+# 	# Funky formatting stuff to make sure the command is properly parsed even if LLM incorrectly calls it
+# 	# var search_name = target_name
+# 	# if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
+# 	# 	search_name = target_name[0].to_upper() + target_name.substr(1)
+# 	# 	search_name = "NPC" + target_name
 
-	for entity in detected_entities:
-		if entity != self and entity.name == target_name:
-			var distance = global_position.distance_to(entity.global_position)
-			if nearest_entity == null or distance < nearest_distance:
-				nearest_distance = distance
-				nearest_entity = entity
+# 	for entity in detected_entities:
+# 		if entity != self and entity.name == target_name:
+# 			var distance = global_position.distance_to(entity.global_position)
+# 			if nearest_entity == null or distance < nearest_distance:
+# 				nearest_distance = distance
+# 				nearest_entity = entity
 
-	current_target = nearest_entity
-	if current_target != null:
-		return true
-	else:
-		return false
+# 	current_target = nearest_entity
+# 	if current_target != null:
+# 		return true
+# 	else:
+# 		return false
 
 
 func _set_chase_target_position():

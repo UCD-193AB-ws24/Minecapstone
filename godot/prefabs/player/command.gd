@@ -138,7 +138,7 @@ func run_script(input: String):
 		"func eval():\n\treturn true",
 		"func eval():\n%s\n\treturn true" % input)
 
-	print_rich("Debug: Agent performing [color=cornflower_blue]%s[/color]" % input)
+	print_rich("Debug: [color=#%s][Agent %s][/color] performing [color=cornflower_blue]%s[/color]" % [agent.debug_color, agent.debug_id, input])
 
 	# Dangerously created script
 	var script = GDScript.new()
