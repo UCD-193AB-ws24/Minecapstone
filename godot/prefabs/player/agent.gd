@@ -8,12 +8,14 @@ class_name Agent extends NPC
 @export var prompt_allowance: int = -1 #negative numbers mean infinite allowance
 @export var visual_mode:bool = false
 @onready var hash_id : int = hash(self)
-@onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
 @onready var memories: Memory = Memory.new(max_memories)
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
+
+@onready var debug_id : String = str(hash_id).substr(0, 3)
+@onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
 
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
@@ -66,7 +68,7 @@ func _physics_process(delta):
 					Command.CommandType.SCRIPT:
 						type_text = "SCRIPT"
 				
-				print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
+				print_rich("[color=#%s][Agent %s][/color] Cmd[%d]: [color=green]%s[/color] | %s" % [debug_color, hash_id, i, type_text, status_text])
 
 
 """ ============================================ AGENT FUNCTIONS =================================================== """
@@ -112,13 +114,13 @@ func _process_command_queue() -> void:
 # Queues up the generation of a new goal from the LLM
 func _generate_new_goal() -> void:
 	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] NOT generating new goal, commands in queue")
+		print_rich("Debug: [color=#%s][Agent %s][/color] NOT generating new goal, commands in queue" % [debug_color, debug_id])
 		return
 	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 
 func set_goal(new_goal: String) -> void:
-	print_rich("Debug: [Agent %s] [color=lime]%s[/color] (Goal Updated)" % [debug_id, new_goal])
+	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
 
@@ -137,30 +139,42 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
-		print("Debug: [Agent %s] Received message from [Agent %s]: %s" % [debug_id, from_id, msg])
+		# Convert from_id to a color
+		var from_color = Color.from_hsv(float(from_id) / 1000.0, 0.8, 1).to_html(false)
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, debug_id, from_color, from_id, msg])
 
 		# Included this message in the agent's memory
 		memories.add_message(msg, from_id, to_id)
 
 
 func script_execution_completed():
-	print_rich("Debug: [Agent %s] [color=lime]Script execution completed[/color]" % debug_id)
+	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]Script execution completed[/color]" % [debug_color, debug_id])
 
 
 func build_prompt_context() -> String:
 	"""Provides context about the game state for the LLM
 	"""
 
-	var context = "Current situation\n"
-	
-	context += "Scenario goal: " + scenario_goal + "\n"
-	context += memories.format_recent_for_prompt(5) + "\n"
-	context += "Items in your inventory:\n" + inventory_manager.GetInventoryData() + "\n"
-	context += "Your name is " + self.name + "\n"
-	context += "Self Position: (" + str(global_position.x) + ", " + str(global_position.z) + ") \n"
-	context += _get_all_detected_entities() + "\n"
-	context += _get_all_detected_items() + "\n"
-	
+	var context = """
+# Game Context
+	Your primary goal: %s
+	Items in your inventory: %s
+	Your name is %s
+	Self Position: (%s, %s)
+	All detected entities: %s
+	%s""" % [
+	scenario_goal,
+	inventory_manager.GetInventoryData(),
+	self.name,
+	snapped(global_position.x, 0.1), 
+	snapped(global_position.y, 0.1),
+	_get_all_detected_entities(),
+	_get_all_detected_items()
+]
+
+	get_node("context").text = context
+	# print(context)
+
 	return context
 
 
@@ -169,10 +183,6 @@ func get_camera_view() -> String:
 	Captures an image from the agent's camera and returns it as base64 encoded string.
 	Returns empty string if camera is not available.
 	"""
-	if not camera:
-		print_rich("[Agent %s] [color=red]Camera3D not found for visual mode[/color]" % debug_id)
-		return ""
-	
 	# Create a viewport to render the camera view
 	var viewport = SubViewport.new()
 	add_child(viewport)

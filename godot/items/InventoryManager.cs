@@ -232,7 +232,7 @@ public partial class InventoryManager : Node
 		}
 	}
 	
-	public String GetInventoryData() 
+	public string GetInventoryData() 
 	{
 		//This function is for providing the inventory content to the LLM's prompt context
 		//also used for listing out mob drops in _get_all_detected_entities()
@@ -241,7 +241,7 @@ public partial class InventoryManager : Node
 		{
 			if (_inventorySlots[i])
 			{
-				inventory_str += "Item Name: " + _slotsToItems[i].PrintInventoryItem() + " Quantity: " + _slotsToItems[i].PrintAmount() + "\n";
+				inventory_str += $"{_slotsToItems[i].PrintInventoryItem()} ({_slotsToItems[i].PrintAmount()}x)";
 			}
 		}
 		

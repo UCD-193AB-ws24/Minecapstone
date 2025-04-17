@@ -22,11 +22,11 @@ func _ready() -> void:
 		if node_meta_name == "agent":
 			var agent_entry = AgentEntry.new()
 			agent_entry.agent_ref = node as Agent
-			print("agent entry is ", agent_entry.agent_ref)
+			# print("agent entry is ", agent_entry.agent_ref)
 			if node.name != "Player":
 				agent_entry.agent_hash_id = node.hash_id
 			agent_dict[node.name] = agent_entry
-			print(node.name, " is registered")
+			# print(node.name, " is registered")
 
 
 #func spawn_agent(agent_name:String):

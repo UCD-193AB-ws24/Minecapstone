@@ -5,7 +5,6 @@ extends Node
 
 #sets up the scene by giving Agent a specified amount of meat
 func _ready() -> void:
-
 	var giver_ref = AgentManager.get_agent(giver).agent_ref
 	#check if giver is an agent
 	if giver_ref.get_meta("Name") != "agent":
@@ -13,5 +12,5 @@ func _ready() -> void:
 		return
 	var inventory = giver_ref.get_node("InventoryManager")
 	
-	print(inventory.AddItem(ItemDictionary.Get("Meat"), 5))
-	print(inventory.GetInventoryData())
+	inventory.AddItem(ItemDictionary.Get("Meat"), 5)
+	# print(inventory.GetInventoryData())

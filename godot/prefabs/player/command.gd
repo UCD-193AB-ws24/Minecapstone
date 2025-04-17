@@ -29,7 +29,7 @@ func execute(_agent: Agent):
 	
 	match command_type:
 		CommandType.GENERATE_GOAL:
-			# Will call _LLM_set_goal when response is received
+			"""Will call _LLM_set_goal when response is received"""
 			var context = agent.build_prompt_context()
 
 			# Generate goal using LLM, passing context and image data if visual mode is enabled
@@ -39,9 +39,9 @@ func execute(_agent: Agent):
 			else:
 				API.generate_goal(context, agent.hash_id)
 		CommandType.GENERATE_SCRIPT:
-			# Will call _LLM_execute_script when response is received
-			var goal = command_input
+			"""Will call _LLM_execute_script when response is received"""
 			var context = agent.build_prompt_context()
+			var goal = command_input
 			var full_prompt = "Goal: " + goal + "\n" + context
 			
 			# Generate script using LLM, passing context and image data if visual mode is enabled
@@ -109,8 +109,6 @@ func _LLM_execute_script(key: int, response: String):
 
 	# Then, run the generated script
 	agent.add_command(CommandType.SCRIPT, response)
-
-	# print_rich("Debug: [Agent %s] [color=lime]Updated Script[/color]" % [agent.debug_id])
 
 	command_status = CommandStatus.DONE
 

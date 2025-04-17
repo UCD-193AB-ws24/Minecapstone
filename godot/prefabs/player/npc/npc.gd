@@ -187,7 +187,7 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 
 
 func move_to_current_target(distance_away:float=1.0):
-	print(current_target)
+	# print(current_target)
 	if current_target:
 		var target_pos = current_target.global_position
 		await move_to_position(target_pos.x, target_pos.z, distance_away)
@@ -306,15 +306,22 @@ func  _get_all_detected_entities():
 	var context = ""
 
 	if detected_entities.size() > 0:
-		context += "Nearby entities:\n"
 		for entity in detected_entities:
-			#var entity_type = entity.get_class()
-			
-			context += "- " + entity.name + " \n"
-			context += "Current HP: " + str(entity.health) + "\n"
-			context += "Distance To: " + str(int(global_position.distance_to(entity.global_position))) + " units, "
-			context += "Coordinates: (" + str(int(entity.global_position.x)) + ", " + str(int(entity.global_position.z)) + ")\n"
-			context += "Possible item drops:\n" + inventory_manager.GetInventoryData() + "\n"
+			context += """
+	=== %s ===
+		* Current HP: %s
+		* Distance To: %s units
+		* Coordinates: (%s, %s)
+		* Possible item drops:
+		%s
+	""" % [
+		entity.name,
+		str(int(entity.health)),
+		str(int(global_position.distance_to(entity.global_position))),
+		str(int(entity.global_position.x)),
+		str(int(entity.global_position.z)),
+		inventory_manager.GetInventoryData()
+	]
 	else:
 		context += "There are no entities nearby.\n"
 	
