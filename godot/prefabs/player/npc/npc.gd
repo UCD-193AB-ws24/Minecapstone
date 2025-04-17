@@ -288,8 +288,8 @@ func _attack():
 
 func _on_body_entered_detection_sphere(body: Node):
 	# Since all current entities extend from Player, will detect all types of mobs
-	if is_instance_of(body, Player) and body != self:
-		if body.visible == false:
+	if is_instance_of(body, NPC) and body != self:
+		if body.visible:
 			detected_entities.push_back(body)
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
@@ -319,15 +319,13 @@ func  _get_all_detected_entities():
 	=== %s ===
 		* Current HP: %s
 		* Distance To: %s units
-		* Coordinates: (%s, %s)
 		* Possible item drops:
 		%s
 	""" % [
 		entity.name,
 		str(int(entity.health)),
 		str(int(global_position.distance_to(entity.global_position))),
-		str(int(entity.global_position.x)),
-		str(int(entity.global_position.z)),
+		# str(int(entity.global_position.x)), str(int(entity.global_position.z)),
 		inventory_manager.GetInventoryData()
 	]
 	else:
@@ -345,8 +343,8 @@ func _get_all_detected_items() -> String:
 		for item in detected_items:
 			context += "- " + item.get_meta("ItemName") + "\n"
 			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
-			context += "Coordinates: (" + str(int(item.global_position.x)) + ", " + str(int(item.global_position.z)) + ")\n"
-			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
+			# context += "Coordinates: (" + str(int(item.global_position.x)) + ", " + str(int(item.global_position.z)) + ")\n"
+			# context += "Elevation: " + str(int(item.global_position.y)) + "\n"
 	else:
 		context += "There are no items nearby to pick up.\n"
 
