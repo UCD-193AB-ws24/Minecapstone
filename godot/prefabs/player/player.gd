@@ -3,7 +3,6 @@ extends CharacterBody3D
 
 
 @export var ai_control_enabled = false
-@export var invisible = false;
 """ ================================================ MOVEMENT ====================================================== """
 @export var _speed = 4.317
 var _sprint_speed = _speed * 1.3

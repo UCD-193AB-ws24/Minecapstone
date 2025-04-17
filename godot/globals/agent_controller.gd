@@ -24,22 +24,19 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 	await agent.move_to_position(x, y, distance_away)
 
 
-# func select_nearest_entity_type(target: String=""):
-# 	label.text = "Selecting nearest target of type: " + target
-# 	agent.select_nearest_target(target)
-
-func move_to_current_target(distance_away:float=1.0):
-	label.text = "Moving to position of target: " + agent.current_target.name 
-	await agent.move_to_current_target(distance_away)
+func move_to_target(target_name: String, distance_away:float=1.0):
+	label.text = "Moving to target: " + target_name
+	await agent.move_to_target(target_name, distance_away)
 
 
-func look_at_current_target():
-	agent.look_at_current_target()
+func look_at_target(target_name: String):
+	label.text = "Looking at target: " + target_name
+	agent.look_at_target_by_name(target_name)
 
 
-func attack_current_target(num_attacks: int = 1):	
-	label.text = "Attacking entity " + str(num_attacks) + " times."
-	await agent._attack_current_target(num_attacks)
+func attack_target(target_name: String, num_attacks: int = 1):
+	label.text = "Attacking entity " + target_name + " " + str(num_attacks) + " times."
+	await agent.attack_target(target_name, num_attacks)
 
 
 func discard(itemName: String, amount: int):
@@ -56,13 +53,11 @@ func say(msg: String) -> void:
 	# agent.record_action("Said: " + msg)
 
 
-# func say_to(msg: String, target_id: int) -> void:
-# 	message_broker.send_message(msg, agent.hash_id, target_id)
-	# agent.record_action("Said to " + str(target_id) + ": " + msg)
-
 func say_to(msg: String, target_agent: String) -> void:
 	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
 	message_broker.send_message(msg, agent.hash_id, target_id)
+	# agent.record_action("Said to " + str(target_id) + ": " + msg)
+
 
 func eat_food():
 	# Currently hardcoded to restore 10 hunger

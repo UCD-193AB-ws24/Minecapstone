@@ -44,8 +44,12 @@ func set_look_position(look_pos: Vector3):
 	head.look_at(look_pos)
 
 
-func look_at_current_target():
-	look_at_target(current_target)
+func look_at_target_by_name(target_name: String):
+	for entity in detected_entities:
+		if entity.name == target_name:
+			look_at_target(entity)
+			return
+	print("Target '%s' not found for looking." % target_name)
 
 
 # rotate body and head to look at look_target
@@ -183,11 +187,13 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 	# return true
 
 
-func move_to_current_target(distance_away:float=1.0):
-	# print(current_target)
-	if current_target:
-		var target_pos = current_target.global_position
-		await move_to_position(target_pos.x, target_pos.z, distance_away)
+func move_to_target(target_name: String, distance_away:float=1.0):
+	for entity in detected_entities:
+		if entity.name == target_name:
+			var target_pos = entity.global_position
+			await move_to_position(target_pos.x, target_pos.z, distance_away)
+			return
+	print("Target '%s' not found in detected entities." % target_name)
 
 
 func _moving_target_process():
@@ -242,20 +248,28 @@ func _rotate_toward(movement_target: Vector3):
 	rotation.y = atan2(direction.x, direction.z) + PI
 
 
-func _attack_current_target(num_attacks : int = 1):
-	if current_target == null: return
+func attack_target(target_name: String, num_attacks: int = 1):
+	# Find target entity by name
+	var target_entity = null
+	for entity in detected_entities:
+		if entity.name == target_name:
+			target_entity = entity
+			break
+			
+	if target_entity == null:
+		# TODO: Add to memories that it failed
+		return
 
+	current_target = target_entity
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
 		if current_target == null: return
-		await move_to_current_target()
-		await look_at_current_target()
+		await move_to_target(target_name)
+		look_at_target_by_name(target_name)
 		var hit = await _attack()
 		if hit: successful_attacks += 1
 		
-		# Wait for the cooldown before the next attack
-
-		print(str(current_target.health) + " health left")
+		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
 
 	current_target = null
@@ -271,14 +285,12 @@ func _attack():
 		
 	return hit
 
+
 func _on_body_entered_detection_sphere(body: Node):
-	if is_instance_of(body, NPC) and body != self:
-		# Since all current entities extend from Player, will detect all types of mobs
-		if !body.invisible:
-			#Check if entity is invivible. If it isn't, add to detected_entites
+	# Since all current entities extend from Player, will detect all types of mobs
+	if is_instance_of(body, Player) and body != self:
+		if body.visible == false:
 			detected_entities.push_back(body)
-			#print("added entity: ", body.name)
-			_get_all_detected_entities()
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
@@ -287,7 +299,6 @@ func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 		# print("removed entity: ", body.name)
-		_get_all_detected_entities()
 	elif body in detected_items:
 		detected_items.erase(body)
 		#print("removed item: ", body.name)
@@ -340,36 +351,6 @@ func _get_all_detected_items() -> String:
 		context += "There are no items nearby to pick up.\n"
 
 	return context
-
-# Sets target_entity to the nearest entity with the name that matches target_string
-# RETURNs True if there is a valid target. False if no target
-# func select_nearest_target(target_name:String) -> bool:
-# 	if detected_entities.is_empty():
-# 		current_target = null
-# 		return false
-# 	# Find the nearest entity that matches the target name
-# 	var nearest_entity: Player = null
-# 	var nearest_distance: float = INF
-
-
-# 	# Funky formatting stuff to make sure the command is properly parsed even if LLM incorrectly calls it
-# 	# var search_name = target_name
-# 	# if target_name != "" and target_name != "Player" and target_name != "Agent" and not target_name.begins_with("NPC"):
-# 	# 	search_name = target_name[0].to_upper() + target_name.substr(1)
-# 	# 	search_name = "NPC" + target_name
-
-# 	for entity in detected_entities:
-# 		if entity != self and entity.name == target_name:
-# 			var distance = global_position.distance_to(entity.global_position)
-# 			if nearest_entity == null or distance < nearest_distance:
-# 				nearest_distance = distance
-# 				nearest_entity = entity
-
-# 	current_target = nearest_entity
-# 	if current_target != null:
-# 		return true
-# 	else:
-# 		return false
 
 
 func _set_chase_target_position():
