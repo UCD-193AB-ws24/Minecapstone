@@ -52,8 +52,8 @@ var thirst_timer = 0.0
 """ ============================================== INVENTORY ======================================================= """
 @onready var inventory_manager: Node = $InventoryManager
 @onready var block_highlight: CSGBox3D = $BlockHighlight
-@onready var block_manager: Node = $"../NavigationMesher/BlockManager"
-@onready var chunk_manager: Node = $"../NavigationMesher/ChunkManager"
+@onready var block_manager: Node = $"../NavigationMesher".find_child("BlockManager")
+@onready var chunk_manager: Node = $"../NavigationMesher".find_child("ChunkManager")
 
 """ =========================================== GODOT FUNCTIONS ==================================================== """
 
