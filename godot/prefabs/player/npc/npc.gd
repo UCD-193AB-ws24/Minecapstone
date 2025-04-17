@@ -343,8 +343,8 @@ func _get_all_detected_items() -> String:
 		for item in detected_items:
 			context += "- " + item.get_meta("ItemName") + "\n"
 			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
-			# context += "Coordinates: (" + str(int(item.global_position.x)) + ", " + str(int(item.global_position.z)) + ")\n"
-			# context += "Elevation: " + str(int(item.global_position.y)) + "\n"
+			context += "Coordinates: (" + str(item.global_position.x) + ", " + str(item.global_position.z) + ")\n"
+			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
 	else:
 		context += "There are no items nearby to pick up.\n"
 
