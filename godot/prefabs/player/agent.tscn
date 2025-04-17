@@ -27,13 +27,15 @@ font_size = 50
 outline_size = 16
 
 [node name="context" type="Label3D" parent="." index="4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.52909, 0)
-offset = Vector2(-300, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.70096, 0)
+offset = Vector2(-250, 100)
 billboard = 1
+render_priority = 1
 text = "waiting..."
 font_size = 25
 outline_size = 8
 horizontal_alignment = 0
+autowrap_trim_flags = 0
 
 [node name="Camera3D" parent="Head" index="1"]
 fov = 120.0
@@ -42,3 +44,6 @@ fov = 120.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9
+
+[connection signal="body_entered" from="DetectionSphere" to="." method="_on_body_entered_detection_sphere"]
+[connection signal="body_exited" from="DetectionSphere" to="." method="_on_body_exited_detection_sphere"]

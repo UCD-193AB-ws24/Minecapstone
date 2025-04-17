@@ -22,9 +22,6 @@ func _ready():
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
 
-	detection_area.body_entered.connect(_on_body_entered)
-	detection_area.body_exited.connect(_on_body_exited)
-
 
 func actor_setup():
 	# Wait for the first physics frame so the NavigationServer can sync.
@@ -276,8 +273,8 @@ func _attack():
 		
 	return hit
 
-func _on_body_entered(body: Node):
-	if is_instance_of(body, Player) and body != self:
+func _on_body_entered_detection_sphere(body: Node):
+	if is_instance_of(body, NPC) and body != self:
 		# Since all current entities extend from Player, will detect all types of mobs
 		if !body.invisible:
 			#Check if entity is invivible. If it isn't, add to detected_entites
@@ -288,7 +285,7 @@ func _on_body_entered(body: Node):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
 
-func _on_body_exited(body: Node):
+func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
 		# print("removed entity: ", body.name)

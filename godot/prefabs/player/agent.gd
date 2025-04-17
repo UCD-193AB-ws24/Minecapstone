@@ -140,7 +140,7 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
 		# Convert from_id to a color
-		var from_color = Color.from_hsv(float(from_id) / 1000.0, 0.8, 1).to_html(false)
+		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
 		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, debug_id, from_color, from_id, msg])
 
 		# Included this message in the agent's memory
@@ -172,7 +172,7 @@ func build_prompt_context() -> String:
 	_get_all_detected_items()
 ]
 
-	get_node("context").text = context
+	get_node("context").text = context.replace("\t", "    ")
 	# print(context)
 
 	return context
