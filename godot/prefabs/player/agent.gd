@@ -84,7 +84,8 @@ func actor_setup():
 	# # Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
-		set_goal(goal)
+	
+	set_goal(goal)
 
 func _process_command_queue() -> void:
 	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
@@ -204,12 +205,13 @@ func get_camera_view() -> String:
 	var image: Image = viewport_texture.get_image()
 	
 	# Save the image to a file
-	# var filename = "agent_view.png"
-	# var err = image.save_png(filename)
-	# if err != OK:
-	# 	print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
-	# else:
-	# 	print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
+	if false:
+		var filename = "agent_view.png"
+		var err = image.save_png(filename)
+		if err != OK:
+			print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
+		else:
+			print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
 
 	# Clean up
 	viewport.queue_free()

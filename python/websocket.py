@@ -8,7 +8,7 @@ from llm_service_factory import LLMServiceFactory
 class WebSocketServer:
     """WebSocket server for handling LLM requests with visual support"""
     
-    def __init__(self, config_path="llm_config.json", host="localhost", port=5000):
+    def __init__(self, config_path, host, port):
         """Initialize the WebSocket server"""
         self.config_path = config_path
         self.host = host
@@ -80,7 +80,7 @@ class WebSocketServer:
 async def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="LLM WebSocket Server")
-    parser.add_argument("--config", default="llm_config.json", help="Path to the configuration file")
+    parser.add_argument("--config", default="./python/llm_config.json", help="Path to the configuration file")
     parser.add_argument("--host", default="localhost", help="Host to bind the server to")
     parser.add_argument("--port", type=int, default=5000, help="Port to bind the server to")
     args = parser.parse_args()
