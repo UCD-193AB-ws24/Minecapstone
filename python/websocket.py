@@ -7,7 +7,7 @@ from llm_service_factory import LLMServiceFactory
 
 class WebSocketServer:
     """WebSocket server for handling LLM requests with visual support"""
-    
+
     def __init__(self, config_path="python/config.json", host="localhost", port=5000):
         """Initialize the WebSocket server"""
         self.config_path = config_path

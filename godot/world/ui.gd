@@ -2,11 +2,10 @@ extends Control
 
 
 @onready var label = $GridContainer/Label
-
+@onready var chunk_manager = $"../NavigationMesher".find_child("ChunkManager")
 
 func _physics_process(_delta: float) -> void:
 	label.text = "FPS: " + str(Engine.get_frames_per_second())
-	var chunk_manager = $"../NavigationMesher/ChunkManager"
 	if chunk_manager:
 		var player_chunk_position = chunk_manager.GetPlayerChunkPosition()
 		label.text += "\nPlayer Chunk Position: " + str(player_chunk_position)

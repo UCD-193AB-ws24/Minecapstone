@@ -329,3 +329,7 @@ func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) 
 	else:
 		$LoadingScreen.visible = false
 		$"LoadingScreen/CenterContainer/MarginContainer/TextureRect".texture = null
+		
+func _ready() -> void:
+	if not $"../NavigationMesher".find_child("ChunkManager"):
+		_handle_loading_screen(null, false)

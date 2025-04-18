@@ -35,6 +35,12 @@ class LLMService(ABC):
         # User preprompt for script generation
         self.user_preprompt = USER_PREPROMPT
 
+    @property
+    @abstractmethod
+    def supports_vision(self) -> bool:
+        """Return whether this LLM service supports vision/images"""
+        pass
+
     @abstractmethod
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script based on the prompt and optional image data"""
@@ -43,12 +49,6 @@ class LLMService(ABC):
     @abstractmethod
     async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
         """Generate a goal based on the context and optional image data"""
-        pass
-
-    @property
-    @abstractmethod
-    def supports_vision(self) -> bool:
-        """Return whether this LLM service supports vision/images"""
         pass
 
     def load_api_keys(self) -> dict:

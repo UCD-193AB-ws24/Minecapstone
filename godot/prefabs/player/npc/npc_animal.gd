@@ -70,7 +70,6 @@ func _behavior_logic():
 	
 	
 func _target_logic():
-		
 	_behavior_logic()
 	
 	match behavior:

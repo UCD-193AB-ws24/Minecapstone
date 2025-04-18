@@ -5,10 +5,10 @@ extends Player
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 @onready var detection_area: Area3D = $DetectionSphere
-var just_jumped = false
-var current_target: Node = null
-var detected_entities: Array = []
-var detected_items: Array = [] # holds items detected by the detection sphere
+@onready var just_jumped = false
+@onready var current_target: Node = null
+@onready var detected_entities: Array = []
+@onready var detected_items: Array = [] # holds items detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
@@ -288,8 +288,8 @@ func _attack():
 
 func _on_body_entered_detection_sphere(body: Node):
 	# Since all current entities extend from Player, will detect all types of mobs
-	if is_instance_of(body, Player) and body != self:
-		if body.visible == false:
+	if is_instance_of(body, NPC) and body != self:
+		if body.visible:
 			detected_entities.push_back(body)
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
@@ -319,15 +319,13 @@ func  _get_all_detected_entities():
 	=== %s ===
 		* Current HP: %s
 		* Distance To: %s units
-		* Coordinates: (%s, %s)
 		* Possible item drops:
 		%s
 	""" % [
 		entity.name,
 		str(int(entity.health)),
 		str(int(global_position.distance_to(entity.global_position))),
-		str(int(entity.global_position.x)),
-		str(int(entity.global_position.z)),
+		# str(int(entity.global_position.x)), str(int(entity.global_position.z)),
 		inventory_manager.GetInventoryData()
 	]
 	else:
@@ -344,7 +342,7 @@ func _get_all_detected_items() -> String:
 		context += "Nearby items you can pick up. Move to the item's coordinates to pick it up"
 		for item in detected_items:
 			context += "- " + item.get_meta("ItemName") + "\n"
-			#context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
+			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
 			context += "Coordinates: (" + str(item.global_position.x) + ", " + str(item.global_position.z) + ")\n"
 			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
 	else:
@@ -364,3 +362,14 @@ func _on_player_death():
 	inventory_manager.DropAllItems()
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
+
+
+func save():
+	var save_dict = super()
+	
+	save_dict["detection_range"] = detection_range
+	save_dict["attack_damage"] = attack_damage
+	save_dict["attack_cooldown"] = attack_cooldown
+	save_dict["chase_speed"] = chase_speed
+	
+	return save_dict

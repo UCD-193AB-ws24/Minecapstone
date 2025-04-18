@@ -60,7 +60,6 @@ prompt_allowance = 10
 
 [node name="Player" parent="." instance=ExtResource("7_n7ury")]
 transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 20.6034, -10.0067)
-invisible = true
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("9_b7mka")
