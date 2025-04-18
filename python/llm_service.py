@@ -45,12 +45,6 @@ class LLMService(ABC):
         """Generate a goal based on the context and optional image data"""
         pass
 
-    @property
-    @abstractmethod
-    def supports_vision(self) -> bool:
-        """Return whether this LLM service supports vision/images"""
-        pass
-
     def load_api_keys(self) -> dict:
         """
         Load API keys from environment files and return them.

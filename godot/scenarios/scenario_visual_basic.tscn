@@ -1,22 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://cgb063gab15jv"]
+[gd_scene load_steps=8 format=3 uid="uid://cgb063gab15jv"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_3yfi2"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_xr4fu"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_7l8mw"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="8_nmvkj"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pyt0w"]
-sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-
-[sub_resource type="Sky" id="Sky_n6ajl"]
-sky_material = SubResource("ProceduralSkyMaterial_pyt0w")
-
-[sub_resource type="Environment" id="Environment_kwlac"]
-background_mode = 2
-sky = SubResource("Sky_n6ajl")
-tonemap_mode = 2
-glow_enabled = true
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
 vertices = PackedVector3Array(-43.6, 1.5, -49.68, -49.68, 1.5, -49.68, -49.68, 1.5, -43.6, -49.68, 1.5, 43.44, -49.68, 1.5, 49.68, -43.6, 1.5, 49.68, 49.68, 1.5, -43.6, 49.68, 1.5, -49.68, 43.44, 1.5, -49.68, 43.44, 1.5, 49.68, 49.68, 1.5, 49.68, 49.68, 1.5, 43.44, -37.36, 1.5, -49.68, -49.68, 1.5, -37.36, -37.36, 1.5, 49.68, -49.68, 1.5, 37.2, 49.68, 1.5, -37.36, 37.2, 1.5, -49.68, 37.2, 1.5, 49.68, -0.0800018, 1.5, -49.68, -6.32, 1.5, -49.68, -49.68, 1.5, -6.32, -49.68, 1.5, -0.0800018, 18.48, 1.5, 49.68, 49.68, 1.5, 24.72, 49.68, 1.5, 18.48, 12.24, 1.5, 49.68, 49.68, 1.5, -6.32, 49.68, 1.5, -12.56, 12.24, 1.5, -49.68, 6, 1.5, -49.68, 49.68, 1.5, 37.2, 30.96, 1.5, 49.68, -31.12, 1.5, -49.68, -49.68, 1.5, -31.12, -31.12, 1.5, 49.68, -49.68, 1.5, 30.96, 49.68, 1.5, -31.12, 30.96, 1.5, -49.68, -12.56, 1.5, -49.68, -18.8, 1.5, -49.68, -49.68, 1.5, -18.8, -49.68, 1.5, -12.56, -49.68, 1.5, 18.48, -18.8, 1.5, 49.68, -12.56, 1.5, 49.68, -49.68, 1.5, 12.24, -49.68, 1.5, 6, -6.32, 1.5, 49.68, 49.68, 1.5, -18.8, 18.48, 1.5, -49.68, 49.68, 1.5, 30.96, 24.72, 1.5, 49.68, -24.88, 1.5, -49.68, -49.68, 1.5, -24.88, -24.88, 1.5, 49.68, -49.68, 1.5, 24.72, 49.68, 1.5, -24.88, 24.72, 1.5, -49.68, -0.0800018, 1.5, 49.68, 49.68, 1.5, 6, 49.68, 1.5, -0.0800018, 6, 1.5, 49.68, 49.68, 1.5, 12.24)
@@ -37,9 +24,6 @@ albedo_color = Color(1, 0, 0, 1)
 albedo_color = Color(0, 0, 1, 1)
 
 [node name="World2" type="Node3D"]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_kwlac")
 
 [node name="UI" parent="." instance=ExtResource("1_3yfi2")]
 

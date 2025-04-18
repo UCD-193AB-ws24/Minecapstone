@@ -80,12 +80,11 @@ func actor_setup():
 
 	await get_tree().physics_frame
 	navigation_ready = true
-	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 	# # Wait for websocket connection
-	# if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
-	# 	await API.connected
-
+	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+		await API.connected
+		set_goal(goal)
 
 func _process_command_queue() -> void:
 	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
@@ -186,7 +185,7 @@ func get_camera_view() -> String:
 	# Create a viewport to render the camera view
 	var viewport = SubViewport.new()
 	add_child(viewport)
-	viewport.size = Vector2i(1024, 512)
+	viewport.size = Vector2i(768, 512)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
 	# Set up the viewport camera to match the agent's camera

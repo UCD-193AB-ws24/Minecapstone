@@ -38,7 +38,7 @@ Be extremely careful with the syntax.
 e.g.
         Remember to define variables using "var" and use "await" for functions that require it.
         Do not use "yield()" as it is deprecated in Godot 4.3.
-        Be careful about the difference between Vector2(x,y) and Vector3(x,y,z).
+        Do not EVER initialize Vector2 or Vector3 variables. Just use any desired values directly.
 """
 
 USER_PREPROMPT = ""

@@ -21,11 +21,6 @@ class OpenAIServiceAdapter(LLMService):
         
         print(f"Initialized OpenAI service with model: {self.model}")
     
-    @property
-    def supports_vision(self) -> bool:
-        """OpenAI gpt-4o and gpt-4o-mini supports vision"""
-        return self.model in ["gpt-4o", "gpt-4o-mini", "gpt-4-vision", "gpt-4.1"]
-    
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using OpenAI with optional image data"""
         

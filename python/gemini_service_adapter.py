@@ -36,11 +36,6 @@ class GeminiServiceAdapter(LLMService):
         
         print(f"Initialized Gemini service with model: {self.model_name}")
 
-    @property
-    def supports_vision(self) -> bool:
-        """Return whether this model supports vision"""
-        # Gemini 1.5/2.0 models support vision
-        return "gemini" in self.model_name and any(version in self.model_name for version in ["1.5", "2.0"])
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using Gemini with optional image data"""
