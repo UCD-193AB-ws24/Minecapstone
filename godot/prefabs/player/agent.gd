@@ -35,8 +35,6 @@ func _input(_event):
 			add_command(Command.CommandType.SCRIPT, """
 	await attack_target("Animal", 1)
 			""")
-			# select_nearest_target("Player")
-			# get_closest_point_target()
 		elif _event.keycode == KEY_C:
 			give_to("Player", "Grass", 1)
 		# elif _event.keycode == KEY_Z:

@@ -146,12 +146,31 @@ func run_script(input: String):
 
 	var err = script.reload()
 	if err != OK:
-		print("Script error in relaoding: ", err)
+		print("Script error in reloading: ", err)
+		_handle_script_error(err, source)
 		return false
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
 
 	var result = await instance.setup(agent).eval()
+	if result != OK:
+		return false
 
 	return result
+
+
+func _handle_script_error(err: int, source: String):
+	""" Handles the error from the script execution.
+		- err: the error code
+		- source: the source code of the script
+	"""
+	print_rich("Debug: [Agent %s] [color=red]%s while running script[/color]" % [agent.debug_id, error_string(err)])
+	
+	agent.add_command(Command.CommandType.GENERATE_SCRIPT, """
+	An error occured while running the script you just wrote, with error code: %s
+	Please try again.
+
+	The broken script:
+	%s
+	""" % [error_string(err), source])
