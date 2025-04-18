@@ -43,9 +43,9 @@ class WebSocketServer:
                     print(f"Error generating response: {e}")
                     response = f"Error: {str(e)}"
         except Exception as e:
-            print(f"Error handling client: {e}")
-            import traceback
-            traceback.print_exc()
+            print(f"Client closed the connection with an error: {e}")
+            # import traceback
+            # traceback.print_exc()
     
     async def start(self):
         """Start the WebSocket server"""
