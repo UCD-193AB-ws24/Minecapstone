@@ -67,7 +67,7 @@ func _physics_process(delta):
 					Command.CommandType.SCRIPT:
 						type_text = "SCRIPT"
 				
-				print_rich("[color=#%s][Agent %s][/color] Cmd[%d]: [color=green]%s[/color] | %s" % [debug_color, hash_id, i, type_text, status_text])
+				print_rich("[color=#%s][Agent %s][/color] Cmd[%d]: [color=green]%s[/color] | %s" % [debug_color, debug_id, i, type_text, status_text])
 
 
 """ ============================================ AGENT FUNCTIONS =================================================== """
@@ -77,15 +77,14 @@ func _physics_process(delta):
 func actor_setup():
 	# Wait for the first physics frame so the NavigationServer can sync.
 	# Do not await inside ready.
+
 	await get_tree().physics_frame
 	navigation_ready = true
+	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
-	# Wait for websocket connection
-	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
-		await API.connected
-
-		# Debug
-		set_goal(goal)
+	# # Wait for websocket connection
+	# if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+	# 	await API.connected
 
 
 func _process_command_queue() -> void:

@@ -68,28 +68,6 @@ func eat_food():
 func eval():
 	return true
 
-
-# ============================== Goal management================================
-
-
-func set_goal(goal_description: String):
-	agent.set_goal(goal_description)
-	return true
-
-
-# TODO: We should automatically determine whether a goal is completed or failed
-# not the agent, somehow.
 # func set_goal(goal_description: String):
-# 	agent.set_goal_status(Agent.GoalStatus.IN_PROGRESS, goal_description)
-# 	agent.record_action("Set new goal: " + goal_description)
-# 	return true
-	
-# func complete_goal():
-# 	agent.set_goal_status(Agent.GoalStatus.COMPLETED)
-# 	agent.record_action("Completed goal: " + agent.goal)
-# 	return true
-	
-# func fail_goal():
-# 	agent.set_goal_status(Agent.GoalStatus.FAILED)
-# 	agent.record_action("Failed goal: " + agent.goal)
+# 	agent.set_goal(goal_description)
 # 	return true
