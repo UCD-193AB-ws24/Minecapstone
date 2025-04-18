@@ -33,7 +33,7 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	await attack_target("Player", 1)
+	await attack_target("Animal", 1)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
@@ -236,3 +236,13 @@ func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 
 # TODO: investigate effectiveness of recording actions taken by agent
 # func record_action(action_description: String):
+func save():
+	var save_dict = super()
+	save_dict["goal"] = goal
+	save_dict["scenario_goal"] = scenario_goal
+	save_dict["max_memories"] = max_memories
+	save_dict["infinite_decisions"] = infinite_decisions
+	save_dict["prompt_allowance"] = prompt_allowance
+	save_dict["visual_mode"] = visual_mode
+	return save_dict
+	

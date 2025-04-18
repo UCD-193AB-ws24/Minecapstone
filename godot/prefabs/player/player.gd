@@ -513,3 +513,48 @@ func _on_player_death():
 	hunger = max_hunger
 	thirst = max_thirst
 	global_position = spawn_point.global_position
+
+
+func save():
+	var save_dict = {
+		"filename": get_scene_file_path(),
+		"name": name,
+		"parent": get_parent().get_path(),
+		"pos_x" : position.x,
+		"pos_y" : position.y,
+		"pos_z" : position.z,
+		"ai_control_enabled": ai_control_enabled,
+		"_speed": _speed,
+		"_sprint_speed": _sprint_speed,
+		"_jump_velocity": _jump_velocity,
+		"_acceleration": _acceleration,
+		"current_acceleration": current_acceleration,
+		"normal_fov": normal_fov,
+		"fov_transition_speed": fov_transition_speed,
+		"double_tap_time": double_tap_time,
+		"sprint_fov": sprint_fov,
+		"_is_sprinting": false, # Reset sprint state
+		"last_forward_press": 0.0, # Reset to prevent accidental sprint activation
+		"view": ViewMode.NORMAL, # Reset to normal view
+		"_is_breaking": false, # Not breaking blocks when loaded
+		"_released": true, # Mouse button is released
+		"health": health,
+		"hunger": hunger,
+		"thirst": thirst,
+		"max_health": max_health,
+		"max_hunger": max_hunger,
+		"max_thirst": max_thirst,
+		"hunger_decrease_rate": hunger_decrease_rate,
+		"thirst_decrease_rate": thirst_decrease_rate,
+		"sprint_hunger": sprint_hunger,
+		"sprint_thirst": sprint_thirst,
+		"health_decrease_rate": health_decrease_rate,
+		"natural_healing_rate": natural_healing_rate,
+		"hunger_timer": 0.0, # Reset timers
+		"thirst_timer": 0.0, # Reset timers
+		"_mouse_sensitivity": _mouse_sensitivity,
+		"velocity": Vector3.ZERO, # Stop any movement
+		"_block_breaking": null, # Not targeting any block
+		"_tool_breaking": null, # Not using any tool
+	}
+	return save_dict

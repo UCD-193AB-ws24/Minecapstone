@@ -5,10 +5,10 @@ extends Player
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 @onready var detection_area: Area3D = $DetectionSphere
-var just_jumped = false
-var current_target: Node = null
-var detected_entities: Array = []
-var detected_items: Array = [] # holds items detected by the detection sphere
+@onready var just_jumped = false
+@onready var current_target: Node = null
+@onready var detected_entities: Array = []
+@onready var detected_items: Array = [] # holds items detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
@@ -362,3 +362,14 @@ func _on_player_death():
 	inventory_manager.DropAllItems()
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
+
+
+func save():
+	var save_dict = super()
+	
+	save_dict["detection_range"] = detection_range
+	save_dict["attack_damage"] = attack_damage
+	save_dict["attack_cooldown"] = attack_cooldown
+	save_dict["chase_speed"] = chase_speed
+	
+	return save_dict

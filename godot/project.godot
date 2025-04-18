@@ -30,6 +30,10 @@ file_logging/enable_file_logging=true
 
 project/assembly_name="minecraft"
 
+[global_group]
+
+Persist=""
+
 [input]
 
 move_forward={
