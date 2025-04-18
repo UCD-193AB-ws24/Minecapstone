@@ -186,7 +186,9 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 	await navigation_agent.target_reached
 	# return true
 
-
+#TODO: If target is moving, npc will only move to the set target position. 
+#resulting in completion of navigation but not at the new target position.
+#Fix this so target position is updated for navigation
 func move_to_target(target_name: String, distance_away:float=1.0):
 	for entity in detected_entities:
 		if entity.name == target_name:
