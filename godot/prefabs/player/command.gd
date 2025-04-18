@@ -146,11 +146,12 @@ func run_script(input: String):
 
 	var err = script.reload()
 	if err != OK:
-		print("Script error: ", err)
+		print("Script error in relaoding: ", err)
 		return false
 
 	var instance = RefCounted.new()
 	instance.set_script(script)
+
 	var result = await instance.setup(agent).eval()
 
 	return result
