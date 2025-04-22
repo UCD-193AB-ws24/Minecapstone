@@ -26,7 +26,7 @@ func execute(_agent: Agent):
 		return command_status
 
 	command_status = CommandStatus.EXECUTING
-	
+
 	match command_type:
 		CommandType.GENERATE_GOAL:
 			"""Will call _LLM_set_goal when response is received"""
@@ -43,7 +43,7 @@ func execute(_agent: Agent):
 			var context = agent.build_prompt_context()
 			var goal = command_input
 			var full_prompt = "Goal: " + goal + "\n" + context
-			
+
 			# Generate script using LLM, passing context and image data if visual mode is enabled
 			if agent.visual_mode:
 				var image_data = await agent.get_camera_view()
@@ -68,13 +68,13 @@ func create_with(command_info: Dictionary) -> Command:
 	command_status = CommandStatus.WAITING
 	command_input = command_info["input"]
 	agent = command_info["agent"]
-	
+
 	match command_type:
 		CommandType.GENERATE_GOAL:
 			API.response.connect(_LLM_set_goal)
 		CommandType.GENERATE_SCRIPT:
 			API.response.connect(_LLM_execute_script)
-		
+
 	return self
 
 
@@ -119,7 +119,7 @@ func _execute_script() -> void:
 	"""
 	# Run script
 	await self.run_script(command_input)
-	
+
 	# Mark command as done and notify agent
 	command_status = CommandStatus.DONE
 	agent.script_execution_completed()
@@ -133,7 +133,7 @@ func run_script(input: String):
 	# TODO: replace RefCounted replacement with something that extends AgentController,
 	# so that the debugger works properly on AgentController
 	var source = agent.agent_controller.get_script().get_source_code().replace(
-		"class_name AgentController\nextends Node", 
+		"class_name AgentController\nextends Node",
 		"extends RefCounted").replace(
 		"func eval():\n\treturn true",
 		"func eval():\n%s\n\treturn true" % input)
@@ -144,9 +144,25 @@ func run_script(input: String):
 	var script = GDScript.new()
 	script.set_source_code(source)
 
+	var start_pattern = "performing"
+	var end_pattern = "An error has occurred. Attempting to fix self..."
+
+	# print(start_pattern)
 	var err = script.reload()
 	if err != OK:
-		print("Script error: ", err)
+		print_rich("[color=#FF786B]%s %s[/color]" % [end_pattern, err])
+		# Log the error to the system log
+		var file:FileAccess = FileAccess.open("user://logs/godot.log", FileAccess.READ)
+		var content = file.get_as_text()
+
+		var start = content.rfind(start_pattern) + len(start_pattern)
+		var end = content.rfind(end_pattern)
+		content = content.substr(start, end - start)
+		content = content.strip_edges()
+		printerr(content)
+
+		agent.add_command(CommandType.GENERATE_SCRIPT, content)
+
 		return false
 
 	var instance = RefCounted.new()
