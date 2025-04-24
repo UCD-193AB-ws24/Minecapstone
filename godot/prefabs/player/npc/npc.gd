@@ -13,6 +13,8 @@ extends Player
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
+@export var move_disabled: bool = false
+@export var attack_disable: bool = false
 
 
 func _ready():
@@ -206,8 +208,9 @@ func _moving_target_process():
 
 
 func _physics_process(delta):
-	if current_target != null and !navigation_agent.get_current_navigation_path().is_empty():
-		_moving_target_process() # sets destination
+	if !move_disabled:
+		if current_target != null and !navigation_agent.get_current_navigation_path().is_empty():
+			_moving_target_process() # sets destination
 	_handle_movement(delta) # actual moving
 	super(delta)
 
@@ -215,7 +218,7 @@ func _physics_process(delta):
 func _handle_movement(delta):
 	if not navigation_ready:
 		return
-	if navigation_agent.is_target_reached():
+	if move_disabled or navigation_agent.is_target_reached():
 		move_to(Vector2(0,0), false,_speed, delta) #for early stopping
 		return
 	var current_pos = global_position

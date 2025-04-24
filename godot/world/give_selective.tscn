@@ -1,0 +1,73 @@
+[gd_scene load_steps=12 format=3 uid="uid://bsb3bvrwug8b1"]
+
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_cnvaf"]
+[ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lhsek"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_075xy"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://worldgen/BlockManager.cs" id="4_1ch4c"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_mv1nr"]
+[ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_oe6px"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_bo8po"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_xhjvb"]
+[ext_resource type="Script" uid="uid://fvtewli8dhxs" path="res://world/attack_baseline.gd" id="9_drli1"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_tiy5n"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
+vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("1_cnvaf")]
+
+[node name="WorldGenerator" parent="." instance=ExtResource("2_lhsek")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+VIEW_DISTANCE = 1
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_w4vno")
+script = ExtResource("3_075xy")
+
+[node name="BlockManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("4_1ch4c")
+
+[node name="ChunkManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("5_mv1nr")
+ChunkScene = ExtResource("6_oe6px")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationMesher"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+use_collision = true
+collision_layer = 9
+size = Vector3(100, 1, 100)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.18661, 23.8613, -0.866516)
+
+[node name="Agent" parent="." instance=ExtResource("7_bo8po")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.25802, 20.9796, -7.44192)
+goal = "Satisfy the Scenario Goal"
+scenario_goal = "Kill the zombie"
+prompt_allowance = 10
+
+[node name="Player" parent="." instance=ExtResource("8_xhjvb")]
+transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 20.6034, -10.0067)
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("9_drli1")
+
+[node name="Timer" type="Timer" parent="ScenarioManager"]
+wait_time = 15.0
+autostart = true
+
+[node name="Zombie" parent="." instance=ExtResource("10_tiy5n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.3733, 20.9766, -10.1987)
+move_disabled = true
+attack_disable = true
+_speed = 2.0
+
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
+[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

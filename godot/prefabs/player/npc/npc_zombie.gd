@@ -18,8 +18,8 @@ func _init() -> void:
 
 func _ready():
 	super()
-	inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
-	inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
+	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
+	#inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
 
 func _physics_process(delta):
@@ -53,9 +53,12 @@ func _physics_process(delta):
 			_speed = 1.25
 			_set_wander_target_position(delta)
 		ZombieState.CHASING:
-			_set_chase_target_position()
+			if !attack_disable:
+				_set_chase_target_position()
 		ZombieState.ATTACKING:
-			_attack_current_target()
+			if !attack_disable:
+				print("npc_zombie.gd: Missing attack function. Implement attack function.")
+				#_attack_current_target()
 	
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)
