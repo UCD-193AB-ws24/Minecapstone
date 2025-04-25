@@ -38,6 +38,12 @@ func reset():
 	# Restore the environment to its original state
 	_restore_initial_state()
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
+	
+
+func _input(event):
+	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
+		_restore_initial_state()
+		print("State loaded.")
 
 
 func _capture_initial_state():
@@ -93,9 +99,3 @@ func _restore_initial_state():
 				continue
 			new_object.set(i, node_data[i])
 	pass
-
-
-func _input(event):
-	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
-		_restore_initial_state()
-		print("State loaded.")
