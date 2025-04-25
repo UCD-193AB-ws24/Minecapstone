@@ -55,7 +55,7 @@ func _physics_process(delta):
 		ZombieState.CHASING:
 			_set_chase_target_position()
 		ZombieState.ATTACKING:
-			_attack_current_target()
+			attack_target(current_target.name)
 	
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)

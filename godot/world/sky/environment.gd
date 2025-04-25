@@ -55,7 +55,6 @@ func _process(delta):
 	# Update sun rotation
 	sun.rotation.x += rotation_speed * delta * time_scale
 	sun.rotation.y = deg_to_rad(180.0)
-	# sun.rotation.z = 0
 	
 	# Update moon rotation (opposite X rotation)
 	moon.rotation.x = -sun.rotation.x

@@ -23,7 +23,7 @@ func _physics_process(delta: float) -> void:
 "
 
 [node name="ItemDrop" type="RigidBody3D"]
-collision_layer = 0
+collision_layer = 8
 collision_mask = 8
 lock_rotation = true
 script = ExtResource("1_an6nj")
@@ -44,7 +44,7 @@ shape = SubResource("BoxShape3D_6tdqx")
 script = ExtResource("2_6tdqx")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(0.734514, 0, 0.527975, 0, 0.904594, 0, -0.527975, 0, 0.734514, 0, 0.234631, 0)
+transform = Transform3D(0.730043, 0, -0.532736, 0, 0.904594, 0, 0.532736, 0, 0.730043, 0, 0.0510181, 0)
 pixel_size = 0.0005
 render_priority = 2
 texture = ExtResource("2_g4j5n")

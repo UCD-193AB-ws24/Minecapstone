@@ -1,0 +1,57 @@
+[gd_resource type="ShaderMaterial" load_steps=8 format=3 uid="uid://coaww57b48oh1"]
+
+[ext_resource type="Shader" uid="uid://da7r8qivntfwk" path="res://shaders/water.gdshader" id="1_243dc"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_h8lre"]
+seed = 525
+frequency = 0.025
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dqqhb"]
+noise = SubResource("FastNoiseLite_h8lre")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dqqhb"]
+frequency = 0.0027
+fractal_type = 2
+fractal_octaves = 7
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_b2suy"]
+seamless = true
+seamless_blend_skirt = 0.122
+as_normal_map = true
+bump_strength = 7.4
+noise = SubResource("FastNoiseLite_dqqhb")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_b2suy"]
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_h8lre"]
+seamless = true
+noise = SubResource("FastNoiseLite_b2suy")
+
+[resource]
+render_priority = 1
+shader = ExtResource("1_243dc")
+shader_parameter/depth_fade_distance = 4.5
+shader_parameter/absorbance = 0.635
+shader_parameter/shallow_color = Color(0.217, 0.537, 0.785, 1)
+shader_parameter/deep_color = Color(0, 0.25, 0.45, 1)
+shader_parameter/foam_amount = 0.35
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/foam_intensity = 2.0
+shader_parameter/foam_noise = SubResource("NoiseTexture2D_dqqhb")
+shader_parameter/roughness = 0.045
+shader_parameter/wave_texture = SubResource("NoiseTexture2D_h8lre")
+shader_parameter/wave_scale = 32.0
+shader_parameter/height_scale = 1.155
+shader_parameter/normal1 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir1 = Vector2(3, 3)
+shader_parameter/normal2 = SubResource("NoiseTexture2D_b2suy")
+shader_parameter/wave_dir2 = Vector2(-3, 1)
+shader_parameter/wave_speed = 0.004
+shader_parameter/wave_amplitude1 = 2.0
+shader_parameter/wave_amplitude2 = 0.5
+shader_parameter/shine_strength = 0.214
+shader_parameter/shine_shininess = 18.0
+shader_parameter/shadow = 1.0
+shader_parameter/shadow_width = 0.18
+shader_parameter/normal_map_w = 256

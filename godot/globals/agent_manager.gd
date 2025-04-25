@@ -1,6 +1,14 @@
 # Global Autoloaded Singleton Class: AgentManager
 extends Node
 
+class AgentEntry:
+	var agent_ref: Node3D
+	var agent_hash_id: int
+
+	func get_ref():
+		return agent_ref
+	func get_id():
+		return agent_hash_id
 
 var agent_dict = {}
 
@@ -12,7 +20,13 @@ func _ready() -> void:
 			continue
 		var node_meta_name = node.get_meta("Name")
 		if node_meta_name == "agent":
-			agent_dict[node.name] = node
+			var agent_entry = AgentEntry.new()
+			agent_entry.agent_ref = node as Agent
+			# print("agent entry is ", agent_entry.agent_ref)
+			if node.name != "Player":
+				agent_entry.agent_hash_id = node.hash_id
+			agent_dict[node.name] = agent_entry
+			# print(node.name, " is registered")
 
 
 #func spawn_agent(agent_name:String):

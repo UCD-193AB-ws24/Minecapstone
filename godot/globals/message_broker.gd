@@ -17,7 +17,8 @@ var waiting: bool = false
 func register_agent(agent: Agent) -> void:
 	if agent.process_mode == Node.PROCESS_MODE_INHERIT:
 		agents[agent.hash_id] = agent
-		print("Debug: [Agent %s] registered" % agent.debug_id)
+		# Assign a consistent color based on hash_id
+		print_rich("Debug: [color=#%s][Agent %s][/color] registered as %s" % [agent.debug_color, agent.debug_id, agent.name])
 
 
 func unregister_agent(agent: Agent) -> void:

@@ -3,40 +3,40 @@ render_mode blend_mix,depth_prepass_alpha,cull_back;
 
 uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, repeat_disable, filter_nearest;
 
-uniform float depth_fade_distance : hint_range(0.0, 10.0) = 1.0;
-uniform float absorbance : hint_range(0.0, 10.0) = 2.0;
+uniform float depth_fade_distance : hint_range(0.0, 10.0) = 4.5;
+uniform float absorbance : hint_range(0.0, 2.0) = 0.635;
 
-uniform vec3 shallow_color : source_color = vec3(0.22, 0.66, 1.0);
+uniform vec3 shallow_color : source_color = vec3(0.217, 0.537, 0.785);
 uniform vec3 deep_color : source_color = vec3(0.0, 0.25, 0.45);
 
-uniform float foam_amount : hint_range(0.0, 2.0) = 0.2;
+uniform float foam_amount : hint_range(0.0, 2.0) = 0.35;
 uniform vec3 foam_color : source_color = vec3(1);
+uniform float foam_intensity : hint_range(1.0, 3.0) = 2;
 uniform sampler2D foam_noise : hint_default_white;
 
-uniform float roughness : hint_range(0.0, 1.0) = 0.05;
+uniform float roughness : hint_range(0.0, 1.0) = 0.045;
 
 uniform sampler2D wave_texture;
-uniform float wave_scale = 4.0;
-uniform float height_scale = 0.15;
+uniform float wave_scale = 32.0;
+uniform float height_scale : hint_range(1.0, 5.0) = 1.155;
 varying float wave_height;
 varying vec3 uv_world_pos;
 
 uniform sampler2D normal1;
-uniform vec2 wave_dir1 = vec2(1.0, 0.0);
+uniform vec2 wave_dir1 = vec2(3.0, 3.0);
 uniform sampler2D normal2;
-uniform vec2 wave_dir2 = vec2(0.0, 1.0);
-uniform float wave_speed : hint_range(0.0, 0.2) = 0.015;
-
-uniform float shine_strength : hint_range(0.0, 1.0) = 0.17;
-uniform float shine_shininess : hint_range(0.0, 32.0) = 18.0;
-uniform float shadow : hint_range(0.0, 1.0) = 0.72;
-uniform float shadow_width : hint_range(0.001, 0.5) = 0.18;
-
+uniform vec2 wave_dir2 = vec2(-3.0, 1.0);
+uniform float wave_speed : hint_range(0.0, 0.2) = 0.004;
 uniform float wave_amplitude1 = 2.0;
 uniform float wave_amplitude2 = 0.5;
-uniform int normal_map_w = 256;
 
-uniform float foam_intensity : hint_range(1.0, 3.0) = 1.5;
+uniform float shine_strength : hint_range(0.0, 1.0) = 0.214;
+uniform float shine_shininess : hint_range(5, 32.0) = 18.0;
+uniform float shadow : hint_range(0.75, 1.25) = 1.0;
+uniform float shadow_width : hint_range(0.001, 0.5) = 0.18;
+
+uniform int normal_map_w : hint_range(1, 512) = 256;
+
 
 vec3 screen(vec3 base, vec3 blend){
 	return 1.0 - (1.0 - base) * (1.0 - blend);
