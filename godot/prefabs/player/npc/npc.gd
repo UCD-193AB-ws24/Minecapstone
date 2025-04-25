@@ -5,10 +5,11 @@ extends Player
 @onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
 @onready var navigation_ready = false
 @onready var detection_area: Area3D = $DetectionSphere
-var just_jumped = false
-var current_target: Node = null
-var detected_entities: Array = []
-@export var detection_range: float = 10.0 # detecttion radius for the DetectionSphere area3d
+@onready var just_jumped = false
+@onready var current_target: Node = null
+@onready var detected_entities: Array = []
+@onready var detected_items: Array = [] # holds items detected by the detection sphere
+@export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
@@ -17,12 +18,9 @@ var detected_entities: Array = []
 func _ready():
 	actor_setup.call_deferred()
 	ai_control_enabled = true
-	inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
+	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
-
-	detection_area.body_entered.connect(_on_body_entered)
-	detection_area.body_exited.connect(_on_body_exited)
 
 
 func actor_setup():
@@ -46,8 +44,12 @@ func set_look_position(look_pos: Vector3):
 	head.look_at(look_pos)
 
 
-func look_at_current_target():
-	look_at_target(current_target)
+func look_at_target_by_name(target_name: String):
+	for entity in detected_entities:
+		if entity.name == target_name:
+			look_at_target(entity)
+			return
+	print("Target '%s' not found for looking." % target_name)
 
 
 # rotate body and head to look at look_target
@@ -75,8 +77,8 @@ func look_at_target(look_target:Node3D):
 		print("Can't get closest point of look_target")
 		return
 	var point:Vector3 = point_array[1]
-	print("cur target position is", look_target.global_position)
-	print("looking at ", point)
+	# print("cur target position is", look_target.global_position)
+	# print("looking at ", point)
 	head.look_at(point)
 
 #gets the closest point of look_target's hurtbox. Target MUST have a BoxShape3D for their CollisionShape3D
@@ -146,10 +148,9 @@ func discard_item(item_name: String, amount: int):
 
 
 func give_to(agent_name: String, item_name:String, amount:int):
-	var agent_ref = AgentManager.get_agent(agent_name)
-	# set_moving_target(agent_ref)
-	# await target_reached
-	
+	var agent_ref = AgentManager.get_agent(agent_name).get_ref()
+	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.z, 3)
+
 	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
 	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
 	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
@@ -171,7 +172,9 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
 	if movement_target.y == 1000:
 		# Sample the navigation map to find the closest point to the target
 		var nav_map_rid = navigation_agent.get_navigation_map()
-		movement_target = NavigationServer3D.map_get_closest_point(nav_map_rid, movement_target)
+		var as_above = Vector3(movement_target.x, 1000, movement_target.z)
+		var so_below = Vector3(movement_target.x, -1000, movement_target.z)
+		movement_target = NavigationServer3D.map_get_closest_point_to_segment(nav_map_rid, as_above, so_below, true)
 	navigation_agent.set_target_position(movement_target)
 
 
@@ -184,10 +187,13 @@ func move_to_position(x: float, y: float, distance_away:float=1.0):
 	# return true
 
 
-func move_to_current_target(distance_away:float=1.0):
-	if current_target:
-		var target_pos = current_target.global_position
-		await move_to_position(target_pos.x, target_pos.z, distance_away)
+func move_to_target(target_name: String, distance_away:float=1.0):
+	for entity in detected_entities:
+		if entity.name == target_name:
+			var target_pos = entity.global_position
+			await move_to_position(target_pos.x, target_pos.z, distance_away)
+			return
+	print("Target '%s' not found in detected entities." % target_name)
 
 
 func _moving_target_process():
@@ -242,17 +248,28 @@ func _rotate_toward(movement_target: Vector3):
 	rotation.y = atan2(direction.x, direction.z) + PI
 
 
-func _attack_current_target(num_attacks : int = 1):
-	if current_target == null: return
+func attack_target(target_name: String, num_attacks: int = 1):
+	# Find target entity by name
+	var target_entity = null
+	for entity in detected_entities:
+		if entity.name == target_name:
+			target_entity = entity
+			break
+			
+	if target_entity == null:
+		# TODO: Add to memories that it failed
+		return
 
+	current_target = target_entity
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
-		await move_to_current_target()
-		await look_at_current_target()
+		if current_target == null: return
+		await move_to_target(target_name)
+		look_at_target_by_name(target_name)
 		var hit = await _attack()
 		if hit: successful_attacks += 1
 		
-		# Wait for the cooldown before the next attack
+		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
 
 	current_target = null
@@ -269,42 +286,69 @@ func _attack():
 	return hit
 
 
-func _on_body_entered(body: Node):
-	if is_instance_of(body, Player):
-		# Since all current entities extend from Player, will detect all types of mobs
-		detected_entities.push_back(body)
-		print("added entity: ", body.name)
+func _on_body_entered_detection_sphere(body: Node):
+	# Since all current entities extend from Player, will detect all types of mobs
+	if is_instance_of(body, NPC) and body != self:
+		if body.visible:
+			detected_entities.push_back(body)
+	elif body.has_meta("ItemName"):
+		detected_items.push_back(body)
+		#print("added item: ", body.name)
 
-
-func _on_body_exited(body: Node):
+func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
 		detected_entities.erase(body)
-		print("removed entity: ", body.name)
+		# print("removed entity: ", body.name)
+	elif body in detected_items:
+		detected_items.erase(body)
+		#print("removed item: ", body.name)
 
+func  _get_all_detected_entities():
+	""" This creates a formatted string of all the detected entities within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed 
+	Also has the fortunate side effect of making targeting specific entities easier
+	Due to the LLM being able to just see the specific entity.name 
+	and correctly calling select_nearest_target() with that information
+	"""
 
-# Sets target_entity to the nearest entity with the name that matches target_string
-# RETURNs True if there is a valid target. False if no target
-func select_nearest_target(target_name:String) -> bool:
-	if detected_entities.is_empty():
-		current_target = null
-		return false
+	var context = ""
 
-	# Find the nearest entity that matches the target name
-	var nearest_entity: Player = null
-	var nearest_distance: float = INF
-	for entity in detected_entities:
-		if entity != self and (target_name in entity.name or target_name == ""):
-			var distance = global_position.distance_to(entity.global_position)
-			if nearest_entity == null or distance < nearest_distance:
-				nearest_distance = distance
-				nearest_entity = entity
-
-	current_target = nearest_entity
-	print("current target: ", current_target)
-	if current_target != null:
-		return true
+	if detected_entities.size() > 0:
+		for entity in detected_entities:
+			context += """
+	=== %s ===
+		* Current HP: %s
+		* Distance To: %s units
+		* Possible item drops:
+		%s
+	""" % [
+		entity.name,
+		str(int(entity.health)),
+		str(int(global_position.distance_to(entity.global_position))),
+		# str(int(entity.global_position.x)), str(int(entity.global_position.z)),
+		inventory_manager.GetInventoryData()
+	]
 	else:
-		return false
+		context += "There are no entities nearby.\n"
+	
+	return context
+
+func _get_all_detected_items() -> String:
+	"""This creates a formatted string of all the detected entities within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed
+	"""
+	var context = ""
+	if detected_items.size() > 0:
+		context += "Nearby items you can pick up. Move to the item's coordinates to pick it up"
+		for item in detected_items:
+			context += "- " + item.get_meta("ItemName") + "\n"
+			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
+			context += "Coordinates: (" + str(item.global_position.x) + ", " + str(item.global_position.z) + ")\n"
+			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
+	else:
+		context += "There are no items nearby to pick up.\n"
+
+	return context
 
 
 func _set_chase_target_position():
@@ -318,3 +362,14 @@ func _on_player_death():
 	inventory_manager.DropAllItems()
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
+
+
+func save():
+	var save_dict = super()
+	
+	save_dict["detection_range"] = detection_range
+	save_dict["attack_damage"] = attack_damage
+	save_dict["attack_cooldown"] = attack_cooldown
+	save_dict["chase_speed"] = chase_speed
+	
+	return save_dict

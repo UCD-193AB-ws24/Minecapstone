@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="1_7pkjh"]
 [ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/player/npc/npc_animal.gd" id="1_v1rpo"]
 
-[node name="NPC" instance=ExtResource("1_7pkjh")]
+[node name="Animal" instance=ExtResource("1_7pkjh")]
 script = ExtResource("1_v1rpo")
 
 [node name="Body" parent="." index="2"]

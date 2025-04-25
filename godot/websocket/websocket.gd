@@ -38,7 +38,6 @@ func _ready():
 func generate_script(prompt: String, key: int, image_data: String = ""):
 	_prompt_LLM(prompt, key, "SCRIPT", image_data)
 
-
 func generate_goal(prompt: String, key: int, image_data: String = ""):
 	_prompt_LLM(prompt, key, "GOAL", image_data)
 
@@ -68,7 +67,8 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 	while response_string == "":
 		await response_received
 		response_string = socket.get_packet().get_string_from_utf8()
-		response.emit(key, response_string)
+		if response_string != "":
+			response.emit(key, response_string)
 		# TODO: add timeout?
 
 

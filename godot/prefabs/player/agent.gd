@@ -5,14 +5,17 @@ class_name Agent extends NPC
 @export var scenario_goal : String = "Move to (30,0)."
 @export var max_memories: int = 20
 @export var infinite_decisions: bool = false
+@export var prompt_allowance: int = -1 #negative numbers mean infinite allowance
 @export var visual_mode:bool = false
 @onready var hash_id : int = hash(self)
-@onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var agent_controller = $AgentController
 @onready var memories: Memory = Memory.new(max_memories)
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
+
+@onready var debug_id : String = str(hash_id).substr(0, 3)
+@onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
 
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
@@ -30,13 +33,14 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	select_nearest_entity_type("Player")
-	attack_current_target(10)
+	await attacktarget("Animal", 1)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
 		elif _event.keycode == KEY_C:
 			give_to("Player", "Grass", 1)
+		# elif _event.keycode == KEY_Z:
+		# 	add_command(Command.CommandType.Script, """""")
 
 
 func _physics_process(delta):
@@ -63,7 +67,7 @@ func _physics_process(delta):
 					Command.CommandType.SCRIPT:
 						type_text = "SCRIPT"
 				
-				print_rich("[Agent %s] Cmd[%d]: [color=green]%s[/color] | %s" % [hash_id, i, type_text, status_text])
+				print_rich("[color=#%s][Agent %s][/color] Cmd[%d]: [color=green]%s[/color] | %s" % [debug_color, debug_id, i, type_text, status_text])
 
 
 """ ============================================ AGENT FUNCTIONS =================================================== """
@@ -73,16 +77,15 @@ func _physics_process(delta):
 func actor_setup():
 	# Wait for the first physics frame so the NavigationServer can sync.
 	# Do not await inside ready.
+
 	await get_tree().physics_frame
 	navigation_ready = true
 
-	# Wait for websocket connection
-	if not API.socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+	# # Wait for websocket connection
+	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
-
-		# Debug
-		set_goal(goal)
-
+	
+	set_goal(goal)
 
 func _process_command_queue() -> void:
 	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
@@ -97,7 +100,10 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
-			if _command_queue.is_empty() and infinite_decisions:
+			if _command_queue.is_empty() and (infinite_decisions or prompt_allowance > 0):
+				#Agent consumes a prompt allowance
+				if prompt_allowance > 0:
+					prompt_allowance -= 1
 				_generate_new_goal()
 		
 		_is_processing_commands = false
@@ -106,13 +112,13 @@ func _process_command_queue() -> void:
 # Queues up the generation of a new goal from the LLM
 func _generate_new_goal() -> void:
 	if _command_queue.size() > 0:
-		print("Debug: [Agent %s] NOT generating new goal, commands in queue")
+		print_rich("Debug: [color=#%s][Agent %s][/color] NOT generating new goal, commands in queue" % [debug_color, debug_id])
 		return
 	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 
 func set_goal(new_goal: String) -> void:
-	print_rich("Debug: [Agent %s] [color=lime]%s[/color] (Goal Updated)" % [debug_id, new_goal])
+	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
 
@@ -131,23 +137,44 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
-		print("Debug: [Agent %s] Received message from [Agent %s]: %s" % [debug_id, from_id, msg])
+		# Convert from_id to a color
+		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, debug_id, from_color, from_id, msg])
 
 		# Included this message in the agent's memory
 		memories.add_message(msg, from_id, to_id)
 
 
 func script_execution_completed():
-	print_rich("Debug: [Agent %s] [color=lime]Script execution completed[/color]" % debug_id)
+	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]Script execution completed[/color]" % [debug_color, debug_id])
 
 
 func build_prompt_context() -> String:
-	var context = "Current situation\n"
-	# context += "- Position: " + str(global_position) + "\n"
-	
-	context += scenario_goal + "\n"
-	context += memories.format_recent_for_prompt(5)
-	
+	"""Provides context about the game state for the LLM
+	"""
+
+	var context = """
+# Game Context
+	Your prime directive is to complete the goal: %s
+	The current goal you have set for yourself is to: %s
+	Items in your inventory: %s
+	Your name is %s
+	Self Position: (%s, %s)
+	All detected entities: %s
+	%s""" % [
+	scenario_goal,
+	goal,
+	inventory_manager.GetInventoryData(),
+	self.name,
+	snapped(global_position.x, 0.1), 
+	snapped(global_position.y, 0.1),
+	_get_all_detected_entities(),
+	_get_all_detected_items()
+]
+
+	get_node("context").text = context.replace("\t", "    ")
+	# print(context)
+
 	return context
 
 
@@ -156,14 +183,10 @@ func get_camera_view() -> String:
 	Captures an image from the agent's camera and returns it as base64 encoded string.
 	Returns empty string if camera is not available.
 	"""
-	if not camera:
-		print_rich("[Agent %s] [color=red]Camera3D not found for visual mode[/color]" % debug_id)
-		return ""
-	
 	# Create a viewport to render the camera view
 	var viewport = SubViewport.new()
 	add_child(viewport)
-	viewport.size = Vector2i(1024, 512)
+	viewport.size = Vector2i(768, 512)
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
 	# Set up the viewport camera to match the agent's camera
@@ -182,12 +205,13 @@ func get_camera_view() -> String:
 	var image: Image = viewport_texture.get_image()
 	
 	# Save the image to a file
-	# var filename = "agent_view.png"
-	# var err = image.save_png(filename)
-	# if err != OK:
-	# 	print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
-	# else:
-	# 	print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
+	if false:
+		var filename = "agent_view.png"
+		var err = image.save_png(filename)
+		if err != OK:
+			print_rich("[Agent %s] [color=red]Failed to save camera view to file: %s[/color]" % [debug_id, error_string(err)])
+		else:
+			print_rich("[Agent %s] [color=lime]Saved camera view to: %s[/color]" % [debug_id, filename])
 
 	# Clean up
 	viewport.queue_free()
@@ -208,5 +232,17 @@ func encode_image_to_base64(image: Image) -> String:
 func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
 	return memories.get_by_type(memory_type)
 
+
+
 # TODO: investigate effectiveness of recording actions taken by agent
 # func record_action(action_description: String):
+func save():
+	var save_dict = super()
+	save_dict["goal"] = goal
+	save_dict["scenario_goal"] = scenario_goal
+	save_dict["max_memories"] = max_memories
+	save_dict["infinite_decisions"] = infinite_decisions
+	save_dict["prompt_allowance"] = prompt_allowance
+	save_dict["visual_mode"] = visual_mode
+	return save_dict
+	

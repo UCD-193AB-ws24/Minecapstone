@@ -11,7 +11,6 @@ config_version=5
 [application]
 
 config/name="minecraft"
-run/main_scene="uid://cgb063gab15jv"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -22,9 +21,17 @@ AgentManager="*res://globals/agent_manager.gd"
 API="*res://websocket/websocket.gd"
 MessageBroker="*res://globals/message_broker.gd"
 
+[debug]
+
+file_logging/enable_file_logging=true
+
 [dotnet]
 
 project/assembly_name="minecraft"
+
+[global_group]
+
+Persist=""
 
 [input]
 

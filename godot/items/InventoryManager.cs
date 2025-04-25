@@ -223,4 +223,28 @@ public partial class InventoryManager : Node
 			_nameToSlots.Remove(itemName);
 		}
 	}
+	public void PrintInventory() 
+	{
+		GD.Print("Printing inventory");
+		for (int i = 0; i < InventorySlots; i++) 
+		{
+			GD.Print(i.ToString() + " " + _slotsToItems[i].PrintInventoryItem() + " " + _slotsToItems[i].PrintAmount());
+		}
+	}
+	
+	public string GetInventoryData() 
+	{
+		//This function is for providing the inventory content to the LLM's prompt context
+		//also used for listing out mob drops in _get_all_detected_entities()
+		string inventory_str = "";
+		for (int i = 0; i < InventorySlots; i++)
+		{
+			if (_inventorySlots[i])
+			{
+				inventory_str += $"{_slotsToItems[i].PrintInventoryItem()} ({_slotsToItems[i].PrintAmount()}x)";
+			}
+		}
+		
+		return inventory_str;
+	}
 }
