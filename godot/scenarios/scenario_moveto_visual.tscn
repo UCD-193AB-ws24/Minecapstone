@@ -1,10 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cgb063gab15jv"]
+[gd_scene load_steps=9 format=3 uid="uid://dt0x3vtwyabsa"]
 
-[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_3yfi2"]
-[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_xr4fu"]
-[ext_resource type="Script" uid="uid://ssoph6jwg2ay" path="res://scenarios/scenario_manager.gd" id="5_n6ajl"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_7l8mw"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="8_nmvkj"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_i3n5n"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_ft6w7"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="3_4byxv"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_6jtc5"]
+[ext_resource type="Script" path="res://scenarios/scenario_manager.gd" id="5_iqun2"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
 vertices = PackedVector3Array(-43.6, 1.5, -49.68, -49.68, 1.5, -49.68, -49.68, 1.5, -43.6, -49.68, 1.5, 43.44, -49.68, 1.5, 49.68, -43.6, 1.5, 49.68, 49.68, 1.5, -43.6, 49.68, 1.5, -49.68, 43.44, 1.5, -49.68, 43.44, 1.5, 49.68, 49.68, 1.5, 49.68, 49.68, 1.5, 43.44, -37.36, 1.5, -49.68, -49.68, 1.5, -37.36, -37.36, 1.5, 49.68, -49.68, 1.5, 37.2, 49.68, 1.5, -37.36, 37.2, 1.5, -49.68, 37.2, 1.5, 49.68, -0.0800018, 1.5, -49.68, -6.32, 1.5, -49.68, -49.68, 1.5, -6.32, -49.68, 1.5, -0.0800018, 18.48, 1.5, 49.68, 49.68, 1.5, 24.72, 49.68, 1.5, 18.48, 12.24, 1.5, 49.68, 49.68, 1.5, -6.32, 49.68, 1.5, -12.56, 12.24, 1.5, -49.68, 6, 1.5, -49.68, 49.68, 1.5, 37.2, 30.96, 1.5, 49.68, -31.12, 1.5, -49.68, -49.68, 1.5, -31.12, -31.12, 1.5, 49.68, -49.68, 1.5, 30.96, 49.68, 1.5, -31.12, 30.96, 1.5, -49.68, -12.56, 1.5, -49.68, -18.8, 1.5, -49.68, -49.68, 1.5, -18.8, -49.68, 1.5, -12.56, -49.68, 1.5, 18.48, -18.8, 1.5, 49.68, -12.56, 1.5, 49.68, -49.68, 1.5, 12.24, -49.68, 1.5, 6, -6.32, 1.5, 49.68, 49.68, 1.5, -18.8, 18.48, 1.5, -49.68, 49.68, 1.5, 30.96, 24.72, 1.5, 49.68, -24.88, 1.5, -49.68, -49.68, 1.5, -24.88, -24.88, 1.5, 49.68, -49.68, 1.5, 24.72, 49.68, 1.5, -24.88, 24.72, 1.5, -49.68, -0.0800018, 1.5, 49.68, 49.68, 1.5, 6, 49.68, 1.5, -0.0800018, 6, 1.5, 49.68, 49.68, 1.5, 12.24)
@@ -26,11 +26,11 @@ albedo_color = Color(0, 0, 1, 1)
 
 [node name="World" type="Node3D"]
 
-[node name="UI" parent="." instance=ExtResource("1_3yfi2")]
+[node name="UI" parent="." instance=ExtResource("1_i3n5n")]
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_u0vnw")
-script = ExtResource("3_xr4fu")
+script = ExtResource("2_ft6w7")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationMesher"]
 use_collision = true
@@ -42,12 +42,12 @@ transform = Transform3D(0.998798, 5.58122e-08, -0.049024, 0.0243124, 0.868363, 0
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
 
-[node name="Player" parent="." instance=ExtResource("7_7l8mw")]
+[node name="Player" parent="." instance=ExtResource("3_4byxv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
 
-[node name="Agent" parent="." instance=ExtResource("8_nmvkj")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -6.35696, 1, 0)
-goal = "Follow the scenario goal."
+[node name="Agent" parent="." instance=ExtResource("4_6jtc5")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -7.2875, 1, 0)
+goal = "Walk to the blue platform."
 scenario_goal = "Walk to the blue platform."
 visual_mode = true
 
@@ -80,7 +80,6 @@ font_size = 200
 outline_size = 48
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("5_n6ajl")
-metadata/_custom_type_script = "uid://ssoph6jwg2ay"
+script = ExtResource("5_iqun2")
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
