@@ -7,6 +7,7 @@ class_name Agent extends NPC
 @export var infinite_decisions: bool = false
 @export var prompt_allowance: int = -1 #negative numbers mean infinite allowance
 @export var visual_mode:bool = false
+@export var self_fix_mode:bool = false
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
 @onready var memories: Memory = Memory.new(max_memories)

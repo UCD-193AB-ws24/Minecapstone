@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_bx4sw"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_n7ury"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="8_w4j5f"]
-[ext_resource type="Script" path="res://world/meat_collect.gd" id="9_b7mka"]
+[ext_resource type="Script" uid="uid://b3ynfeti08ay0" path="res://world/meat_collect.gd" id="9_b7mka"]
 [ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="10_mdcgn"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]

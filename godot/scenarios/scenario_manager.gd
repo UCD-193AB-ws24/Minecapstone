@@ -1,30 +1,50 @@
 class_name ScenarioManager
 extends Node
 
+
 var success_count: int = 0
 var failure_count: int = 0
-var save_json : String = ""
+var error_count: int = 0
+var save_data : String = ""
+var current_iteration: int = 0
+var MAX_ITERATIONS: int = 100
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_capture_initial_state()
 
-# # Called every frame. 'delta' is the elapsed time since the previous frame.
-# func _process(delta: float) -> void:
-# 	pass
 
 func track_success():
 	success_count += 1
+	current_iteration += 1
 	print("Success count:", success_count)
+
 
 func track_failure():
 	failure_count += 1
+	current_iteration += 1
 	print("Failure count:", failure_count)
+	
 
-func reset_environment():
+func track_error():
+	error_count += 1
+	current_iteration += 1
+	print("Error count:", error_count)
+	reset()
+
+
+func reset():
 	# Restore the environment to its original state
 	_restore_initial_state()
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
+	
+
+func _input(event):
+	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
+		_restore_initial_state()
+		print("State loaded.")
+
 
 func _capture_initial_state():
 	var save_nodes = get_tree().get_nodes_in_group("Persist")
@@ -45,7 +65,7 @@ func _capture_initial_state():
 		# JSON provides a static method to serialized JSON string.
 		var json_string = JSON.stringify(node_data)
 
-		save_json += json_string + "\n"
+		save_data += json_string + "\n"
 
 
 func _restore_initial_state():
@@ -56,7 +76,7 @@ func _restore_initial_state():
 	# Wait for full removal to prevent name collisions
 	for i in range(8):	await get_tree().physics_frame
 
-	for json_string in save_json.split("\n"):
+	for json_string in save_data.split("\n"):
 		if json_string.strip_edges() == "":
 			continue
 
@@ -79,9 +99,3 @@ func _restore_initial_state():
 				continue
 			new_object.set(i, node_data[i])
 	pass
-
-
-func _input(event):
-	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
-		_restore_initial_state()
-		print("State loaded.")
