@@ -153,24 +153,17 @@ func build_prompt_context() -> String:
 	"""Provides context about the game state for the LLM
 	"""
 
-	var context = """
-# Game Context
-	Your prime directive is to complete the goal: %s
-	The current goal you have set for yourself is to: %s
-	Items in your inventory: %s
-	Your name is %s
-	Self Position: (%s, %s)
-	All detected entities: %s
-	%s""" % [
-	scenario_goal,
-	goal,
-	inventory_manager.GetInventoryData(),
-	self.name,
-	snapped(global_position.x, 0.1), 
-	snapped(global_position.y, 0.1),
-	_get_all_detected_entities(),
-	_get_all_detected_items()
-]
+	var context = "# Game Context\n"
+
+	if scenario_goal != "":
+		context += "	Your prime directive is to complete the goal: " + scenario_goal + "\n"
+	
+	context += "	The current goal you have set for yourself is to: " + goal + "\n"
+	context += "	Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
+	context += "	Your name is " + self.name + "\n"
+	context += "	Self Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
+	context += "	All detected items: " + _get_all_detected_items()
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)
