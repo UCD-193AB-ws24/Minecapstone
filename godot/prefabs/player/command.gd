@@ -161,7 +161,11 @@ func run_script(input: String):
 		content = content.strip_edges()
 		printerr(content)
 
-		agent.add_command(CommandType.GENERATE_SCRIPT, content)
+		if agent.self_fix_mode:
+			agent.add_command(CommandType.GENERATE_SCRIPT, content)
+
+		var sm:ScenarioManager = agent.get_parent().find_child("ScenarioManager")
+		if sm: sm.track_error()
 
 		return false
 
