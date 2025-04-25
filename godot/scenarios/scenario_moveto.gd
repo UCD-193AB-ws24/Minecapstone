@@ -18,7 +18,7 @@ func reload():
 
 
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
-	if platform_name == "BluePlatform":
+	if platform_name == "RedPlatform":
 		track_success()
 	else:
 		track_failure()
