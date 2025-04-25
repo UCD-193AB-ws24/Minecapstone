@@ -81,6 +81,5 @@ outline_size = 48
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_iqun2")
-metadata/_custom_type_script = "uid://ssoph6jwg2ay"
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
