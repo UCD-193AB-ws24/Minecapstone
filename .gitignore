@@ -5,3 +5,5 @@
 .env
 .env.development.local
 godot/.vscode/*
+__pycache__/
+*.pyc
