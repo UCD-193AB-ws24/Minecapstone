@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bsb3bvrwug8b1"]
+[gd_scene load_steps=13 format=3 uid="uid://bsb3bvrwug8b1"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_cnvaf"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lhsek"]
@@ -8,8 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_oe6px"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_bo8po"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_xhjvb"]
-[ext_resource type="Script" uid="uid://fvtewli8dhxs" path="res://world/attack_baseline.gd" id="9_drli1"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_tiy5n"]
+[ext_resource type="Script" uid="uid://ssoph6jwg2ay" path="res://scenarios/scenario_manager.gd" id="9_cnvaf"]
+[ext_resource type="Script" uid="uid://c6ivpqyw6p4ca" path="res://scenarios/box_monitor.gd" id="9_lhsek"]
+[ext_resource type="PackedScene" uid="uid://xxyt1nk5pm8h" path="res://prefabs/scenario_box.tscn" id="10_cnvaf"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
 vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)
@@ -55,19 +56,15 @@ prompt_allowance = 10
 [node name="Player" parent="." instance=ExtResource("8_xhjvb")]
 transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 20.6034, -10.0067)
 
+[node name="BoxMonitor" type="Node" parent="." node_paths=PackedStringArray("scenario_box")]
+script = ExtResource("9_lhsek")
+scenario_box = NodePath("../ScenarioBox")
+
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("9_drli1")
+script = ExtResource("9_cnvaf")
 
-[node name="Timer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
-
-[node name="Zombie" parent="." instance=ExtResource("10_tiy5n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.3733, 20.9766, -10.1987)
-move_disabled = true
-attack_disable = true
-_speed = 2.0
+[node name="ScenarioBox" parent="." instance=ExtResource("10_cnvaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 21.0417, -4)
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
-[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

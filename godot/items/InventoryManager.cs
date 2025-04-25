@@ -247,4 +247,24 @@ public partial class InventoryManager : Node
 		
 		return inventory_str;
 	}
+
+	public int GetItemCount(String itemName) 
+	{
+		//GetItemCount checks if itemName is in inventory and returns the total amount of itemName in inventory
+		if (_nameToSlots.ContainsKey(itemName))
+		{
+			List<int> slotNums = _nameToSlots[itemName];
+			int totalAmount = 0;
+			//sum up all amounts of itemName in inventory
+			foreach (int slotNum in slotNums)
+			{
+				totalAmount += _slotsToItems[slotNum].count;
+				
+			}
+			return totalAmount;
+		} else {
+			return 0;
+		}
+
+	}
 }
