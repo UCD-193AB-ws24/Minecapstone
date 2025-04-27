@@ -1,21 +1,27 @@
-[gd_scene load_steps=4 format=3 uid="uid://xxyt1nk5pm8h"]
+[gd_scene load_steps=6 format=3 uid="uid://cfvms5p7mvw2d"]
 
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://items/InventoryManager.cs" id="1_d672t"]
+[ext_resource type="Script" uid="uid://c6ivpqyw6p4ca" path="res://scenarios/box_monitor.gd" id="1_f1bx6"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_atm6x"]
-albedo_color = Color(0, 0.904501, 0.474301, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_d672t"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_atm6x"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f1bx6"]
+albedo_color = Color(0.133792, 0.889366, 0, 1)
 
-[node name="ScenarioBox" type="Node3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_wxamg"]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
-material_override = SubResource("StandardMaterial3D_atm6x")
+[node name="ScenarioBox" type="StaticBody3D"]
+script = ExtResource("1_f1bx6")
+metadata/Name = "storage"
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+mesh = SubResource("BoxMesh_d672t")
+material = SubResource("StandardMaterial3D_f1bx6")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-shape = SubResource("BoxShape3D_atm6x")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_wxamg")
 
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("1_d672t")
+
+[connection signal="ItemAdded" from="InventoryManager" to="." method="check_box"]

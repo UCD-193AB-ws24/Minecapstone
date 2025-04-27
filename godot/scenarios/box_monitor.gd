@@ -1,12 +1,11 @@
 extends Node
 
-@export var scenario_box:Node
 var scenario_manager
 
 var inventory_manager
 
 func _ready() -> void:
-	inventory_manager = scenario_box.get_node("InventoryManager")
+	inventory_manager = get_node("InventoryManager")
 	scenario_manager = get_parent().get_node("ScenarioManager") # ScenarioManager should be a sibling of the scriptholder
 
 func check_box():

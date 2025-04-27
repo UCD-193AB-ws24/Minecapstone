@@ -18,6 +18,9 @@ public partial class InventoryManager : Node
 	public int InventorySlots { get; set; } = 9;
 	public int SelectedSlot => _selectedSlot;
 
+	[Signal]
+	public delegate void ItemAddedEventHandler();
+
 	public InventoryManager() {
 		_inventorySlots = new bool[InventorySlots];
 	}
@@ -119,8 +122,17 @@ public partial class InventoryManager : Node
 	}
 
 	public bool AddItem(Item item, int amount) {
-		if (TryAddToExistingStack(item, amount)) return true;
-		return TryAddToNewSlot(item, amount);
+		if (TryAddToExistingStack(item, amount)) 
+		{
+			EmitSignal(SignalName.ItemAdded);
+			return true;
+		}
+		if (TryAddToNewSlot(item, amount))
+		{
+			EmitSignal(SignalName.ItemAdded);
+			return true;
+		}
+		return false;
 	}
 	
 	// Returns list of slot numbers that have items named itemName

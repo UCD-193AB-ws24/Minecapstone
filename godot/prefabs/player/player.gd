@@ -63,6 +63,7 @@ func _ready():
 	global_position = spawn_point.global_position
 	inventory_manager.AddItem(ItemDictionary.Get("Stone"), 64)
 	inventory_manager.AddItem(ItemDictionary.Get("Wood Pickaxe"), 1)
+	inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
 
 # Called on input event
