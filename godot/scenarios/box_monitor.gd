@@ -13,3 +13,4 @@ func check_box():
 	print("Dirt amount: ", amount)
 	if amount > 0:
 		scenario_manager.track_success()
+		scenario_manager.reset()
