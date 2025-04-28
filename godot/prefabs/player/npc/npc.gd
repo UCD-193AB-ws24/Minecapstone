@@ -9,6 +9,7 @@ extends Player
 @onready var current_target: Node = null
 @onready var detected_entities: Array = []
 @onready var detected_items: Array = [] # holds items detected by the detection sphere
+@onready var detected_interactables: Array = [] # holds interactables detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
@@ -297,6 +298,9 @@ func _on_body_entered_detection_sphere(body: Node):
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
+	elif body.has_meta("Category"):
+		detected_interactables.push_back(body)
+		print("added interactable: ", body.name)
 
 func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
@@ -305,6 +309,8 @@ func _on_body_exited_detection_sphere(body: Node):
 	elif body in detected_items:
 		detected_items.erase(body)
 		#print("removed item: ", body.name)
+	elif body in detected_interactables:
+		detected_interactables.erase(body)
 
 func  _get_all_detected_entities():
 	""" This creates a formatted string of all the detected entities within the detection sphere
@@ -337,7 +343,7 @@ func  _get_all_detected_entities():
 	return context
 
 func _get_all_detected_items() -> String:
-	"""This creates a formatted string of all the detected entities within the detection sphere
+	"""This creates a formatted string of all the detected items within the detection sphere
 	Formatted to make it easier for the LLM to process and understand the information being parsed
 	"""
 	var context = ""
@@ -352,7 +358,17 @@ func _get_all_detected_items() -> String:
 		context += "There are no items nearby to pick up.\n"
 
 	return context
+func _get_all_detected_interactables() -> String:
+	"""This creates a formatted string of all the detected interactables within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed
+	"""
 
+	var context = ""
+	if detected_interactables.size() > 0:
+		context += "Nearby interactables. Move to within 1 meter of the interactable to interact with it.\n"
+		for interactable in detected_interactables:
+			context += "=== %s ===" % interactable.name
+	return context
 
 func _set_chase_target_position():
 	navigation_agent.target_position = current_target.global_position

@@ -13,6 +13,8 @@ albedo_color = Color(0.133792, 0.889366, 0, 1)
 [node name="ScenarioBox" type="StaticBody3D"]
 script = ExtResource("1_f1bx6")
 metadata/Name = "storage"
+metadata/Category = "storage"
+metadata/Function = "Drop a certain Item into this interactable to satisfy the scenario goal."
 
 [node name="CSGMesh3D" type="CSGMesh3D" parent="."]
 mesh = SubResource("BoxMesh_d672t")
