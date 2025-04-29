@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_phkkd"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_t8jqv"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="8_jq16g"]
-[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://world/meat_baseline.gd" id="9_3opkw"]
+[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://scenarios/scenario_meat_baseline.gd" id="9_3opkw"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
 vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)

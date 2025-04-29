@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_bx4sw"]
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_n7ury"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_w4j5f"]
-[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://world/meat_baseline.gd" id="9_b7mka"]
+[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://scenarios/scenario_meat_baseline.gd" id="9_b7mka"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="10_ibdnm"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
