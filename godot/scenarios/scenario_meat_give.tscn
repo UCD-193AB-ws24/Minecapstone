@@ -38,29 +38,29 @@ use_collision = true
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.9539, 23.8613, -11.3878)
-
-[node name="Player" parent="." instance=ExtResource("7_w4j5f")]
-transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 23.1578, -10.0067)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 
 [node name="Agent" parent="." instance=ExtResource("10_ibdnm")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -33.209, 20.9796, -7.44192)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 3.722)
 goal = "Give Agent2 your meat"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 self_fix_mode = false
 
+[node name="Agent2" parent="." instance=ExtResource("10_ibdnm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, -5)
+goal = "Tell agent named Agent you want meat"
+scenario_goal = "Have Agent2 hold the most quantity of meat"
+self_fix_mode = false
+
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 20.25, -15)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 0)
 radius = 2.0
 height = 1.0
 sides = 32
 material = SubResource("StandardMaterial3D_r23cj")
 
-[node name="Agent2" parent="." instance=ExtResource("10_ibdnm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.1645, 21.9819, -15.0006)
-goal = "Tell agent named Agent you want meat"
-scenario_goal = "Have Agent2 hold the most quantity of meat"
-self_fix_mode = false
+[node name="Player" parent="." instance=ExtResource("7_w4j5f")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("9_b7mka")
