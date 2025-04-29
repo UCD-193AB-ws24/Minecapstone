@@ -271,9 +271,7 @@ func attack_target(target_name: String, num_attacks: int = 1):
 	while successful_attacks < num_attacks:
 		if current_target == null: 
 			return
-		print("trying to move")
 		await move_to_target(target_name)
-		print("but why did i never get here")
 		look_at_target_by_name(target_name)
 		var hit = await _attack()
 		if hit: successful_attacks += 1
