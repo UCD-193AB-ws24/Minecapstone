@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bsb3bvrwug8b1"]
+[gd_scene load_steps=13 format=3 uid="uid://bsb3bvrwug8b1"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_cnvaf"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lhsek"]
@@ -8,12 +8,31 @@
 [ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_oe6px"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_bo8po"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_xhjvb"]
-[ext_resource type="PackedScene" uid="uid://cfvms5p7mvw2d" path="res://prefabs/scenario_box.tscn" id="10_cnvaf"]
+[ext_resource type="PackedScene" uid="uid://cfvms5p7mvw2d" path="res://scenarios/prefabs/scenario_box.tscn" id="10_cnvaf"]
 [ext_resource type="Script" uid="uid://b5lfas6n2bq64" path="res://scenarios/scenario_give_selective.gd" id="10_lhsek"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_w4vno"]
 vertices = PackedVector3Array(-49.5, 21, -49.5, -49.5, 21, 49.5, 49.5, 21, 49.5, 49.5, 21, -49.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="GDScript" id="GDScript_2tmgb"]
+script/source = "extends Node
+
+var scenario_manager
+
+var inventory_manager
+
+func _ready() -> void:
+	inventory_manager = get_node(\"InventoryManager\")
+	scenario_manager = get_parent().get_node(\"ScenarioManager\") # ScenarioManager should be a sibling of the scriptholder
+
+func check_box():
+	var amount = inventory_manager.GetItemCount(\"Dirt\")
+	print(\"Dirt amount: \", amount)
+	if amount > 0:
+		scenario_manager.track_success()
+		scenario_manager.reset()
+"
 
 [node name="World" type="Node3D"]
 
@@ -61,6 +80,7 @@ script = ExtResource("10_lhsek")
 
 [node name="ScenarioBox" parent="." instance=ExtResource("10_cnvaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 21.0417, -4)
+script = SubResource("GDScript_2tmgb")
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
