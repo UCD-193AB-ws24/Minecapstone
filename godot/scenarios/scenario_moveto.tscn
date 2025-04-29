@@ -32,6 +32,9 @@ albedo_color = Color(0, 0, 1, 1)
 
 [node name="UI" parent="." instance=ExtResource("1_2aubx")]
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.998798, 5.76726e-08, -0.049024, 0.0243124, 0.868363, 0.495333, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
+
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_u0vnw")
 script = ExtResource("2_wg4w5")
@@ -40,9 +43,6 @@ script = ExtResource("2_wg4w5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0105543, 0.0198784, -0.00255489)
 use_collision = true
 size = Vector3(100, 1, 100)
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.998798, 5.58122e-08, -0.049024, 0.0243124, 0.868363, 0.495333, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
