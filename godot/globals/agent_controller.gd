@@ -21,12 +21,12 @@ func get_position() -> Vector3:
 
 func move_to_position(x: float, y: float, distance_away:float=1.0):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-	await agent.move_to_position(x, y, distance_away)
+	return await agent.move_to_position(x, y, distance_away)
 
 
-func move_to_target(target_name: String, distance_away:float=1.0):
+func move_to_target(target_name: String, distance_away:float=2.0):
 	label.text = "Moving to target: " + target_name
-	await agent.move_to_target(target_name, distance_away)
+	return await agent.move_to_target(target_name, distance_away)
 
 
 func look_at_target(target_name: String):

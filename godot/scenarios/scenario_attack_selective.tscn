@@ -28,7 +28,6 @@ edge_max_error = 1.0
 transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
-transform = Transform3D(0.99551, 0.0243125, -0.0914845, 0.0664818, 0.508404, 0.858548, 0.0673847, -0.860775, 0.504505, 2.30765e-06, 74.7586, -19.8436)
 navigation_mesh = SubResource("NavigationMesh_mtvs4")
 script = ExtResource("3_erluh")
 
@@ -41,14 +40,25 @@ size = Vector3(100, 1, 100)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.18661, 23.8613, -0.866516)
 
 [node name="Agent" parent="." instance=ExtResource("7_r7l5o")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.25802, 20.9796, -7.44192)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 10)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
 prompt_allowance = 10
 self_fix_mode = false
 
+[node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
+move_disabled = true
+attack_disable = true
+_speed = 2.0
+
+[node name="Animal" parent="." instance=ExtResource("11_qsilw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 5)
+chase_speed = 0.0
+_speed = 0.0
+
 [node name="Player" parent="." instance=ExtResource("8_j5ljg")]
-transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -30.1122, 20.6034, -10.0067)
+transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, 0, 1, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("9_mjr6u")
@@ -56,15 +66,6 @@ script = ExtResource("9_mjr6u")
 [node name="Timer" type="Timer" parent="ScenarioManager"]
 wait_time = 15.0
 autostart = true
-
-[node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.3733, 20.9766, -10.1987)
-move_disabled = true
-attack_disable = true
-_speed = 2.0
-
-[node name="Animal" parent="." instance=ExtResource("11_qsilw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.1667, 20.5, -15.4543)
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

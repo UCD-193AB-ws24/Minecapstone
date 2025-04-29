@@ -75,7 +75,7 @@ func _target_logic():
 	match behavior:
 		BehaviorModes.Curious:
 			set_target_position(player.global_position)
-			_speed = 2
+			#_speed = 2
 			_rotate_toward(player.global_position)
 		BehaviorModes.Wandering:
 			if _wandering_timer.is_stopped():
@@ -88,7 +88,7 @@ func _target_logic():
 
 
 func _scared_movement():
-		_speed = 3
+		#_speed = 3
 		# While scared, want to randomly change direction while running around
 		var chance = randf_range(0, 1)
 		if chance < 0.02:
@@ -110,7 +110,7 @@ func _generate_scared_target():
 
 
 func _wandering_movement():
-		_speed = 1.5
+		#_speed = 1.5
 		var chance = randf_range(0, 1)
 		# randomly change direction
 		if chance < 0.02:

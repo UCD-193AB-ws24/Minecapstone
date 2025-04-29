@@ -34,7 +34,9 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	await attacktarget("Animal", 1)
+	var reached = await move_to_target("Zombie")
+	if reached:
+		await attack_target("Zombie", 1)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()

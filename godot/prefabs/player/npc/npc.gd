@@ -181,22 +181,24 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
 	navigation_agent.set_target_position(movement_target)
 
 
-func move_to_position(x: float, y: float, distance_away:float=1.0):
-	set_target_position(Vector3(x,1000,y), distance_away)
+func move_to_position(x: float, y: float, distance_away: float = 1.0):
+	set_target_position(Vector3(x, 1000, y), distance_away)
 
-	# TODO: replace with a loop that checks if the agent has reached the target, instead of waiting for a signal
-	# Waiting for signal blocks the agent from doing anything else?... i had a better reason... it's 12 am..
-	await navigation_agent.target_reached
-	# return true
+	# Replace the await signal with a loop to check if the target is reached
+	while not navigation_agent.is_target_reached():
+		await get_tree().process_frame
+
+	return true
 
 
-func move_to_target(target_name: String, distance_away:float=1.0):
+func move_to_target(target_name: String, distance_away:float=2.0):
 	for entity in detected_entities:
 		if entity.name == target_name:
 			var target_pos = entity.global_position
 			await move_to_position(target_pos.x, target_pos.z, distance_away)
-			return
+			return true
 	print("Target '%s' not found in detected entities." % target_name)
+	return false
 
 
 func _moving_target_process():
@@ -262,22 +264,26 @@ func attack_target(target_name: String, num_attacks: int = 1):
 			
 	if target_entity == null:
 		# TODO: Add to memories that it failed
-		return
+		return false
 
 	current_target = target_entity
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
-		if current_target == null: return
+		if current_target == null: 
+			return
+		print("trying to move")
 		await move_to_target(target_name)
+		print("but why did i never get here")
 		look_at_target_by_name(target_name)
 		var hit = await _attack()
 		if hit: successful_attacks += 1
 		
 		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
+	print("huhh!")
 
 	current_target = null
-
+	return true
 
 # Attacks specificaly the current target
 func _attack():

@@ -54,6 +54,7 @@ _speed = 2.0
 
 [node name="Animal" parent="." instance=ExtResource("11_3yt8f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 5)
+_speed = 0.0
 
 [node name="Player" parent="." instance=ExtResource("8_n02k7")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 0)
