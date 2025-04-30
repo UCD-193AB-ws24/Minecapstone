@@ -60,15 +60,12 @@ func say_to(msg: String, target_agent: String) -> void:
 
 
 func eat_food(food_name: String = "") -> bool:
-	# Currently hardcoded to restore 10 hunger
-	food_name = "Meat"
-
 	var success = agent.eat_food(food_name)
 
 	if success:
-		label.text = "Successfully ate meat"
+		label.text = "Successfully ate food"
 	else:
-		label.text = "Failed to eat meat"
+		label.text = "Failed to eat food"
 	
 	return success
 

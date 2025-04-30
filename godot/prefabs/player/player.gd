@@ -490,20 +490,21 @@ func _update_health_hunger_thirst(_delta):
 
 
 func eat_food(food_name: String = "") -> bool:
-	if food_name.is_empty() or food_name.to_lower() == "meat":
-		for i in range(inventory_manager.InventorySlots):
-			if not inventory_manager._inventorySlots[i]:
-				continue
-			
-			var item = inventory_manager._slotsToItems[i].item
+	# Search through inventory for the food item
+	for i in range(inventory_manager.InventorySlots):
+		if not inventory_manager._inventorySlots[i]:
+			continue
+		
+		var item = inventory_manager._slotsToItems[i].item
 
-			if item.has_meta("IsConsumable"):
-				var satiety = item.satiety
-				hunger = min(hunger + satiety, max_hunger)
+		# Check if the food matches and that its consumable
+		if item.name == food_name and item.has_meta("IsConsumable"):
+			var satiety = item.satiety
+			hunger = min(hunger + satiety, max_hunger)
 
-				inventory_manager.DecrementItemInSlot(i)
-				print("Ate food")
-				return true
+			inventory_manager.DecrementItemInSlot(i)
+			print("Ate " + food_name)
+			return true
 
 	return false
 
