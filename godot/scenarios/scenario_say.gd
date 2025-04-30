@@ -3,7 +3,6 @@ extends ScenarioManager
 var agent
 var agent_name = "Agent"
 var test_message = "Hello, I am excited to play Minecapstone"
-var message_received = false
 
 func _ready() -> void:
     super ()
@@ -12,15 +11,13 @@ func _ready() -> void:
 func reload():
     success_count = 0
     failure_count = 0
-
-    message_received = false
-
+    
+    # Creates listener for message sent event
     MessageBroker.connect("message_sent", _on_message_sent)
+
 
 func _on_message_sent(message: String, sender_id: int, receiver_id: int) -> void:
     if message == test_message and receiver_id == agent.hash_id:
-        message_received = true
-
         track_success()
 
         if current_iteration <= MAX_ITERATIONS:
