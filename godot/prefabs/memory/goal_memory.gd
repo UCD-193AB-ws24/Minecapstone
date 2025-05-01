@@ -1,5 +1,5 @@
 class_name GoalMemory
-extends MemoryItem
+extends Memory
 
 
 var goal: String

@@ -1,5 +1,5 @@
 class_name MessageMemory
-extends MemoryItem
+extends Memory
 
 
 var message: String

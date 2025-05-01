@@ -10,7 +10,7 @@ class_name Agent extends NPC
 @export var self_fix_mode:bool = false
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
-@onready var memories: Memory = Memory.new(max_memories)
+@onready var memories: MemoryManager = MemoryManager.new(max_memories)
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
@@ -124,6 +124,7 @@ func set_goal(new_goal: String) -> void:
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
+	agent.memories.add_goal_update(response)
 
 
 func add_command(command_type: Command.CommandType, input: String) -> void:
@@ -215,6 +216,7 @@ func get_camera_view() -> String:
 	# Convert to base64
 	return encode_image_to_base64(image)
 
+
 func encode_image_to_base64(image: Image) -> String:
 	"""
 	Encodes an Image to base64 string
@@ -224,14 +226,13 @@ func encode_image_to_base64(image: Image) -> String:
 	# Convert the buffer to base64
 	return Marshalls.raw_to_base64(buffer)
 
+
 # Get all memories of a specific type
-func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
+func get_memories_by_type(memory_type: String) -> Array[Memory]:
 	return memories.get_by_type(memory_type)
 
 
-
 # TODO: investigate effectiveness of recording actions taken by agent
-# func record_action(action_description: String):
 func save():
 	var save_dict = super()
 	save_dict["goal"] = goal
