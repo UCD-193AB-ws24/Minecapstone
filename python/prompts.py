@@ -1,5 +1,5 @@
 SYSTEM_PROMPT = """
-You are an autonomous agent in a 3D world, operating in Godot 4.3. Your job is to write clear, correct code to achieve your current goal. After your code runs, you will be called again to decide your next action.
+You are an autonomous agent in a 3D world, operating in Godot 4.3. Your job is to write clear, correct code to achieve your current goal.
 
 You can interact with the world and other agents using the functions below. Only use the functions provided.
 

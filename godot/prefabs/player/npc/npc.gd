@@ -17,6 +17,8 @@ extends Player
 @export var move_disabled: bool = false
 @export var attack_disable: bool = false
 
+signal has_died(deadName: String)
+signal detected_entities_added(added_entity: Node)
 
 func _ready():
 	actor_setup.call_deferred()
@@ -299,6 +301,7 @@ func _on_body_entered_detection_sphere(body: Node):
 	if is_instance_of(body, NPC) and body != self:
 		if body.visible:
 			detected_entities.push_back(body)
+			detected_entities_added.emit(body) #emit signal for zombie to check if it is a valid target
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
@@ -383,6 +386,7 @@ func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
 	# Drop loot
 	inventory_manager.DropAllItems()
+	has_died.emit(str(self.name))
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
 

@@ -21,10 +21,12 @@ func _ready():
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	#inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
+#TODO: create a function, connected to detected_entities_added signal, to check if entity is a valid target and set it as the current target
 
 func _physics_process(delta):
 	# TODO: Update this line to use entity detector instead of first Player once multiple agents get implemented
-	current_target = owner.find_children("Player")[0]
+	#current_target = owner.find_children("Player")[0]
+	
 
 	var old_state = current_state
 	var distance_to_player = global_position.distance_to(current_target.global_position)
