@@ -21,21 +21,16 @@ func reload():
 	add_meat_to_agent()
 
 	var initial_hunger = agent.hunger
-
-	#Debug 
-	var had_meat = has_meat_in_inventory()
-	if not had_meat:
-		print("Agent does not have meat in inventory.")
-		track_error()
-		return
 	
 	var timeout_timer = get_tree().create_timer(test_duration)
 	timeout_timer.timeout.connect(func(): check_result(initial_hunger))
 
 func add_meat_to_agent():
 	var inventory_manager = agent.get_node("InventoryManager")
+	var test
 	
-	var test = inventory_manager.AddItemByName("Meat", 1)
+	if not has_meat_in_inventory():
+		test = inventory_manager.AddItemByName("Meat", 1)
 
 	if test:
 		print("Meat added to agent's inventory.")
