@@ -18,53 +18,61 @@ func _init() -> void:
 
 func _ready():
 	super()
+	detected_entities_added.connect(_check_added_entity)
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	#inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
 #TODO: create a function, connected to detected_entities_added signal, to check if entity is a valid target and set it as the current target
+func _check_added_entity(added_entity):
+	#check if added entity is a valid target
+	if added_entity.has_meta("Name") and added_entity.get_meta("Name") == "agent":
+		#check if zombie is already chasing a target. If not, set current target to added entity
+		if current_state == ZombieState.WANDERING:
+			#set added_entity as current target
+			current_target = added_entity
+
 
 func _physics_process(delta):
 	# TODO: Update this line to use entity detector instead of first Player once multiple agents get implemented
 	#current_target = owner.find_children("Player")[0]
-	
+	if current_target != null:
+			
+		var old_state = current_state
+		var distance_to_player = global_position.distance_to(current_target.global_position)
 
-	var old_state = current_state
-	var distance_to_player = global_position.distance_to(current_target.global_position)
-
-	if distance_to_player <= detection_range:
-		# TODO: maybe want to make attack_range a READONLY member variable
-		var attack_range = raycast.target_position.length()
-		if distance_to_player <= attack_range:
-			current_state = ZombieState.ATTACKING
+		if distance_to_player <= detection_range:
+			# TODO: maybe want to make attack_range a READONLY member variable
+			var attack_range = raycast.target_position.length()
+			if distance_to_player <= attack_range:
+				current_state = ZombieState.ATTACKING
+			else:
+				current_state = ZombieState.CHASING
 		else:
-			current_state = ZombieState.CHASING
-	else:
-		if current_state != ZombieState.WANDERING:
-			# When transitioning state, update the wander center
-			last_known_position = current_target.global_position
-			wander_center = last_known_position
-			_generate_wander_target() # generate wander target based on where the player was last in chase range
-		current_state = ZombieState.WANDERING
+			if current_state != ZombieState.WANDERING:
+				# When transitioning state, update the wander center
+				last_known_position = current_target.global_position
+				wander_center = last_known_position
+				_generate_wander_target() # generate wander target based on where the player was last in chase range
+			current_state = ZombieState.WANDERING
 
-	if old_state != current_state:
-		print("State changed to ", ZombieState.keys()[current_state])
+		if old_state != current_state:
+			print("State changed to ", ZombieState.keys()[current_state])
 
-	# Handle state
-	match current_state:
-		ZombieState.WANDERING:
-			_speed = 1.25
-			_set_wander_target_position(delta)
-		ZombieState.CHASING:
-			if !attack_disable:
-				_set_chase_target_position()
-		ZombieState.ATTACKING:
-			if !attack_disable:
-				print("npc_zombie.gd: Missing attack function. Implement attack function.")
-				#_attack_current_target()
+		# Handle state
+		match current_state:
+			ZombieState.WANDERING:
+				_speed = 1.25
+				_set_wander_target_position(delta)
+			ZombieState.CHASING:
+				if !attack_disabled:
+					_set_chase_target_position()
+			ZombieState.ATTACKING:
+				if !attack_disabled:
+					print("npc_zombie.gd: Missing attack function. Implement attack function.")
+					#_attack_current_target()
 	
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)
-
 
 # note to ryan: don't call _handle_movement(delta) inside of handle_chasing and _handle attacking, 
 # when it could be called externally or by a super class

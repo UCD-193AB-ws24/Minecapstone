@@ -15,7 +15,7 @@ extends Player
 @export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
 @export var move_disabled: bool = false
-@export var attack_disable: bool = false
+@export var attack_disabled: bool = false
 
 signal has_died(deadName: String)
 signal detected_entities_added(added_entity: Node)
@@ -386,6 +386,7 @@ func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
 	# Drop loot
 	inventory_manager.DropAllItems()
+	print("dead. emitting has_died")
 	has_died.emit(str(self.name))
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
@@ -398,5 +399,9 @@ func save():
 	save_dict["attack_damage"] = attack_damage
 	save_dict["attack_cooldown"] = attack_cooldown
 	save_dict["chase_speed"] = chase_speed
+	save_dict["move_disabled"] = move_disabled
+	save_dict["attack_disabled"] = attack_disabled
+	save_dict["has_died"] = has_died
+	save_dict["detected_entities_added"] = detected_entities_added
 	
 	return save_dict
