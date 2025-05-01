@@ -488,25 +488,34 @@ func _update_health_hunger_thirst(_delta):
 	if health <= 0:
 		_on_player_death()
 
-
 func eat_food(food_name: String = "") -> bool:
-	# Search through inventory for the food item
-	for i in range(inventory_manager.InventorySlots):
-		if not inventory_manager._inventorySlots[i]:
-			continue
-		
-		var item = inventory_manager._slotsToItems[i].item
+	if food_name == "":
+		hunger = min(hunger + 10, max_hunger)
+		return true
 
-		# Check if the food matches and that its consumable
-		if item.name == food_name and item.has_meta("IsConsumable"):
-			var satiety = item.satiety
+	# Get inventory data as a string
+	var inventory_data = inventory_manager.GetInventoryData()
+
+	# Check if the food is in inventory
+	if inventory_data.contains(food_name):
+		# Find food item in dictionary to get satiety value
+		var food_item = ItemDictionary.Get(food_name)
+		if food_item and food_item.IsConsumable:
+			var satiety = 10  # Default
+			
+			if food_item.has_method("get_satiety"):
+				satiety = food_item.get_satiety()
+
+			# Increase hunger
 			hunger = min(hunger + satiety, max_hunger)
 
-			inventory_manager.DecrementItemInSlot(i)
+			# Remove one of the food items from inventory
+			inventory_manager.DropItem(food_name, 1)
 			print("Ate " + food_name)
 			return true
 
 	return false
+
 
 func drink_water(amount):
 	thirst = min(thirst + amount, max_thirst)

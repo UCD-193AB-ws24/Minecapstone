@@ -59,7 +59,7 @@ func say_to(msg: String, target_agent: String) -> void:
 	# agent.record_action("Said to " + str(target_id) + ": " + msg)
 
 
-func eat_food(food_name: String = "") -> bool:
+func eat_food(food_name: String = "") -> void:
 	var success = agent.eat_food(food_name)
 
 	if success:
@@ -67,8 +67,6 @@ func eat_food(food_name: String = "") -> bool:
 	else:
 		label.text = "Failed to eat food"
 	
-	return success
-
 
 func eval():
 	return true
