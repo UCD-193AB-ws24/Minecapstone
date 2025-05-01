@@ -19,9 +19,9 @@ func get_position() -> Vector3:
 	return agent.global_position
 
 
-func move_to_position(x: float, y: float, distance_away:float=1.0):
+func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-	return await agent.move_to_position(x, y, distance_away)
+	return await agent.move_to_position(x, y, 1.5)
 
 
 func move_to_target(target_name: String, distance_away:float=2.0):

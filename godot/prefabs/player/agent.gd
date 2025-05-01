@@ -124,7 +124,7 @@ func set_goal(new_goal: String) -> void:
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
-	agent.memories.add_goal_update(response)
+	#agent.memories.add_goal_update(response)
 
 
 func add_command(command_type: Command.CommandType, input: String) -> void:

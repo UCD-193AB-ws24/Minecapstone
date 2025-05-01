@@ -25,7 +25,7 @@ if reached:
 Distances are in meters. Anything within 1 meter is "nearby".
 
 Guidelines:
-1. Focus on your simplest immediate next step to achieve your goal.
+1. You must attempt to complete the entire task in one single turn.
 2. Use the functions provided to interact with the world and other agents.
 3. Avoid using any other functions or methods not listed above.
 4. Be clear and concise in your code. Use comments to explain your actions.
