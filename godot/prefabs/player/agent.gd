@@ -18,6 +18,8 @@ static var _command = preload("command.gd")
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
 
+signal out_of_prompts
+
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
 func _ready() -> void:
@@ -108,6 +110,9 @@ func _process_command_queue() -> void:
 				if prompt_allowance > 0:
 					prompt_allowance -= 1
 				_generate_new_goal()
+			elif prompt_allowance <= 0:
+				# No more prompt allowance, emit _out_of_prompts signal
+				out_of_prompts.emit()
 		
 		_is_processing_commands = false
 
