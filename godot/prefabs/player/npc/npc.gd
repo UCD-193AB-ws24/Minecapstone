@@ -375,6 +375,9 @@ func _get_all_detected_interactables() -> String:
 		context += "Nearby interactables. Move to within 1 meter of the interactable to interact with it.\n"
 		for interactable in detected_interactables:
 			context += "=== %s ===" % interactable.name
+			context += "Coordinates: (" + str(interactable.global_position.x) + ", " + str(interactable.global_position.z) + ")\n"
+			context += "Elevation: " + str(int(interactable.global_position.y)) + "\n"
+			context += "What you can do with it: " + interactable.get_meta("Function") + "\n"
 	return context
 
 func _set_chase_target_position():
