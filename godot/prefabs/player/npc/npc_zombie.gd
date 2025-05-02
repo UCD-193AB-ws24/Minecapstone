@@ -43,8 +43,8 @@ func _physics_process(delta):
 			_generate_wander_target() # generate wander target based on where the player was last in chase range
 		current_state = ZombieState.WANDERING
 
-	if old_state != current_state:
-		print("State changed to ", ZombieState.keys()[current_state])
+	# if old_state != current_state:
+		# print("State changed to ", ZombieState.keys()[current_state])
 
 	# Handle state
 	match current_state:
@@ -62,7 +62,7 @@ func _physics_process(delta):
 func _target_nearest_player_or_agent():
 	var nearest_distance = INF
 	for entity in detected_entities:
-		if entity.name == "Player" or entity.name == "Agent":
+		if entity.name.begins_with("Player") or entity.name.begins_with("Agent"):
 			var distance = global_position.distance_to(entity.global_position)
 			if distance < nearest_distance:
 				nearest_distance = distance
