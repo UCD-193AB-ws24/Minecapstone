@@ -3,6 +3,7 @@ extends ScenarioManager
 var zombie
 var agent
 var animal
+var zombie_killed = false
 
 func _ready() -> void:
 	reset_connections()
@@ -12,23 +13,27 @@ func _ready() -> void:
 func _on_zombie_died(deadName):
 		print("died: " + deadName)
 		if deadName == "Zombie":
-			track_success()
-			reset()
+			zombie_killed = true
+			# track_success()
+			# reset()
 
-			for i in range(10):
-				await get_tree().physics_frame
+			# for i in range(10):
+			# 	await get_tree().physics_frame
 
-			reset_connections()
+			# reset_connections()
 func _on_animal_died(deadName):
 		print("died: " + deadName)
 		if deadName == "Animal":
-			track_failure()
-			reset()
+			if zombie_killed == true:
+				track_success()
+			else:
+				track_failure()
+		reset()
 
-			for i in range(10):
-				await get_tree().physics_frame
+		for i in range(10):
+			await get_tree().physics_frame
 
-			reset_connections()
+		reset_connections()
 	
 
 func _out_of_prompts():

@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_j6mkj"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_erluh"]
+[ext_resource type="Script" uid="uid://doy24vmj373wx" path="res://scenarios/scenario_attack_selective.gd" id="7_mtvs4"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_r7l5o"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_j5ljg"]
-[ext_resource type="Script" uid="uid://fvtewli8dhxs" path="res://scenarios/scenario_attack_baseline.gd" id="9_mjr6u"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_eg4dg"]
 [ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="11_qsilw"]
 
@@ -60,7 +60,7 @@ _speed = 0.0
 transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, 0, 1, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("9_mjr6u")
+script = ExtResource("7_mtvs4")
 
 [node name="Timer" type="Timer" parent="ScenarioManager"]
 wait_time = 15.0

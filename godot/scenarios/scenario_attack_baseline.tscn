@@ -44,7 +44,6 @@ goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
 prompt_allowance = 1
 self_fix_mode = false
-attack_damage = 10.0
 
 [node name="Zombie" parent="." instance=ExtResource("9_lflxy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)

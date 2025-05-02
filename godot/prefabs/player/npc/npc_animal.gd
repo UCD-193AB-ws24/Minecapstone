@@ -19,8 +19,6 @@ var _scared_duration: float = 7
 var drop_list:Array = ["Meat"]
 
 func _ready():
-	max_health = 50
-	health = 50
 	# Made it jump higher so it can go up 1 block heights while following navmesh meant for taller agents
 	_jump_velocity = 12.0
 	super()
