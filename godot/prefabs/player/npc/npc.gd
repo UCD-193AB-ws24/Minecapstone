@@ -153,15 +153,22 @@ func discard_item(item_name: String, amount: int):
 
 
 func give_to(agent_name: String, item_name:String, amount:int):
-	var agent_ref = AgentManager.get_agent(agent_name).get_ref()
-	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.z, 3)
+	var agent_entry = AgentManager.get_agent(agent_name)
+	var ref
+	if agent_entry != null:
+		ref = agent_entry.get_ref()
+	else:
+		#Agent not found. Maybe it is not an agent the npc wants
+		#from the world node, get node with the name agent_name
+		ref = get_parent().get_node(agent_name)
+	await move_to_position(ref.global_position.x, ref.global_position.z, 3)
 
 	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
-	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
-	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
+	var look_pos = Vector3(ref.global_position.x, ref.global_position.y + 2, ref.global_position.z)
+	if (round(ref.global_position.y - self.global_position.y)) >= 2:
 		# Receiving agent is above this agent by 2+ blocks
 		look_pos.y += 1
-	elif (round(agent_ref.global_position.y - self.global_position.y)) <= -2:
+	elif (round(ref.global_position.y - self.global_position.y)) <= -2:
 		# Receiving agent is above this agent by 2- blocks
 		look_pos.y += 1
 	set_look_position(look_pos)

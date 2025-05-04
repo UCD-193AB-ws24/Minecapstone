@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bsb3bvrwug8b1"]
+[gd_scene load_steps=8 format=3 uid="uid://c8qpd4twf2vpq"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_cnvaf"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_075xy"]
@@ -19,25 +19,6 @@ agent_max_slope = 90.0
 edge_max_length = 10.0
 edge_max_error = 1.0
 
-[sub_resource type="GDScript" id="GDScript_2tmgb"]
-script/source = "extends Node
-
-var scenario_manager
-
-var inventory_manager
-
-func _ready() -> void:
-	inventory_manager = get_node(\"InventoryManager\")
-	scenario_manager = get_parent().get_node(\"ScenarioManager\") # ScenarioManager should be a sibling of the scriptholder
-
-func check_box():
-	var amount = inventory_manager.GetItemCount(\"Dirt\")
-	print(\"Dirt amount: \", amount)
-	if amount > 0:
-		scenario_manager.track_success()
-		scenario_manager.reset()
-"
-
 [node name="World" type="Node3D"]
 
 [node name="UI" parent="." instance=ExtResource("1_cnvaf")]
@@ -52,6 +33,7 @@ script = ExtResource("3_075xy")
 [node name="Baseplate" type="CSGBox3D" parent="NavigationMesher"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0105543, 0.0198784, -0.00255489)
 use_collision = true
+collision_layer = 9
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
@@ -60,13 +42,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 [node name="Agent" parent="." instance=ExtResource("7_bo8po")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 5)
 goal = "Satisfy the Scenario Goal"
-scenario_goal = ""
-prompt_allowance = 10
+scenario_goal = "Give ScenarioBox one dirt"
+prompt_allowance = 1
 self_fix_mode = false
 
 [node name="ScenarioBox" parent="." instance=ExtResource("10_cnvaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
-script = SubResource("GDScript_2tmgb")
+script = null
 
 [node name="Player" parent="." instance=ExtResource("8_xhjvb")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)

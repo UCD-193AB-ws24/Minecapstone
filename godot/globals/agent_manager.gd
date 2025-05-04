@@ -37,4 +37,8 @@ func _ready() -> void:
 
 
 func get_agent(agent_name:String):
-	return agent_dict[agent_name]
+	if agent_dict.has(agent_name):
+		return agent_dict[agent_name]
+	else:
+		#name not found in agent_dict
+		return null

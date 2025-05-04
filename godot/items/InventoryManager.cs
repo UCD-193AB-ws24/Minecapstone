@@ -19,7 +19,7 @@ public partial class InventoryManager : Node
 	public int SelectedSlot => _selectedSlot;
 
 	[Signal]
-	public delegate void ItemAddedEventHandler();
+	public delegate void ItemAddedEventHandler(Item item);
 
 	public InventoryManager() {
 		_inventorySlots = new bool[InventorySlots];
@@ -124,12 +124,14 @@ public partial class InventoryManager : Node
 	public bool AddItem(Item item, int amount) {
 		if (TryAddToExistingStack(item, amount)) 
 		{
-			EmitSignal(SignalName.ItemAdded);
+			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			GD.Print(EmitSignal(nameof(ItemAdded), item));
 			return true;
 		}
 		if (TryAddToNewSlot(item, amount))
 		{
-			EmitSignal(SignalName.ItemAdded);
+			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			GD.Print(EmitSignal(nameof(ItemAdded), item));
 			return true;
 		}
 		return false;
