@@ -20,7 +20,7 @@ func _on_zombie_died(deadName):
 		for i in range(10):
 			await get_tree().physics_frame
 
-			reset_connections()
+		reset_connections()
 func _on_animal_died(deadName):
 	"""Function is to be triggered by the has_died signal of an animal.	
 	Function checks if animal died and if so, log failure and reset the scenario"""
@@ -54,6 +54,6 @@ func reset_connections():
 	agent = get_parent().get_node("Agent")
 	animal = get_parent().get_node("Animal")
 	#connect to signals
-	zombie.has_died.connect(_on_zombie_died)
+	print(zombie.has_died.connect(_on_zombie_died))
 	agent.out_of_prompts.connect(_out_of_prompts)
 	animal.has_died.connect(_on_animal_died)
