@@ -12,20 +12,20 @@ var current_acceleration = 0.15
 """ =========================================== FOV AND SPRINTING ================================================== """
 @export var normal_fov = 70.0
 @export var fov_transition_speed = 7.5
-@export var double_tap_time = 0.3 		# Time in between "W" presses
+@export var double_tap_time = 0.3 # Time in between "W" presses
 var sprint_fov = normal_fov + 20
 var _is_sprinting = false
-var last_forward_press = 0.0 			# Make note and update the time for last "W" press
+var last_forward_press = 0.0 # Make note and update the time for last "W" press
 """ =========================================== ALTERNATVE VIEWS =================================================== """
-enum ViewMode { THIRDPERSON, SPECTATOR, NORMAL }
-@onready var view:ViewMode = ViewMode.NORMAL
+enum ViewMode {THIRDPERSON, SPECTATOR, NORMAL}
+@onready var view: ViewMode = ViewMode.NORMAL
 """ ============================================ BLOCK BREAKING ==================================================== """
-var _is_breaking : bool = false
-var _break_timer : Timer
-var _block_breaking						# position of the block attempting to break or null (not attempted block)
-var _released : bool = true
-var _tool_breaking : Resource
-@onready var block_progress : Label = $"../UI/Control/BlockProgress"
+var _is_breaking: bool = false
+var _break_timer: Timer
+var _block_breaking # position of the block attempting to break or null (not attempted block)
+var _released: bool = true
+var _tool_breaking: Resource
+@onready var block_progress: Label = $"../UI/Control/BlockProgress"
 """ ================================================ NEEDS ========================================================= """
 @export var max_health = 100
 @export var max_hunger = 100
@@ -43,11 +43,11 @@ var thirst = max_thirst
 var hunger_timer = 0.0
 var thirst_timer = 0.0
 """ ============================================ BODY RELATED ====================================================== """
-@onready var head:Node3D = $Head
+@onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/Camera3D
 @onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
 @onready var collision: CollisionShape3D = $CollisionShape3D
-@onready var spawn_point: Marker3D = $"../SpawnPoint"	# TODO: replace with a proper spawn system
+@onready var spawn_point: Marker3D = $"../SpawnPoint" # TODO: replace with a proper spawn system
 @export var _mouse_sensitivity = 0.1
 """ ============================================== INVENTORY ======================================================= """
 @onready var inventory_manager: Node = $InventoryManager
@@ -76,7 +76,7 @@ func _input(event):
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
 			KEY_E: _throw_pearl()
-			KEY_F5: 
+			KEY_F5:
 				match view:
 					ViewMode.NORMAL:
 						view = ViewMode.THIRDPERSON
@@ -95,8 +95,8 @@ func _input(event):
 					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		var deltaX = -event.relative.y * _mouse_sensitivity
-		var deltaY = -event.relative.x * _mouse_sensitivity
+		var deltaX = - event.relative.y * _mouse_sensitivity
+		var deltaY = - event.relative.x * _mouse_sensitivity
 		if view == ViewMode.SPECTATOR:
 			camera.global_rotation_degrees.x = clamp(camera.global_rotation_degrees.x + deltaX, -89.5, 89.5)
 			camera.global_rotation_degrees.y += deltaY
@@ -209,7 +209,7 @@ func _handle_block_interaction():
 		if raycast.is_colliding() and collider and collider.has_meta("is_chunk"):
 			var chunk = raycast.get_collider()
 
-			var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+			var block_position = raycast.get_collision_point() - 0.5 * raycast.get_collision_normal()
 			var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 			
 			block_highlight.visible = true
@@ -219,7 +219,7 @@ func _handle_block_interaction():
 			_handle_block_breaking(block_position, chunk.global_position)
 			
 			if Input.is_action_just_pressed("mouse2"):
-				var new_block_position:Vector3 = int_block_position + raycast.get_collision_normal()
+				var new_block_position: Vector3 = int_block_position + raycast.get_collision_normal()
 				
 				# Prevent player from placing blocks if the block will intersect the player
 				if not _block_position_intersect_player(new_block_position):
@@ -232,7 +232,7 @@ func _handle_block_interaction():
 		block_highlight.visible = false
 
 
-func _block_position_intersect_player(new_block_position:Vector3) -> bool:
+func _block_position_intersect_player(new_block_position: Vector3) -> bool:
 	""" Checks if the new block position intersects with the player
 		- new_block_position: Vector3 - The position of the new block
 	"""
@@ -258,7 +258,7 @@ func _update_navmesh():
 	nav_mesher.call_deferred("GenerateNavmesh")
 
 
-func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
+func _handle_block_breaking(block_position: Vector3, chunk_offset: Vector3):
 	""" Checks if the player toggled breaking
 	"""
 	if not Input.is_action_pressed("mouse1"): _released = true
@@ -271,12 +271,12 @@ func _handle_block_breaking(block_position:Vector3, chunk_offset:Vector3):
 		_begin_block_break((Vector3i)(block_position - chunk_offset))
 
 
-func _begin_block_break(pos:Vector3i):
+func _begin_block_break(pos: Vector3i):
 	""" Begins the target block breaking process,
 		Prepares a timer for block breaking
 	"""
 	_is_breaking = true
-	_block_breaking = pos 
+	_block_breaking = pos
 	# get block data, time to break
 	var chunk = raycast.get_collider()
 	var block = chunk.GetBlock(_block_breaking)
@@ -304,7 +304,7 @@ func _break_block():
 
 	# Get initial raycast data from player
 	var chunk = raycast.get_collider()
-	var block_position = raycast.get_collision_point() -0.5 * raycast.get_collision_normal()
+	var block_position = raycast.get_collision_point() - 0.5 * raycast.get_collision_normal()
 	var int_block_position = Vector3(floor(block_position.x), floor(block_position.y), floor(block_position.z))
 
 	# if player isn't looking at a block, cancel the block breaking
@@ -318,8 +318,8 @@ func _break_block():
 	var block = chunk.GetBlock(_block_breaking)
 	
 	var time = block_manager.GetTime(block)
-	var percentage : float = (time - _break_timer.time_left) / time * 100
-	var percent_string : String = str(round(percentage * 10)/10, "%")
+	var percentage: float = (time - _break_timer.time_left) / time * 100
+	var percent_string: String = str(round(percentage * 10) / 10, "%")
 	block_progress.text = percent_string
 	
 	# if player stops looking at the block cancel the block breaking
@@ -351,7 +351,7 @@ func _break_block():
 		
 		# TODO: Fix this
 		if (_tool_breaking != null and _tool_breaking.has_meta("is_tool") and _tool_breaking.GetHarvestLevel() >= block.GetHarvestLevel() and _tool_breaking.GetProficency() == block.GetProficency()) or block.GetHarvestLevel() == 0:
-			var drop_pos:Vector3 = chunk.global_position + Vector3(_block_breaking.x, _block_breaking.y, _block_breaking.z)
+			var drop_pos: Vector3 = chunk.global_position + Vector3(_block_breaking.x, _block_breaking.y, _block_breaking.z)
 			var block_node = block.GenerateItem()
 			get_parent().add_child(block_node)
 			block_node.global_position = drop_pos + Vector3(0.5, 0.5, 0.5)
@@ -450,8 +450,8 @@ func _throw_pearl():
 	get_parent().add_child(pearl_instance)
 
 	# Launch the pearl in the direction the camera is facing
-	var facing_direction = -head.global_transform.basis.z
-	var throw_direction = facing_direction + ((facing_direction + velocity)/2)*0.05
+	var facing_direction = - head.global_transform.basis.z
+	var throw_direction = facing_direction + ((facing_direction + velocity) / 2) * 0.05
 	var spawn_position = head.global_transform.origin
 
 	pearl_instance.throw_in_direction(self, spawn_position, throw_direction.normalized())
@@ -488,9 +488,37 @@ func _update_health_hunger_thirst(_delta):
 	if health <= 0:
 		_on_player_death()
 
+signal food_eaten(food_name: String, agent_hash_id: int)
 
-func eat_food(amount):
-	hunger = min(hunger + amount, max_hunger)
+func eat_food(food_name: String = "") -> bool:
+	if food_name == "":
+		hunger = min(hunger + 10, max_hunger)
+		return true
+
+	# Get inventory data as a string
+	var inventory_data = inventory_manager.GetInventoryData()
+
+	# Check if the food is in inventory
+	if inventory_data.contains(food_name):
+		# Find food item in dictionary to get satiety value
+		var food_item = ItemDictionary.Get(food_name)
+		if food_item and food_item.IsConsumable:
+			var satiety = 10  # Default
+			
+			if food_item.has_method("get_satiety"):
+				satiety = food_item.get_satiety()
+
+			# Increase hunger
+			hunger = min(hunger + satiety, max_hunger)
+
+			# Remove one of the food items from inventory
+			inventory_manager.DropItem(food_name, 1)
+			print("Ate " + food_name)
+			
+			emit_signal("food_eaten", food_name, get_instance_id())
+			return true
+
+	return false
 
 
 func drink_water(amount):
@@ -520,9 +548,9 @@ func save():
 		"filename": get_scene_file_path(),
 		"name": name,
 		"parent": get_parent().get_path(),
-		"pos_x" : position.x,
-		"pos_y" : position.y,
-		"pos_z" : position.z,
+		"pos_x": position.x,
+		"pos_y": position.y,
+		"pos_z": position.z,
 		"ai_control_enabled": ai_control_enabled,
 		"_speed": _speed,
 		"_sprint_speed": _sprint_speed,
