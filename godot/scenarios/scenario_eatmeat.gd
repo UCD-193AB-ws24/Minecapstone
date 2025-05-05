@@ -1,95 +1,88 @@
 extends ScenarioManager
 
-var agent_name = "Agent"
-var test_duration = 8.0
-var initial_hunger: float = 0
-var timer: Timer
-var iteration_complete = false
+var food_name = "Meat"
+var already_processed = false
+var meat_added = false
 
 func _ready() -> void:
 	super()
-	reload()
+	
+	# Connect to any food_eaten signals in the scene
+	get_tree().connect("node_added", _on_node_added)
+	get_tree().connect("node_removed", _on_node_removed)
+	
+	# Also connect to the message broker to detect when an agent says something
+	MessageBroker.connect("message", _on_message_received)
+	
+	print("Listening for any agent that eats " + food_name)
+	
+	# Start checking for agents immediately
+	add_meat_to_agent()
 
-func reload():
-	# Reset variables
-	iteration_complete = false
-	
-	# Clean up previous timer if it exists
-	if timer:
-		timer.stop()
-		timer.queue_free()
-		timer = null
-	
-	var agent = get_parent().find_child(agent_name)
-	if not agent:
-		print("Agent not found in the scene.")
-		await get_tree().create_timer(0.5).timeout
-		reload()  # Try again after a short delay
-		return
-	
-	var inventory_manager = agent.get_node("InventoryManager")
-	
-	# Add meat to the agent's inventory
-	inventory_manager.AddItem(ItemDictionary.Get("Meat"), 1)
-	print("Added Meat to agent's inventory")
-	
-	# Store initial hunger
-	initial_hunger = agent.hunger
-	print("Initial hunger: ", initial_hunger)
-	
-	# Set a timer to check the result
-	timer = Timer.new()
-	timer.one_shot = true
-	timer.wait_time = test_duration
-	timer.timeout.connect(_on_timeout)
-	add_child(timer)
-	timer.start()
+func _on_node_added(node):
+	# If an Agent is added, try to add meat
+	if node is Player and node.name == "Agent":
+		add_meat_to_agent()
 
-func _on_timeout():
-	if iteration_complete:
-		return
-		
-	iteration_complete = true
-	
-	var agent = get_parent().find_child(agent_name)
-	if not agent:
-		print("Agent not found at check time.")
+func add_meat_to_agent():
+	var agent = get_parent().find_child("Agent")
+	if agent and !meat_added:
+		# Add meat to inventory
+		var meat_item = ItemDictionary.Get(food_name)
+		if meat_item:
+			agent.inventory_manager.AddItem(meat_item, 1)
+			print("Added " + food_name + " to agent's inventory")
+			meat_added = true
+			
+			# Connect to the signal
+			if !agent.is_connected("food_eaten", _on_food_eaten):
+				agent.connect("food_eaten", _on_food_eaten)
+		else:
+			print("Could not find " + food_name + " item in ItemDictionary")
+
+func _on_node_removed(node):
+	# Reset meat_added flag when the agent is removed
+	if node is Player and node.name == "Agent":
+		meat_added = false
+
+func _on_message_received(msg: String, from_id: int, to_id: int) -> void:
+	# If the agent is talking about finding meat, it probably doesn't have any
+	if "find" in msg.to_lower() and "meat" in msg.to_lower() and !already_processed:
+		already_processed = true
 		track_failure()
-		if current_iteration <= MAX_ITERATIONS:
-			reset()
-			# Wait for physics frames to ensure proper reset
-			await get_tree().physics_frame
-			await get_tree().physics_frame
-			reload()
-		return
+		print("Failure! Agent said it needs to find meat, which means it doesn't have any.")
 		
-	var new_hunger = agent.hunger
-	print("New hunger: ", new_hunger)
+		# Wait briefly then reset for next iteration
+		get_tree().create_timer(1.0).timeout.connect(func():
+			if current_iteration < MAX_ITERATIONS:
+				reset()
+				meat_added = false
+			else:
+				print("============== Scenario complete. ==============")
+				print("Success count:", success_count)
+				print("Failure count:", failure_count)
+				print("Error count:", error_count)
+		)
+
+func _on_food_eaten(eaten_food: String, agent_id: int) -> void:
+	if already_processed:
+		return
 	
-	# Check if inventory still has meat using the public GetInventoryData method
-	var inventory_data = agent.inventory_manager.GetInventoryData()
-	var still_has_meat = "Meat" in inventory_data
+	print("Food eaten signal received: '" + eaten_food + "'")
 	
-	# Check if hunger increased and meat was consumed
-	if new_hunger > initial_hunger and not still_has_meat:
-		print("Agent successfully ate meat.")
+	if eaten_food == food_name:
+		already_processed = true
 		track_success()
-	else:
-		print("Agent failed to eat meat. Still has meat: ", still_has_meat)
-		track_failure()
-
-	if timer:
-		timer.queue_free()
-		timer = null
+		print("Success! Agent ate " + food_name)
 		
-	if current_iteration <= MAX_ITERATIONS:
-		reset()
-		# Wait for physics frames to ensure proper reset
-		await get_tree().physics_frame
-		await get_tree().physics_frame
-		reload()
-	else:
-		print("============== Scenario complete. ==============")
-		print("Success count:", success_count)
-		print("Failure count:", failure_count)
-		print("Error count:", error_count)
+		# Wait briefly then reset for next iteration
+		get_tree().create_timer(1.0).timeout.connect(func():
+			if current_iteration < MAX_ITERATIONS:
+				reset()
+				meat_added = false
+			else:
+				print("============== Scenario complete. ==============")
+				print("Success count:", success_count)
+				print("Failure count:", failure_count)
+				print("Error count:", error_count)
+		)

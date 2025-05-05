@@ -488,6 +488,8 @@ func _update_health_hunger_thirst(_delta):
 	if health <= 0:
 		_on_player_death()
 
+signal food_eaten(food_name: String, agent_hash_id: int)
+
 func eat_food(food_name: String = "") -> bool:
 	if food_name == "":
 		hunger = min(hunger + 10, max_hunger)
@@ -512,6 +514,8 @@ func eat_food(food_name: String = "") -> bool:
 			# Remove one of the food items from inventory
 			inventory_manager.DropItem(food_name, 1)
 			print("Ate " + food_name)
+			
+			emit_signal("food_eaten", food_name, get_instance_id())
 			return true
 
 	return false
