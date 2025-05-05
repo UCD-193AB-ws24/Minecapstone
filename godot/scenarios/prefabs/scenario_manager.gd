@@ -66,6 +66,7 @@ func _capture_initial_state():
 		var json_string = JSON.stringify(node_data)
 
 		save_data += json_string + "\n"
+		print("Saved the scene")
 
 
 func _restore_initial_state():

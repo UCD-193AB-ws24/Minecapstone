@@ -10,13 +10,15 @@ class_name Agent extends NPC
 @export var self_fix_mode:bool = false
 @onready var hash_id : int = hash(self)
 @onready var agent_controller = $AgentController
-@onready var memories: Memory = Memory.new(max_memories)
+@onready var memories: MemoryManager = MemoryManager.new(max_memories)
 @onready var _command_queue: Array[Command] = []
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
 
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
+
+signal out_of_prompts
 
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
@@ -34,7 +36,9 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	await attacktarget("Animal", 1)
+	var reached = await move_to_target("Zombie")
+	if reached:
+		await attack_target("Zombie", 1)
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
@@ -106,6 +110,9 @@ func _process_command_queue() -> void:
 				if prompt_allowance > 0:
 					prompt_allowance -= 1
 				_generate_new_goal()
+			elif prompt_allowance <= 0:
+				# No more prompt allowance, emit _out_of_prompts signal
+				out_of_prompts.emit()
 		
 		_is_processing_commands = false
 
@@ -122,6 +129,7 @@ func set_goal(new_goal: String) -> void:
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
+	#agent.memories.add_goal_update(response)
 
 
 func add_command(command_type: Command.CommandType, input: String) -> void:
@@ -165,6 +173,7 @@ func build_prompt_context() -> String:
 	context += "	Self Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
 	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
 	context += "	All detected items: " + _get_all_detected_items()
+	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)
@@ -213,6 +222,7 @@ func get_camera_view() -> String:
 	# Convert to base64
 	return encode_image_to_base64(image)
 
+
 func encode_image_to_base64(image: Image) -> String:
 	"""
 	Encodes an Image to base64 string
@@ -222,14 +232,13 @@ func encode_image_to_base64(image: Image) -> String:
 	# Convert the buffer to base64
 	return Marshalls.raw_to_base64(buffer)
 
+
 # Get all memories of a specific type
-func get_memories_by_type(memory_type: String) -> Array[MemoryItem]:
+func get_memories_by_type(memory_type: String) -> Array[Memory]:
 	return memories.get_by_type(memory_type)
 
 
-
 # TODO: investigate effectiveness of recording actions taken by agent
-# func record_action(action_description: String):
 func save():
 	var save_dict = super()
 	save_dict["goal"] = goal

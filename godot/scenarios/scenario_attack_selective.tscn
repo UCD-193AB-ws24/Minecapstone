@@ -1,8 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dvexbsr46hq2i"]
+[gd_scene load_steps=9 format=3 uid="uid://cx1ddo5r36ls8"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_j6mkj"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_erluh"]
-[ext_resource type="Script" path="res://scenarios/scenario_attack_selective.gd" id="7_mtvs4"]
+[ext_resource type="Script" uid="uid://doy24vmj373wx" path="res://scenarios/scenario_attack_selective.gd" id="7_mtvs4"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_r7l5o"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_j5ljg"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_eg4dg"]
@@ -48,6 +48,7 @@ self_fix_mode = false
 
 [node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
+move_disabled = true
 _speed = 2.0
 
 [node name="Animal" parent="." instance=ExtResource("11_qsilw")]

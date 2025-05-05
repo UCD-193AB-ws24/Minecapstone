@@ -1,7 +1,6 @@
 @tool
 extends RigidBody3D
 
-
 func _ready() -> void:
 	var texture = $Sprite3D.texture
 	$Sprite3D.position = Vector3.ZERO
@@ -13,7 +12,8 @@ func _ready() -> void:
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body.has_meta("Name"):
-		if body.get_meta("Name") == "agent":
+		if body.get_meta("Name") == "agent" or body.get_meta("Name") == "storage":
+			
 			if body.has_node("InventoryManager"):
 				var item_name = get_meta("ItemName");
 				var inventory_node = body.get_node("InventoryManager")

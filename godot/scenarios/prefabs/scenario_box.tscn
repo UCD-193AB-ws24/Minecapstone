@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3 uid="uid://cfvms5p7mvw2d"]
+
+[ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://items/InventoryManager.cs" id="1_d672t"]
+
+[sub_resource type="GDScript" id="GDScript_qy66u"]
+script/source = "extends Node
+
+var scenario_manager
+
+var inventory_manager
+
+func _ready() -> void:
+	inventory_manager = get_node(\"InventoryManager\")
+	scenario_manager = get_parent().get_node(\"ScenarioManager\") # ScenarioManager should be a sibling of the scriptholder
+
+func check_box():
+	var amount = inventory_manager.GetItemCount(\"Dirt\")
+	print(\"Dirt amount: \", amount)
+	if amount > 0:
+		scenario_manager.track_success()
+		scenario_manager.reset()
+"
+
+[sub_resource type="BoxMesh" id="BoxMesh_d672t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f1bx6"]
+albedo_color = Color(0.133792, 0.889366, 0, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wxamg"]
+
+[node name="ScenarioBox" type="StaticBody3D"]
+script = SubResource("GDScript_qy66u")
+metadata/Name = "storage"
+metadata/Category = "storage"
+metadata/Function = "Drop a certain Item into this interactable to satisfy the scenario goal."
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+mesh = SubResource("BoxMesh_d672t")
+material = SubResource("StandardMaterial3D_f1bx6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_wxamg")
+
+[node name="InventoryManager" type="Node" parent="."]
+script = ExtResource("1_d672t")
+
+[connection signal="ItemAdded" from="InventoryManager" to="." method="check_box"]

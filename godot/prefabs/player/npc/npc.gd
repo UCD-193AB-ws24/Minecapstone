@@ -9,11 +9,16 @@ extends Player
 @onready var current_target: Node = null
 @onready var detected_entities: Array = []
 @onready var detected_items: Array = [] # holds items detected by the detection sphere
+@onready var detected_interactables: Array = [] # holds interactables detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
 @export var chase_speed: float = 2.0
+@export var move_disabled: bool = false
+@export var attack_disabled: bool = false
 
+signal has_died(deadName: String)
+signal detected_entities_added(added_entity: Node)
 
 func _ready():
 	actor_setup.call_deferred()
@@ -148,15 +153,22 @@ func discard_item(item_name: String, amount: int):
 
 
 func give_to(agent_name: String, item_name:String, amount:int):
-	var agent_ref = AgentManager.get_agent(agent_name).get_ref()
-	await move_to_position(agent_ref.global_position.x, agent_ref.global_position.z, 3)
+	var agent_entry = AgentManager.get_agent(agent_name)
+	var ref
+	if agent_entry != null:
+		ref = agent_entry.get_ref()
+	else:
+		#Agent not found. Maybe it is not an agent the npc wants
+		#from the world node, get node with the name agent_name
+		ref = get_parent().get_node(agent_name)
+	await move_to_position(ref.global_position.x, ref.global_position.z, 3)
 
 	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
-	var look_pos = Vector3(agent_ref.global_position.x, agent_ref.global_position.y + 2, agent_ref.global_position.z)
-	if (round(agent_ref.global_position.y - self.global_position.y)) >= 2:
+	var look_pos = Vector3(ref.global_position.x, ref.global_position.y + 2, ref.global_position.z)
+	if (round(ref.global_position.y - self.global_position.y)) >= 2:
 		# Receiving agent is above this agent by 2+ blocks
 		look_pos.y += 1
-	elif (round(agent_ref.global_position.y - self.global_position.y)) <= -2:
+	elif (round(ref.global_position.y - self.global_position.y)) <= -2:
 		# Receiving agent is above this agent by 2- blocks
 		look_pos.y += 1
 	set_look_position(look_pos)
@@ -178,22 +190,24 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
 	navigation_agent.set_target_position(movement_target)
 
 
-func move_to_position(x: float, y: float, distance_away:float=1.0):
-	set_target_position(Vector3(x,1000,y), distance_away)
+func move_to_position(x: float, y: float, distance_away: float = 1.0):
+	set_target_position(Vector3(x, 1000, y), distance_away)
 
-	# TODO: replace with a loop that checks if the agent has reached the target, instead of waiting for a signal
-	# Waiting for signal blocks the agent from doing anything else?... i had a better reason... it's 12 am..
-	await navigation_agent.target_reached
-	# return true
+	# Replace the await signal with a loop to check if the target is reached
+	while not navigation_agent.is_target_reached():
+		await get_tree().process_frame
+
+	return true
 
 
-func move_to_target(target_name: String, distance_away:float=1.0):
+func move_to_target(target_name: String, distance_away:float=2.0):
 	for entity in detected_entities:
 		if entity.name == target_name:
 			var target_pos = entity.global_position
 			await move_to_position(target_pos.x, target_pos.z, distance_away)
-			return
+			return true
 	print("Target '%s' not found in detected entities." % target_name)
+	return false
 
 
 func _moving_target_process():
@@ -206,8 +220,9 @@ func _moving_target_process():
 
 
 func _physics_process(delta):
-	if current_target != null and !navigation_agent.get_current_navigation_path().is_empty():
-		_moving_target_process() # sets destination
+	if !move_disabled:
+		if current_target != null and !navigation_agent.get_current_navigation_path().is_empty():
+			_moving_target_process() # sets destination
 	_handle_movement(delta) # actual moving
 	super(delta)
 
@@ -215,7 +230,7 @@ func _physics_process(delta):
 func _handle_movement(delta):
 	if not navigation_ready:
 		return
-	if navigation_agent.is_target_reached():
+	if move_disabled or navigation_agent.is_target_reached():
 		move_to(Vector2(0,0), false,_speed, delta) #for early stopping
 		return
 	var current_pos = global_position
@@ -258,12 +273,13 @@ func attack_target(target_name: String, num_attacks: int = 1):
 			
 	if target_entity == null:
 		# TODO: Add to memories that it failed
-		return
+		return false
 
 	current_target = target_entity
 	var successful_attacks = 0
 	while successful_attacks < num_attacks:
-		if current_target == null: return
+		if current_target == null: 
+			return
 		await move_to_target(target_name)
 		look_at_target_by_name(target_name)
 		var hit = await _attack()
@@ -271,9 +287,10 @@ func attack_target(target_name: String, num_attacks: int = 1):
 		
 		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
+	print("huhh!")
 
 	current_target = null
-
+	return true
 
 # Attacks specificaly the current target
 func _attack():
@@ -291,9 +308,13 @@ func _on_body_entered_detection_sphere(body: Node):
 	if is_instance_of(body, NPC) and body != self:
 		if body.visible:
 			detected_entities.push_back(body)
+			detected_entities_added.emit(body) #emit signal for zombie to check if it is a valid target
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
 		#print("added item: ", body.name)
+	elif body.has_meta("Category"):
+		detected_interactables.push_back(body)
+		print("added interactable: ", body.name)
 
 func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
@@ -302,6 +323,8 @@ func _on_body_exited_detection_sphere(body: Node):
 	elif body in detected_items:
 		detected_items.erase(body)
 		#print("removed item: ", body.name)
+	elif body in detected_interactables:
+		detected_interactables.erase(body)
 
 func  _get_all_detected_entities():
 	""" This creates a formatted string of all the detected entities within the detection sphere
@@ -334,7 +357,7 @@ func  _get_all_detected_entities():
 	return context
 
 func _get_all_detected_items() -> String:
-	"""This creates a formatted string of all the detected entities within the detection sphere
+	"""This creates a formatted string of all the detected items within the detection sphere
 	Formatted to make it easier for the LLM to process and understand the information being parsed
 	"""
 	var context = ""
@@ -349,7 +372,20 @@ func _get_all_detected_items() -> String:
 		context += "There are no items nearby to pick up.\n"
 
 	return context
+func _get_all_detected_interactables() -> String:
+	"""This creates a formatted string of all the detected interactables within the detection sphere
+	Formatted to make it easier for the LLM to process and understand the information being parsed
+	"""
 
+	var context = ""
+	if detected_interactables.size() > 0:
+		context += "Nearby interactables. Move to within 1 meter of the interactable to interact with it.\n"
+		for interactable in detected_interactables:
+			context += "=== %s ===" % interactable.name
+			context += "Coordinates: (" + str(interactable.global_position.x) + ", " + str(interactable.global_position.z) + ")\n"
+			context += "Elevation: " + str(int(interactable.global_position.y)) + "\n"
+			context += "What you can do with it: " + interactable.get_meta("Function") + "\n"
+	return context
 
 func _set_chase_target_position():
 	navigation_agent.target_position = current_target.global_position
@@ -360,6 +396,7 @@ func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
 	# Drop loot
 	inventory_manager.DropAllItems()
+	has_died.emit(str(self.name))
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()
 
@@ -371,5 +408,9 @@ func save():
 	save_dict["attack_damage"] = attack_damage
 	save_dict["attack_cooldown"] = attack_cooldown
 	save_dict["chase_speed"] = chase_speed
+	save_dict["move_disabled"] = move_disabled
+	save_dict["attack_disabled"] = attack_disabled
+	save_dict["has_died"] = has_died
+	save_dict["detected_entities_added"] = detected_entities_added
 	
 	return save_dict

@@ -56,13 +56,13 @@ var thirst_timer = 0.0
 @onready var chunk_manager: Node = $"../NavigationMesher".find_child("ChunkManager")
 
 """ =========================================== GODOT FUNCTIONS ==================================================== """
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	global_position = spawn_point.global_position
 	inventory_manager.AddItem(ItemDictionary.Get("Stone"), 64)
 	inventory_manager.AddItem(ItemDictionary.Get("Wood Pickaxe"), 1)
+	inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
 
 # Called on input event
@@ -537,6 +537,7 @@ func damage(damage_amount: float):
 
 func _on_player_death():
 	print(str(self) + " has died!")
+
 	health = max_health
 	hunger = max_hunger
 	thirst = max_thirst

@@ -18,6 +18,9 @@ public partial class InventoryManager : Node
 	public int InventorySlots { get; set; } = 9;
 	public int SelectedSlot => _selectedSlot;
 
+	[Signal]
+	public delegate void ItemAddedEventHandler(Item item);
+
 	public InventoryManager() {
 		_inventorySlots = new bool[InventorySlots];
 	}
@@ -119,8 +122,19 @@ public partial class InventoryManager : Node
 	}
 
 	public bool AddItem(Item item, int amount) {
-		if (TryAddToExistingStack(item, amount)) return true;
-		return TryAddToNewSlot(item, amount);
+		if (TryAddToExistingStack(item, amount)) 
+		{
+			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			GD.Print(EmitSignal(nameof(ItemAdded), item));
+			return true;
+		}
+		if (TryAddToNewSlot(item, amount))
+		{
+			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			GD.Print(EmitSignal(nameof(ItemAdded), item));
+			return true;
+		}
+		return false;
 	}
 	
 	// Returns list of slot numbers that have items named itemName
@@ -246,5 +260,25 @@ public partial class InventoryManager : Node
 		}
 		
 		return inventory_str;
+	}
+
+	public int GetItemCount(String itemName) 
+	{
+		//GetItemCount checks if itemName is in inventory and returns the total amount of itemName in inventory
+		if (_nameToSlots.ContainsKey(itemName))
+		{
+			List<int> slotNums = _nameToSlots[itemName];
+			int totalAmount = 0;
+			//sum up all amounts of itemName in inventory
+			foreach (int slotNum in slotNums)
+			{
+				totalAmount += _slotsToItems[slotNum].count;
+				
+			}
+			return totalAmount;
+		} else {
+			return 0;
+		}
+
 	}
 }

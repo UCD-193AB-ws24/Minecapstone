@@ -1,12 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://b7yt0mo7s3q1q"]
+[gd_scene load_steps=8 format=3 uid="uid://1vp0ettxgy1v"]
 
-[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_2aubx"]
-[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_wg4w5"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="3_a56lr"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_0601x"]
-[ext_resource type="Script" uid="uid://bb587gjmc8o6g" path="res://scenarios/scenario_moveto.gd" id="5_2aubx"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_wvicf"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_7w6ne"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_v5me7"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_ecm1x"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="9_lflxy"]
+[ext_resource type="Script" uid="uid://fvtewli8dhxs" path="res://scenarios/scenario_attack_baseline.gd" id="9_wvicf"]
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
+[sub_resource type="NavigationMesh" id="NavigationMesh_pt1kx"]
 vertices = PackedVector3Array(-43.6106, 1.51988, -49.6826, -49.6906, 1.51988, -49.6826, -49.6906, 1.51988, -43.6026, -49.6906, 1.51988, 43.4374, -49.6906, 1.51988, 49.6774, -43.6106, 1.51988, 49.6774, 49.6694, 1.51988, -43.6026, 49.6694, 1.51988, -49.6826, 43.4294, 1.51988, -49.6826, 43.4294, 1.51988, 49.6774, 49.6694, 1.51988, 49.6774, 49.6694, 1.51988, 43.4374, -37.3706, 1.51988, -49.6826, -49.6906, 1.51988, -37.3626, -37.3706, 1.51988, 49.6774, -49.6906, 1.51988, 37.1974, 49.6694, 1.51988, -37.3626, 37.1894, 1.51988, -49.6826, 37.1894, 1.51988, 49.6774, -0.0905571, 1.51988, -49.6826, -6.33055, 1.51988, -49.6826, -49.6906, 1.51988, -6.32256, -49.6906, 1.51988, -0.0825577, 18.4694, 1.51988, 49.6774, 49.6694, 1.51988, 24.7174, 49.6694, 1.51988, 18.4774, 12.2294, 1.51988, 49.6774, 49.6694, 1.51988, -6.32256, 49.6694, 1.51988, -12.5626, 12.2294, 1.51988, -49.6826, 5.98944, 1.51988, -49.6826, 49.6694, 1.51988, 37.1974, 30.9494, 1.51988, 49.6774, -31.1306, 1.51988, -49.6826, -49.6906, 1.51988, -31.1226, -31.1306, 1.51988, 49.6774, -49.6906, 1.51988, 30.9574, 49.6694, 1.51988, -31.1226, 30.9494, 1.51988, -49.6826, -12.5706, 1.51988, -49.6826, -18.8106, 1.51988, -49.6826, -49.6906, 1.51988, -18.8026, -49.6906, 1.51988, -12.5626, -49.6906, 1.51988, 18.4774, -18.8106, 1.51988, 49.6774, -12.5706, 1.51988, 49.6774, -49.6906, 1.51988, 12.2374, -49.6906, 1.51988, 5.99744, -6.33055, 1.51988, 49.6774, 49.6694, 1.51988, -18.8026, 18.4694, 1.51988, -49.6826, 49.6694, 1.51988, 30.9574, 24.7094, 1.51988, 49.6774, -24.8906, 1.51988, -49.6826, -49.6906, 1.51988, -24.8826, -24.8906, 1.51988, 49.6774, -49.6906, 1.51988, 24.7174, 49.6694, 1.51988, -24.8826, 24.7094, 1.51988, -49.6826, -0.0905571, 1.51988, 49.6774, 49.6694, 1.51988, 5.99744, 49.6694, 1.51988, -0.0825577, 5.98944, 1.51988, 49.6774, 49.6694, 1.51988, 12.2374)
 polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(5, 4, 3), PackedInt32Array(8, 7, 6), PackedInt32Array(11, 10, 9), PackedInt32Array(0, 12, 2), PackedInt32Array(2, 12, 13), PackedInt32Array(5, 3, 14), PackedInt32Array(14, 3, 15), PackedInt32Array(6, 16, 8), PackedInt32Array(8, 16, 17), PackedInt32Array(11, 9, 18), PackedInt32Array(20, 19, 21), PackedInt32Array(21, 19, 22), PackedInt32Array(24, 23, 25), PackedInt32Array(25, 23, 26), PackedInt32Array(28, 27, 29), PackedInt32Array(29, 27, 30), PackedInt32Array(11, 18, 31), PackedInt32Array(31, 18, 32), PackedInt32Array(12, 33, 13), PackedInt32Array(13, 33, 34), PackedInt32Array(14, 15, 35), PackedInt32Array(35, 15, 36), PackedInt32Array(16, 37, 17), PackedInt32Array(17, 37, 38), PackedInt32Array(40, 39, 41), PackedInt32Array(41, 39, 42), PackedInt32Array(44, 43, 45), PackedInt32Array(45, 43, 46), PackedInt32Array(48, 47, 22), PackedInt32Array(49, 28, 50), PackedInt32Array(50, 28, 29), PackedInt32Array(31, 32, 51), PackedInt32Array(51, 32, 52), PackedInt32Array(33, 53, 34), PackedInt32Array(34, 53, 54), PackedInt32Array(35, 36, 55), PackedInt32Array(55, 36, 56), PackedInt32Array(37, 57, 38), PackedInt32Array(38, 57, 58), PackedInt32Array(48, 22, 59), PackedInt32Array(59, 22, 60), PackedInt32Array(60, 22, 61), PackedInt32Array(61, 22, 19), PackedInt32Array(63, 62, 60), PackedInt32Array(60, 62, 59), PackedInt32Array(25, 26, 63), PackedInt32Array(63, 26, 62), PackedInt32Array(30, 27, 19), PackedInt32Array(19, 27, 61), PackedInt32Array(51, 52, 24), PackedInt32Array(24, 52, 23), PackedInt32Array(53, 40, 54), PackedInt32Array(54, 40, 41), PackedInt32Array(55, 56, 44), PackedInt32Array(44, 56, 43), PackedInt32Array(57, 49, 58), PackedInt32Array(58, 49, 50), PackedInt32Array(39, 20, 42), PackedInt32Array(42, 20, 21), PackedInt32Array(45, 46, 48), PackedInt32Array(48, 46, 47)]
 geometry_parsed_geometry_type = 1
@@ -18,26 +19,16 @@ agent_max_slope = 90.0
 edge_max_length = 10.0
 edge_max_error = 1.0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t5wr3"]
-albedo_color = Color(1, 0, 0, 1)
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_i3n5n"]
-height = 1.0
-radius = 7.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r23cj"]
-albedo_color = Color(0, 0, 1, 1)
-
 [node name="World" type="Node3D"]
 
-[node name="UI" parent="." instance=ExtResource("1_2aubx")]
+[node name="UI" parent="." instance=ExtResource("1_wvicf")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.998798, 5.76726e-08, -0.049024, 0.0243124, 0.868363, 0.495333, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
+transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_u0vnw")
-script = ExtResource("2_wg4w5")
+navigation_mesh = SubResource("NavigationMesh_pt1kx")
+script = ExtResource("3_7w6ne")
 
 [node name="Baseplate" type="CSGBox3D" parent="NavigationMesher"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0105543, 0.0198784, -0.00255489)
@@ -45,59 +36,30 @@ use_collision = true
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 
-[node name="Agent" parent="." instance=ExtResource("4_0601x")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -5, 1, 0)
-goal = "Walk to (-30, 15)"
-scenario_goal = ""
+[node name="Agent" parent="." instance=ExtResource("7_v5me7")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 1, -5)
+goal = "Satisfy the Scenario Goal"
+scenario_goal = "Kill the zombie"
+prompt_allowance = 1
 self_fix_mode = false
-_speed = 10.0
 
-[node name="RedPlatform" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.25, 15)
-radius = 7.0
-height = 1.0
-sides = 32
-material = SubResource("StandardMaterial3D_t5wr3")
+[node name="Zombie" parent="." instance=ExtResource("9_lflxy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
+move_disabled = true
+attack_disabled = true
+_speed = 2.0
 
-[node name="Label3D" type="Label3D" parent="RedPlatform"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
-billboard = 1
-text = "Coordinates are (-30, 15)"
-font_size = 320
-outline_size = 127
-
-[node name="Area3D" type="Area3D" parent="RedPlatform"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RedPlatform/Area3D"]
-shape = SubResource("CylinderShape3D_i3n5n")
-debug_color = Color(1, 1, 1, 0.42)
-
-[node name="BluePlatform" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.25, -15)
-radius = 7.0
-height = 1.0
-sides = 32
-material = SubResource("StandardMaterial3D_r23cj")
-
-[node name="Label3D" type="Label3D" parent="BluePlatform"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
-billboard = 1
-text = "Coordinates are (-30, -15)"
-font_size = 320
-outline_size = 127
-
-[node name="Area3D" type="Area3D" parent="BluePlatform"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="BluePlatform/Area3D"]
-shape = SubResource("CylinderShape3D_i3n5n")
-debug_color = Color(1, 1, 1, 0.42)
-
-[node name="Player" parent="." instance=ExtResource("3_a56lr")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
+[node name="Player" parent="." instance=ExtResource("8_ecm1x")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("5_2aubx")
+script = ExtResource("9_wvicf")
+
+[node name="Timer" type="Timer" parent="ScenarioManager"]
+wait_time = 15.0
+autostart = true
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

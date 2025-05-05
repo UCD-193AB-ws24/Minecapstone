@@ -19,14 +19,14 @@ func get_position() -> Vector3:
 	return agent.global_position
 
 
-func move_to_position(x: float, y: float, distance_away: float = 1.0):
+func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-	await agent.move_to_position(x, y, distance_away)
+	return await agent.move_to_position(x, y, 1.5)
 
 
-func move_to_target(target_name: String, distance_away: float = 1.0):
+func move_to_target(target_name: String, distance_away: float = 2.0):
 	label.text = "Moving to target: " + target_name
-	await agent.move_to_target(target_name, distance_away)
+	return await agent.move_to_target(target_name, distance_away)
 
 
 func look_at_target(target_name: String):
@@ -43,6 +43,7 @@ func discard(itemName: String, amount: int):
 	label.text = "Discarding item: " + itemName + ", amount: " + str(amount)
 	agent.discard_item(itemName, amount)
 
+
 func give_to(agent_name: String, item_name: String, amount: int = 1):
 	label.text = "Giving " + str(amount) + " " + item_name + " to " + agent_name
 	agent.give_to(agent_name, item_name, amount)
@@ -50,18 +51,15 @@ func give_to(agent_name: String, item_name: String, amount: int = 1):
 
 func say(msg: String) -> void:
 	message_broker.send_message(msg, agent.hash_id)
-	# agent.record_action("Said: " + msg)
 
 
 func say_to(msg: String, target_agent: String) -> void:
 	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
 	message_broker.send_message(msg, agent.hash_id, target_id)
-	# agent.record_action("Said to " + str(target_id) + ": " + msg)
 
 
 func eat_food(food_name: String = "") -> void:
 	var success = agent.eat_food(food_name)
-
 	if success:
 		label.text = "Successfully ate food"
 	else:

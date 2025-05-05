@@ -91,7 +91,6 @@ func _LLM_set_goal(key: int, response: String):
 
 	# Then, set the goal to the LLM generated one
 	agent.set_goal(response)
-	agent.memories.add_goal_update(response)
 
 	command_status = CommandStatus.DONE
 
