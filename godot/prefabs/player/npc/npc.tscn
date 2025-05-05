@@ -58,3 +58,6 @@ material = SubResource("StandardMaterial3D_onrkg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionSphere"]
 shape = SubResource("SphereShape3D_cuwdc")
+
+[connection signal="body_entered" from="DetectionSphere" to="." method="_on_body_entered_detection_sphere"]
+[connection signal="body_exited" from="DetectionSphere" to="." method="_on_body_exited_detection_sphere"]

@@ -1,0 +1,83 @@
+[gd_scene load_steps=9 format=3 uid="uid://bl2cidw8ydcat"]
+
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_67v8h"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_klf3g"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="3_mn0dk"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_by4s5"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="6_mn0dk"]
+[ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="7_by4s5"]
+[ext_resource type="Script" uid="uid://dc4f2d4d7on6m" path="res://scenarios/scenario_look_at.gd" id="7_ieyft"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
+vertices = PackedVector3Array(-43.6, 1.5, -49.68, -49.68, 1.5, -49.68, -49.68, 1.5, -43.6, -49.68, 1.5, 43.44, -49.68, 1.5, 49.68, -43.6, 1.5, 49.68, 49.68, 1.5, -43.6, 49.68, 1.5, -49.68, 43.44, 1.5, -49.68, 43.44, 1.5, 49.68, 49.68, 1.5, 49.68, 49.68, 1.5, 43.44, -37.36, 1.5, -49.68, -49.68, 1.5, -37.36, -37.36, 1.5, 49.68, -49.68, 1.5, 37.2, 49.68, 1.5, -37.36, 37.2, 1.5, -49.68, 37.2, 1.5, 49.68, -0.0800018, 1.5, -49.68, -6.32, 1.5, -49.68, -49.68, 1.5, -6.32, -49.68, 1.5, -0.0800018, 18.48, 1.5, 49.68, 49.68, 1.5, 24.72, 49.68, 1.5, 18.48, 12.24, 1.5, 49.68, 49.68, 1.5, -6.32, 49.68, 1.5, -12.56, 12.24, 1.5, -49.68, 6, 1.5, -49.68, 49.68, 1.5, 37.2, 30.96, 1.5, 49.68, -31.12, 1.5, -49.68, -49.68, 1.5, -31.12, -31.12, 1.5, 49.68, -49.68, 1.5, 30.96, 49.68, 1.5, -31.12, 30.96, 1.5, -49.68, -12.56, 1.5, -49.68, -18.8, 1.5, -49.68, -49.68, 1.5, -18.8, -49.68, 1.5, -12.56, -49.68, 1.5, 18.48, -18.8, 1.5, 49.68, -12.56, 1.5, 49.68, -49.68, 1.5, 12.24, -49.68, 1.5, 6, -6.32, 1.5, 49.68, 49.68, 1.5, -18.8, 18.48, 1.5, -49.68, 49.68, 1.5, 30.96, 24.72, 1.5, 49.68, -24.88, 1.5, -49.68, -49.68, 1.5, -24.88, -24.88, 1.5, 49.68, -49.68, 1.5, 24.72, 49.68, 1.5, -24.88, 24.72, 1.5, -49.68, -0.0800018, 1.5, 49.68, 49.68, 1.5, 6, 49.68, 1.5, -0.0800018, 6, 1.5, 49.68, 49.68, 1.5, 12.24)
+polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(5, 4, 3), PackedInt32Array(8, 7, 6), PackedInt32Array(11, 10, 9), PackedInt32Array(0, 12, 2), PackedInt32Array(2, 12, 13), PackedInt32Array(5, 3, 14), PackedInt32Array(14, 3, 15), PackedInt32Array(6, 16, 8), PackedInt32Array(8, 16, 17), PackedInt32Array(11, 9, 18), PackedInt32Array(20, 19, 21), PackedInt32Array(21, 19, 22), PackedInt32Array(24, 23, 25), PackedInt32Array(25, 23, 26), PackedInt32Array(28, 27, 29), PackedInt32Array(29, 27, 30), PackedInt32Array(11, 18, 31), PackedInt32Array(31, 18, 32), PackedInt32Array(12, 33, 13), PackedInt32Array(13, 33, 34), PackedInt32Array(14, 15, 35), PackedInt32Array(35, 15, 36), PackedInt32Array(16, 37, 17), PackedInt32Array(17, 37, 38), PackedInt32Array(40, 39, 41), PackedInt32Array(41, 39, 42), PackedInt32Array(44, 43, 45), PackedInt32Array(45, 43, 46), PackedInt32Array(48, 47, 22), PackedInt32Array(49, 28, 50), PackedInt32Array(50, 28, 29), PackedInt32Array(31, 32, 51), PackedInt32Array(51, 32, 52), PackedInt32Array(33, 53, 34), PackedInt32Array(34, 53, 54), PackedInt32Array(35, 36, 55), PackedInt32Array(55, 36, 56), PackedInt32Array(37, 57, 38), PackedInt32Array(38, 57, 58), PackedInt32Array(48, 22, 59), PackedInt32Array(59, 22, 60), PackedInt32Array(60, 22, 61), PackedInt32Array(61, 22, 19), PackedInt32Array(63, 62, 60), PackedInt32Array(60, 62, 59), PackedInt32Array(25, 26, 63), PackedInt32Array(63, 26, 62), PackedInt32Array(30, 27, 19), PackedInt32Array(19, 27, 61), PackedInt32Array(51, 52, 24), PackedInt32Array(24, 52, 23), PackedInt32Array(53, 40, 54), PackedInt32Array(54, 40, 41), PackedInt32Array(55, 56, 44), PackedInt32Array(44, 56, 43), PackedInt32Array(57, 49, 58), PackedInt32Array(58, 49, 50), PackedInt32Array(39, 20, 42), PackedInt32Array(42, 20, 21), PackedInt32Array(45, 46, 48), PackedInt32Array(48, 46, 47)]
+geometry_parsed_geometry_type = 1
+cell_size = 0.16
+cell_height = 0.5
+agent_radius = 0.32
+agent_max_climb = 1.0
+agent_max_slope = 90.0
+edge_max_length = 10.0
+edge_max_error = 1.0
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("1_67v8h")]
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_u0vnw")
+script = ExtResource("2_klf3g")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationMesher"]
+use_collision = true
+size = Vector3(100, 1, 100)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.998798, 5.58122e-08, -0.049024, 0.0243124, 0.868363, 0.495333, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
+
+[node name="Player" parent="." instance=ExtResource("3_mn0dk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
+
+[node name="Agent" parent="." instance=ExtResource("4_by4s5")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
+goal = "Without moving, look at the entity to the left."
+scenario_goal = "Without moving, look at the entity to the left."
+prompt_allowance = 1
+
+[node name="NPCZombie" parent="." instance=ExtResource("6_mn0dk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 2.5)
+collision_layer = 9
+collision_mask = 9
+chase_speed = 0.0
+_speed = 0.0
+_acceleration = 0.0
+
+[node name="Label3D" type="Label3D" parent="NPCZombie"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+pixel_size = 0.001
+billboard = 1
+text = "Coordinates are (-2.5, 2.5)"
+font_size = 200
+outline_size = 48
+
+[node name="Animal" parent="." instance=ExtResource("7_by4s5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, -2.5)
+chase_speed = 0.0
+_speed = 0.0
+_acceleration = 0.0
+
+[node name="Label3D2" type="Label3D" parent="Animal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+pixel_size = 0.001
+billboard = 1
+text = "Coordinates are (-2.5, -2.5)"
+font_size = 200
+outline_size = 48
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("7_ieyft")
+
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

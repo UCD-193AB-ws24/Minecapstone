@@ -12,7 +12,7 @@ pip install -r ./python/requirements.txt	# Install requirements
 3. Set all the environment variables within ``.env.development.local``.
 ####  DO NOT PUSH API KEYS TO THE REPO!!
 
-4. If you want to use LLM agents in Godot you must run the python websocket file before running the game.
+4. To enable agent control, you must run the Python backend before running a Scene in Godot.
 ```bash
 python ./python/websocket.py
 ```

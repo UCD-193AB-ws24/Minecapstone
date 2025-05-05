@@ -7,7 +7,7 @@ FUNCTION REFERENCE:
 - get_position() -> Vector3: Returns your current position.
 - say(message) -> Sends a message to all nearby agents.
 - say_to(message, target_name) -> Sends a message to a specific agent.
-- eat_food() -> Restores 10 hunger points.
+- eat_food(item_name) -> Consumes the specified food item.
 - pass: Skip your turn.
 
 IMPORTANT: THE FOLLOWING FUNCTIONS REQUIRE AWAIT:

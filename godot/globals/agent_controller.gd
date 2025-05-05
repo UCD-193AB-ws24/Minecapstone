@@ -24,7 +24,7 @@ func move_to_position(x: float, y: float):
 	return await agent.move_to_position(x, y, 1.5)
 
 
-func move_to_target(target_name: String, distance_away:float=2.0):
+func move_to_target(target_name: String, distance_away: float = 2.0):
 	label.text = "Moving to target: " + target_name
 	return await agent.move_to_target(target_name, distance_away)
 
@@ -44,8 +44,8 @@ func discard(itemName: String, amount: int):
 	agent.discard_item(itemName, amount)
 
 
-func give_to(agent_name:String, item_name:String, amount:int = 1):
-	label.text = "Giving " + str(amount) + " "+ item_name + " to " + agent_name
+func give_to(agent_name: String, item_name: String, amount: int = 1):
+	label.text = "Giving " + str(amount) + " " + item_name + " to " + agent_name
 	agent.give_to(agent_name, item_name, amount)
 
 
@@ -58,10 +58,13 @@ func say_to(msg: String, target_agent: String) -> void:
 	message_broker.send_message(msg, agent.hash_id, target_id)
 
 
-func eat_food():
-	label.text = "Eating food, restored 10 hunger"
-	agent.eat_food(10)
-
+func eat_food(food_name: String = "") -> void:
+	var success = agent.eat_food(food_name)
+	if success:
+		label.text = "Successfully ate food"
+	else:
+		label.text = "Failed to eat food"
+	
 
 func eval():
 	return true

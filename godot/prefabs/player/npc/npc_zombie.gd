@@ -33,12 +33,10 @@ func _check_added_entity(added_entity):
 
 
 func _physics_process(delta):
-	# TODO: Update this line to use entity detector instead of first Player once multiple agents get implemented
-	#current_target = owner.find_children("Player")[0]
-	if current_target != null:
-			
-		var old_state = current_state
-		var distance_to_player = global_position.distance_to(current_target.global_position)
+	_target_nearest_player_or_agent()
+
+	var old_state = current_state
+	var distance_to_player = global_position.distance_to(current_target.global_position)
 
 		if distance_to_player <= detection_range:
 			# TODO: maybe want to make attack_range a READONLY member variable
@@ -73,6 +71,16 @@ func _physics_process(delta):
 	
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)
+
+
+func _target_nearest_player_or_agent():
+	var nearest_distance = INF
+	for entity in detected_entities:
+		if entity.name == "Player" or entity.name == "Agent":
+			var distance = global_position.distance_to(entity.global_position)
+			if distance < nearest_distance:
+				nearest_distance = distance
+				current_target = entity
 
 # note to ryan: don't call _handle_movement(delta) inside of handle_chasing and _handle attacking, 
 # when it could be called externally or by a super class
