@@ -13,7 +13,7 @@ extends Player
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
 @export var attack_cooldown: float = 2.0
-@export var chase_speed: float = 2.0
+@export var chase_speed: float = 2.0		# TODO: why is this a member of NPC when not all NPCs chase
 @export var move_disabled: bool = false
 @export var attack_disabled: bool = false
 
