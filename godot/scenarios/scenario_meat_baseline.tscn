@@ -41,13 +41,11 @@ transform = Transform3D(1, 0, -3.72529e-09, 0, 1, 0, 3.72529e-09, 0, 1, 0, 6, 9.
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold as much meat as possible."
-self_fix_mode = false
 
 [node name="Agent2" parent="." instance=ExtResource("8_jq16g")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, -5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold the meat"
-self_fix_mode = false
 
 [node name="Player" parent="." instance=ExtResource("7_t8jqv")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)

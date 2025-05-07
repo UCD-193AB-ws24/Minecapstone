@@ -94,7 +94,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5275, 19.5108, -62.0236)
 transform = Transform3D(-0.946407, 0, -0.322976, 0, 1, 0, 0.322976, 0, -0.946407, 20.4907, 19.3368, -67.8958)
 goal = "Attack the nearest zombie 100 times."
 visual_mode = true
-_speed = 2.0
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1138, 20.7689, -66.8156)

@@ -44,7 +44,6 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie first and then kill the animal second"
 prompt_allowance = 1
-self_fix_mode = false
 
 [node name="Zombie" parent="." instance=ExtResource("10_cq45f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)

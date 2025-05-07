@@ -51,7 +51,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -5, 1, 0)
 goal = "Walk to (-30, 15)"
 scenario_goal = ""
-self_fix_mode = false
 _speed = 10.0
 
 [node name="RedPlatform" type="CSGCylinder3D" parent="."]
