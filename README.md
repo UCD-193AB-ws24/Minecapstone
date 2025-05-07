@@ -8,7 +8,6 @@ The game and the problem defined for the LLMs are designed around a survival/san
 * [Python 3.11.9](https://www.python.org/downloads/release/python-3119/) is used for the backend server, which handles websocket connections and agent control. 
 Older or new versions may or may not work.
 
-
 ## Setup
 1. Install python requirements in a virtual environment.
 ```bash
@@ -63,5 +62,15 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
         - `python/` contains the backend server and agent control logic.
     * ### Contributing
         * Development branches should be named dev-<your_name>-<feature_name> and pull requests should be made with at least one reviewer before merging into main.
-- ## TODO/Not in current sample
+- ## Future Work/Not in current sample
     * Need infinite thinking
+
+# Troubleshooting
+
+# FAQ
+
+# Contact Information
+
+# Glossary
+
+# Appendix
