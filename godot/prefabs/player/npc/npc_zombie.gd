@@ -38,36 +38,38 @@ func _physics_process(delta):
 	var old_state = current_state
 	var distance_to_player = global_position.distance_to(current_target.global_position)
 
-		if distance_to_player <= detection_range:
-			# TODO: maybe want to make attack_range a READONLY member variable
-			var attack_range = raycast.target_position.length()
-			if distance_to_player <= attack_range:
-				current_state = ZombieState.ATTACKING
-			else:
-				current_state = ZombieState.CHASING
+	# Darroll: why was the null check on the target removed here?
+
+	if distance_to_player <= detection_range:
+		# TODO: maybe want to make attack_range a READONLY member variable
+		var attack_range = raycast.target_position.length()
+		if distance_to_player <= attack_range:
+			current_state = ZombieState.ATTACKING
 		else:
-			if current_state != ZombieState.WANDERING:
-				# When transitioning state, update the wander center
-				last_known_position = current_target.global_position
-				wander_center = last_known_position
-				_generate_wander_target() # generate wander target based on where the player was last in chase range
-			current_state = ZombieState.WANDERING
+			current_state = ZombieState.CHASING
+	else:
+		if current_state != ZombieState.WANDERING:
+			# When transitioning state, update the wander center
+			last_known_position = current_target.global_position
+			wander_center = last_known_position
+			_generate_wander_target() # generate wander target based on where the player was last in chase range
+		current_state = ZombieState.WANDERING
 
-		if old_state != current_state:
-			print("State changed to ", ZombieState.keys()[current_state])
+	if old_state != current_state:
+		print("State changed to ", ZombieState.keys()[current_state])
 
-		# Handle state
-		match current_state:
-			ZombieState.WANDERING:
-				_speed = 1.25
-				_set_wander_target_position(delta)
-			ZombieState.CHASING:
-				if !attack_disabled:
-					_set_chase_target_position()
-			ZombieState.ATTACKING:
-				if !attack_disabled:
-					print("npc_zombie.gd: Missing attack function. Implement attack function.")
-					#_attack_current_target()
+	# Handle state
+	match current_state:
+		ZombieState.WANDERING:
+			_speed = 1.25
+			_set_wander_target_position(delta)
+		ZombieState.CHASING:
+			if !attack_disabled:
+				_set_chase_target_position()
+		ZombieState.ATTACKING:
+			if !attack_disabled:
+				print("npc_zombie.gd: Missing attack function. Implement attack function.")
+				#_attack_current_target()
 	
 	_rotate_toward(navigation_agent.target_position)
 	super(delta)
