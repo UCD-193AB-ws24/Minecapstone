@@ -15,6 +15,8 @@ func _ready() -> void:
 
 	scenario_box = get_parent().get_node("ScenarioBox")
 	scenario_box_inventory = scenario_box.get_node("InventoryManager")
+
+	# This scenario uniquely re-saves the state after some additional setup.
 	_capture_initial_state()
 	reset_connections()
 

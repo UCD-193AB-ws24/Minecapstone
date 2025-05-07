@@ -124,14 +124,16 @@ public partial class InventoryManager : Node
 	public bool AddItem(Item item, int amount) {
 		if (TryAddToExistingStack(item, amount)) 
 		{
-			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
-			GD.Print(EmitSignal(nameof(ItemAdded), item));
+			// GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			// GD.Print(EmitSignal(nameof(ItemAdded), item));
+			EmitSignal(nameof(ItemAdded), item);
 			return true;
 		}
 		if (TryAddToNewSlot(item, amount))
 		{
-			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
-			GD.Print(EmitSignal(nameof(ItemAdded), item));
+			// GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
+			// GD.Print(EmitSignal(nameof(ItemAdded), item));
+			EmitSignal(nameof(ItemAdded), item);
 			return true;
 		}
 		return false;

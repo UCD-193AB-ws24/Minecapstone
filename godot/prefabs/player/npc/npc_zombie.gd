@@ -56,8 +56,8 @@ func _physics_process(delta):
 				_generate_wander_target() # generate wander target based on where the player was last in chase range
 			current_state = ZombieState.WANDERING
 
-		if old_state != current_state:
-			print("State changed to ", ZombieState.keys()[current_state])
+		# if old_state != current_state:
+		# 	print("State changed to ", ZombieState.keys()[current_state])
 
 		# Handle state
 		match current_state:
