@@ -18,19 +18,19 @@ func _ready() -> void:
 func track_success():
 	success_count += 1
 	current_iteration += 1
-	print("Success count:", success_count)
+	# print("Success count:", success_count)
 
 
 func track_failure():
 	failure_count += 1
 	current_iteration += 1
-	print("Failure count:", failure_count)
+	# print("Failure count:", failure_count)
 	
 
 func track_error():
 	error_count += 1
 	current_iteration += 1
-	print("Error count:", error_count)
+	# print("Error count:", error_count)
 	reset()
 
 

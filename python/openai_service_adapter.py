@@ -66,7 +66,7 @@ class OpenAIServiceAdapter(LLMService):
      
         # Add a newline and tab to the beginning of each line
         formatted_code = "\n\t" + "\n\t".join(code_lines)
-        print(f"OpenAI generated script (length: {len(formatted_code)} chars)")
+        # print(f"OpenAI generated script (length: {len(formatted_code)} chars)")
         return formatted_code
     
     async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:

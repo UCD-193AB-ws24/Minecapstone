@@ -40,7 +40,7 @@ func _physics_process(_delta):
 	
 	# print("Raycast found")
 
-	if raycast.is_colliding():
+	if raycast and raycast.is_colliding():
 		#print("Colliding")
 		var collider = raycast.get_collider()
 		if collider.name == "NPCZombie":
