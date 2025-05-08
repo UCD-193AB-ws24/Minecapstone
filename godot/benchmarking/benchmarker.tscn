@@ -1,3 +1,8 @@
-[gd_scene format=3 uid="uid://e62feh5lmdxr"]
+[gd_scene load_steps=3 format=3 uid="uid://e62feh5lmdxr"]
+
+[ext_resource type="Script" uid="uid://becer5tyhbd6" path="res://benchmarking/benchmarker.gd" id="1_e8rto"]
+[ext_resource type="PackedScene" uid="uid://1vp0ettxgy1v" path="res://benchmarking/scenarios/scenario_attack_baseline.tscn" id="2_iwud5"]
 
 [node name="Benchmarker" type="Node3D"]
+script = ExtResource("1_e8rto")
+scene_list = Array[PackedScene]([ExtResource("2_iwud5")])

@@ -47,6 +47,13 @@ func get_results(debug = false):
 		print("Failure count:", failure_count)
 		print("Error count:", error_count)
 	return [success_count, failure_count, error_count]
+
+
+func next_iteration():
+	if current_iteration < MAX_ITERATIONS:
+		reset()
+	else:
+		get_results(true)
 	
 
 func _input(event):

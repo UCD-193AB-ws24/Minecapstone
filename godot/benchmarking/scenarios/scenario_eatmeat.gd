@@ -141,14 +141,7 @@ func proceed_to_next_iteration():
 		
 		print("Disconnected signals from agent")
 	
-	# Wait briefly then reset for next iteration
-	get_tree().create_timer(1.0).timeout.connect(func():
-		if current_iteration < MAX_ITERATIONS:
-			reset()
-			# Wait for reset to complete
-			get_tree().create_timer(1.5).timeout.connect(func():
-				start_test()
-			)
-		else:
-			get_results(true)
-	)
+	next_iteration()
+
+	await get_tree().create_timer(0.5).timeout
+	start_test()

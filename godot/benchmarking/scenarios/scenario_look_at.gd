@@ -47,7 +47,4 @@ func _physics_process(_delta):
 			track_success()
 		elif collider.name == "Animal":
 			track_failure()
-		if current_iteration <= MAX_ITERATIONS:
-			reset()
-		else:
-			get_results(true)
+		next_iteration()

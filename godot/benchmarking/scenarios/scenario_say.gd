@@ -12,8 +12,4 @@ func _on_message_received(msg: String, _from_id: int, _to_id: int) -> void:
 	# Check for our test message
 	if msg == test_message:
 		track_success()
-
-		if current_iteration < MAX_ITERATIONS:
-			reset()
-		else:
-			get_results(true)
+		next_iteration()
