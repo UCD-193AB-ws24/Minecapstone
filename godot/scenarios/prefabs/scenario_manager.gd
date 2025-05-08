@@ -7,7 +7,7 @@ var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 100
+var MAX_ITERATIONS: int = 10
 
 
 # Called when the node enters the scene tree for the first time.
@@ -38,6 +38,15 @@ func reset():
 	# Restore the environment to its original state
 	_restore_initial_state()
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
+
+
+func get_results(debug = false):
+	if debug:
+		print("============== Scenario complete. ==============")
+		print("Success count:", success_count)
+		print("Failure count:", failure_count)
+		print("Error count:", error_count)
+	return [success_count, failure_count, error_count]
 	
 
 func _input(event):

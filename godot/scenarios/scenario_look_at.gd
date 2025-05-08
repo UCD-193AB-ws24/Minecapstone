@@ -49,9 +49,5 @@ func _physics_process(_delta):
 			track_failure()
 		if current_iteration <= MAX_ITERATIONS:
 			reset()
-		#Why is else necessary?
-		# else:
-		# 	print("============== Scenario complete. ==============")
-		# 	print("Success count:", success_count)
-		# 	print("Failure count:", failure_count)
-		# 	print("Error count:", error_count)
+		else:
+			get_results(true)

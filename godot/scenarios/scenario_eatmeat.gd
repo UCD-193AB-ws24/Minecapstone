@@ -41,7 +41,7 @@ func setup_agent(agent):
 	if inventory_manager:
 		var meat_item = ItemDictionary.Get(food_name)
 		if meat_item:
-			var result = inventory_manager.AddItem(meat_item, 1)
+			inventory_manager.AddItem(meat_item, 1)
 			print("Added " + food_name + " to agent's inventory - inventory now: " + inventory_manager.GetInventoryData())
 			
 			# Connect to signals
@@ -150,8 +150,5 @@ func proceed_to_next_iteration():
 				start_test()
 			)
 		else:
-			print("============== Scenario complete. ==============")
-			print("Success count:", success_count)
-			print("Failure count:", failure_count)
-			print("Error count:", error_count)
+			get_results(true)
 	)
