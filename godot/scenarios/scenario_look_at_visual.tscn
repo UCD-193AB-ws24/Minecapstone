@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_klf3g"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="3_mn0dk"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_by4s5"]
-[ext_resource type="Script" uid="uid://ssoph6jwg2ay" path="res://scenarios/prefabs/scenario_manager.gd" id="5_28057"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="6_mn0dk"]
 [ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="7_by4s5"]
+[ext_resource type="Script" uid="uid://dc4f2d4d7on6m" path="res://scenarios/scenario_look_at.gd" id="7_mn0dk"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
 vertices = PackedVector3Array(-43.6, 1.5, -49.68, -49.68, 1.5, -49.68, -49.68, 1.5, -43.6, -49.68, 1.5, 43.44, -49.68, 1.5, 49.68, -43.6, 1.5, 49.68, 49.68, 1.5, -43.6, 49.68, 1.5, -49.68, 43.44, 1.5, -49.68, 43.44, 1.5, 49.68, 49.68, 1.5, 49.68, 49.68, 1.5, 43.44, -37.36, 1.5, -49.68, -49.68, 1.5, -37.36, -37.36, 1.5, 49.68, -49.68, 1.5, 37.2, 49.68, 1.5, -37.36, 37.2, 1.5, -49.68, 37.2, 1.5, 49.68, -0.0800018, 1.5, -49.68, -6.32, 1.5, -49.68, -49.68, 1.5, -6.32, -49.68, 1.5, -0.0800018, 18.48, 1.5, 49.68, 49.68, 1.5, 24.72, 49.68, 1.5, 18.48, 12.24, 1.5, 49.68, 49.68, 1.5, -6.32, 49.68, 1.5, -12.56, 12.24, 1.5, -49.68, 6, 1.5, -49.68, 49.68, 1.5, 37.2, 30.96, 1.5, 49.68, -31.12, 1.5, -49.68, -49.68, 1.5, -31.12, -31.12, 1.5, 49.68, -49.68, 1.5, 30.96, 49.68, 1.5, -31.12, 30.96, 1.5, -49.68, -12.56, 1.5, -49.68, -18.8, 1.5, -49.68, -49.68, 1.5, -18.8, -49.68, 1.5, -12.56, -49.68, 1.5, 18.48, -18.8, 1.5, 49.68, -12.56, 1.5, 49.68, -49.68, 1.5, 12.24, -49.68, 1.5, 6, -6.32, 1.5, 49.68, 49.68, 1.5, -18.8, 18.48, 1.5, -49.68, 49.68, 1.5, 30.96, 24.72, 1.5, 49.68, -24.88, 1.5, -49.68, -49.68, 1.5, -24.88, -24.88, 1.5, 49.68, -49.68, 1.5, 24.72, 49.68, 1.5, -24.88, 24.72, 1.5, -49.68, -0.0800018, 1.5, 49.68, 49.68, 1.5, 6, 49.68, 1.5, -0.0800018, 6, 1.5, 49.68, 49.68, 1.5, 12.24)
@@ -47,9 +47,6 @@ goal = "Without moving, ook at the entity to the left."
 scenario_goal = "Without moving, look at the entity to the left."
 visual_mode = true
 
-[node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("5_28057")
-
 [node name="NPCZombie" parent="." instance=ExtResource("6_mn0dk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 2.5)
 _speed = 0.0
@@ -73,5 +70,8 @@ billboard = 1
 text = "Coordinates are (-2.5, -2.5)"
 font_size = 200
 outline_size = 48
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("7_mn0dk")
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
