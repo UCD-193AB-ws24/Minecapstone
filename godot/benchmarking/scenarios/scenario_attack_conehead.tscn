@@ -1,12 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://cx1ddo5r36ls8"]
+[gd_scene load_steps=10 format=3 uid="uid://ddr2des6bssim"]
 
-[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_j6mkj"]
-[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_erluh"]
-[ext_resource type="Script" uid="uid://doy24vmj373wx" path="res://benchmarking/scenarios/scenario_attack_selective.gd" id="7_mtvs4"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="7_r7l5o"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="8_j5ljg"]
-[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="10_eg4dg"]
-[ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="11_qsilw"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_pamg6"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_g0e3n"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="3_gd63u"]
+[ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="5_vh2i8"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="6_s3ar6"]
+[ext_resource type="Script" uid="uid://b6bkjo35ywh0x" path="res://benchmarking/scenarios/scenario_attack_conehead.gd" id="7_g0e3n"]
+[ext_resource type="PackedScene" uid="uid://cjccbnsq8343q" path="res://prefabs/player/npc/npc_conehead.tscn" id="7_pamg6"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_mtvs4"]
 vertices = PackedVector3Array(-43.6106, 1.51988, -49.6826, -49.6906, 1.51988, -49.6826, -49.6906, 1.51988, -43.6026, -49.6906, 1.51988, 43.4374, -49.6906, 1.51988, 49.6774, -43.6106, 1.51988, 49.6774, 49.6694, 1.51988, -43.6026, 49.6694, 1.51988, -49.6826, 43.4294, 1.51988, -49.6826, 43.4294, 1.51988, 49.6774, 49.6694, 1.51988, 49.6774, 49.6694, 1.51988, 43.4374, -37.3706, 1.51988, -49.6826, -49.6906, 1.51988, -37.3626, -37.3706, 1.51988, 49.6774, -49.6906, 1.51988, 37.1974, 49.6694, 1.51988, -37.3626, 37.1894, 1.51988, -49.6826, 37.1894, 1.51988, 49.6774, -0.0905571, 1.51988, -49.6826, -6.33055, 1.51988, -49.6826, -49.6906, 1.51988, -6.32256, -49.6906, 1.51988, -0.0825577, 18.4694, 1.51988, 49.6774, 49.6694, 1.51988, 24.7174, 49.6694, 1.51988, 18.4774, 12.2294, 1.51988, 49.6774, 49.6694, 1.51988, -6.32256, 49.6694, 1.51988, -12.5626, 12.2294, 1.51988, -49.6826, 5.98944, 1.51988, -49.6826, 49.6694, 1.51988, 37.1974, 30.9494, 1.51988, 49.6774, -31.1306, 1.51988, -49.6826, -49.6906, 1.51988, -31.1226, -31.1306, 1.51988, 49.6774, -49.6906, 1.51988, 30.9574, 49.6694, 1.51988, -31.1226, 30.9494, 1.51988, -49.6826, -12.5706, 1.51988, -49.6826, -18.8106, 1.51988, -49.6826, -49.6906, 1.51988, -18.8026, -49.6906, 1.51988, -12.5626, -49.6906, 1.51988, 18.4774, -18.8106, 1.51988, 49.6774, -12.5706, 1.51988, 49.6774, -49.6906, 1.51988, 12.2374, -49.6906, 1.51988, 5.99744, -6.33055, 1.51988, 49.6774, 49.6694, 1.51988, -18.8026, 18.4694, 1.51988, -49.6826, 49.6694, 1.51988, 30.9574, 24.7094, 1.51988, 49.6774, -24.8906, 1.51988, -49.6826, -49.6906, 1.51988, -24.8826, -24.8906, 1.51988, 49.6774, -49.6906, 1.51988, 24.7174, 49.6694, 1.51988, -24.8826, 24.7094, 1.51988, -49.6826, -0.0905571, 1.51988, 49.6774, 49.6694, 1.51988, 5.99744, 49.6694, 1.51988, -0.0825577, 5.98944, 1.51988, 49.6774, 49.6694, 1.51988, 12.2374)
@@ -20,50 +20,67 @@ agent_max_slope = 90.0
 edge_max_length = 10.0
 edge_max_error = 1.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pamg6"]
+albedo_color = Color(0.334327, 0.788699, 1, 1)
+
 [node name="World" type="Node3D"]
 
-[node name="UI" parent="." instance=ExtResource("1_j6mkj")]
+[node name="UI" parent="." instance=ExtResource("1_pamg6")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_mtvs4")
-script = ExtResource("3_erluh")
+script = ExtResource("2_g0e3n")
 
 [node name="Baseplate" type="CSGBox3D" parent="NavigationMesher"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0105543, 0.0198784, -0.00255489)
 use_collision = true
+collision_layer = 9
 size = Vector3(100, 1, 100)
+material = SubResource("StandardMaterial3D_pamg6")
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.18661, 23.8613, -0.866516)
 
-[node name="Agent" parent="." instance=ExtResource("7_r7l5o")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 10)
+[node name="Agent" parent="." instance=ExtResource("3_gd63u")]
+transform = Transform3D(0.999848, 0, 0.0174524, 0, 1, 0, -0.0174524, 0, 0.999848, -0.340211, 0.578259, 10.7884)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
 prompt_allowance = 1
+visual_mode = true
+attack_damage = 50.0
 
-[node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
-move_disabled = true
-_speed = 2.0
-
-[node name="Animal" parent="." instance=ExtResource("11_qsilw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 5)
-chase_speed = 0.0
+[node name="Animal4" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45499, 0.409239, -1.49083)
 move_disabled = true
 
-[node name="Player" parent="." instance=ExtResource("8_j5ljg")]
-transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, 0, 1, 0)
+[node name="Animal5" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.656323, 0.477163, 6.25382)
+move_disabled = true
+
+[node name="Animal" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.40819, 1, 5)
+move_disabled = true
+
+[node name="Animal3" parent="." instance=ExtResource("7_pamg6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.42415, 0.519879, 1.43678)
+move_disabled = true
+
+[node name="Animal2" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65584, 0.472456, 5)
+move_disabled = true
+
+[node name="Player" parent="." instance=ExtResource("6_s3ar6")]
+transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, -8.0936, 1, 13.4444)
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("7_mtvs4")
+script = ExtResource("7_g0e3n")
 
-[node name="Timer" type="Timer" parent="ScenarioManager"]
+[node name="ScenarioTimer" type="Timer" parent="ScenarioManager"]
 wait_time = 15.0
 autostart = true
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]
+[connection signal="timeout" from="ScenarioManager/ScenarioTimer" to="ScenarioManager" method="spawn_scene"]

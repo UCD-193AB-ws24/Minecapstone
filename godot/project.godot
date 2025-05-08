@@ -32,6 +32,7 @@ project/assembly_name="minecraft"
 [global_group]
 
 Persist=""
+Clear="For generated nodes to be cleared during reset"
 
 [input]
 

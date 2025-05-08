@@ -9,10 +9,16 @@ var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 10
 
+var timer:Timer
+@export var scenario_duration_seconds: int = 15
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	timer = get_node("ScenarioTimer")
+	timer.timeout.connect(_out_of_time)
 	_capture_initial_state()
+	reset_timer()
 
 
 func track_success():
@@ -38,6 +44,24 @@ func reset():
 	# Restore the environment to its original state
 	_restore_initial_state()
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
+	#reset timer
+	reset_timer()
+
+func _out_of_time():
+	"""Function is to be triggered by the out_of_time signal of an agent.
+	Function check if agent is out of time and if so, log failure and reset the scenario"""
+	print("out of time")
+	track_failure()
+	reset()
+
+	for i in range(10):
+		await get_tree().physics_frame
+
+func reset_timer():
+	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
+	Function resets the timer."""
+	print("reset timer")
+	timer.start(scenario_duration_seconds)
 
 
 func get_results(debug = false):
@@ -82,7 +106,6 @@ func _restore_initial_state():
 	var save_nodes = get_tree().get_nodes_in_group("Persist")
 	for node in save_nodes:
 		node.queue_free()
-
 	# Wait for full removal to prevent name collisions
 	for i in range(8):	await get_tree().physics_frame
 
