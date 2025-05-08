@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_by4s5"]
 [ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="6_mn0dk"]
 [ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="7_by4s5"]
-[ext_resource type="Script" uid="uid://dc4f2d4d7on6m" path="res://scenarios/scenario_look_at.gd" id="7_mn0dk"]
+[ext_resource type="Script" uid="uid://dc4f2d4d7on6m" path="res://benchmarking/scenarios/scenario_look_at.gd" id="7_ieyft"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
 vertices = PackedVector3Array(-43.6, 1.5, -49.68, -49.68, 1.5, -49.68, -49.68, 1.5, -43.6, -49.68, 1.5, 43.44, -49.68, 1.5, 49.68, -43.6, 1.5, 49.68, 49.68, 1.5, -43.6, 49.68, 1.5, -49.68, 43.44, 1.5, -49.68, 43.44, 1.5, 49.68, 49.68, 1.5, 49.68, 49.68, 1.5, 43.44, -37.36, 1.5, -49.68, -49.68, 1.5, -37.36, -37.36, 1.5, 49.68, -49.68, 1.5, 37.2, 49.68, 1.5, -37.36, 37.2, 1.5, -49.68, 37.2, 1.5, 49.68, -0.0800018, 1.5, -49.68, -6.32, 1.5, -49.68, -49.68, 1.5, -6.32, -49.68, 1.5, -0.0800018, 18.48, 1.5, 49.68, 49.68, 1.5, 24.72, 49.68, 1.5, 18.48, 12.24, 1.5, 49.68, 49.68, 1.5, -6.32, 49.68, 1.5, -12.56, 12.24, 1.5, -49.68, 6, 1.5, -49.68, 49.68, 1.5, 37.2, 30.96, 1.5, 49.68, -31.12, 1.5, -49.68, -49.68, 1.5, -31.12, -31.12, 1.5, 49.68, -49.68, 1.5, 30.96, 49.68, 1.5, -31.12, 30.96, 1.5, -49.68, -12.56, 1.5, -49.68, -18.8, 1.5, -49.68, -49.68, 1.5, -18.8, -49.68, 1.5, -12.56, -49.68, 1.5, 18.48, -18.8, 1.5, 49.68, -12.56, 1.5, 49.68, -49.68, 1.5, 12.24, -49.68, 1.5, 6, -6.32, 1.5, 49.68, 49.68, 1.5, -18.8, 18.48, 1.5, -49.68, 49.68, 1.5, 30.96, 24.72, 1.5, 49.68, -24.88, 1.5, -49.68, -49.68, 1.5, -24.88, -24.88, 1.5, 49.68, -49.68, 1.5, 24.72, 49.68, 1.5, -24.88, 24.72, 1.5, -49.68, -0.0800018, 1.5, 49.68, 49.68, 1.5, 6, 49.68, 1.5, -0.0800018, 6, 1.5, 49.68, 49.68, 1.5, 12.24)
@@ -43,13 +43,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
 
 [node name="Agent" parent="." instance=ExtResource("4_by4s5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
-goal = "Without moving, ook at the entity to the left."
-scenario_goal = "Without moving, look at the entity to the left."
-visual_mode = true
+goal = "Look at the zombie."
+scenario_goal = ""
 
 [node name="NPCZombie" parent="." instance=ExtResource("6_mn0dk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 2.5)
+collision_layer = 9
+collision_mask = 9
+chase_speed = 0.0
 _speed = 0.0
+_acceleration = 0.0
 
 [node name="Label3D" type="Label3D" parent="NPCZombie"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
@@ -61,7 +64,9 @@ outline_size = 48
 
 [node name="Animal" parent="." instance=ExtResource("7_by4s5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, -2.5)
+chase_speed = 0.0
 _speed = 0.0
+_acceleration = 0.0
 
 [node name="Label3D2" type="Label3D" parent="Animal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
@@ -72,6 +77,6 @@ font_size = 200
 outline_size = 48
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("7_mn0dk")
+script = ExtResource("7_ieyft")
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
