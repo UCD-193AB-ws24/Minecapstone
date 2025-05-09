@@ -21,6 +21,10 @@
 				{ "name": "gemini-1.5-pro", "supports_vision": true },
 				{ "name": "gemini-2.0-flash", "supports_vision": true }
 			]
+		},
+		"local_llm": {
+			"config_path": "python/local_llm_config.json"
 		}
+
 	}
 }
