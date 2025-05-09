@@ -1,6 +1,8 @@
 class_name ScenarioManager
 extends Node
 
+signal scenario_complete(success_count: int, failure_count: int, error_count: int)
+
 
 var success_count: int = 0
 var failure_count: int = 0
@@ -39,11 +41,13 @@ func reset():
 
 
 func get_results(debug = false):
+	""" This function MUST BE CALLED at the end of the scenario to get the results and for the scene switcher to work."""
 	if debug:
 		print("============== Scenario complete. ==============")
 		print("Success count:", success_count)
 		print("Failure count:", failure_count)
 		print("Error count:", error_count)
+	scenario_complete.emit(success_count, failure_count, error_count)
 	return [success_count, failure_count, error_count]
 
 
