@@ -31,5 +31,8 @@ class LLMServiceFactory:
         elif service_type == "gemini":
             from gemini_service_adapter import GeminiServiceAdapter
             return GeminiServiceAdapter(model=model, settings=settings)
+        elif service_type == "local_llm":
+            from localllm_service_adapter import LocalLLMService
+            return LocalLLMService(model=model, settings=settings)
         else:
             raise ValueError(f"Unknown service type: {service_type}")

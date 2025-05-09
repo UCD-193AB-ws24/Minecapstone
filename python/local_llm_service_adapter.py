@@ -12,7 +12,7 @@ class LocalLLMService(LLMService):
 
         # Config
         local_config = {}
-        local_config_path = settings.get("config_path", "./python/llm_config.json")
+        local_config_path = settings.get("config_path", "./python/local_llm_config.json")
 
         try:
             with open(local_config_path, 'r') as f:
