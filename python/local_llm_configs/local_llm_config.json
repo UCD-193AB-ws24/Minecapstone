@@ -1,0 +1,25 @@
+{
+  "api_endpoint": "http://localhost:11434/api/generate",
+  "model": "llama4",
+  "supports_vision": false,
+  "request_format": {
+    "model": "{model}",
+    "prompt": "{prompt}",
+    "stream": false,
+    "options": {
+      "temperature": 0.7,
+      "max_tokens": 1024
+    }
+  },
+  "response_field": "response",
+  "code_settings": {
+    "options": {
+      "temperature": 0.2
+    }
+  },
+  "goal_settings": {
+    "options": {
+      "temperature": 0.8
+    }
+  }
+}
