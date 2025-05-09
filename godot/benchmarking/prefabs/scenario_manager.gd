@@ -86,7 +86,7 @@ func _capture_initial_state():
 
 		save_data += json_string + "\n"
 		print("Saved the scene")
-
+	
 
 func _restore_initial_state():
 	var save_nodes = get_tree().get_nodes_in_group("Persist")
@@ -94,7 +94,7 @@ func _restore_initial_state():
 		node.queue_free()
 
 	# Wait for full removal to prevent name collisions
-	for i in range(8):	await get_tree().physics_frame
+	for i in range(16):	await get_tree().physics_frame
 
 	for json_string in save_data.split("\n"):
 		if json_string.strip_edges() == "":

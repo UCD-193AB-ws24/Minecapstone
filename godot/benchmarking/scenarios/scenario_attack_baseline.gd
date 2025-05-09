@@ -28,7 +28,7 @@ func reset_connections():
 
 	zombie = get_parent().get_node("Zombie")
 	agent = get_parent().get_node("Agent")
-
+	print(zombie, agent)
 	if zombie:
 		zombie.has_died.connect(_on_zombie_died)
 	if agent:
