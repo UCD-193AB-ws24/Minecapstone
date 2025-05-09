@@ -22,4 +22,3 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 		track_success()
 	else:
 		track_failure()
-	next_iteration()

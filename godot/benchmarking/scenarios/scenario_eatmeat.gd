@@ -125,6 +125,7 @@ func _on_timeout():
 	print("Failure! Test timed out - agent didn't eat " + food_name)
 	proceed_to_next_iteration()
 
+# This may be broken
 func proceed_to_next_iteration():
 	# Store the agent we're disconnecting from
 	var agent_to_disconnect = current_agent
@@ -141,7 +142,5 @@ func proceed_to_next_iteration():
 		
 		print("Disconnected signals from agent")
 	
-	next_iteration()
-
 	await get_tree().create_timer(0.5).timeout
 	start_test()

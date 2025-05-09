@@ -2,6 +2,7 @@
 extends ScenarioManager
 
 
+
 func _ready() -> void:
 	super()
 	reload()
@@ -19,8 +20,6 @@ func reload():
 
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "BluePlatform":
-		track_success()
+		await track_success()
 	else:
-		track_failure()
-
-	next_iteration()
+		await track_failure()

@@ -7,10 +7,9 @@ var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 10
+var MAX_ITERATIONS: int = 1
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_capture_initial_state()
 
@@ -18,26 +17,25 @@ func _ready() -> void:
 func track_success():
 	success_count += 1
 	current_iteration += 1
-	# print("Success count:", success_count)
+	await next_iteration()
 
 
 func track_failure():
 	failure_count += 1
 	current_iteration += 1
-	# print("Failure count:", failure_count)
-	
+	await next_iteration()
+
 
 func track_error():
 	error_count += 1
 	current_iteration += 1
-	# print("Error count:", error_count)
-	reset()
+	await next_iteration()
 
 
 func reset():
 	# Restore the environment to its original state
-	_restore_initial_state()
-	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
+	print("Environment reset. Successes:", success_count, ", Failures:", failure_count, ", Errors:", error_count)
+	await _restore_initial_state()
 
 
 func get_results(debug = false):
@@ -51,9 +49,14 @@ func get_results(debug = false):
 
 func next_iteration():
 	if current_iteration < MAX_ITERATIONS:
-		reset()
+		await reset()
 	else:
-		get_results(true)
+		var results = get_results(true)
+		var success = results[0]
+		var failure = results[1]
+		var error = results[2]
+		ScenarioSwitcher.save_results(success, failure, error)
+		ScenarioSwitcher.next_scene()
 	
 
 func _input(event):
@@ -115,4 +118,3 @@ func _restore_initial_state():
 			if i == "filename" or i == "parent" or i == "pos_x" or i == "pos_y":
 				continue
 			new_object.set(i, node_data[i])
-	pass

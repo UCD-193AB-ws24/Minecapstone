@@ -10,4 +10,3 @@ func _ready() -> void:
 	# Enable the ScenarioSwitcher global
 	ScenarioSwitcher.enable(scene_list)
 	ScenarioSwitcher.next_scene()
-	print(ScenarioSwitcher.enabled)
