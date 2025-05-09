@@ -3,23 +3,32 @@ import requests
 import json
 import re
 from typing import Optional, Dict, Any
+import os
 
-class LocalLLMService(LLMService):
+class LocalLLMServiceAdapter(LLMService):
     """Adapter for any locally run LLM"""
 
     def __init__(self, model="default", settings = None):
-        super().__init__(model = model, settings = settings)
-
-        # Config
+        super().__init__(model=model, settings=settings)
+    
+        # Load local config if specified
+        self.config = settings or {}
         local_config = {}
-        local_config_path = settings.get("config_path", "./python/local_llm_config.json")
-
+        
+        local_config_path = self.config.get("config_path", "./local_llm_config.json")
+        
+        if local_config_path.startswith("python/"):
+            local_config_path = local_config_path[7:]
+        
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        resolved_path = os.path.join(script_dir, local_config_path)
+        
         try:
-            with open(local_config_path, 'r') as f:
+            with open(resolved_path, 'r') as f:
                 local_config = json.load(f)
-                print(f"Loaded local LLM configuration from {local_config_path}")
+                print(f"Loaded local LLM configuration from {resolved_path}")
         except FileNotFoundError:
-            print(f"No local LLM config found at {local_config_path}, using defaults")
+            print(f"No local LLM config found at {resolved_path}, using defaults")
 
         self.config = {**local_config, **settings}
         
