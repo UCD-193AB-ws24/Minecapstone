@@ -67,9 +67,10 @@ func _physics_process(delta):
 			ZombieState.CHASING:
 				if !attack_disabled:
 					_set_chase_target_position()
-			ZombieState.ATTACKING:
-				if !attack_disabled:
-					print("npc_zombie.gd: Missing attack function. Implement attack function.")
+			#ZombieState.ATTACKING:
+				#if !attack_disabled:
+					
+					#print("npc_zombie.gd: Missing attack function. Implement attack function.")
 					#_attack_current_target()
 		_rotate_toward(navigation_agent.target_position)
 	
