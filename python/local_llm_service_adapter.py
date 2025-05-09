@@ -89,3 +89,71 @@ Your response should be a single sentence or short paragraph goal only.
 
         except Exception as e:
             print(f"Error generating goal with Local LLM: {e}")
+
+    def _make_api_request(self, prompt: str, image_data: Optional[str] = None, request_type: str = "general") -> str:
+        """Make a request to the local LLM API"""
+        # Get request format from config, or use default
+        request_format = self.config.get("request_format", {"prompt": "{prompt}"})
+        
+        # Create a copy of the request format
+        payload = {}
+        for key, value in request_format.items():
+            if isinstance(value, str):
+                # Replace placeholders
+                processed_value = value.replace("{prompt}", prompt)
+                if "{model}" in processed_value and self.model_name:
+                    processed_value = processed_value.replace("{model}", self.model_name)
+                payload[key] = processed_value
+            else:
+                # Copy other values as is
+                payload[key] = value
+        
+        # Add image if supported
+        if image_data and self.supports_vision:
+            image_field = self.config.get("image_field", "image")
+            payload[image_field] = image_data
+        
+        # Apply type-specific settings
+        if request_type == "code" and "code_settings" in self.config:
+            for key, value in self.config["code_settings"].items():
+                payload[key] = value
+        elif request_type == "goal" and "goal_settings" in self.config:
+            for key, value in self.config["goal_settings"].items():
+                payload[key] = value
+        
+        # Make the request
+        headers = {"Content-Type": "application/json"}
+        if "headers" in self.config:
+            headers.update(self.config["headers"])
+        
+        response = requests.post(
+            self.api_endpoint,
+            json=payload,
+            headers=headers,
+            timeout=self.timeout
+        )
+        
+        # Handle non-200 responses
+        if response.status_code != 200:
+            raise Exception(f"API returned status {response.status_code}: {response.text}")
+        
+        # Try to parse JSON response
+        try:
+            result = response.json()
+            
+            # Use configured response field if specified
+            response_field = self.config.get("response_field", None)
+            if response_field and response_field in result:
+                return result[response_field]
+            
+            # Check common response fields
+            for field in ["text", "content", "response", "output", "generated_text"]:
+                if field in result:
+                    return result[field]
+            
+            # Fall back to the full response
+            return str(result)
+            
+        except ValueError:
+            # Not JSON, return text directly
+            return response.text
