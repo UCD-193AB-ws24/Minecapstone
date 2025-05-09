@@ -106,6 +106,11 @@ func _restore_initial_state():
 	var save_nodes = get_tree().get_nodes_in_group("Persist")
 	for node in save_nodes:
 		node.queue_free()
+	#free nodes from Clear group
+	var clear_nodes = get_tree().get_nodes_in_group("Clear")
+	for node in clear_nodes:
+		node.queue_free()
+
 	# Wait for full removal to prevent name collisions
 	for i in range(8):	await get_tree().physics_frame
 
