@@ -44,7 +44,7 @@ class LocalLLMService(LLMService):
         try:
             import asyncio
             response_text = await asyncio.to_thread(
-                self.make_api_request,
+                self._make_api_request,
                 full_prompt,
                 image_data
             )
@@ -157,3 +157,47 @@ Your response should be a single sentence or short paragraph goal only.
         except ValueError:
             # Not JSON, return text directly
             return response.text
+        
+    def _extract_code(self, text: str) -> str:
+        """Helper method: extract code from the response text"""
+        # Look for code blocks
+        code_match = re.search(r'```(?:python|gdscript)?\s*(.*?)```', text, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        
+        # Try to parse JSON format
+        try:
+            data = json.loads(text)
+            if "line_of_code_of_function" in data:
+                return "\n".join(data["line_of_code_of_function"])
+        except (json.JSONDecodeError, TypeError):
+            pass
+        
+        # Assume the entire text is code (simple approach)
+        return text
+    
+    def _extract_goal(self, text: str) -> str:
+        """Extract a goal from the response text"""
+        # Try to parse JSON response
+        try:
+            data = json.loads(text)
+            if "plaintext_goal" in data:
+                return data["plaintext_goal"]
+        except (json.JSONDecodeError, TypeError):
+            pass
+        
+        # Clean up the text (remove markdown, etc.)
+        cleaned = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
+        lines = cleaned.strip().split('\n')
+        
+        # Find the first non-empty, non-header line
+        for line in lines:
+            line = line.strip()
+            if line and not line.startswith('#') and line != "Goal:":
+                # Clean up the line
+                line = re.sub(r'^[*-] ', '', line)
+                line = re.sub(r'^Goal: ', '', line)
+                return line
+        
+        # Fall back to default
+        return "No goal generated"
