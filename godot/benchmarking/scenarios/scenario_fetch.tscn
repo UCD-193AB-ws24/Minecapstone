@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://ct8loqnh6o263"]
+[gd_scene load_steps=8 format=3 uid="uid://ct8loqnh6o263"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_53nu6"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_wmjf1"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="3_5gkwf"]
+[ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="4_aa4bf"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="5_fhyri"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="6_53nu6"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_hniks"]
 vertices = PackedVector3Array(-43.6106, 1.51988, -49.6826, -49.6906, 1.51988, -49.6826, -49.6906, 1.51988, -43.6026, -49.6906, 1.51988, 43.4374, -49.6906, 1.51988, 49.6774, -43.6106, 1.51988, 49.6774, 49.6694, 1.51988, -43.6026, 49.6694, 1.51988, -49.6826, 43.4294, 1.51988, -49.6826, 43.4294, 1.51988, 49.6774, 49.6694, 1.51988, 49.6774, 49.6694, 1.51988, 43.4374, -37.3706, 1.51988, -49.6826, -49.6906, 1.51988, -37.3626, -37.3706, 1.51988, 49.6774, -49.6906, 1.51988, 37.1974, 49.6694, 1.51988, -37.3626, 37.1894, 1.51988, -49.6826, 37.1894, 1.51988, 49.6774, -0.0905571, 1.51988, -49.6826, -6.33055, 1.51988, -49.6826, -49.6906, 1.51988, -6.32256, -49.6906, 1.51988, -0.0825577, 18.4694, 1.51988, 49.6774, 49.6694, 1.51988, 24.7174, 49.6694, 1.51988, 18.4774, 12.2294, 1.51988, 49.6774, 49.6694, 1.51988, -6.32256, 49.6694, 1.51988, -12.5626, 12.2294, 1.51988, -49.6826, 5.98944, 1.51988, -49.6826, 49.6694, 1.51988, 37.1974, 30.9494, 1.51988, 49.6774, -31.1306, 1.51988, -49.6826, -49.6906, 1.51988, -31.1226, -31.1306, 1.51988, 49.6774, -49.6906, 1.51988, 30.9574, 49.6694, 1.51988, -31.1226, 30.9494, 1.51988, -49.6826, -12.5706, 1.51988, -49.6826, -18.8106, 1.51988, -49.6826, -49.6906, 1.51988, -18.8026, -49.6906, 1.51988, -12.5626, -49.6906, 1.51988, 18.4774, -18.8106, 1.51988, 49.6774, -12.5706, 1.51988, 49.6774, -49.6906, 1.51988, 12.2374, -49.6906, 1.51988, 5.99744, -6.33055, 1.51988, 49.6774, 49.6694, 1.51988, -18.8026, 18.4694, 1.51988, -49.6826, 49.6694, 1.51988, 30.9574, 24.7094, 1.51988, 49.6774, -24.8906, 1.51988, -49.6826, -49.6906, 1.51988, -24.8826, -24.8906, 1.51988, 49.6774, -49.6906, 1.51988, 24.7174, 49.6694, 1.51988, -24.8826, 24.7094, 1.51988, -49.6826, -0.0905571, 1.51988, 49.6774, 49.6694, 1.51988, 5.99744, 49.6694, 1.51988, -0.0825577, 5.98944, 1.51988, 49.6774, 49.6694, 1.51988, 12.2374)
@@ -34,16 +36,16 @@ use_collision = true
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7216, 6, 2.24452)
 
 [node name="Agent" parent="." instance=ExtResource("3_5gkwf")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 5)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 2.03032, 5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 prompt_allowance = 10
 
 [node name="Agent2" parent="." instance=ExtResource("3_5gkwf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 5, 5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.21307, 5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Have Agent2 hold the most quantity of meat"
 prompt_allowance = 10
@@ -56,6 +58,12 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 
 [node name="Timer" type="Timer" parent="ScenarioManager"]
 wait_time = 15.0
 autostart = true
+
+[node name="Animal" parent="." instance=ExtResource("4_aa4bf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.85656, 0.519878, -3.23215)
+
+[node name="Zombie" parent="." instance=ExtResource("6_53nu6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.139519, 0.519879, -2.89983)
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
 [connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]
