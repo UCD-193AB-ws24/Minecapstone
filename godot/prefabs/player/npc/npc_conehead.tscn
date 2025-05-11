@@ -15,6 +15,10 @@ height = 0.8
 transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0.5, 0.4)
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="." index="7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05924, 0.407133)
-height = 0.546875
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2056, 0.407133)
+height = 0.8396
 cone = true
+
+[node name="Label3D" type="Label3D" parent="." index="8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.17243, 0)
+pixel_size = 0.02

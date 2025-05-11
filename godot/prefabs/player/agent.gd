@@ -174,6 +174,7 @@ func build_prompt_context() -> String:
 	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
 	context += "	All detected items: " + _get_all_detected_items()
 	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
+	context += "	your five most recent memories: " + memories.format_recent_for_prompt(5) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)

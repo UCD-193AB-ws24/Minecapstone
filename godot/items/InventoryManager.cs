@@ -43,6 +43,14 @@ public partial class InventoryManager : Node
 		if (!_inventorySlots[_selectedSlot]) return;
 		DecrementItemInSlot(_selectedSlot);
 	}
+	public void ConsumeItem(String itemName) {
+		// Consume one of itemName in inventory
+		// Check if itemName is in inventory
+		if (!_nameToSlots.ContainsKey(itemName)) return;
+		List<int> slotNums = _nameToSlots[itemName];
+		int slot = slotNums[0];
+		DecrementItemInSlot(slot);
+	}
 
 	public bool DropItem(String itemName, int amount) {
 		int currentAmount = amount;

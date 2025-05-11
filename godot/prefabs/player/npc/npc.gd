@@ -16,6 +16,9 @@ extends Player
 @export var chase_speed: float = 2.0		# TODO: why is this a member of NPC when not all NPCs chase
 @export var move_disabled: bool = false
 @export var attack_disabled: bool = false
+#@export var label_name:String = "" 
+
+var label: Label3D
 
 signal has_died(deadName: String)
 signal detected_entities_added(added_entity: Node)
@@ -26,6 +29,8 @@ func _ready():
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
+	label = get_node("Label3D")
+
 
 
 func actor_setup():
@@ -33,6 +38,10 @@ func actor_setup():
 	# Do not await inside ready.
 	await get_tree().physics_frame
 	navigation_ready = true
+
+	if label != null:
+		label.text = self.name
+		label.pixel_size = 0.02
 
 
 func _input(_event):
@@ -292,6 +301,21 @@ func attack_target(target_name: String, num_attacks: int = 1):
 	current_target = null
 	return true
 
+func pick_up_item(item_name: String):
+	# Find item by name
+	var item = null
+	for detected_item in detected_items:
+		if detected_item.get_meta("ItemName") == item_name:
+			item = detected_item
+			break
+			
+	if item == null:
+		print("Item '%s' not found in detected items." % item_name)
+		return false
+
+	await move_to_position(item.global_position.x, item.global_position.z)
+	return true
+
 # Attacks specificaly the current target
 func _attack():
 	var hit = raycast.is_colliding() and raycast.get_collider() == current_target
@@ -301,6 +325,8 @@ func _attack():
 		_apply_knockback(current_target)
 		
 	return hit
+
+
 
 
 func _on_body_entered_detection_sphere(body: Node):
@@ -396,6 +422,7 @@ func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
 	# Drop loot
 	inventory_manager.DropAllItems()
+	print("has_died emitted")
 	has_died.emit(str(self.name))
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()

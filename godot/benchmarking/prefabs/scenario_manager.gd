@@ -54,9 +54,6 @@ func _out_of_time():
 	track_failure()
 	reset()
 
-	for i in range(10):
-		await get_tree().physics_frame
-
 func reset_timer():
 	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
 	Function resets the timer."""
