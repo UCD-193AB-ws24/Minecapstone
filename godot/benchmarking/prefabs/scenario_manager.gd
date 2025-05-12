@@ -41,6 +41,9 @@ func track_error():
 
 
 func reset():
+	#Clear data from global classes
+	MessageBroker.clear_agents()
+	AgentManager.clear_agents()
 	# Restore the environment to its original state
 	_restore_initial_state()
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count)
@@ -128,6 +131,7 @@ func _restore_initial_state():
 		get_node(node_data["parent"]).add_child(new_object)
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 
+		
 		# Now we set the remaining variables.
 		for i in node_data.keys():
 			if i == "filename" or i == "parent" or i == "pos_x" or i == "pos_y":

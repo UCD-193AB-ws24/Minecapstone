@@ -368,7 +368,7 @@ func  _get_all_detected_entities():
 	=== %s ===
 		* Current HP: %s
 		* Distance To: %s units
-		* Possible item drops:
+		* Item drops on death:
 		%s
 	""" % [
 		entity.name,

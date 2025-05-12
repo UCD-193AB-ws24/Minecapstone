@@ -25,16 +25,6 @@ signal out_of_prompts
 func _ready() -> void:
 	super()
 
-	# Register with message_broker
-	MessageBroker.register_agent(self)
-	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
-
-	#register with agent_manager
-	AgentManager.register_agent(self)
-
-	print("My name is: ", self.name)
-
-
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
 	if _event is InputEventKey and _event.pressed:
@@ -85,12 +75,15 @@ func _physics_process(delta):
 
 # Gets call-deferred in _ready of npc
 func actor_setup():
-	# Wait for the first physics frame so the NavigationServer can sync.
-	# Do not await inside ready.
+	super()
+	# Register with message_broker
+	MessageBroker.register_agent(self)
+	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
 
-	await get_tree().physics_frame
-	navigation_ready = true
+	#register with agent_manager
+	AgentManager.register_agent(self)
 
+	print("My name is: ", self.name)
 	# # Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
