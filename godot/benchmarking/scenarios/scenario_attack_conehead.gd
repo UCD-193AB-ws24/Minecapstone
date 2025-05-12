@@ -15,7 +15,7 @@ func _ready() -> void:
 
 func _on_died(deadName: String):
 	"""Triggered by has_died signal. If the conehead animal dies, set conehead died flag true. 
-	If any other animal dies, log failre and reset the scenario. """
+	If any other animal dies, log failure and reset the scenario. """
 	print("this died: ", deadName)
 	if deadName == conehead.name:
 		print("conehead_dead flag set to true")

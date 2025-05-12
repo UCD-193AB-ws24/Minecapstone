@@ -27,7 +27,12 @@ func _ready() -> void:
 
 	# Register with message_broker
 	MessageBroker.register_agent(self)
-	MessageBroker.message.connect(_on_message_received)
+	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
+
+	#register with agent_manager
+	AgentManager.register_agent(self)
+
+	print("My name is: ", self.name)
 
 
 func _input(_event):
@@ -146,12 +151,22 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
+		#get agents by id
+		var from_agent =  MessageBroker.get_agent_by_id(from_id)
+		var to_agent
+		if to_id != -1:
+			to_agent = MessageBroker.get_agent_by_id(to_id)
+		else:
+			to_agent = self
+
 		# Convert from_id to a color
 		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
-		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, debug_id, from_color, from_id, msg])
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.name, from_color, from_agent.name, msg])
 
 		# Included this message in the agent's memory
-		memories.add_message(msg, from_id, to_id)
+		print("adding to memory: ", msg)
+		var message_memory = MessageMemory.new(msg, from_agent.name, to_agent.name)
+		memories.add_memory(message_memory)
 
 
 func script_execution_completed():

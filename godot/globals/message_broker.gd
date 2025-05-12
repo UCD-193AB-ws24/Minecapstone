@@ -24,6 +24,10 @@ func register_agent(agent: Agent) -> void:
 func unregister_agent(agent: Agent) -> void:
 	agents.erase(agent.hash_id)
 
+func clear_agents() -> void:
+	"""Clears all agents from dict. Intended for when scenario resets or switches"""
+	agents.clear()
+
 
 func send_message(msg: String, from_id: int, to_id: int = -1) -> bool:
 	# TODO: check if to_id is a valid agent, inform source agent if failed
