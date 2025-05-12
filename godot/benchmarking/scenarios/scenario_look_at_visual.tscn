@@ -43,7 +43,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
 
 [node name="Agent" parent="." instance=ExtResource("4_by4s5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
-goal = "Without moving, ook at the entity to the left."
+goal = "Without moving, look at the entity to the left."
 scenario_goal = "Without moving, look at the entity to the left."
 visual_mode = true
 
