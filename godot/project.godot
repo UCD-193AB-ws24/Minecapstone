@@ -20,6 +20,7 @@ ItemDictionary="*res://items/ItemDictionary.cs"
 AgentManager="*res://globals/agent_manager.gd"
 API="*res://websocket/websocket.gd"
 MessageBroker="*res://globals/message_broker.gd"
+ScenarioSwitcher="*res://benchmarking/prefabs/scenario_switcher.gd"
 
 [debug]
 
@@ -32,6 +33,7 @@ project/assembly_name="minecraft"
 [global_group]
 
 Persist=""
+Clear="For generated nodes to be cleared during reset"
 
 [input]
 

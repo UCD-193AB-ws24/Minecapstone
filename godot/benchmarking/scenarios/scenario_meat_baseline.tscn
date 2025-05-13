@@ -1,12 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://0khhh01v1rh"]
+[gd_scene load_steps=7 format=3 uid="uid://c12sfy6hssvwh"]
 
-[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_mdcgn"]
-[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_shwkf"]
-[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_w4j5f"]
-[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://scenarios/scenario_meat_baseline.gd" id="9_b7mka"]
-[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="10_ibdnm"]
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_3opkw"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="3_8r8vj"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="7_t8jqv"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="8_jq16g"]
+[ext_resource type="Script" uid="uid://dm0mj5eiul7m0" path="res://benchmarking/scenarios/scenario_meat_baseline.gd" id="9_3opkw"]
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_1cutr"]
+[sub_resource type="NavigationMesh" id="NavigationMesh_4k8ar"]
 vertices = PackedVector3Array(-43.6106, 1.51988, -49.6826, -49.6906, 1.51988, -49.6826, -49.6906, 1.51988, -43.6026, -49.6906, 1.51988, 43.4374, -49.6906, 1.51988, 49.6774, -43.6106, 1.51988, 49.6774, 49.6694, 1.51988, -43.6026, 49.6694, 1.51988, -49.6826, 43.4294, 1.51988, -49.6826, 43.4294, 1.51988, 49.6774, 49.6694, 1.51988, 49.6774, 49.6694, 1.51988, 43.4374, -37.3706, 1.51988, -49.6826, -49.6906, 1.51988, -37.3626, -37.3706, 1.51988, 49.6774, -49.6906, 1.51988, 37.1974, 49.6694, 1.51988, -37.3626, 37.1894, 1.51988, -49.6826, 37.1894, 1.51988, 49.6774, -0.0905571, 1.51988, -49.6826, -6.33055, 1.51988, -49.6826, -49.6906, 1.51988, -6.32256, -49.6906, 1.51988, -0.0825577, 18.4694, 1.51988, 49.6774, 49.6694, 1.51988, 24.7174, 49.6694, 1.51988, 18.4774, 12.2294, 1.51988, 49.6774, 49.6694, 1.51988, -6.32256, 49.6694, 1.51988, -12.5626, 12.2294, 1.51988, -49.6826, 5.98944, 1.51988, -49.6826, 49.6694, 1.51988, 37.1974, 30.9494, 1.51988, 49.6774, -31.1306, 1.51988, -49.6826, -49.6906, 1.51988, -31.1226, -31.1306, 1.51988, 49.6774, -49.6906, 1.51988, 30.9574, 49.6694, 1.51988, -31.1226, 30.9494, 1.51988, -49.6826, -12.5706, 1.51988, -49.6826, -18.8106, 1.51988, -49.6826, -49.6906, 1.51988, -18.8026, -49.6906, 1.51988, -12.5626, -49.6906, 1.51988, 18.4774, -18.8106, 1.51988, 49.6774, -12.5706, 1.51988, 49.6774, -49.6906, 1.51988, 12.2374, -49.6906, 1.51988, 5.99744, -6.33055, 1.51988, 49.6774, 49.6694, 1.51988, -18.8026, 18.4694, 1.51988, -49.6826, 49.6694, 1.51988, 30.9574, 24.7094, 1.51988, 49.6774, -24.8906, 1.51988, -49.6826, -49.6906, 1.51988, -24.8826, -24.8906, 1.51988, 49.6774, -49.6906, 1.51988, 24.7174, 49.6694, 1.51988, -24.8826, 24.7094, 1.51988, -49.6826, -0.0905571, 1.51988, 49.6774, 49.6694, 1.51988, 5.99744, 49.6694, 1.51988, -0.0825577, 5.98944, 1.51988, 49.6774, 49.6694, 1.51988, 12.2374)
 polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(5, 4, 3), PackedInt32Array(8, 7, 6), PackedInt32Array(11, 10, 9), PackedInt32Array(0, 12, 2), PackedInt32Array(2, 12, 13), PackedInt32Array(5, 3, 14), PackedInt32Array(14, 3, 15), PackedInt32Array(6, 16, 8), PackedInt32Array(8, 16, 17), PackedInt32Array(11, 9, 18), PackedInt32Array(20, 19, 21), PackedInt32Array(21, 19, 22), PackedInt32Array(24, 23, 25), PackedInt32Array(25, 23, 26), PackedInt32Array(28, 27, 29), PackedInt32Array(29, 27, 30), PackedInt32Array(11, 18, 31), PackedInt32Array(31, 18, 32), PackedInt32Array(12, 33, 13), PackedInt32Array(13, 33, 34), PackedInt32Array(14, 15, 35), PackedInt32Array(35, 15, 36), PackedInt32Array(16, 37, 17), PackedInt32Array(17, 37, 38), PackedInt32Array(40, 39, 41), PackedInt32Array(41, 39, 42), PackedInt32Array(44, 43, 45), PackedInt32Array(45, 43, 46), PackedInt32Array(48, 47, 22), PackedInt32Array(49, 28, 50), PackedInt32Array(50, 28, 29), PackedInt32Array(31, 32, 51), PackedInt32Array(51, 32, 52), PackedInt32Array(33, 53, 34), PackedInt32Array(34, 53, 54), PackedInt32Array(35, 36, 55), PackedInt32Array(55, 36, 56), PackedInt32Array(37, 57, 38), PackedInt32Array(38, 57, 58), PackedInt32Array(48, 22, 59), PackedInt32Array(59, 22, 60), PackedInt32Array(60, 22, 61), PackedInt32Array(61, 22, 19), PackedInt32Array(63, 62, 60), PackedInt32Array(60, 62, 59), PackedInt32Array(25, 26, 63), PackedInt32Array(63, 26, 62), PackedInt32Array(30, 27, 19), PackedInt32Array(19, 27, 61), PackedInt32Array(51, 52, 24), PackedInt32Array(24, 52, 23), PackedInt32Array(53, 40, 54), PackedInt32Array(54, 40, 41), PackedInt32Array(55, 56, 44), PackedInt32Array(44, 56, 43), PackedInt32Array(57, 49, 58), PackedInt32Array(58, 49, 50), PackedInt32Array(39, 20, 42), PackedInt32Array(42, 20, 21), PackedInt32Array(45, 46, 48), PackedInt32Array(48, 46, 47)]
 geometry_parsed_geometry_type = 1
@@ -18,19 +18,16 @@ agent_max_slope = 90.0
 edge_max_length = 10.0
 edge_max_error = 1.0
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r23cj"]
-albedo_color = Color(0, 0, 1, 1)
-
 [node name="World" type="Node3D"]
 
-[node name="UI" parent="." instance=ExtResource("1_mdcgn")]
+[node name="UI" parent="." instance=ExtResource("1_3opkw")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.998798, 0, -0.0490241, 0.0243124, 0.868363, 0.495332, 0.0425707, -0.495929, 0.867319, 0, 40.0129, 0)
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
-navigation_mesh = SubResource("NavigationMesh_1cutr")
-script = ExtResource("3_shwkf")
+navigation_mesh = SubResource("NavigationMesh_4k8ar")
+script = ExtResource("3_8r8vj")
 
 [node name="Baseplate" type="CSGBox3D" parent="NavigationMesher"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0105543, 0.0198784, -0.00255489)
@@ -38,31 +35,22 @@ use_collision = true
 size = Vector3(100, 1, 100)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+transform = Transform3D(1, 0, -3.72529e-09, 0, 1, 0, 3.72529e-09, 0, 1, 0, 6, 9.53674e-07)
 
-[node name="Agent" parent="." instance=ExtResource("10_ibdnm")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 3.722)
-goal = "Give Agent2 your meat"
-scenario_goal = "Have Agent2 hold the most quantity of meat"
-self_fix_mode = false
+[node name="Agent" parent="." instance=ExtResource("8_jq16g")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 5)
+goal = "Satisfy the Scenario Goal"
+scenario_goal = "Have Agent2 hold as much meat as possible."
 
-[node name="Agent2" parent="." instance=ExtResource("10_ibdnm")]
+[node name="Agent2" parent="." instance=ExtResource("8_jq16g")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 5, -5)
-goal = "Tell agent named Agent you want meat"
-scenario_goal = "Have Agent2 hold the most quantity of meat"
-self_fix_mode = false
+goal = "Satisfy the Scenario Goal"
+scenario_goal = "Have Agent2 hold as much meat as possible."
 
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 1, 0)
-radius = 2.0
-height = 1.0
-sides = 32
-material = SubResource("StandardMaterial3D_r23cj")
-
-[node name="Player" parent="." instance=ExtResource("7_w4j5f")]
+[node name="Player" parent="." instance=ExtResource("7_t8jqv")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("9_b7mka")
+script = ExtResource("9_3opkw")
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

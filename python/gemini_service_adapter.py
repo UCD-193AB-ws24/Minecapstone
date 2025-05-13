@@ -142,7 +142,7 @@ class GeminiServiceAdapter(LLMService):
             # Process the code lines (existing code continues here)
             code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
             formatted_code = "\n\t" + "\n\t".join(code_lines)
-            print(f"Gemini generated script (length: {len(formatted_code)} chars)")
+            # print(f"Gemini generated script (length: {len(formatted_code)} chars)")
             return formatted_code
                 
         except Exception as e:

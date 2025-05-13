@@ -2,6 +2,7 @@
 extends ScenarioManager
 
 
+
 func _ready() -> void:
 	super()
 	reload()
@@ -18,15 +19,7 @@ func reload():
 
 
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
-	if platform_name == "RedPlatform":
-		track_success()
+	if platform_name == "BluePlatform":
+		await track_success()
 	else:
-		track_failure()
-
-	if current_iteration <= MAX_ITERATIONS:
-		reset()
-	else:
-		print("============== Scenario complete. ==============")
-		print("Success count:", success_count)
-		print("Failure count:", failure_count)
-		print("Error count:", error_count)
+		await track_failure()

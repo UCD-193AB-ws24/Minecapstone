@@ -7,13 +7,13 @@ FUNCTION REFERENCE:
 - get_position() -> Vector3: Returns your current position.
 - say(message) -> Sends a message to all nearby agents.
 - say_to(message, target_name) -> Sends a message to a specific agent.
-- eat_food() -> Restores 10 hunger points.
+- eat_food(item_name) -> Consumes the specified food item.
 - pass: Skip your turn.
 
 IMPORTANT: THE FOLLOWING FUNCTIONS REQUIRE AWAIT:
 - await move_to_position(x, y) -> Moves to the given coordinates. Returns true when reached.
 - await move_to_target(target_name) -> Moves to the specified entity by name.
-- await attack_target(target_name, num_attacks) -> Attacks the named entity the specified number of times.
+- await attack_target(target_name, num_attacks) -> Attacks the named entity the specified number of times, automatically moving to it if necessary.
 - await look_at_target(target_name) -> Makes the agent look at the specified entity.
 - await give_to(agent_name, item_name, amount) -> Moves to the agent and gives them the specified item and amount. Default amount is 1. Only items in your inventory can be given.
 

@@ -12,6 +12,7 @@ max_memories = 20
 infinite_decisions = false
 prompt_allowance = -1
 visual_mode = false
+self_fix_mode = false
 _speed = 2.0
 metadata/Name = "agent"
 
@@ -44,6 +45,3 @@ fov = 120.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9
-
-[connection signal="body_entered" from="DetectionSphere" to="." method="_on_body_entered_detection_sphere"]
-[connection signal="body_exited" from="DetectionSphere" to="." method="_on_body_exited_detection_sphere"]

@@ -33,12 +33,13 @@ func _check_added_entity(added_entity):
 
 
 func _physics_process(delta):
-	# TODO: Update this line to use entity detector instead of first Player once multiple agents get implemented
-	#current_target = owner.find_children("Player")[0]
-	if current_target != null:
-			
-		var old_state = current_state
+	_target_nearest_player_or_agent()
+	
+	if current_target:
+		# var old_state = current_state
 		var distance_to_player = global_position.distance_to(current_target.global_position)
+
+		# Darroll: why was the null check on the target removed here?
 
 		if distance_to_player <= detection_range:
 			# TODO: maybe want to make attack_range a READONLY member variable
@@ -55,8 +56,8 @@ func _physics_process(delta):
 				_generate_wander_target() # generate wander target based on where the player was last in chase range
 			current_state = ZombieState.WANDERING
 
-		if old_state != current_state:
-			print("State changed to ", ZombieState.keys()[current_state])
+		# if old_state != current_state:
+		# 	print("State changed to ", ZombieState.keys()[current_state])
 
 		# Handle state
 		match current_state:
@@ -66,13 +67,24 @@ func _physics_process(delta):
 			ZombieState.CHASING:
 				if !attack_disabled:
 					_set_chase_target_position()
-			ZombieState.ATTACKING:
-				if !attack_disabled:
-					print("npc_zombie.gd: Missing attack function. Implement attack function.")
+			#ZombieState.ATTACKING:
+				#if !attack_disabled:
+					
+					#print("npc_zombie.gd: Missing attack function. Implement attack function.")
 					#_attack_current_target()
+		_rotate_toward(navigation_agent.target_position)
 	
-	_rotate_toward(navigation_agent.target_position)
 	super(delta)
+
+
+func _target_nearest_player_or_agent():
+	var nearest_distance = INF
+	for entity in detected_entities:
+		if entity.name == "Player" or entity.name == "Agent":
+			var distance = global_position.distance_to(entity.global_position)
+			if distance < nearest_distance:
+				nearest_distance = distance
+				current_target = entity
 
 # note to ryan: don't call _handle_movement(delta) inside of handle_chasing and _handle attacking, 
 # when it could be called externally or by a super class

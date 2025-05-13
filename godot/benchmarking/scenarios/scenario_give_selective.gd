@@ -1,4 +1,6 @@
+# GIVE SELECTIVE SCENARIO
 extends ScenarioManager
+
 
 var agent
 var scenario_box
@@ -7,6 +9,7 @@ var agent_inventory
 var timer: Timer
 @export var required_item: String = "Dirt"
 @export var scenario_duration_seconds: int = 315
+
 
 func _ready() -> void:
 	agent = get_parent().get_node("Agent")
@@ -21,6 +24,12 @@ func _ready() -> void:
 	timer.timeout.connect(_out_of_time)
 	super()
 	reset_timer()
+	scenario_box_inventory = scenario_box.get_node("InventoryManager")
+
+	# This scenario uniquely re-saves the state after some additional setup.
+	_capture_initial_state()
+	reset_connections()
+
 
 func _on_item_added(item):
 	"""Function checks if the item added is the required item and if so, log success. Otherwisem log failure. 
