@@ -311,10 +311,10 @@ func pick_up_item(item_name: String):
 			
 	if item == null:
 		print("Item '%s' not found in detected items." % item_name)
-		return false
-
-	await move_to_position(item.global_position.x, item.global_position.z)
-	return true
+	#TODO: after moving to item, check if the item is still in the world to verify it has been picked up. Keep moving to item if the item still exists in the world
+	while detected_items.has(item):
+		await move_to_position(item.global_position.x, item.global_position.z)
+	print("Picking up item complete.")
 
 # Attacks specificaly the current target
 func _attack():
@@ -364,6 +364,11 @@ func  _get_all_detected_entities():
 
 	if detected_entities.size() > 0:
 		for entity in detected_entities:
+			var entity_inventory = entity.get_node("InventoryManager")
+			var inventory_data = ""
+			if entity_inventory != null:
+				inventory_data = entity_inventory.GetInventoryData()
+			print(entity.name + "'s inventory: ", inventory_data)	
 			context += """
 	=== %s ===
 		* Current HP: %s
@@ -375,7 +380,7 @@ func  _get_all_detected_entities():
 		str(int(entity.health)),
 		str(int(global_position.distance_to(entity.global_position))),
 		# str(int(entity.global_position.x)), str(int(entity.global_position.z)),
-		inventory_manager.GetInventoryData()
+		inventory_data
 	]
 	else:
 		context += "There are no entities nearby.\n"
