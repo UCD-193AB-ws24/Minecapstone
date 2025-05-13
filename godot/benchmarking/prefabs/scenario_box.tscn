@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cfvms5p7mvw2d"]
+[gd_scene load_steps=7 format=3 uid="uid://cfvms5p7mvw2d"]
 
 [ext_resource type="Script" uid="uid://bwk3jqdqs5p3l" path="res://items/InventoryManager.cs" id="1_d672t"]
+[ext_resource type="Script" uid="uid://oq2dvo54qlb0" path="res://scenarios/prefabs/signal_adapter.gd" id="2_53i8v"]
 
 [sub_resource type="GDScript" id="GDScript_qy66u"]
 script/source = "extends Node
@@ -43,4 +44,7 @@ shape = SubResource("BoxShape3D_wxamg")
 [node name="InventoryManager" type="Node" parent="."]
 script = ExtResource("1_d672t")
 
-[connection signal="ItemAdded" from="InventoryManager" to="." method="check_box"]
+[node name="SignalAdapter" type="Node" parent="."]
+script = ExtResource("2_53i8v")
+
+[connection signal="ItemAdded" from="InventoryManager" to="SignalAdapter" method="_on_transit"]
