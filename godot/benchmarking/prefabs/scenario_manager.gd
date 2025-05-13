@@ -11,33 +11,48 @@ var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 1
 
+var timeout_timer: Timer
+@export var timeout_time: float = 10.0
 
 func _ready() -> void:
 	_capture_initial_state()
+	timeout_timer = Timer.new()
+	timeout_timer.one_shot = true
+	timeout_timer.timeout.connect(track_timeout)
+	add_child(timeout_timer)
+	timeout_timer.start(timeout_time)
+	
 
 
 func track_success():
+	timeout_timer.stop()
 	success_count += 1
 	current_iteration += 1
 	await next_iteration()
 
 
 func track_failure():
+	timeout_timer.stop()
 	failure_count += 1
 	current_iteration += 1
 	await next_iteration()
 
 
 func track_error():
+	timeout_timer.stop()
 	error_count += 1
 	current_iteration += 1
 	await next_iteration()
 
+func track_timeout():
+	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
+	track_failure()
 
 func reset():
 	# Restore the environment to its original state
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count, ", Errors:", error_count)
 	await _restore_initial_state()
+	timeout_timer.start(timeout_time)
 
 
 func get_results(debug = false):
