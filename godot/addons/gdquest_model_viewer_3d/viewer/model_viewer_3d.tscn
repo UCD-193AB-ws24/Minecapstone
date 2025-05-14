@@ -1,14 +1,14 @@
 [gd_scene load_steps=17 format=3 uid="uid://birqyoesacalq"]
 
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/model_viewer_3d.gd" id="1_3jhs4"]
-[ext_resource type="Shader" path="res://addons/gdquest_model_viewer_3d/viewer/assets/shaders/ground.gdshader" id="6_s8bys"]
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/turner.gd" id="7_0tn27"]
+[ext_resource type="Script" uid="uid://bndbl5w7uswy0" path="res://addons/gdquest_model_viewer_3d/viewer/model_viewer_3d.gd" id="1_3jhs4"]
+[ext_resource type="Shader" uid="uid://u8lapa6i7qpv" path="res://addons/gdquest_model_viewer_3d/viewer/assets/shaders/ground.gdshader" id="6_s8bys"]
+[ext_resource type="Script" uid="uid://bcgtl0tg07svm" path="res://addons/gdquest_model_viewer_3d/viewer/turner.gd" id="7_0tn27"]
 [ext_resource type="Material" uid="uid://cqdapslfy1rva" path="res://addons/gdquest_model_viewer_3d/viewer/assets/materials/background_mat.tres" id="8_nxs1c"]
 [ext_resource type="PackedScene" uid="uid://cj6led5eh25bo" path="res://addons/gdquest_model_viewer_3d/viewer/ui/model_selector/model_selector.tscn" id="9_yvaan"]
 [ext_resource type="Theme" uid="uid://dioqrbukc6tl0" path="res://addons/gdquest_model_viewer_3d/viewer/main_theme.tres" id="10_l4eat"]
 [ext_resource type="Texture2D" uid="uid://b3hg20sllwpo" path="res://addons/gdquest_model_viewer_3d/viewer/assets/textures/down_arrow_icon.png" id="10_ojfeu"]
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/animation_selector.gd" id="10_ylcjv"]
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/parameters.gd" id="11_rc064"]
+[ext_resource type="Script" uid="uid://npxkyc26qkuu" path="res://addons/gdquest_model_viewer_3d/viewer/animation_selector.gd" id="10_ylcjv"]
+[ext_resource type="Script" uid="uid://cyjvqrix7b3t4" path="res://addons/gdquest_model_viewer_3d/viewer/parameters.gd" id="11_rc064"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4wrdr"]
 content_margin_left = 12.0

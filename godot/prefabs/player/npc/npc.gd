@@ -169,16 +169,19 @@ func give_to(agent_name: String, item_name:String, amount:int):
 		ref = get_parent().get_node(agent_name)
 	await move_to_position(ref.global_position.x, ref.global_position.z, 3)
 
-	# Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
-	var look_pos = Vector3(ref.global_position.x, ref.global_position.y + 2, ref.global_position.z)
-	if (round(ref.global_position.y - self.global_position.y)) >= 2:
-		# Receiving agent is above this agent by 2+ blocks
-		look_pos.y += 1
-	elif (round(ref.global_position.y - self.global_position.y)) <= -2:
-		# Receiving agent is above this agent by 2- blocks
-		look_pos.y += 1
-	set_look_position(look_pos)
+	set_look_position(ref.global_position)
 	inventory_manager.DropItem(item_name, amount)
+
+	# # Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
+	# var look_pos = Vector3(ref.global_position.x, ref.global_position.y + 2, ref.global_position.z)
+	# if (round(ref.global_position.y - self.global_position.y)) >= 2:
+	# 	# Receiving agent is above this agent by 2+ blocks
+	# 	look_pos.y += 1
+	# elif (round(ref.global_position.y - self.global_position.y)) <= -2:
+	# 	# Receiving agent is above this agent by 2- blocks
+	# 	look_pos.y += 1
+	# set_look_position(look_pos)
+	# inventory_manager.DropItem(item_name, amount)
 	# print(round(agent_ref.global_position.y - self.global_position.y))
 
 

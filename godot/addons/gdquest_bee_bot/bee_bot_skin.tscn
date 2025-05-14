@@ -1,7 +1,7 @@
-[gd_scene load_steps=36 format=3 uid="uid://482rxnrhe64v"]
+[gd_scene load_steps=35 format=3 uid="uid://482rxnrhe64v"]
 
 [ext_resource type="PackedScene" uid="uid://d0gfx2lihdq44" path="res://addons/gdquest_bee_bot/bee_bot.glb" id="1_ehj7o"]
-[ext_resource type="Script" path="res://addons/gdquest_bee_bot/bee_bot_skin.gd" id="1_vvvv8"]
+[ext_resource type="Script" uid="uid://bgrqhat7mks5r" path="res://addons/gdquest_bee_bot/bee_bot_skin.gd" id="1_vvvv8"]
 [ext_resource type="Material" uid="uid://bww7by8cvcuoe" path="res://addons/gdquest_bee_bot/materials/bee_bot_lights_mat.tres" id="3_7rf2o"]
 [ext_resource type="Material" uid="uid://dx8xfrepk0a68" path="res://addons/gdquest_bee_bot/materials/bee_bot_eyes_mat.tres" id="4_76kpj"]
 [ext_resource type="Material" uid="uid://cruyb7vmbaabx" path="res://addons/gdquest_bee_bot/materials/bee_bot_wings_mat.tres" id="5_uomwq"]
@@ -1214,11 +1214,11 @@ tracks/40/keys = PackedFloat32Array(0, 1, -9.19819e-09, -5.55632e-10, -0.0252876
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_5iwik"]
 _data = {
-"Idle": SubResource("Animation_ookjt"),
-"RESET": SubResource("Animation_lfeqv"),
-"head_movement": SubResource("Animation_3el4i"),
-"power_off": SubResource("Animation_261on"),
-"spit_attack": SubResource("Animation_6guba")
+&"Idle": SubResource("Animation_ookjt"),
+&"RESET": SubResource("Animation_lfeqv"),
+&"head_movement": SubResource("Animation_3el4i"),
+&"power_off": SubResource("Animation_261on"),
+&"spit_attack": SubResource("Animation_6guba")
 }
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cglxu"]
@@ -1329,8 +1329,6 @@ nodes/StateMachine/position = Vector2(100, 100)
 nodes/output/position = Vector2(300, 100)
 node_connections = [&"output", 0, &"StateMachine"]
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id="AnimationNodeStateMachinePlayback_uyfu0"]
-
 [node name="BeebotSkin" type="Node3D"]
 transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0, 0, 0)
 script = ExtResource("1_vvvv8")
@@ -1338,43 +1336,45 @@ script = ExtResource("1_vvvv8")
 [node name="bee_bot" parent="." instance=ExtResource("1_ehj7o")]
 
 [node name="Skeleton3D" parent="bee_bot/Armature" index="0"]
-bones/1/position = Vector3(-3.34694e-10, 0.231858, 0.170286)
+bones/1/position = Vector3(-3.34694e-10, 0.231858, 0.175683)
+bones/2/rotation = Quaternion(2.3909e-08, 0.852809, 0.522224, 3.72774e-08)
 bones/3/rotation = Quaternion(0.374547, 4.07077e-08, -1.74392e-08, 0.927208)
-bones/4/rotation = Quaternion(-0.471539, 0.154001, -0.139682, 0.856985)
-bones/5/rotation = Quaternion(0.811294, 7.34147e-10, 6.11468e-09, 0.584638)
+bones/4/rotation = Quaternion(-0.462585, 0.152537, -0.141279, 0.861851)
+bones/5/rotation = Quaternion(0.81721, -3.54356e-09, 4.78056e-09, 0.57634)
 bones/6/rotation = Quaternion(0.485844, 4.87666e-08, 4.86565e-08, 0.874045)
-bones/7/rotation = Quaternion(-0.471539, -0.154001, 0.139682, 0.856985)
-bones/8/rotation = Quaternion(0.811294, -7.34045e-10, -6.11456e-09, 0.584638)
-bones/10/rotation = Quaternion(-0.999701, 3.10323e-09, 4.65227e-08, 0.024454)
-bones/11/rotation = Quaternion(-0.146235, 4.83096e-10, -7.08465e-09, 0.98925)
-bones/12/rotation = Quaternion(0.465358, 0.491336, 0.736213, -0.00466543)
-bones/13/rotation = Quaternion(-0.485572, 1.8265e-07, 7.61358e-08, 0.874197)
-bones/14/rotation = Quaternion(0.274911, -0.0171335, -0.129397, 0.952569)
-bones/15/rotation = Quaternion(0.274911, 0.017133, 0.129397, 0.952569)
-bones/16/rotation = Quaternion(-0.00881079, 0.647583, 0.761542, 0.0247338)
-bones/17/rotation = Quaternion(-0.553838, 0.0096069, 0.00705839, 0.832539)
-bones/18/rotation = Quaternion(0.192821, -0.0205529, -0.127929, 0.972642)
-bones/19/rotation = Quaternion(0.189717, -0.00264167, 0.132489, 0.972855)
-bones/20/rotation = Quaternion(0.777814, 0.394227, 0.417575, -0.255384)
-bones/21/rotation = Quaternion(-0.416621, 0.0322501, 0.016311, 0.908362)
-bones/22/rotation = Quaternion(0.351145, -0.0495682, -0.11992, 0.927286)
-bones/23/rotation = Quaternion(0.346363, 0.0144972, 0.133101, 0.928497)
-bones/24/rotation = Quaternion(0.392074, 0.0425175, 0.701915, -0.593115)
-bones/25/rotation = Quaternion(5.40528e-08, 5.59368e-09, -0.0183124, 0.999832)
-bones/26/rotation = Quaternion(0.465064, -0.510979, -0.722717, -0.0171929)
-bones/27/rotation = Quaternion(-0.394201, -1.26298e-07, -5.31986e-08, 0.919024)
-bones/28/rotation = Quaternion(0.296327, 0.0200478, 0.128977, 0.946125)
-bones/29/rotation = Quaternion(0.296327, -0.0200473, -0.128978, 0.946126)
-bones/30/rotation = Quaternion(-0.00881081, -0.647583, -0.761542, 0.0247338)
-bones/31/rotation = Quaternion(-0.48013, -0.0101788, -0.00620539, 0.877116)
-bones/32/rotation = Quaternion(0.356766, 0.0421874, 0.122509, 0.925165)
-bones/33/rotation = Quaternion(0.353744, -0.0201185, -0.13098, 0.925908)
-bones/34/rotation = Quaternion(0.777814, -0.394227, -0.417575, -0.255384)
-bones/35/rotation = Quaternion(-0.401194, -0.0325214, -0.015763, 0.91528)
-bones/36/rotation = Quaternion(0.186919, 0.0282685, 0.126644, 0.973768)
-bones/37/rotation = Quaternion(0.182001, 0.00854352, -0.133616, 0.974141)
-bones/38/rotation = Quaternion(0.392074, -0.0425175, -0.701915, -0.593115)
-bones/39/rotation = Quaternion(-3.44219e-09, -2.52583e-09, 0.0192227, 0.999815)
+bones/7/rotation = Quaternion(-0.462585, -0.152537, 0.141279, 0.861851)
+bones/8/rotation = Quaternion(0.81721, 3.54365e-09, -4.78043e-09, 0.57634)
+bones/9/rotation = Quaternion(0.485844, -4.87664e-08, -4.86564e-08, 0.874045)
+bones/10/rotation = Quaternion(-0.999975, 2.2949e-09, 4.65696e-08, 0.00709066)
+bones/11/rotation = Quaternion(-0.164719, 6.15574e-10, -7.07437e-09, 0.986341)
+bones/12/rotation = Quaternion(0.465239, 0.502099, 0.728915, -0.0115019)
+bones/13/rotation = Quaternion(-0.496677, 1.80375e-07, 8.8168e-08, 0.867935)
+bones/14/rotation = Quaternion(0.241668, -0.01263, -0.129914, 0.96154)
+bones/15/rotation = Quaternion(0.241668, 0.0126296, 0.129914, 0.96154)
+bones/16/rotation = Quaternion(-0.00816357, 0.667198, 0.744417, 0.0249548)
+bones/17/rotation = Quaternion(-0.547697, 0.00965858, 0.0069875, 0.836592)
+bones/18/rotation = Quaternion(0.207114, -0.0224333, -0.127613, 0.969699)
+bones/19/rotation = Quaternion(0.204014, -0.000691565, 0.132514, 0.969958)
+bones/20/rotation = Quaternion(0.776173, 0.396877, 0.415057, -0.26033)
+bones/21/rotation = Quaternion(-0.440138, 0.0318144, 0.0171454, 0.897203)
+bones/22/rotation = Quaternion(0.33746, -0.047798, -0.120637, 0.932354)
+bones/23/rotation = Quaternion(0.332661, 0.0125368, 0.1333, 0.933494)
+bones/24/rotation = Quaternion(0.543592, 0.0101689, 0.167879, -0.822326)
+bones/25/rotation = Quaternion(3.22389e-08, 6.99872e-09, -0.0683779, 0.99766)
+bones/26/rotation = Quaternion(0.464753, -0.521778, -0.714961, -0.0241766)
+bones/27/rotation = Quaternion(-0.382452, -1.36934e-07, -6.09076e-08, 0.923975)
+bones/28/rotation = Quaternion(0.329002, 0.0245143, 0.128203, 0.935265)
+bones/29/rotation = Quaternion(0.329002, -0.0245139, -0.128204, 0.935265)
+bones/30/rotation = Quaternion(-0.00816366, -0.667198, -0.744417, 0.024955)
+bones/31/rotation = Quaternion(-0.486571, -0.0101328, -0.00628012, 0.87356)
+bones/32/rotation = Quaternion(0.343112, 0.0403799, 0.123117, 0.930315)
+bones/33/rotation = Quaternion(0.340079, -0.0181887, -0.131262, 0.931013)
+bones/34/rotation = Quaternion(0.776173, -0.396877, -0.415058, -0.26033)
+bones/35/rotation = Quaternion(-0.377219, -0.0329209, -0.0149106, 0.925419)
+bones/36/rotation = Quaternion(0.201229, 0.0301292, 0.126214, 0.970911)
+bones/37/rotation = Quaternion(0.196317, 0.00657621, -0.133727, 0.971357)
+bones/38/rotation = Quaternion(0.543592, -0.010169, -0.167879, -0.822326)
+bones/39/rotation = Quaternion(-2.50373e-08, 4.46053e-09, 0.0692862, 0.997597)
 
 [node name="bee_bot2" parent="bee_bot/Armature/Skeleton3D" index="0"]
 surface_material_override/1 = ExtResource("3_7rf2o")
@@ -1383,15 +1383,14 @@ surface_material_override/3 = ExtResource("5_uomwq")
 
 [node name="AnimationPlayer" parent="bee_bot" index="1"]
 libraries = {
-"": SubResource("AnimationLibrary_5iwik"),
-"custom_lib": ExtResource("6_6725d")
+&"": SubResource("AnimationLibrary_5iwik"),
+&"custom_lib": ExtResource("6_6725d")
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
+root_node = NodePath("../bee_bot")
 tree_root = SubResource("AnimationNodeBlendTree_ijsyv")
 anim_player = NodePath("../bee_bot/AnimationPlayer")
-active = true
-parameters/StateMachine/playback = SubResource("AnimationNodeStateMachinePlayback_uyfu0")
 parameters/StateMachine/Attack/Blend2/blend_amount = 1.0
 parameters/StateMachine/HeadMovement/Add2/add_amount = 1.0
 parameters/StateMachine/PowerOff/Add2/add_amount = 1.0

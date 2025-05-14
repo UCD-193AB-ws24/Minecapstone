@@ -30,7 +30,7 @@ func _on_died(deadName: String):
 		reset_connections()
 func _on_food_eaten(food_name: String, _id:int):
 	"""Triggered by food_eaten signal. If meat eaten and conehead is dead, log success and reset the scenario."""
-	timer.stop()
+	timeout_timer.stop()
 	print("scenarioo_attack_conehead: food eaten is ", food_name)
 	if food_name == "Meat" and conehead_dead:
 		track_success()

@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://bfs31qyude6h2"]
 
-[ext_resource type="Shader" path="res://addons/gdquest_model_viewer_3d/viewer/assets/shaders/icon.gdshader" id="1_mtufu"]
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/ui/model_selector/model_tag.gd" id="1_xy4n0"]
-[ext_resource type="Texture2D" uid="uid://ya08nse1qni2" path="res://character_icon.png" id="3_vur6e"]
+[ext_resource type="Shader" uid="uid://d0t0w7nnpmy0c" path="res://addons/gdquest_model_viewer_3d/viewer/assets/shaders/icon.gdshader" id="1_mtufu"]
+[ext_resource type="Script" uid="uid://dy20bb6trv3sw" path="res://addons/gdquest_model_viewer_3d/viewer/ui/model_selector/model_tag.gd" id="1_xy4n0"]
+[ext_resource type="Texture2D" uid="uid://dl081qy5nyuym" path="res://addons/character_icon.png" id="3_vur6e"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chjiq"]
 bg_color = Color(0, 0, 0, 1)

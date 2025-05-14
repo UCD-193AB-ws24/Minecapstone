@@ -43,7 +43,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23.1578, 3.54849)
 
 [node name="Agent" parent="." instance=ExtResource("4_by4s5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
-goal = "Without moving, ook at the entity to the left."
+goal = "Without moving, look at the entity to the left."
 scenario_goal = "Without moving, look at the entity to the left."
 visual_mode = true
 
@@ -51,7 +51,7 @@ visual_mode = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 2.5)
 _speed = 0.0
 
-[node name="Label3D" type="Label3D" parent="NPCZombie"]
+[node name="Label3D2" type="Label3D" parent="NPCZombie"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 pixel_size = 0.001
 billboard = 1
