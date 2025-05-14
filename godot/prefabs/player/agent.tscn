@@ -39,7 +39,3 @@ fov = 120.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9
-
-[node name="Label3D" parent="." index="9"]
-render_priority = 2
-outline_render_priority = 1
