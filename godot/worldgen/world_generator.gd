@@ -137,17 +137,19 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	
 	# Generate tree positions and display them as red dots on the biome map
-	var tree_positions = generate_trees(500)  # Low density trees for now
+	var low_density = float(SIZE) / 4
+	var med_density = SIZE
+	var high_density = SIZE * 1.5
+	var tree_positions = generate_trees(high_density)  # Low density trees for now
 	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
 	# TODO: Wait for user input before completing world generation
-	if call_deferred("has_node", "../NavigationMesher"):
-		await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(1.0).timeout
 
-		# Emit signal when world generation is complete
-		call_deferred("_handle_loading_screen", null, false)
-		call_deferred("emit_signal", "world_generated")
+	# Emit signal when world generation is complete
+	call_deferred("_handle_loading_screen", null, false)
+	call_deferred("emit_signal", "world_generated")
 
 
 func _create_combined_height_image() -> Image:
@@ -327,6 +329,13 @@ func _display_land_ocean(mask):
 	call_deferred("_handle_loading_screen", texture)
 
 
+# Function to get grid cell for a position
+func get_cell(pos: Vector2, cell_size) -> Vector2:
+	var cell_x = floor(pos.x / cell_size)
+	var cell_y = floor(pos.y / cell_size)
+	return Vector2(cell_x, cell_y)
+
+
 func relax(positions: Array, iterations: int = 10) -> Array:
 	var relaxed_positions = positions.duplicate()
 	var rng = RandomNumberGenerator.new()
@@ -335,29 +344,49 @@ func relax(positions: Array, iterations: int = 10) -> Array:
 	# Calculate the average spacing between points
 	var area = float(SIZE * SIZE)
 	var avg_spacing = sqrt(area / float(positions.size())) * 1.5
+	var cell_size = avg_spacing  # Use average spacing as cell size for spatial grid
 	
 	for i in range(iterations):
-		var new_positions = []
+		# Create a spatial grid for efficient neighbor lookup
+		# This reduces complexity from O(n²) to O(n + k) where k is number of nearby points
+		var grid = {}
 		
-		# For each point, find near points and adjust position
+		# Populate the grid
 		for idx in range(relaxed_positions.size()):
 			var pos = relaxed_positions[idx]
+			var cell = get_cell(pos, cell_size)
+			
+			if !grid.has(cell):
+				grid[cell] = []
+			grid[cell].append({"pos": pos, "idx": idx})
+		
+		var new_positions = []
+		
+		# For each point, find near points using grid cells
+		for idx in range(relaxed_positions.size()):
+			var pos = relaxed_positions[idx]
+			var cell = get_cell(pos, cell_size)
 			var force = Vector2(0, 0)
 			var nearby_count = 0
 			
-			# Only check points within a reasonable radius
-			for j in range(relaxed_positions.size()):
-				if idx == j:
-					continue
-				
-				var other_pos = relaxed_positions[j]
-				var dist = pos.distance_to(other_pos)
-				
-				# Only consider points within our average spacing
-				if dist < avg_spacing:
-					var repulsion = (pos - other_pos).normalized() * (1.0 / max(dist, 0.1))
-					force += repulsion
-					nearby_count += 1
+			# Check neighboring cells (including current cell)
+			for dx in range(-1, 2):
+				for dy in range(-1, 2):
+					var neighbor_cell = Vector2(cell.x + dx, cell.y + dy)
+					
+					if grid.has(neighbor_cell):
+						for point in grid[neighbor_cell]:
+							if point.idx == idx:
+								continue
+							
+							var other_pos = point.pos
+							var dist = pos.distance_to(other_pos)
+							
+							# Only consider points within our average spacing
+							if dist < avg_spacing:
+								var repulsion = (pos - other_pos).normalized() * (1.0 / max(dist, 0.1))
+								force += repulsion
+								nearby_count += 1
 			
 			# Apply force and small jitter to avoid grid-like patterns
 			if nearby_count > 0:
@@ -393,6 +422,8 @@ func generate_trees(count: int) -> Array:
 	
 	# Apply point relaxation algorithm
 	positions = relax(positions)
+	# Ensure all tree positions are within the map bounds
+	#positions = filter_inbox(positions)
 	
 	return positions
 
@@ -423,7 +454,7 @@ func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) 
 		
 
 func _ready() -> void:
-	# Disable the loading screen if the NavigationMesher is not present
+	# Disable the loading screen if the ChunkManager is not present
 	if has_node("../NavigationMesher"):
 		if not get_node("../NavigationMesher").find_child("ChunkManager"):
 			_handle_loading_screen(null, false)
