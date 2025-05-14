@@ -127,7 +127,6 @@ func set_goal(new_goal: String) -> void:
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
-	#agent.memories.add_goal_update(response)
 
 
 func add_command(command_type: Command.CommandType, input: String) -> void:
@@ -157,7 +156,6 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.name, from_color, from_agent.name, msg])
 
 		# Included this message in the agent's memory
-		print("adding to memory: ", msg)
 		var message_memory = MessageMemory.new(msg, from_agent.name, to_agent.name)
 		memories.add_memory(message_memory)
 

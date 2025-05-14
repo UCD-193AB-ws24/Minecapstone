@@ -20,14 +20,7 @@ metadata/Name = "agent"
 process_mode = 4
 script = ExtResource("3_6hp0s")
 
-[node name="Label3D" type="Label3D" parent="." index="3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
-billboard = 1
-text = "waiting..."
-font_size = 50
-outline_size = 16
-
-[node name="context" type="Label3D" parent="." index="4"]
+[node name="context" type="Label3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.70096, 0)
 offset = Vector2(-250, 100)
 billboard = 1
@@ -41,7 +34,7 @@ autowrap_trim_flags = 0
 [node name="Camera3D" parent="Head" index="1"]
 fov = 120.0
 
-[node name="DetectionSphere" parent="." index="9"]
+[node name="DetectionSphere" parent="." index="8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9

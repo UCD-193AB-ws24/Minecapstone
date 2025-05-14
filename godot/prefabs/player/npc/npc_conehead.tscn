@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjccbnsq8343q"]
+[gd_scene load_steps=3 format=3 uid="uid://ckec5gv8ix8bm"]
 
 [ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="1_773mc"]
 [ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/player/npc/npc_animal.gd" id="2_tdh2c"]
@@ -19,6 +19,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2056, 0.407133)
 height = 0.8396
 cone = true
 
-[node name="Label3D" type="Label3D" parent="." index="8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.17243, 0)
-pixel_size = 0.02
+[node name="Label3D" parent="." index="8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.835, 0)
