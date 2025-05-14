@@ -137,7 +137,7 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	
 	# Generate tree positions and display them as red dots on the biome map
-	var tree_positions = generate_trees(1000)  # Low density trees for now
+	var tree_positions = generate_trees(500)  # Low density trees for now
 	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
@@ -327,14 +327,6 @@ func _display_land_ocean(mask):
 	call_deferred("_handle_loading_screen", texture)
 
 
-func remove_oob(positions: Array) -> Array:
-	var filtered_positions = []
-	for pos in positions:
-		if pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE:
-			filtered_positions.append(pos)
-	return filtered_positions
-
-
 func relax(positions: Array, iterations: int = 10) -> Array:
 	var relaxed_positions = positions.duplicate()
 	var rng = RandomNumberGenerator.new()
@@ -399,9 +391,8 @@ func generate_trees(count: int) -> Array:
 		var y = rng.randi_range(0, SIZE - 1)
 		positions.append(Vector2(x, y))
 	
-	# Apply our efficient relaxation algorithm
+	# Apply point relaxation algorithm
 	positions = relax(positions)
-	positions = remove_oob(positions)
 	
 	return positions
 
