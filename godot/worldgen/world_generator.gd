@@ -135,14 +135,19 @@ func _threaded_generate():
 	_display_image(combined_height_image)
 
 	var biome_map = _create_biome_map_image()
+	
+	# Generate tree positions and display them as red dots on the biome map
+	var tree_positions = generate_trees(1000)  # Low density trees for now
+	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
 	# TODO: Wait for user input before completing world generation
-	await get_tree().create_timer(1.0).timeout
+	if call_deferred("has_node", "../NavigationMesher"):
+		await get_tree().create_timer(1.0).timeout
 
-	# Emit signal when world generation is complete
-	call_deferred("_handle_loading_screen", null, false)
-	call_deferred("emit_signal", "world_generated")
+		# Emit signal when world generation is complete
+		call_deferred("_handle_loading_screen", null, false)
+		call_deferred("emit_signal", "world_generated")
 
 
 func _create_combined_height_image() -> Image:
@@ -322,6 +327,101 @@ func _display_land_ocean(mask):
 	call_deferred("_handle_loading_screen", texture)
 
 
+func remove_oob(positions: Array) -> Array:
+	var filtered_positions = []
+	for pos in positions:
+		if pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE:
+			filtered_positions.append(pos)
+	return filtered_positions
+
+
+func relax(positions: Array, iterations: int = 10) -> Array:
+	var relaxed_positions = positions.duplicate()
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
+	# Calculate the average spacing between points
+	var area = float(SIZE * SIZE)
+	var avg_spacing = sqrt(area / float(positions.size())) * 1.5
+	
+	for i in range(iterations):
+		var new_positions = []
+		
+		# For each point, find near points and adjust position
+		for idx in range(relaxed_positions.size()):
+			var pos = relaxed_positions[idx]
+			var force = Vector2(0, 0)
+			var nearby_count = 0
+			
+			# Only check points within a reasonable radius
+			for j in range(relaxed_positions.size()):
+				if idx == j:
+					continue
+				
+				var other_pos = relaxed_positions[j]
+				var dist = pos.distance_to(other_pos)
+				
+				# Only consider points within our average spacing
+				if dist < avg_spacing:
+					var repulsion = (pos - other_pos).normalized() * (1.0 / max(dist, 0.1))
+					force += repulsion
+					nearby_count += 1
+			
+			# Apply force and small jitter to avoid grid-like patterns
+			if nearby_count > 0:
+				force = force.normalized() * min(avg_spacing * 0.2, force.length())
+				var new_pos = pos + force
+				new_pos.x += rng.randf_range(-1.0, 1.0)
+				new_pos.y += rng.randf_range(-1.0, 1.0)
+				new_positions.append(new_pos)
+			else:
+				# Small random movement if no neighbors
+				var new_pos = pos + Vector2(rng.randf_range(-2.0, 2.0), rng.randf_range(-2.0, 2.0))
+				new_positions.append(new_pos)
+		
+		relaxed_positions = new_positions
+		
+	# Ensure all positions are integers
+	for i in range(relaxed_positions.size()):
+		relaxed_positions[i].x = round(relaxed_positions[i].x)
+		relaxed_positions[i].y = round(relaxed_positions[i].y)
+	
+	return relaxed_positions
+
+
+func generate_trees(count: int) -> Array:
+	var positions = []
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
+	for i in range(count):
+		var x = rng.randi_range(0, SIZE - 1)
+		var y = rng.randi_range(0, SIZE - 1)
+		positions.append(Vector2(x, y))
+	
+	# Apply our efficient relaxation algorithm
+	positions = relax(positions)
+	positions = remove_oob(positions)
+	
+	return positions
+
+
+func _overlay_trees_on_image(image: Image, tree_positions: Array) -> Image:
+	var result_image = image.duplicate()
+	
+	for pos in tree_positions:
+		if pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE:
+			if land_ocean_mask[pos]:
+				for dx in range(-1, 2):
+					for dy in range(-1, 2):
+						var x = pos.x + dx
+						var y = pos.y + dy
+						if x >= 0 and x < SIZE and y >= 0 and y < SIZE:
+							result_image.set_pixel(x, y, Color(1, 0, 0))
+	
+	return result_image
+
+
 func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) -> void:
 	if enabled:
 		$LoadingScreen.visible = true
@@ -330,6 +430,17 @@ func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) 
 		$LoadingScreen.visible = false
 		$"LoadingScreen/CenterContainer/MarginContainer/TextureRect".texture = null
 		
+
 func _ready() -> void:
-	if not $"../NavigationMesher".find_child("ChunkManager"):
-		_handle_loading_screen(null, false)
+	# Disable the loading screen if the NavigationMesher is not present
+	if has_node("../NavigationMesher"):
+		if not get_node("../NavigationMesher").find_child("ChunkManager"):
+			_handle_loading_screen(null, false)
+
+
+func _input(event: InputEvent) -> void:
+	# Debug: Press R to regenerate the world
+	if event is InputEventKey and event.pressed and event.keycode == KEY_R:
+		if not has_node("../NavigationMesher"):
+			_handle_loading_screen(null, true)
+			generate()
