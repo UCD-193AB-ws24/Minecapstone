@@ -30,7 +30,8 @@ func _ready():
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
 	label = get_node("Label3D")
-
+	if label:
+		label.text = self.name
 
 
 func actor_setup():
@@ -38,10 +39,6 @@ func actor_setup():
 	# Do not await inside ready.
 	await get_tree().physics_frame
 	navigation_ready = true
-
-	if label != null:
-		label.text = self.name
-		label.pixel_size = 0.02
 
 
 func _input(_event):

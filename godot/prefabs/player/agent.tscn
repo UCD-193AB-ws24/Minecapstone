@@ -24,7 +24,8 @@ script = ExtResource("3_6hp0s")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.70096, 0)
 offset = Vector2(-250, 100)
 billboard = 1
-render_priority = 1
+render_priority = 2
+outline_render_priority = 1
 text = "waiting..."
 font_size = 25
 outline_size = 8
@@ -38,3 +39,7 @@ fov = 120.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9
+
+[node name="Label3D" parent="." index="9"]
+render_priority = 2
+outline_render_priority = 1

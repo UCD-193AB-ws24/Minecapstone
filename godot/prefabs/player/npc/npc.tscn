@@ -62,6 +62,8 @@ shape = SubResource("SphereShape3D_cuwdc")
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.115, 0)
 billboard = 1
+render_priority = 2
+outline_render_priority = 1
 text = "ExampleName"
 font_size = 47
 
