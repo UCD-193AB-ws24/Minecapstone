@@ -60,8 +60,8 @@ ChunkScene = ExtResource("4_b2ttj")
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
 low_graphics_mode = false
-day_duration_seconds = 240.0
-night_duration_seconds = 240.0
+day_duration_seconds = 5.0
+night_duration_seconds = 1.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94032, 14.035, -2.00584)

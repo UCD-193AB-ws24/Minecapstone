@@ -38,6 +38,16 @@ func _ready():
 	else:
 		self.environment = load("res://world/sky/sky.tres")
 		$Water.visible = true
+	
+	# Get the initial sun elevation for phase detection
+	var sun_direction = sun.global_transform.basis.z.normalized()
+	previous_elevation = asin(sun_direction.y)
+	
+	# Keep the default y rotation but maintain current x rotation
+	sun.rotation.y = deg_to_rad(180.0)
+	moon.rotation.x = -sun.rotation.x
+	moon.rotation.y = sun.rotation.y - deg_to_rad(180.0)
+	
 	_update_shader_parameters()
 
 
@@ -47,23 +57,29 @@ func _process(delta):
 	# Update time
 	elapsed_time += delta * time_scale
 	
-	# Calculate rotation speed based on day/night cycle
-	# TODO: use SunPhase to give day and night different speeds
-	var cycle_duration = day_duration_seconds + night_duration_seconds
-	var rotation_speed = deg_to_rad(360.0) / cycle_duration
+	# Get the current phase before updating positions
+	var current_phase = determine_sun_phase()
+	
+	# Calculate rotation speed based on current phase (day or night)
+	var rotation_speed: float
+	if current_phase == SunPhase.Day or current_phase == SunPhase.Sunrise:
+		rotation_speed = deg_to_rad(180.0) / day_duration_seconds  # 180 degrees for day portion
+	else:
+		rotation_speed = deg_to_rad(180.0) / night_duration_seconds  # 180 degrees for night portion
 	
 	# Update sun rotation
 	sun.rotation.x += rotation_speed * delta * time_scale
 	sun.rotation.y = deg_to_rad(180.0)
 	
+	# Keep sun rotation within range to prevent float precision issues over time
+	if sun.rotation.x > 2 * PI:
+		sun.rotation.x -= 2 * PI
+	
 	# Update moon rotation (opposite X rotation)
 	moon.rotation.x = -sun.rotation.x
 	moon.rotation.y = sun.rotation.y - deg_to_rad(180.0)
-	# moon.rotation.z = 0
 	
 	# Update environment
-	# var current_phase = determine_sun_phase()
-	#modify_sky(current_phase)
 	_update_shader_parameters()
 
 
@@ -80,9 +96,14 @@ func determine_sun_phase() -> SunPhase:
 	elif elevation < NIGHT_THRESHOLD:
 		phase = SunPhase.Night
 	else:
-		phase = SunPhase.Sunrise if elevation > previous_elevation else SunPhase.Sunset
-
-	var phase_str: String
+		# Transition detection based on the change in elevation
+		if elevation > previous_elevation:
+			phase = SunPhase.Sunrise
+		else:
+			phase = SunPhase.Sunset
+	
+	# Debug information
+	var phase_str: String = ""
 	match phase:
 		SunPhase.Day:
 			phase_str = "Day"
