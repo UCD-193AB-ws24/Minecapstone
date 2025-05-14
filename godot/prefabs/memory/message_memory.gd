@@ -3,16 +3,16 @@ extends Memory
 
 
 var message: String
-var from_id: int
-var to_id: int
+var from_agent: String
+var to_agent: String
 
 
-func _init(msg: String, sender_id: int, recipient_id: int):
+func _init(msg: String, sender_name: String, recipient_name: String):
 	super("message")
 	message = msg
-	from_id = sender_id
-	to_id = recipient_id
+	from_agent = sender_name
+	to_agent = recipient_name
 
 
 func format_for_prompt() -> String:
-	return "* Message from agent %s: %s" % [str(from_id), message]
+	return "* Message from agent %s: %s" % [from_agent, message]

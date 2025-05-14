@@ -8,7 +8,7 @@ var scenario_box_adapter
 var agent_inventory
 var timer: Timer
 @export var required_item: String = "Dirt"
-@export var scenario_duration_seconds: int = 315
+#@export var scenario_duration_seconds: int = 315
 
 
 func _ready() -> void:

@@ -1,6 +1,7 @@
 class_name ScenarioManager
 extends Node
 
+
 signal scenario_complete(success_count: int, failure_count: int, error_count: int)
 
 
@@ -11,17 +12,18 @@ var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 1
 
-var timeout_timer: Timer
-@export var timeout_time: float = 10.0
+
+var timeout_timer:Timer
+@export var scenario_duration_seconds: float = 10.0
+
 
 func _ready() -> void:
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
-	timeout_timer.timeout.connect(track_timeout)
+	timeout_timer.timeout.connect(_out_of_time)
 	add_child(timeout_timer)
-	timeout_timer.start(timeout_time)
-	
+	reset_timer()
 
 
 func track_success():
@@ -44,15 +46,33 @@ func track_error():
 	current_iteration += 1
 	await next_iteration()
 
+
 func track_timeout():
 	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
 	track_failure()
 
+
 func reset():
+	#Clear data from global classes
+	MessageBroker.clear_agents()
+	AgentManager.clear_agents()
 	# Restore the environment to its original state
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count, ", Errors:", error_count)
 	await _restore_initial_state()
-	timeout_timer.start(timeout_time)
+	reset_timer()
+
+
+func _out_of_time():
+	"""Function is to be triggered by the out_of_time signal of an agent.
+	Function check if agent is out of time and if so, log failure and reset the scenario"""
+	track_failure()
+	reset()
+
+
+func reset_timer():
+	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
+	Function resets the timer."""
+	timeout_timer.start(scenario_duration_seconds)
 
 
 func get_results(debug = false):
@@ -111,6 +131,10 @@ func _restore_initial_state():
 	var save_nodes = get_tree().get_nodes_in_group("Persist")
 	for node in save_nodes:
 		node.queue_free()
+	#free nodes from Clear group
+	var clear_nodes = get_tree().get_nodes_in_group("Clear")
+	for node in clear_nodes:
+		node.queue_free()
 
 	# Wait for full removal to prevent name collisions
 	for i in range(16):	await get_tree().physics_frame
@@ -132,6 +156,7 @@ func _restore_initial_state():
 		get_node(node_data["parent"]).add_child(new_object)
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 
+		
 		# Now we set the remaining variables.
 		for i in node_data.keys():
 			if i == "filename" or i == "parent" or i == "pos_x" or i == "pos_y":

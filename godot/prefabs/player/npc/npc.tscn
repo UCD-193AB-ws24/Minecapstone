@@ -59,5 +59,13 @@ material = SubResource("StandardMaterial3D_onrkg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionSphere"]
 shape = SubResource("SphereShape3D_cuwdc")
 
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.115, 0)
+billboard = 1
+render_priority = 2
+outline_render_priority = 1
+text = "ExampleName"
+font_size = 47
+
 [connection signal="body_entered" from="DetectionSphere" to="." method="_on_body_entered_detection_sphere"]
 [connection signal="body_exited" from="DetectionSphere" to="." method="_on_body_exited_detection_sphere"]

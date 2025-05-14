@@ -45,6 +45,8 @@ func _physics_process(delta):
 
 
 func set_target_position(movement_target: Vector3, _distance_away: float = 1.0):
+	if move_disabled:
+		return
 	_rotate_toward(movement_target)
 	super(movement_target)
 

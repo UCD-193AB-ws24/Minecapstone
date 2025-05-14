@@ -53,7 +53,7 @@ _speed = 2.0
 [node name="Animal" parent="." instance=ExtResource("11_qsilw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 5)
 chase_speed = 0.0
-_speed = 0.0
+move_disabled = true
 
 [node name="Player" parent="." instance=ExtResource("8_j5ljg")]
 transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204, 0, 1, 0)
