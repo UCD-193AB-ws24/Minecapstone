@@ -83,7 +83,7 @@ func _process(delta):
 	_update_shader_parameters()
 
 
-func determine_sun_phase() -> SunPhase:
+func determine_sun_phase(debug=false) -> SunPhase:
 	var sun_direction = sun.global_transform.basis.z.normalized()
 	var elevation = asin(sun_direction.y)
 	
@@ -103,17 +103,18 @@ func determine_sun_phase() -> SunPhase:
 			phase = SunPhase.Sunset
 	
 	# Debug information
-	var phase_str: String = ""
-	match phase:
-		SunPhase.Day:
-			phase_str = "Day"
-		SunPhase.Night:
-			phase_str = "Night"
-		SunPhase.Sunrise:
-			phase_str = "Sunrise"
-		SunPhase.Sunset:
-			phase_str = "Sunset"
-	print("Current sun phase: ", phase_str)
+	if debug:
+		var phase_str: String = ""
+		match phase:
+			SunPhase.Day:
+				phase_str = "Day"
+			SunPhase.Night:
+				phase_str = "Night"
+			SunPhase.Sunrise:
+				phase_str = "Sunrise"
+			SunPhase.Sunset:
+				phase_str = "Sunset"
+		print("Current sun phase: ", phase_str)
 	
 	previous_elevation = elevation
 	return phase
