@@ -423,15 +423,17 @@ func generate_trees(count: int) -> Array:
 		var y = rng.randi_range(0, SIZE - 1)
 		positions.append(Vector2(x, y))
 	
-	# Apply point relaxation algorithm
+	# Spread out the tree positions to avoid clustering
 	positions = relax(positions)
 
-	# Filter out positions that are not on land
-	positions = positions.filter(func(pos): return pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE and land_ocean_mask.has(Vector2(pos.x, pos.y)) and land_ocean_mask[Vector2(pos.x, pos.y)])
+	# Filter out positions that are not on land and ensure inbounds
+	positions = positions.filter(
+		func(pos): 
+			return pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE and \
+				land_ocean_mask.has(Vector2(pos.x, pos.y)) and \
+				land_ocean_mask[Vector2(pos.x, pos.y)]
+	)
 
-	# Ensure all tree positions are within the map bounds
-	#positions = filter_inbox(positions)
-	
 	# Store the positions for later access
 	tree_positions_list = positions
 	

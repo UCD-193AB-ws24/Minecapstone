@@ -37,6 +37,9 @@ public partial class Chunk : StaticBody3D
 	private Node3D WorldGenerator;
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
+	
+	// Dictionary to store terrain heights for each x,z coordinate in the chunk
+	private Dictionary<Vector2I, int> _terrainHeights = new();
 
 	public Vector2I ChunkPosition { get; protected set; }
 	public List<Vector2I> SavedChunks = [];
@@ -59,7 +62,6 @@ public partial class Chunk : StaticBody3D
 		ChunkManager.Instance.UpdateChunkPosition(this, position, ChunkPosition);
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
-
 
 		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
 		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
@@ -137,6 +139,9 @@ public partial class Chunk : StaticBody3D
 				var ironHeight = stoneHeight / 2;
 				var goldHeight = stoneHeight / 3;
 				var diamondHeight = stoneHeight / 5;
+
+				// Store the calculated terrain height for this x,z coordinate
+				_terrainHeights[new Vector2I(x, z)] = terrainHeight;
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					if (IsSkippable(new Vector3I(x,y,z))){
@@ -452,42 +457,6 @@ public partial class Chunk : StaticBody3D
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
 
-	// // Retrieve a block at the specified local position
-	// public Block GetLocalBlock(Vector3I localPosition)
-	// {
-	// 	if (localPosition.X >= 0 && localPosition.X < dimensions.X &&
-	// 		localPosition.Y >= 0 && localPosition.Y < dimensions.Y &&
-	// 		localPosition.Z >= 0 && localPosition.Z < dimensions.Z)
-	// 	{
-	// 		return _blocks[localPosition.X, localPosition.Y, localPosition.Z];
-	// 	}
-	// 	return null;
-	// }
-
-	// // Set a block at the specified local position
-	// public void SetLocalBlock(Vector3I localPosition, Block block)
-	// {
-	// 	if (localPosition.X >= 0 && localPosition.X < dimensions.X &&
-	// 		localPosition.Y >= 0 && localPosition.Y < dimensions.Y &&
-	// 		localPosition.Z >= 0 && localPosition.Z < dimensions.Z)
-	// 	{
-	// 		_blocks[localPosition.X, localPosition.Y, localPosition.Z] = block;
-			
-	// 		// Store the block in saved blocks dictionary for persistence
-	// 		Vector2I globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(localPosition.X, localPosition.Z) + Offset;
-	// 		var globalCoordinates = new Vector3I(globalPos.X, localPosition.Y, globalPos.Y);
-			
-	// 		if (block != BlockManager.Instance.GetBlock("Air"))
-	// 		{
-	// 			SavedBlocks[globalCoordinates] = block;
-	// 		}
-	// 		else if (SavedBlocks.ContainsKey(globalCoordinates))
-	// 		{
-	// 			SavedBlocks.Remove(globalCoordinates);
-	// 		}
-	// 	}
-	// }
-
 		// Generates an Ore Vein
 	public void GenerateVein(Vector3I position, Block ore, int veinSize) {
 		skippableBlocks.Add(position);
@@ -605,5 +574,94 @@ public partial class Chunk : StaticBody3D
 		}
 
 		return false;
+	}
+	
+	// Place trees within this chunk
+	public void PlaceTrees() {
+		if (WorldGenerator == null) {
+			GD.PrintErr("WorldGenerator reference is null");
+			return;
+		}
+		
+		// Get all tree positions from the world generator
+		var allTreePositions = WorldGenerator.Call("get_tree_positions").AsGodotArray<Vector2>();
+		if (allTreePositions == null || allTreePositions.Count == 0) {
+			return;
+		}
+
+		// Convert tree positions to global world space coordinates
+		int worldSize = (int)WorldGenerator.Get("VIEW_DISTANCE") * 16;
+		Vector2I worldOffset = new(worldSize/2, worldSize/2);
+		
+		// Get the wood block for tree trunks
+		var woodBlock = (Block)ItemDictionary.Get("Wood");
+		
+		// Set seed for consistent tree generation
+		var random = new System.Random(42 + ChunkPosition.X * 100 + ChunkPosition.Y); // Unique seed per chunk
+		
+		// Calculate chunk boundaries in global coordinates
+		Vector2I chunkMinGlobal = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z);
+		Vector2I chunkMaxGlobal = chunkMinGlobal + new Vector2I(dimensions.X, dimensions.Z) - Vector2I.One;
+		
+		// Check each tree position to see if it falls within this chunk
+		foreach (var pos in allTreePositions) {
+			// Convert from world generator space to global coordinates
+			var globalX = (int)pos.X - worldOffset.X;
+			var globalZ = (int)pos.Y - worldOffset.Y;
+			
+			// Check if this tree position is within this chunk's boundaries
+			if (globalX < chunkMinGlobal.X || globalX > chunkMaxGlobal.X || 
+				globalZ < chunkMinGlobal.Y || globalZ > chunkMaxGlobal.Y) {
+				continue; // Skip if not in this chunk
+			}
+			
+			// Convert to local coordinates within this chunk
+			var localX = Mathf.PosMod(globalX, dimensions.X);
+			var localZ = Mathf.PosMod(globalZ, dimensions.Z);
+			
+			// Get terrain height from the stored dictionary - efficient!
+			var localPos = new Vector2I(localX, localZ);
+			if (!_terrainHeights.TryGetValue(localPos, out int terrainHeight)) {
+				continue; // Skip if terrain height not found
+			}
+			
+			// Skip if the terrain is not suitable (e.g., water)
+			var surfaceBlock = _blocks[localX, terrainHeight, localZ];
+			if (surfaceBlock == null || 
+				!(surfaceBlock.Name == "Grass" || surfaceBlock.Name == "Dirt")) {
+				continue;
+			}
+			
+			// Generate tree
+			int treeHeight = 3 + random.Next(4); // Random height between 3-6 blocks
+			
+			// Ensure there's enough space above for the tree
+			if (terrainHeight + treeHeight >= dimensions.Y) {
+				treeHeight = dimensions.Y - terrainHeight - 1;
+				if (treeHeight <= 2) continue; // Skip if not enough height
+			}
+			
+			// Place trunk
+			for (int h = 1; h <= treeHeight; h++) {
+				var blockPos = new Vector3I(localX, terrainHeight + h, localZ);
+				
+				// Skip if there's already a block here
+				if (_blocks[blockPos.X, blockPos.Y, blockPos.Z] != BlockManager.Instance.GetBlock("Air")) {
+					continue;
+				}
+				
+				_blocks[blockPos.X, blockPos.Y, blockPos.Z] = woodBlock;
+				
+				// Save to the SavedBlocks dictionary
+				var globalCoordinates = new Vector3I(
+					globalX,
+					terrainHeight + h,
+					globalZ
+				);
+				SavedBlocks[globalCoordinates] = woodBlock;
+			}
+			
+			// Future enhancement: Add leaves
+		}
 	}
 }
