@@ -43,7 +43,7 @@ orientation = 1
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
 height_noise = SubResource("FastNoiseLite_ov2xu")
-VIEW_DISTANCE = 2
+VIEW_DISTANCE = 10
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
@@ -60,8 +60,7 @@ ChunkScene = ExtResource("4_b2ttj")
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
 low_graphics_mode = false
-day_duration_seconds = 10.0
-night_duration_seconds = 5.0
+day_duration_seconds = 500.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94032, 14.035, -2.00584)

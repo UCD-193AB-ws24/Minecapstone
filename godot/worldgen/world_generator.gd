@@ -141,9 +141,9 @@ func _threaded_generate():
 	
 	# Generate tree positions and display them as red dots on the biome map
 	var low_density = float(SIZE) / 4
-	var med_density = SIZE
-	var high_density = SIZE * 1.5
-	var tree_positions = generate_trees(high_density)  # Higher density trees
+	# var med_density = SIZE
+	# var high_density = SIZE * 1.5
+	var tree_positions = generate_trees(low_density)  # Higher density trees
 	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
