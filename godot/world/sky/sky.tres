@@ -46,7 +46,6 @@ shader_parameter/stars_texture = ExtResource("2_eciw1")
 shader_parameter/stars_speed = 0.35
 shader_parameter/stars_scale = 3.0
 shader_parameter/stars_opacity = 0.1
-shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_a6p7n"]
 sky_material = SubResource("ShaderMaterial_mcsb2")

@@ -43,6 +43,9 @@ var precipitation_averages
 var combined_height_image
 var land_ocean_mask
 
+# Store the generated tree positions
+var tree_positions_list = []
+
 
 func _get_biome_index(x: int, y: int) -> int:
 	var pos = Vector2(x, y)
@@ -140,7 +143,7 @@ func _threaded_generate():
 	var low_density = float(SIZE) / 4
 	var med_density = SIZE
 	var high_density = SIZE * 1.5
-	var tree_positions = generate_trees(high_density)  # Low density trees for now
+	var tree_positions = generate_trees(high_density)  # Higher density trees
 	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
@@ -422,10 +425,21 @@ func generate_trees(count: int) -> Array:
 	
 	# Apply point relaxation algorithm
 	positions = relax(positions)
+
+	# Filter out positions that are not on land
+	positions = positions.filter(func(pos): return pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE and land_ocean_mask.has(Vector2(pos.x, pos.y)) and land_ocean_mask[Vector2(pos.x, pos.y)])
+
 	# Ensure all tree positions are within the map bounds
 	#positions = filter_inbox(positions)
 	
+	# Store the positions for later access
+	tree_positions_list = positions
+	
 	return positions
+
+
+func get_tree_positions() -> Array:
+	return tree_positions_list
 
 
 func _overlay_trees_on_image(image: Image, tree_positions: Array) -> Image:
@@ -433,13 +447,12 @@ func _overlay_trees_on_image(image: Image, tree_positions: Array) -> Image:
 	
 	for pos in tree_positions:
 		if pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE:
-			if land_ocean_mask[pos]:
-				for dx in range(-1, 2):
-					for dy in range(-1, 2):
-						var x = pos.x + dx
-						var y = pos.y + dy
-						if x >= 0 and x < SIZE and y >= 0 and y < SIZE:
-							result_image.set_pixel(x, y, Color(1, 0, 0))
+			for dx in range(-1, 2):
+				for dy in range(-1, 2):
+					var x = pos.x + dx
+					var y = pos.y + dy
+					if x >= 0 and x < SIZE and y >= 0 and y < SIZE:
+						result_image.set_pixel(x, y, Color(1, 0, 0))
 	
 	return result_image
 

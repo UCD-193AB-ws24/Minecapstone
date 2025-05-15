@@ -389,19 +389,32 @@ public partial class Chunk : StaticBody3D
 		return transparentBlocks.Contains(_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z]);
 	}
 	
-	// Set a block in the chunk
+	// Set a block in the chunk at the specified local position
 	public void SetBlock(Vector3I blockPosition, Block block) {
+		// Set the block in the array
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
+		
+		// Convert to global coordinates for the SavedBlocks dictionary
+		var globalCoordinates = new Vector3I(
+			(ChunkPosition.X * dimensions.X) + blockPosition.X,
+			blockPosition.Y,
+			(ChunkPosition.Y * dimensions.Z) + blockPosition.Z
+		);
+		
+		// Update the saved blocks dictionary
+		if (block == BlockManager.Instance.GetBlock("Air")) {
+			if (SavedBlocks.ContainsKey(globalCoordinates)) {
+				SavedBlocks.Remove(globalCoordinates);
+			}
+		}
+		else {
+			SavedBlocks[globalCoordinates] = block;
+		}
+
+		// Force update for this chunk and adjacent chunks if needed
 		Update();
 		
-		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
-		
-		if (block == BlockManager.Instance.GetBlock("Air"))
-			SavedBlocks.Remove(globalCoordinates);
-		else
-			SavedBlocks[globalCoordinates] = block;
-
-		// Force update for adjacent chunks if an air block is set at the chunk edge.
+		// Force update for adjacent chunks if an air block is set at the chunk edge
 		if (block == BlockManager.Instance.GetBlock("Air")) {
 			// Check left edge
 			if (blockPosition.X == 0) {
@@ -426,10 +439,54 @@ public partial class Chunk : StaticBody3D
 		}
 	}
 	
-	// Get a block in the chunk
+	// Get a block in the chunk at the specified local position
 	public Block GetBlock(Vector3I blockPosition) {
+		// Bounds checking
+		if (blockPosition.X < 0 || blockPosition.X >= dimensions.X ||
+			blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y ||
+			blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) {
+			// Return null for out-of-bounds requests
+			return null;
+		}
+		
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
+
+	// // Retrieve a block at the specified local position
+	// public Block GetLocalBlock(Vector3I localPosition)
+	// {
+	// 	if (localPosition.X >= 0 && localPosition.X < dimensions.X &&
+	// 		localPosition.Y >= 0 && localPosition.Y < dimensions.Y &&
+	// 		localPosition.Z >= 0 && localPosition.Z < dimensions.Z)
+	// 	{
+	// 		return _blocks[localPosition.X, localPosition.Y, localPosition.Z];
+	// 	}
+	// 	return null;
+	// }
+
+	// // Set a block at the specified local position
+	// public void SetLocalBlock(Vector3I localPosition, Block block)
+	// {
+	// 	if (localPosition.X >= 0 && localPosition.X < dimensions.X &&
+	// 		localPosition.Y >= 0 && localPosition.Y < dimensions.Y &&
+	// 		localPosition.Z >= 0 && localPosition.Z < dimensions.Z)
+	// 	{
+	// 		_blocks[localPosition.X, localPosition.Y, localPosition.Z] = block;
+			
+	// 		// Store the block in saved blocks dictionary for persistence
+	// 		Vector2I globalPos = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z) + new Vector2I(localPosition.X, localPosition.Z) + Offset;
+	// 		var globalCoordinates = new Vector3I(globalPos.X, localPosition.Y, globalPos.Y);
+			
+	// 		if (block != BlockManager.Instance.GetBlock("Air"))
+	// 		{
+	// 			SavedBlocks[globalCoordinates] = block;
+	// 		}
+	// 		else if (SavedBlocks.ContainsKey(globalCoordinates))
+	// 		{
+	// 			SavedBlocks.Remove(globalCoordinates);
+	// 		}
+	// 	}
+	// }
 
 		// Generates an Ore Vein
 	public void GenerateVein(Vector3I position, Block ore, int veinSize) {

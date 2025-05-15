@@ -25,12 +25,13 @@ public partial class BlockManager : Node {
 		Instance = this;
 
 		// TODO: Make this generalized for any number of blocks
-		(Block Air, Block Stone, Block Dirt, Block Grass, Block Sand, Block IronOre, Block CopperOre, Block CoalOre, Block GoldOre, Block DiamondOre) = (
+		(Block Air, Block Stone, Block Dirt, Block Grass, Block Sand, Block Wood, Block IronOre, Block CopperOre, Block CoalOre, Block GoldOre, Block DiamondOre) = (
 			(Block)ItemDictionary.Get("Air"),
 			(Block)ItemDictionary.Get("Stone"),
 			(Block)ItemDictionary.Get("Dirt"),
 			(Block)ItemDictionary.Get("Grass"),
 			(Block)ItemDictionary.Get("Sand"),
+			(Block)ItemDictionary.Get("Wood"),
 			(Block)ItemDictionary.Get("Iron Ore"),
 			(Block)ItemDictionary.Get("Copper Ore"),
 			(Block)ItemDictionary.Get("Coal Ore"),
@@ -39,7 +40,7 @@ public partial class BlockManager : Node {
 		);
 
 		// Array of all block textures
-		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, Sand, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
+		var blockTextures = new Block[] { Air, Stone, Dirt, Grass, Sand, Wood, IronOre, CopperOre, CoalOre, GoldOre, DiamondOre }.
 		SelectMany(block => block.Textures).Where(texture => texture != null).Distinct().ToArray();
 
 		// Create a lookup table for the texture atlas
@@ -84,6 +85,7 @@ public partial class BlockManager : Node {
 			{Dirt, 0.25f},
 			{Grass, 0.25f},
 			{Sand, 0.25f},
+			{Wood, 0.75f},
 			{CoalOre, 2.5f}, // in real minecraft coal is annoying and takes long to mine
 			{CopperOre, 1.75f},
 			{IronOre, 2.0f},
