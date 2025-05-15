@@ -88,7 +88,8 @@ func actor_setup():
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
 	
-	set_goal(goal)
+	#set_goal(goal)
+	set_goal.call_deferred(goal)
 
 func _process_command_queue() -> void:
 	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
@@ -108,7 +109,7 @@ func _process_command_queue() -> void:
 				if prompt_allowance > 0:
 					prompt_allowance -= 1
 				_generate_new_goal()
-			elif prompt_allowance <= 0:
+			elif prompt_allowance < 0:
 				# No more prompt allowance, emit _out_of_prompts signal
 				out_of_prompts.emit()
 		
@@ -123,7 +124,7 @@ func _generate_new_goal() -> void:
 	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 
-func set_goal(new_goal: String) -> void:
+func set_goal(new_goal: String):
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)

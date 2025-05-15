@@ -22,8 +22,3 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 		track_success()
 	else:
 		track_failure()
-
-	if current_iteration <= MAX_ITERATIONS:
-		reset()
-	else:
-		get_results(true)
