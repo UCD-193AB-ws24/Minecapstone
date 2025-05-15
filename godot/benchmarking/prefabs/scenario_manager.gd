@@ -1,22 +1,19 @@
 class_name ScenarioManager
 extends Node
 
+
 signal scenario_complete(success_count: int, failure_count: int, error_count: int)
-
-
 var success_count: int = 0
 var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 1
-
 var timeout_timer: Timer
 @export var timeout_time: float = 10.0
 
+
 func _ready() -> void:
-	timer = get_node("ScenarioTimer")
-	timer.timeout.connect(_out_of_time)
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
