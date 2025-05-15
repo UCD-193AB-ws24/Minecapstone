@@ -2,6 +2,11 @@
 extends ScenarioManager
 
 
+var red_touched = false
+var blue_touched = false
+var door_unlocked = false
+var door = $"../NavigationMesher/Door"
+
 func _ready() -> void:
 	super()
 	reload()
@@ -15,10 +20,29 @@ func reload():
 	failure_count = 0
 	red_platform.connect("body_entered", _on_touch_platform.bind("RedPlatform"))
 	blue_platform.connect("body_entered", _on_touch_platform.bind("BluePlatform"))
+	red_platform.connect("body_exited", _on_touch_platform_exit.bind("RedPlatform"))
+	blue_platform.connect("body_exited", _on_touch_platform_exit.bind("BluePlatform"))
 
 
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "RedPlatform":
-		track_success()
+		red_touched = true
+		print("Red platform touched")
 	else:
-		track_failure()
+		blue_touched = true
+		print("Blue platform touched")
+
+	if red_touched and blue_touched and !door_unlocked:
+		door_unlocked = true
+		print("Door unlocked!")
+		door.visible = false
+		door.use_collision = false
+
+
+func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
+	if platform_name == "RedPlatform":
+		red_touched = false
+		print("Red platform exited")
+	else:
+		blue_touched = false
+		print("Blue platform exited")

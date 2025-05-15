@@ -88,7 +88,7 @@ material = SubResource("ShaderMaterial_bbo18")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 
 [node name="Agent" parent="." instance=ExtResource("4_us0x5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -5, 1, 0)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -15.3009, 2.94337, 7.87137)
 goal = "Walk to (-30, 15)"
 scenario_goal = ""
 _speed = 10.0
@@ -158,5 +158,6 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_t4jf7")
+timeout_time = 5000.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
