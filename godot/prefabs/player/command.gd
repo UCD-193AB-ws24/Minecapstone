@@ -164,7 +164,8 @@ func run_script(input: String):
 			agent.add_command(CommandType.GENERATE_SCRIPT, content)
 
 		var sm:ScenarioManager = agent.get_parent().find_child("ScenarioManager")
-		if sm: sm.track_error()
+		if sm: 
+			sm.track_error()
 
 		return false
 

@@ -54,7 +54,7 @@ chase_speed = 0.0
 _speed = 0.0
 _acceleration = 0.0
 
-[node name="Label3D" type="Label3D" parent="NPCZombie"]
+[node name="Label3D2" type="Label3D" parent="NPCZombie"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 pixel_size = 0.001
 billboard = 1

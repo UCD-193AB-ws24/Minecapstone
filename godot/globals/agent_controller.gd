@@ -57,6 +57,10 @@ func say_to(msg: String, target_agent: String) -> void:
 	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
 	message_broker.send_message(msg, agent.hash_id, target_id)
 
+func pick_up_item(item_name: String):
+	label.text = "Picking up item: " + item_name
+	agent.pick_up_item(item_name)
+
 
 func eat_food(food_name: String = "") -> void:
 	var success = agent.eat_food(food_name)

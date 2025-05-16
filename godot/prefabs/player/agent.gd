@@ -25,11 +25,6 @@ signal out_of_prompts
 func _ready() -> void:
 	super()
 
-	# Register with message_broker
-	MessageBroker.register_agent(self)
-	MessageBroker.message.connect(_on_message_received)
-
-
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
 	if _event is InputEventKey and _event.pressed:
@@ -80,17 +75,21 @@ func _physics_process(delta):
 
 # Gets call-deferred in _ready of npc
 func actor_setup():
-	# Wait for the first physics frame so the NavigationServer can sync.
-	# Do not await inside ready.
+	super()
+	# Register with message_broker
+	MessageBroker.register_agent(self)
+	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
 
-	await get_tree().physics_frame
-	navigation_ready = true
+	#register with agent_manager
+	AgentManager.register_agent(self)
 
+	print("My name is: ", self.name)
 	# # Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
 	
-	set_goal(goal)
+	#set_goal(goal)
+	set_goal.call_deferred(goal)
 
 func _process_command_queue() -> void:
 	# TODO: investigate using semaphore/Godot locks on _command_queue instead of _is_processing_commands
@@ -110,7 +109,7 @@ func _process_command_queue() -> void:
 				if prompt_allowance > 0:
 					prompt_allowance -= 1
 				_generate_new_goal()
-			elif prompt_allowance <= 0:
+			elif prompt_allowance < 0:
 				# No more prompt allowance, emit _out_of_prompts signal
 				out_of_prompts.emit()
 		
@@ -125,11 +124,10 @@ func _generate_new_goal() -> void:
 	add_command(Command.CommandType.GENERATE_GOAL, goal)
 
 
-func set_goal(new_goal: String) -> void:
+func set_goal(new_goal: String):
 	print_rich("Debug: [color=#%s][Agent %s][/color] [color=lime]%s[/color] (Goal Updated)" % [debug_color, debug_id, new_goal])
 	goal = new_goal
 	add_command(Command.CommandType.GENERATE_SCRIPT, new_goal)
-	#agent.memories.add_goal_update(response)
 
 
 func add_command(command_type: Command.CommandType, input: String) -> void:
@@ -146,12 +144,21 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
+		#get agents by id
+		var from_agent =  MessageBroker.get_agent_by_id(from_id)
+		var to_agent
+		if to_id != -1:
+			to_agent = MessageBroker.get_agent_by_id(to_id)
+		else:
+			to_agent = self
+
 		# Convert from_id to a color
 		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
-		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, debug_id, from_color, from_id, msg])
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.name, from_color, from_agent.name, msg])
 
 		# Included this message in the agent's memory
-		memories.add_message(msg, from_id, to_id)
+		var message_memory = MessageMemory.new(msg, from_agent.name, to_agent.name)
+		memories.add_memory(message_memory)
 
 
 func script_execution_completed():
@@ -174,6 +181,7 @@ func build_prompt_context() -> String:
 	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
 	context += "	All detected items: " + _get_all_detected_items()
 	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
+	context += "	your five most recent memories: " + memories.format_recent_for_prompt(5) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)

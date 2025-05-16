@@ -93,6 +93,8 @@ func _input(event):
 					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 				else:
 					Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			KEY_O:
+				eat_food("Meat")
 	
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		var deltaX = - event.relative.y * _mouse_sensitivity
@@ -491,17 +493,18 @@ func _update_health_hunger_thirst(_delta):
 signal food_eaten(food_name: String, agent_hash_id: int)
 
 func eat_food(food_name: String = "") -> bool:
+	var string_array = food_name.split(" ")
+	var formatted_food_name = ""
+	for word in string_array:
+		formatted_food_name += word[0].to_upper() + word.substr(1, -1)
 	if food_name == "":
 		hunger = min(hunger + 10, max_hunger)
 		return true
 
-	# Get inventory data as a string
-	var inventory_data = inventory_manager.GetInventoryData()
-
 	# Check if the food is in inventory
-	if inventory_data.contains(food_name):
+	if inventory_manager.GetItemCount(formatted_food_name) > 0:
 		# Find food item in dictionary to get satiety value
-		var food_item = ItemDictionary.Get(food_name)
+		var food_item = ItemDictionary.Get(formatted_food_name)
 		if food_item and food_item.IsConsumable:
 			var satiety = 10  # Default
 			
@@ -512,7 +515,7 @@ func eat_food(food_name: String = "") -> bool:
 			hunger = min(hunger + satiety, max_hunger)
 
 			# Remove one of the food items from inventory
-			inventory_manager.DropItem(food_name, 1)
+			inventory_manager.ConsumeItem(food_name)
 			print("Ate " + food_name)
 			
 			emit_signal("food_eaten", food_name, get_instance_id())

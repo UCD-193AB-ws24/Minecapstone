@@ -63,14 +63,80 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
     * ### Contributing
         * Development branches should be named dev-<your_name>-<feature_name> and pull requests should be made with at least one reviewer before merging into main.
 - ## Future Work/Not in current sample
-    * Need infinite thinking
+    * TBD
 
 # Troubleshooting
 
 # FAQ
 
 # Contact Information
+- darroll saddi AKA [@Iemontine](https://www.linkedin.com/in/darrolls)
+- ken lin AKA [@Keshfer](https://www.linkedin.com/in/ken-lin-b1a925296/)
+- [ryan li](https://www.linkedin.com/in/ryan-li-a05b34236/)
+- [jon logasca](https://www.linkedin.com/in/jon-lagasca-300958345/)
+- [matthew fulde](https://www.linkedin.com/in/matthew-fulde-25761725b/)
 
 # Glossary
 
 # Appendix
+
+# Credits
+## Iemontine
+1. Project manager and director
+2. World generation
+    - Chunk system, procedural generation, voxel optimization
+3. Prompting architecture
+    - Generating goals, scripts
+4. AI integration
+    - Agent executing generated code
+5. Agent navigation
+    - Navlogic, runtime navmesh generation
+6. Chain-of-thought mode
+    - "Infinite thinking"
+7. Base player/NPC functionality
+    - Movement, camera, raycasting
+8. Scenario Manager
+    - Base example scenario
+9. Benchmarker
+    - Sequential running of scenarios + getting metrics
+10. World shaders
+    - Water, sky, biome
+11. Block system
+    - Block types, textures
+12. Structure generation
+    - Trees as interactable objects
+13. Debugging tools
+    - Agent labels, debug UI, debug for script/goal gen
+14. Agent self-fixing
+    - self-repair
+15. Day/night cycle + shaders
+16. Prompt engineering
+17. Support for visual modal LLMs - sending camera data to backend as image
+18. QC
+19. Bug fixes
+20. Refactoring
+21. Repository maintenance
+## Keshfer
+1. Design of inventory and item management system
+2. Item interaction functionality (picking up drops)
+3. Scenario dev (complex multiprompt + multiagent)
+4. Interactables
+5. Signal adapter for C#-GDScript signal communication
+6. Bug fixes
+## Ryan
+1. LLM-swapping user config tool
+2. Base memory mangaement system
+3. Messaging system for inter-agent communication
+4. Zombie NPC
+5. Scenario dev (eat)
+## Matt
+1. Block breaking system (taking time to break blocks)
+2. Ore generation system with different ore types
+3. Tool use and tool proficiencies
+4. Entity targetting and combat
+5. Bug fixes
+## Jon
+1. Chunk caching and loading
+2. Animal AI behaviors
+3. Entity detection and targeting systems
+4. Scenario dev (look_at)

@@ -35,7 +35,7 @@ func _check_added_entity(added_entity):
 func _physics_process(delta):
 	_target_nearest_player_or_agent()
 	
-	if current_target:
+	if current_target and !move_disabled:
 		# var old_state = current_state
 		var distance_to_player = global_position.distance_to(current_target.global_position)
 
@@ -67,9 +67,10 @@ func _physics_process(delta):
 			ZombieState.CHASING:
 				if !attack_disabled:
 					_set_chase_target_position()
-			ZombieState.ATTACKING:
-				if !attack_disabled:
-					print("npc_zombie.gd: Missing attack function. Implement attack function.")
+			#ZombieState.ATTACKING:
+				#if !attack_disabled:
+					
+					#print("npc_zombie.gd: Missing attack function. Implement attack function.")
 					#_attack_current_target()
 		_rotate_toward(navigation_agent.target_position)
 	

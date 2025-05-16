@@ -1,3 +1,4 @@
+# ATTACK SEQUENTIAL SCENARIO
 extends ScenarioManager	
 
 var zombie
@@ -16,7 +17,8 @@ func _on_zombie_died(deadName):
 	#print("died: " + deadName)
 	if deadName == "Zombie":
 		zombie_killed = true
-		
+
+
 func _on_animal_died(deadName):
 	"""Function is to be triggered by the has_died signal of an animal.
 	Function checks if animal died and if so, also checks if zombie_killed is true.
@@ -25,28 +27,19 @@ func _on_animal_died(deadName):
 	#print("died: " + deadName)
 	if deadName == "Animal":
 		if zombie_killed == true:
-			track_success()
+			await track_success()
 		else:
-			track_failure()
-	reset()
-
-	for i in range(10):
-		await get_tree().physics_frame
-
+			await track_failure()
 	reset_connections()
-	
+
 
 func _out_of_prompts():
 	"""Function is to be triggered by the out_of_prompts signal of an agent.
 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
 	#print("out of prompts")
-	track_failure()
-	reset()
-
-	for i in range(10):
-		await get_tree().physics_frame
-	
+	await track_failure()
 	reset_connections()
+
 
 func reset_connections():
 	"""Function is to reset the connections of the signals."""

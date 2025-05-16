@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://ckec5gv8ix8bm"]
+
+[ext_resource type="PackedScene" uid="uid://le6846223p6p" path="res://prefabs/player/npc/npc.tscn" id="1_773mc"]
+[ext_resource type="Script" uid="uid://b1on6248sdblg" path="res://prefabs/player/npc/npc_animal.gd" id="2_tdh2c"]
+
+[node name="Animal" instance=ExtResource("1_773mc")]
+script = ExtResource("2_tdh2c")
+_speed = 2.0
+
+[node name="Body" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.4, 0)
+height = 0.8
+
+[node name="Head" parent="." index="3"]
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0.5, 0.4)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2056, 0.407133)
+height = 0.8396
+cone = true
+
+[node name="Label3D" parent="." index="8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.835, 0)
