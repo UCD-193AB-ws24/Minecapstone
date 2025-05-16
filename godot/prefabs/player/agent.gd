@@ -169,7 +169,7 @@ func build_prompt_context() -> String:
 	"""Provides context about the game state for the LLM
 	"""
 
-	var context = "# Game Context\n"
+	var context = ""
 
 	if scenario_goal != "":
 		context += "	Your prime directive is to complete the goal: " + scenario_goal + "\n"
@@ -177,11 +177,11 @@ func build_prompt_context() -> String:
 	context += "	The current goal you have set for yourself is to: " + goal + "\n"
 	context += "	Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
 	context += "	Your name is " + self.name + "\n"
-	context += "	Self Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
-	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
+	context += "	Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "	All detected entities: " + _get_all_detected_entities()
 	context += "	All detected items: " + _get_all_detected_items()
 	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
-	context += "	your five most recent memories: " + memories.format_recent_for_prompt(5) + "\n"
+	context += "	Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)

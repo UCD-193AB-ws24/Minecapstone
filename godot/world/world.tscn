@@ -91,7 +91,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 20, 5)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 25, -5)
-goal = "Attack the nearest zombie 100 times."
+goal = "Survive."
+scenario_goal = "Survive."
 visual_mode = true
 
 [node name="SpawnPoint" type="Marker3D" parent="."]

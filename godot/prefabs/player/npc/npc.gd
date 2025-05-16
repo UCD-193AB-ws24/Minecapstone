@@ -301,6 +301,7 @@ func attack_target(target_name: String, num_attacks: int = 1):
 	current_target = null
 	return true
 
+
 func pick_up_item(item_name: String):
 	# Find item by name
 	var item = null
@@ -316,6 +317,7 @@ func pick_up_item(item_name: String):
 		await move_to_position(item.global_position.x, item.global_position.z)
 	print("Picking up item complete.")
 
+
 # Attacks specificaly the current target
 func _attack():
 	var hit = raycast.is_colliding() and raycast.get_collider() == current_target
@@ -327,8 +329,6 @@ func _attack():
 	return hit
 
 
-
-
 func _on_body_entered_detection_sphere(body: Node):
 	# Since all current entities extend from Player, will detect all types of mobs
 	if is_instance_of(body, NPC) and body != self:
@@ -337,10 +337,10 @@ func _on_body_entered_detection_sphere(body: Node):
 			detected_entities_added.emit(body) #emit signal for zombie to check if it is a valid target
 	elif body.has_meta("ItemName"):
 		detected_items.push_back(body)
-		#print("added item: ", body.name)
-	elif body.has_meta("Category"):
+	elif body.get_meta("Interactable", false) == true:
 		detected_interactables.push_back(body)
 		print("added interactable: ", body.name)
+
 
 func _on_body_exited_detection_sphere(body: Node):
 	if body in detected_entities:
@@ -351,6 +351,7 @@ func _on_body_exited_detection_sphere(body: Node):
 		#print("removed item: ", body.name)
 	elif body in detected_interactables:
 		detected_interactables.erase(body)
+
 
 func  _get_all_detected_entities():
 	""" This creates a formatted string of all the detected entities within the detection sphere
@@ -387,6 +388,7 @@ func  _get_all_detected_entities():
 	
 	return context
 
+
 func _get_all_detected_items() -> String:
 	"""This creates a formatted string of all the detected items within the detection sphere
 	Formatted to make it easier for the LLM to process and understand the information being parsed
@@ -403,6 +405,8 @@ func _get_all_detected_items() -> String:
 		context += "There are no items nearby to pick up.\n"
 
 	return context
+
+
 func _get_all_detected_interactables() -> String:
 	"""This creates a formatted string of all the detected interactables within the detection sphere
 	Formatted to make it easier for the LLM to process and understand the information being parsed
@@ -416,7 +420,11 @@ func _get_all_detected_interactables() -> String:
 			context += "Coordinates: (" + str(interactable.global_position.x) + ", " + str(interactable.global_position.z) + ")\n"
 			context += "Elevation: " + str(int(interactable.global_position.y)) + "\n"
 			context += "What you can do with it: " + interactable.get_meta("Function") + "\n"
+	else:
+		context += "There are no interactables nearby.\n"
+	
 	return context
+
 
 func _set_chase_target_position():
 	navigation_agent.target_position = current_target.global_position
