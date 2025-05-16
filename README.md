@@ -70,13 +70,18 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 # FAQ
 
 # Contact Information
+- darroll saddi AKA [@Iemontine](https://www.linkedin.com/in/darrolls)
+- ken lin AKA [@Keshfer](https://www.linkedin.com/in/ken-lin-b1a925296/)
+- [ryan li](https://www.linkedin.com/in/ryan-li-a05b34236/)
+- [jon logasca](https://www.linkedin.com/in/jon-lagasca-300958345/)
+- [matthew fulde](https://www.linkedin.com/in/matthew-fulde-25761725b/)
 
 # Glossary
 
 # Appendix
 
 # Credits
-## lemontine
+## Iemontine
 1. Project manager and director
 2. World generation
     - Chunk system, procedural generation, voxel optimization
