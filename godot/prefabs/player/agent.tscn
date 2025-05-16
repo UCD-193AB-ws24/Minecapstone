@@ -14,7 +14,6 @@ prompt_allowance = -1
 visual_mode = false
 self_fix_mode = false
 _speed = 2.0
-metadata/Name = "agent"
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4
@@ -35,7 +34,11 @@ autowrap_trim_flags = 0
 [node name="Camera3D" parent="Head" index="1"]
 fov = 120.0
 
+[node name="RayCast3D" parent="Head/Camera3D" index="0"]
+visible = true
+
 [node name="DetectionSphere" parent="." index="8"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0940139, 0)
 collision_layer = 9
 collision_mask = 9
+priority = 1

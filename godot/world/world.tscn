@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://codcxxqo8wi2f"]
+[gd_scene load_steps=17 format=3 uid="uid://codcxxqo8wi2f"]
 
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="1_8mp4y"]
 [ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_lh600"]
@@ -11,6 +11,8 @@
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
 [ext_resource type="Material" uid="uid://coaww57b48oh1" path="res://shaders/water.tres" id="9_ov2xu"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
+[ext_resource type="Script" uid="uid://43jtyi2jnfnn" path="res://world/scenario_world.gd" id="12_mad0u"]
+[ext_resource type="PackedScene" uid="uid://dljmox5ih6n1q" path="res://benchmarking/prefabs/interactable_block.tscn" id="13_ocfjn"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ov2xu"]
 seed = 8600
@@ -90,13 +92,21 @@ directional_shadow_max_distance = 250.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 20, 5)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 25, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.40364, 25, -20.0734)
 goal = "Survive."
 scenario_goal = "Survive."
-visual_mode = true
+infinite_decisions = true
+detection_range = 200.0
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("12_mad0u")
+metadata/_custom_type_script = "uid://ssoph6jwg2ay"
+
+[node name="InteractableBlock" parent="." instance=ExtResource("13_ocfjn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85059, 22.1645, -17.2668)
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

@@ -14,7 +14,6 @@ var _wandering_timer : Timer
 var _scared_timer : Timer
 var _wandering_duration: float = 5
 var _scared_duration: float = 7
-#var detection_range = 25
 
 var drop_list:Array = ["Meat"]
 

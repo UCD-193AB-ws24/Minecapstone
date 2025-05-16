@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://dljmox5ih6n1q"]
+
+[ext_resource type="PackedScene" uid="uid://bytihxq3opyho" path="res://benchmarking/prefabs/interactable.tscn" id="1_7prxp"]
+[ext_resource type="Script" uid="uid://05p0ueegdfd1" path="res://benchmarking/prefabs/interactable_block.gd" id="2_wjhm1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wjhm1"]
+transparency = 1
+albedo_color = Color(0.134, 0.889, 0, 0.207)
+
+[node name="InteractableBlock" instance=ExtResource("1_7prxp")]
+script = ExtResource("2_wjhm1")
+metadata/Category = "Block"
+
+[node name="CSGMesh3D" parent="." index="0"]
+material = SubResource("StandardMaterial3D_wjhm1")

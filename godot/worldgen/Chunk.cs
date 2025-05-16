@@ -55,6 +55,17 @@ public partial class Chunk : StaticBody3D
 	// transparency debug
 	private List<Block> transparentBlocks = new List<Block>{};
 
+	// Preloaded scene resources
+	private static readonly PackedScene _interactableBlockScene = GD.Load<PackedScene>("res://benchmarking/prefabs/interactable_block.tscn");
+
+	// Method to instantiate an interactable block
+	public Node3D InstantiateInteractableBlock(Vector3 position)	{
+		var interactableBlock = _interactableBlockScene.Instantiate<Node3D>();
+		AddChild(interactableBlock);
+		interactableBlock.CallDeferred(Node3D.MethodName.SetGlobalPosition, position + new Vector3(0.5f, 0.5f, 0.5f));
+		return interactableBlock;
+	}
+
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator, bool forceUpdate = false) {
@@ -64,10 +75,10 @@ public partial class Chunk : StaticBody3D
 		this.WorldGenerator = WorldGenerator;
 
 		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
-		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
+		Offset = new Vector2I(VIEW_DISTANCE / 2 * 16, VIEW_DISTANCE / 2 * 16);
 
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
-		
+
 		if (forceUpdate) {
 			Generate();
 			Update();
@@ -597,7 +608,7 @@ public partial class Chunk : StaticBody3D
 		var woodBlock = (Block)ItemDictionary.Get("Wood");
 		
 		// Set seed for consistent tree generation
-		var random = new System.Random(42 + ChunkPosition.X * 100 + ChunkPosition.Y); // Unique seed per chunk
+		var random = new Random(42 + ChunkPosition.X * 100 + ChunkPosition.Y); // Unique seed per chunk
 		
 		// Calculate chunk boundaries in global coordinates
 		Vector2I chunkMinGlobal = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z);
@@ -619,7 +630,7 @@ public partial class Chunk : StaticBody3D
 			var localX = Mathf.PosMod(globalX, dimensions.X);
 			var localZ = Mathf.PosMod(globalZ, dimensions.Z);
 			
-			// Get terrain height from the stored dictionary - efficient!
+			// Get terrain height from the stored dictionary
 			var localPos = new Vector2I(localX, localZ);
 			if (!_terrainHeights.TryGetValue(localPos, out int terrainHeight)) {
 				continue; // Skip if terrain height not found
@@ -635,8 +646,11 @@ public partial class Chunk : StaticBody3D
 			// Generate tree
 			int treeHeight = 3 + random.Next(4); // Random height between 3-6 blocks
 			
+			InstantiateInteractableBlock(new Vector3(globalX, terrainHeight + 1, globalZ));
+			
 			// Ensure there's enough space above for the tree
-			if (terrainHeight + treeHeight >= dimensions.Y) {
+			if (terrainHeight + treeHeight >= dimensions.Y)
+			{
 				treeHeight = dimensions.Y - terrainHeight - 1;
 				if (treeHeight <= 2) continue; // Skip if not enough height
 			}
