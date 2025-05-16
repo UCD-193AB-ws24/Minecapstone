@@ -184,7 +184,6 @@ func build_prompt_context() -> String:
 	context += "	Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
-	# print(context)
 
 	return context
 

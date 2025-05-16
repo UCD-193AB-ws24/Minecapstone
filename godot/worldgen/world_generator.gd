@@ -140,7 +140,7 @@ func _threaded_generate():
 	var biome_map = _create_biome_map_image()
 	
 	# Generate tree positions and display them as red dots on the biome map
-	var low_density = float(SIZE) / 4
+	var low_density = float(SIZE) / 7
 	# var med_density = SIZE
 	# var high_density = SIZE * 1.5
 	var tree_positions = generate_trees(low_density)  # Higher density trees
@@ -416,7 +416,8 @@ func relax(positions: Array, iterations: int = 10) -> Array:
 func generate_trees(count: int) -> Array:
 	var positions = []
 	var rng = RandomNumberGenerator.new()
-	rng.randomize()
+	# Use a fixed seed for deterministic tree generation
+	rng.seed = int(abs(voronoi_noise.seed) + abs(height_noise.seed))
 	
 	for i in range(count):
 		var x = rng.randi_range(0, SIZE - 1)

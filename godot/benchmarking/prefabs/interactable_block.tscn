@@ -12,4 +12,5 @@ script = ExtResource("2_wjhm1")
 metadata/Category = "Block"
 
 [node name="CSGMesh3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00185803, 0, 0.000823259)
 material = SubResource("StandardMaterial3D_wjhm1")

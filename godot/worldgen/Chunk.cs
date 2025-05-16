@@ -610,62 +610,59 @@ public partial class Chunk : StaticBody3D
 		// Set seed for consistent tree generation
 		var random = new Random(42 + ChunkPosition.X * 100 + ChunkPosition.Y); // Unique seed per chunk
 		
-		// Calculate chunk boundaries in global coordinates
-		Vector2I chunkMinGlobal = ChunkPosition * new Vector2I(dimensions.X, dimensions.Z);
-		Vector2I chunkMaxGlobal = chunkMinGlobal + new Vector2I(dimensions.X, dimensions.Z) - Vector2I.One;
-		
 		// Check each tree position to see if it falls within this chunk
 		foreach (var pos in allTreePositions) {
 			// Convert from world generator space to global coordinates
 			var globalX = (int)pos.X - worldOffset.X;
 			var globalZ = (int)pos.Y - worldOffset.Y;
-			
-			// Check if this tree position is within this chunk's boundaries
-			if (globalX < chunkMinGlobal.X || globalX > chunkMaxGlobal.X || 
-				globalZ < chunkMinGlobal.Y || globalZ > chunkMaxGlobal.Y) {
+
+			// Check if this tree position belongs to this chunk
+			int chunkX = (int)Math.Floor((float)globalX / dimensions.X);
+			int chunkZ = (int)Math.Floor((float)globalZ / dimensions.Z);
+			if (chunkX != ChunkPosition.X || chunkZ != ChunkPosition.Y) {
 				continue; // Skip if not in this chunk
 			}
-			
+
 			// Convert to local coordinates within this chunk
 			var localX = Mathf.PosMod(globalX, dimensions.X);
 			var localZ = Mathf.PosMod(globalZ, dimensions.Z);
-			
+
 			// Get terrain height from the stored dictionary
 			var localPos = new Vector2I(localX, localZ);
 			if (!_terrainHeights.TryGetValue(localPos, out int terrainHeight)) {
 				continue; // Skip if terrain height not found
 			}
-			
+
 			// Skip if the terrain is not suitable (e.g., water)
 			var surfaceBlock = _blocks[localX, terrainHeight, localZ];
-			if (surfaceBlock == null || 
+			if (surfaceBlock == null ||
 				!(surfaceBlock.Name == "Grass" || surfaceBlock.Name == "Dirt")) {
 				continue;
 			}
-			
+
 			// Generate tree
 			int treeHeight = 3 + random.Next(4); // Random height between 3-6 blocks
-			
+
+			// GD.Print("Placing tree at: " + new Vector3(globalX, terrainHeight + 1, globalZ) + " in chunk " + ChunkPosition + " Debug: " + chunkX + " " + chunkZ);
 			InstantiateInteractableBlock(new Vector3(globalX, terrainHeight + 1, globalZ));
-			
+
 			// Ensure there's enough space above for the tree
-			if (terrainHeight + treeHeight >= dimensions.Y)
-			{
+			if (terrainHeight + treeHeight >= dimensions.Y) {
 				treeHeight = dimensions.Y - terrainHeight - 1;
 				if (treeHeight <= 2) continue; // Skip if not enough height
 			}
-			
+
 			// Place trunk
 			for (int h = 1; h <= treeHeight; h++) {
 				var blockPos = new Vector3I(localX, terrainHeight + h, localZ);
-				
+
 				// Skip if there's already a block here
 				if (_blocks[blockPos.X, blockPos.Y, blockPos.Z] != BlockManager.Instance.GetBlock("Air")) {
 					continue;
 				}
-				
+
 				_blocks[blockPos.X, blockPos.Y, blockPos.Z] = woodBlock;
-				
+
 				// Save to the SavedBlocks dictionary
 				var globalCoordinates = new Vector3I(
 					globalX,
@@ -674,7 +671,6 @@ public partial class Chunk : StaticBody3D
 				);
 				SavedBlocks[globalCoordinates] = woodBlock;
 			}
-			
 			// Future enhancement: Add leaves
 		}
 	}

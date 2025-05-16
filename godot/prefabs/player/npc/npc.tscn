@@ -46,3 +46,6 @@ render_priority = 2
 outline_render_priority = 1
 text = "ExampleName"
 font_size = 47
+
+[connection signal="body_entered" from="DetectionSphere" to="." method="_on_body_entered_detection_sphere"]
+[connection signal="body_exited" from="DetectionSphere" to="." method="_on_body_exited_detection_sphere"]

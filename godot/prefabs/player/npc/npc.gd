@@ -339,7 +339,6 @@ func _on_body_entered_detection_sphere(body: Node):
 		detected_items.push_back(body)
 	elif body.get_meta("Interactable", false) == true:
 		detected_interactables.push_back(body)
-		print("added interactable: ", body.name)
 
 
 func _on_body_exited_detection_sphere(body: Node):

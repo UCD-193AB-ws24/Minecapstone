@@ -36,9 +36,6 @@ public partial class ChunkManager : Node
 		WorldGenerator = GetNode<Node3D>("../../WorldGenerator");
 		view_distance = (int)WorldGenerator.Get("VIEW_DISTANCE");
 
-		// Connect to the world_generated signal
-		WorldGenerator.Connect("world_generated", Callable.From(OnWorldGenerated));
-		
 		WorldGenerator.Call("generate");
 		
 		player = GetNodeOrNull<CharacterBody3D>("../../Player");

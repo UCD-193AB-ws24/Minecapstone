@@ -24,7 +24,7 @@ fractal_type = 0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_41cxm"]
 seed = 8600
-frequency = 0.0084
+frequency = 0.0098
 fractal_gain = 0.46
 domain_warp_enabled = true
 domain_warp_amplitude = 0.5
