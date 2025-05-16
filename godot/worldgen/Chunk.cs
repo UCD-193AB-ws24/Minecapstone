@@ -646,7 +646,7 @@ public partial class Chunk : StaticBody3D
 			// Generate tree
 			int treeHeight = 3 + random.Next(4); // Random height between 3-6 blocks
 			
-			InstantiateInteractableBlock(new Vector3(localPos.X, terrainHeight + 1, localPos.Y));
+			InstantiateInteractableBlock(new Vector3(globalX, terrainHeight + 1, globalZ));
 			
 			// Ensure there's enough space above for the tree
 			if (terrainHeight + treeHeight >= dimensions.Y)
