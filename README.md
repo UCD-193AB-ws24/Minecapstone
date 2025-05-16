@@ -63,7 +63,7 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
     * ### Contributing
         * Development branches should be named dev-<your_name>-<feature_name> and pull requests should be made with at least one reviewer before merging into main.
 - ## Future Work/Not in current sample
-    * Need infinite thinking
+    * TBD
 
 # Troubleshooting
 
@@ -78,22 +78,39 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 # Credits
 ## lemontine
 1. Project manager and director
-2. World generation (chunk system, noise-baseed systems, voxel optimization)
-3. Prompting architecture (generating goals, scripts)
-4. AI integration - Agent code execution (executing generated code)
-5. Agent navigation (navlogic, runtime navmesh generation)
-6. Chain-of-thought "infinite thinking" mode
-7. Agent self-fixing
-8. Base player/NPC functionality (movement, camera, raycasting)
-9. Scenario Manager (base scenario, looping through scenarios and obtaining metrics)
-10. World shaders (water, sky, biome)
-11. Block systems (allowing for different types of blocks)
-12. Tree generation
-13. Debugging tools (agent labels, debug UI, debug for script/goal gen)
-14. Day/night cycle + shaders
-15. Prompt engineering
-16. Support for visual modal LLMs (sending camera data to backend as image)
-17. QC, bug fixes, refactoring, repository maintenance
+2. World generation
+    - Chunk system, procedural generation, voxel optimization
+3. Prompting architecture
+    - Generating goals, scripts
+4. AI integration
+    - Agent executing generated code
+5. Agent navigation
+    - Navlogic, runtime navmesh generation
+6. Chain-of-thought mode
+    - "Infinite thinking"
+7. Base player/NPC functionality
+    - Movement, camera, raycasting
+8. Scenario Manager
+    - Base example scenario
+9. Benchmarker
+    - Sequential running of scenarios + getting metrics
+10. World shaders
+    - Water, sky, biome
+11. Block system
+    - Block types, textures
+12. Structure generation
+    - Trees as interactable objects
+13. Debugging tools
+    - Agent labels, debug UI, debug for script/goal gen
+14. Agent self-fixing
+    - self-repair
+15. Day/night cycle + shaders
+16. Prompt engineering
+17. Support for visual modal LLMs - sending camera data to backend as image
+18. QC
+19. Bug fixes
+20. Refactoring
+21. Repository maintenance
 ## Keshfer
 1. Design of inventory and item management system
 2. Item interaction functionality (picking up drops)
