@@ -19,8 +19,7 @@
 	  "local_llm": {
 		"models": [
 		  { "name": "deepseek-r1", "config_path": "local_llm_configs/deepseek_config.json" },
-		  { "name": "gemma:3", "config_path": "local_llm_configs/gemma_config.json" },
-		  { "name": "llama4", "config_path": "local_llm_configs/llama_config.json" }
+		  { "name": "gemma3", "config_path": "local_llm_configs/gemma_config.json" }
 		]
 	  }
 	}

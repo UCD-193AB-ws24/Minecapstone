@@ -85,7 +85,7 @@ Your response should be a single sentence or short paragraph goal only.
         try:
             import asyncio
             response_text = await asyncio.to_thread(
-                self.make_api_request,
+                self._make_api_request,
                 full_prompt,
                 image_data
             )
