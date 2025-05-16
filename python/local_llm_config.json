@@ -1,6 +1,6 @@
 {
     "api_endpoint": "http://localhost:11434/api/generate",
-    "model": "gemma3:latest",
+    "model": "deepseek-r1",
     "supports_vision": false,
     "request_format": {
       "model": "{model}",

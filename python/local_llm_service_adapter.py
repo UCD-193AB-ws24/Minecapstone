@@ -55,7 +55,8 @@ class LocalLLMServiceAdapter(LLMService):
             response_text = await asyncio.to_thread(
                 self._make_api_request,
                 full_prompt,
-                image_data
+                image_data,
+                "code"  # Specify request_type for script generation
             )
 
             code = self._extract_code(response_text)
@@ -75,19 +76,20 @@ class LocalLLMServiceAdapter(LLMService):
         """Generate a goal using local LLM with optional image data"""
         full_prompt = f"""{self.system_prompt}
 
-{context}
+    {context}
 
-Based on the situation described, provide a single plain text goal that you will pursue. 
-Be creative and ambitious while staying within your capabilities.
-Your response should be a single sentence or short paragraph goal only.
-"""
+    Based on the situation described, provide a single plain text goal that you will pursue. 
+    Be creative and ambitious while staying within your capabilities.
+    Your response should be a single sentence or short paragraph goal only.
+    """
         
         try:
             import asyncio
             response_text = await asyncio.to_thread(
                 self._make_api_request,
                 full_prompt,
-                image_data
+                image_data,
+                "goal"  # Specify request_type for goal generation
             )
 
             goal = self._extract_goal(response_text)
@@ -95,9 +97,9 @@ Your response should be a single sentence or short paragraph goal only.
         
             return goal
         
-
         except Exception as e:
             print(f"Error generating goal with Local LLM: {e}")
+            return "Failed to generate goal"  # Add a default return value for error case
 
     def _make_api_request(self, prompt: str, image_data: Optional[str] = None, request_type: str = "general") -> str:
         """Make a request to the local LLM API"""
