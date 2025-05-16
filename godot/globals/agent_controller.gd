@@ -57,9 +57,20 @@ func say_to(msg: String, target_agent: String) -> void:
 	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
 	message_broker.send_message(msg, agent.hash_id, target_id)
 
+
 func pick_up_item(item_name: String):
 	label.text = "Picking up item: " + item_name
 	agent.pick_up_item(item_name)
+
+
+func break_block(coordinates: Vector3i):
+	label.text = "Breaking block at: " + str(coordinates)
+	agent.break_block(coordinates)
+
+
+func place_block(coordinates: Vector3i):
+	label.text = "Placing block at: " + str(coordinates)
+	agent.place_block(coordinates)
 
 
 func eat_food(food_name: String = "") -> void:
@@ -68,7 +79,7 @@ func eat_food(food_name: String = "") -> void:
 		label.text = "Successfully ate food"
 	else:
 		label.text = "Failed to eat food"
-	
+
 
 func eval():
 	return true
