@@ -90,7 +90,7 @@ directional_shadow_max_distance = 250.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 20, 5)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 25, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.40364, 25, -20.0734)
 goal = "Survive."
 scenario_goal = "Survive."
 visual_mode = true

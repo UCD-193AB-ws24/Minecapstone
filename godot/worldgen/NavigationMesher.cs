@@ -7,7 +7,6 @@ public partial class NavigationMesher : NavigationRegion3D {
 	// Need to fix this by use and parse collision shapes as source geometry or create geometry data procedurally in scripts.
 	// Source geometry parsing for navigation mesh baking had to parse RenderingServer meshes at runtime. This poses a significant performance issues as visual meshes store geometry data on the GPU and transferring this data back to the CPU blocks the rendering. For runtime (re)baking navigation meshes use and parse collision shapes as source geometry or create geometry data procedurally in scripts.
 	
-	
 	public void GenerateNavmesh() {
 		var chunkManager = GetNode("ChunkManager");
 		if (chunkManager != null) {
