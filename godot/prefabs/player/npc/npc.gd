@@ -368,12 +368,13 @@ func  _get_all_detected_entities():
 			var inventory_data = ""
 			if entity_inventory != null:
 				inventory_data = entity_inventory.GetInventoryData()
-			print(entity.name + "'s inventory: ", inventory_data)	
+			# print(entity.name + "'s inventory: ", inventory_data)	
 			context += """
-	=== %s ===
-		* Current HP: %s
-		* Distance To: %s units
-		* Item drops on death:
+	- %s
+		- Health: %s
+		- Distance To: %s units
+		- Coordinates: (%s, %s)
+		- Inventory: %s
 		%s
 	""" % [
 		entity.name,
@@ -383,7 +384,7 @@ func  _get_all_detected_entities():
 		inventory_data
 	]
 	else:
-		context += "There are no entities nearby.\n"
+		context += "	- There are no entities nearby.\n"
 	
 	return context
 
@@ -394,14 +395,12 @@ func _get_all_detected_items() -> String:
 	"""
 	var context = ""
 	if detected_items.size() > 0:
-		context += "Nearby items you can pick up. Move to the item's coordinates to pick it up"
+		# context += "	- Nearby items you can pick up. Move to the item's coordinates to pick it up"
 		for item in detected_items:
-			context += "- " + item.get_meta("ItemName") + "\n"
-			context += "Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
-			context += "Coordinates: (" + str(item.global_position.x) + ", " + str(item.global_position.z) + ")\n"
-			context += "Elevation: " + str(int(item.global_position.y)) + "\n"
+			context += "		- " + item.get_meta("ItemName") + " at coordinates (" + str(item.global_position.x) + ", elevation= " + str(int(item.global_position.y)) + ", " + str(item.global_position.z) + ")\n"
+			context += "		- Distance To: " + str(int(global_position.distance_to(item.global_position))) + " units, "
 	else:
-		context += "There are no items nearby to pick up.\n"
+		context += "	- There are no items nearby to pick up.\n"
 
 	return context
 
@@ -413,14 +412,13 @@ func _get_all_detected_interactables() -> String:
 
 	var context = ""
 	if detected_interactables.size() > 0:
-		context += "Nearby interactables. Move to within 1 meter of the interactable to interact with it.\n"
+		# context += "Nearby interactables. Move to within 1 meter of the interactable to interact with it.\n"
 		for interactable in detected_interactables:
-			context += "=== %s ===" % interactable.name
-			context += "Coordinates: (" + str(interactable.global_position.x) + ", " + str(interactable.global_position.z) + ")\n"
-			context += "Elevation: " + str(int(interactable.global_position.y)) + "\n"
-			context += "What you can do with it: " + interactable.get_meta("Function") + "\n"
+			context += "	- " + interactable.name + " at coordinates (" + str(interactable.global_position.x) + ", elevation= " + str(int(interactable.global_position.y)) + ", " + str(interactable.global_position.z) + ")\n"
+			context += "		- Distance To: " + str(int(global_position.distance_to(interactable.global_position))) + " units\n"
+			context += "		- What you can do with it: " + interactable.get_meta("Function") + "\n"
 	else:
-		context += "There are no interactables nearby.\n"
+		context += "	- There are no interactables nearby.\n"
 	
 	return context
 

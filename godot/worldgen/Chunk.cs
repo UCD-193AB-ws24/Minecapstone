@@ -61,6 +61,7 @@ public partial class Chunk : StaticBody3D
 	// Method to instantiate an interactable block
 	public Node3D InstantiateInteractableBlock(Vector3 position)	{
 		var interactableBlock = _interactableBlockScene.Instantiate<Node3D>();
+		interactableBlock.Name = "Tree";
 		AddChild(interactableBlock);
 		interactableBlock.CallDeferred(Node3D.MethodName.SetGlobalPosition, position + new Vector3(0.5f, 0.5f, 0.5f));
 		return interactableBlock;

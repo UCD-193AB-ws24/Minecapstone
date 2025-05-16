@@ -11,7 +11,7 @@
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
 [ext_resource type="Material" uid="uid://coaww57b48oh1" path="res://shaders/water.tres" id="9_ov2xu"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
-[ext_resource type="Script" uid="uid://43jtyi2jnfnn" path="res://world/scenario_world.gd" id="12_mad0u"]
+[ext_resource type="Script" path="res://world/scenario_world.gd" id="12_mad0u"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -52,7 +52,6 @@ ChunkScene = ExtResource("4_b2ttj")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
-low_graphics_mode = false
 day_duration_seconds = 500.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]

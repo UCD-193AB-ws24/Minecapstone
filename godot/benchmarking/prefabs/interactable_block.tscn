@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dljmox5ih6n1q"]
+[gd_scene load_steps=4 format=3 uid="uid://b3421d1bnf528"]
 
-[ext_resource type="PackedScene" uid="uid://bytihxq3opyho" path="res://benchmarking/prefabs/interactable.tscn" id="1_7prxp"]
-[ext_resource type="Script" uid="uid://05p0ueegdfd1" path="res://benchmarking/prefabs/interactable_block.gd" id="2_wjhm1"]
+[ext_resource type="PackedScene" path="res://benchmarking/prefabs/interactable.tscn" id="1_7prxp"]
+[ext_resource type="Script" path="res://benchmarking/prefabs/interactable_block.gd" id="2_wjhm1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wjhm1"]
 transparency = 1
@@ -10,7 +10,7 @@ albedo_color = Color(0.134, 0.889, 0, 0.207)
 [node name="InteractableBlock" instance=ExtResource("1_7prxp")]
 script = ExtResource("2_wjhm1")
 metadata/Category = "Block"
+metadata/Function = "There is a tree at these coordinates."
 
 [node name="CSGMesh3D" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00185803, 0, 0.000823259)
 material = SubResource("StandardMaterial3D_wjhm1")
