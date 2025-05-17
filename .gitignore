@@ -8,3 +8,9 @@ godot/.vscode/*
 .venv
 __pycache__/
 *.pyc
+
+# tex related
+*.aux
+*.log
+*.out
+*.gz
