@@ -85,38 +85,40 @@
 \maketitle
 
 \begin{abstract}
-    The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform designed for the quantitative and qualitative evaluation of embodied Large Language Model (LLM) agents in a complex 3D environment. 
+    The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform designed for the quantitative and qualitative evaluation of embodied Large Language Model (LLM) agents by allowing AI agents to perform tasks in a simulated environment.
     As LLMs are increasingly being integrated into robotics and other embodied systems, there is a growing need for standardized evaluation frameworks that can assess their performance in real-world scenarios. 
     SPEEN attempts to address this need by providing a easily modifiable baseline benchmarking environment allowing researchers to evaluate LLM agents' capabilities in various tasks that map to real-world applications of embodied intelligence, including communication and interactions with a responsive environment.
     The framework features two complementary evaluation approaches. The first is a structured quantitative benchmarking system comprising diverse scenarios that measure agent capabilities in specific tasks ranging from taking simple actions to cooperative puzzle solving scenarios.
-    The second is open-world sandbox environment allowing for qualitative assessment of agent decision-making, adaptability, and goal-oriented behavior over extended time periods.
+    The second was designed to be similar to an open-world sandbox environment, allowing for less restrictions on agent behavior and decision-making, and for qualitative assessment of agent decision-making and goal-oriented behavior over extended time periods.
 \end{abstract}
 
-\section{Submission of papers to NeurIPS 2025}
+\section{Early Development}
 
+\subsection{Background}
 
-Please read the instructions below carefully and follow them faithfully.
+    This project was started from the Senior Design Project at UC Davis, where students work with clients in-industry to develop a project that meets their needs.
+    We were particularly interested in working with \textit{Justin Jia} affiliated with \textit{Apple}, who was interested in designing some kind of sandbox environment specifically designed to help test AI programs, to whom we were succesfully assigned.
+    Exploratory research and early project discussions with our client led us to focus our work on Large Language Models (LLMs), which will be described in the following section.
 
+\subsection{Exploratory Research}
 
-\subsection{Style}
+    We identified several problems with the current state of evaluating and testing of artificial intelligence via environmental design.
+    We began with investigating similar projects within this space, and found that projects like NeuralMMO that attempted to provide an open-source environment for measuring the performance of reinforcement learning algorithms. 
+    NeuralMMO focused on creating a discretized game environment with large input complexity, requiring agents to learn how to navigate a 2D grid world with a variety of tasks and challenges, including resource management, exploration, as well as combat or even cooperation with other agents.
+    However, as the project continued to be developed and despite the complexity of additional features or environmental constraints added to the environment, a general conclusion was that highly performant algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could learn to solve the tasks presented in the environment.
+    This led us to focus our efforts away from reinforcement learning and towards LLMs, which are a more recent development in the field of artificial intelligence, and are notable for recent integration of LLM techology into robotics and other embodied systems.
+    One large takeaway from [Joseph], the creator of NeuralMMO, was the following insight on designing benchmarking systems for AI: it is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation.
+    This heavily informed our future design processes.
 
+    To clarify, we define agentic AI as systems capable of making decisions and taking actions in the world, and to react to challenges and changes in the environment.
+    We further separate our focus onto embodied AI, which is a subset of agentic AI that interacts with a physical world.
+    We argue that this project is embodied AI.
 
-Papers to be submitted to NeurIPS 2025 must be prepared according to the
-instructions presented here. Papers may only be up to {\bf nine} pages long,
-including figures.
-% Additional pages \emph{containing only acknowledgments and references} are allowed.
-Additional pages \emph{containing references, checklist, and the optional technical appendices} do not count as content pages.
-Papers that exceed the page limit will not be
-reviewed, or in any other way considered for presentation at the conference.
+    Another fallback within the field of AI benchmarking and research is the lack of a standardized framework for evaluating the performance of LLMs in real-world scenarios. fact check this shit.
+    While there exists several projects that claim to present effective prompting architectures, none of the large ones by NVIDIA, Altera, are open-source, and are applied to the environment of Minecraft which serves as an additional barrier to entry for enthusiasts and researchers.
 
-
-The margins in 2025 are the same as those in previous years.
-
-
-Authors are required to use the NeurIPS \LaTeX{} style files obtainable at the
-NeurIPS website as indicated below. Please make sure you use the current files
-and not previous versions. Tweaking the style files may be grounds for
-rejection.
+    We concluded that the suitable direction to take our project is in this: \emph{Designing an open-source benchmarking environment specifically designed for evaluating the performance and behavior of embodied AI.}
+    We particularly designed the environment for the testing of Large Language Models, and wanted to make the environment and setup easily modifiable, documented, adhering to best practices, to assist in the project longetivty and usefulness.
 
 
 \subsection{Retrieval of style files}
