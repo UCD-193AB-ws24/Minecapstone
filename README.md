@@ -96,7 +96,8 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 7. Base player/NPC functionality
     - Movement, camera, raycasting
 8. Scenario Manager
-    - Base example scenario
+    - Base example scenario (move_to, move_to_visual)
+    - Tracking successes and failures, then resetting to original state 
 9. Benchmarker
     - Sequential running of scenarios + getting metrics
 10. World shaders
@@ -108,7 +109,7 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 13. Debugging tools
     - Agent labels, debug UI, debug for script/goal gen
 14. Agent self-fixing
-    - self-repair
+    - Self-repair
 15. Day/night cycle + shaders
 16. Prompt engineering
 17. Support for visual modal LLMs - sending camera data to backend as image
@@ -117,9 +118,12 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 20. Refactoring
 21. Repository maintenance
 ## Keshfer
-1. Design of inventory and item management system
-2. Item interaction functionality (picking up drops)
-3. Scenario dev (complex multiprompt + multiagent)
+1. Item system, inventory management system
+   - Design & implementation inventory and item management system
+2. Item interaction functionality
+   - Picking up item drops
+   - Dropping items
+3. Scenario dev (Complex multiprompt + multiagent)
 4. Interactables
 5. Signal adapter for C#-GDScript signal communication
 6. Bug fixes
@@ -130,7 +134,7 @@ This is a more advanced benchmarking system that tests the agent's ability to ma
 4. Zombie NPC
 5. Scenario dev (eat)
 ## Matt
-1. Block breaking system (taking time to break blocks)
+1. Block breaking (taking time to break blocks)
 2. Ore generation system with different ore types
 3. Tool use and tool proficiencies
 4. Entity targetting and combat
