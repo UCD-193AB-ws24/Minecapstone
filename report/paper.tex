@@ -113,11 +113,11 @@ One crucial insight from Joseph Suarez, NeuralMMO's creator, significantly influ
     "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\answerTODO{cite his thesis defense}
 \end{quote}
 
-\paragraph{Definitions}
+\subsubsection{Definitions}
 We define agentic AI as systems capable of autonomous decision-making and environmental interaction.
 Embodied AI, our primary focus, represents a subset specifically concerned with agents that interact with physical or simulated physical worlds.
 
-\paragraph{Environment Design}
+\subsubsection{Environment Design}
 Several proposed embodied AI architectures use Minecraft as their testing environment.
 While Minecraft offers inherent complexity and extensive documentation, it presents significant limitations for research purposes.
 First, it requires a commercial license, creating accessibility barriers for researchers.
@@ -127,41 +127,27 @@ Third, the environment was not specifically designed to test embodied AI capabil
 Although environments that more closely emulate the real world would provide better mapping for real-world robotic applications, we determined that focusing our efforts on standardizing contextualization and prompting systems would be more beneficial.
 This justified our decision to develop a Minecraft-like environment using the open-source Godot game engine, with a focus on creating flexible prompting and context-provision systems that could later be adapted to more realistic environments.
 
-\paragraph{Open-Source Requirements}
+\subsubsection{Open-Source Requirements}
 Our research identified that many successful LLM evaluation solutions are not open-source, limiting their utility for broader research purposes.
 By building our system with easy integration of new LLMs and prompting architectures, we aim to address this limitation.
 Our open-source approach ensures transparency, reproducibility, and adaptability—core values for scientific research tools.
 This constraint guided our decision to use the Godot game engine, which is open-source and allows for easy modification and expansion, and we believe is heading in a positive directions for potential use in environment design and research.
 
-\paragraph{Recap: Project Justification}
+\subsubsection{Research Use}
+Since the system is intended for benchmarking, we designed the backend Python websocket to support both cloud-hosted and locally-hosted LLMs.
+This flexibility allows researchers and enthusiasts to test the performance of various LLMs, especially as new models are released.
+Using abstraction layers, we can easily integrate new models into the system without requiring significant changes to the codebase on the development side.
+For higher-level access, a configuration file is used to streamline the connection of backend to a locally-hosted LLM, and provide users default options that demonstrate how to connect additional models.
+
+In the current product, we support OpenAI API for GPT models, Google Gemini API, and have tested the integration of locally-hosted LLMs such as Ollama and Deepseek.
+These are also largely the models we used for testing our implementation of the prompting architecture and agentic pipelines.
+
+\subsubsection{Recap: Project Justification}
 Based on our research findings, we developed SPEEN as an open-source benchmarking environment specifically for evaluating embodied AI performance.
 In terms of open-source, our designed hope to ensure: easy modification, comprehensive documentation, and adherence to best practices to ensure project longevity.
 The prompting architecture was engineered to be easily expandable across environment types, allowing for future development of additional architectures or application to different environments.
 For the purpose of developing a sufficient proof of concept, we also developed a Minecraft-like environment that uses our prompting architecture, providing quantitative and qualitative evaluation use cases.
 Our design deliberately targets researchers and enthusiasts by addressing the identified limitations in existing systems.
-
-\subsection{Technologies}
-We first needed an environment with which the LLMs can interact with for benchmarking.
-Game engines are the best option to streamline the creation of simulated environments because they provide the tools for us to conveniently build our environments while abstracting low-level calculations and implementations that would greatly hinder our project development.
-In spirit of our open-source requirement, we chose Godot to be our game engine due to it also being open-source and many of the project members are familiar with using the game engine, reducing the overhead of learning the fundamentals of using a game engine.
-Minecraft as our simulated environment would've been ideal since the environment is already made and rich with game features to test the LLMs on, removing the portion of our project timeline to develop the environment.
-However, Minecraft is not an open-source game which is a required attribute for our project. Furthermore, users of our projects would have to buy a license for the game which restricts accessibility, another core attribute of this project.
-
-We intend for our project to work with any LLMs, cloud-hosted or locally-hosted, so that users can use our project to benchmark currently existing and developing LLMs.
-Additionally, we need LLMs to test our implementation of our LLM and agent body pipelines.
-Thus, we chose GPT o-models, Gemini 2.0 Flash-lite, Ollama 4, and Deepseek as our set of models for testing.
-GPT and Gemini served as test subjects that guided our integration of cloud-hosted LLMs to Godot while Ollama and Deepseek serves the same purpose but for locall-hosted LLM integration.
-We also wanted to provide a suite of default options for the users to streamline setup and provide a reference on how they can integrate their own LLMs to our project.
-
-Our implementation required selecting appropriate technologies for both the simulation environment and LLM integration.
-We chose the Godot game engine for environment development due to its open-source nature, robust capabilities, and team familiarity, which reduced development overhead.
-While Minecraft would have provided a ready-made rich environment, its proprietary nature conflicted with our open-source requirements and would have imposed licensing costs on users.
-
-For LLM integration, we designed a flexible architecture supporting both cloud-hosted and locally-hosted models.
-We implemented and tested integration with multiple models including GPT, Gemini 2.0 Flash-lite, Ollama, and Deepseek.
-This diversity allowed us to develop robust integration patterns while providing users with default options that demonstrate how to connect additional models.
-Our implementation includes a standardized API interface that abstracts the underlying model specifics, allowing researchers to easily benchmark different LLMs the same environment.
-
 
 \section{Implementation}
 
