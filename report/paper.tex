@@ -68,15 +68,15 @@
 % \AND instead of \And before the third author name.
 
 \author{%
-    Darroll Saddi \quad
-        Ken Lin \quad
-        Ryan Li \quad
-        Matthew Fulde \quad
-        Jon Lagasca \vspace{0.5em} \\
-        \textit{University of California, Davis} \\
+    Darroll Saddi\textsuperscript{1} \quad
+        Ken Lin\textsuperscript{1} \quad
+        Ryan Li\textsuperscript{1} \quad
+        Matthew Fulde\textsuperscript{2} \quad
+        Jon Lagasca\textsuperscript{1} \vspace{0.75em} \\
+        \large{\textit{University of California, Davis}} \\
         \vspace{0.5em}
-        Computer Science \quad
-        Computer Science and Engineering \\
+        \textsuperscript{1}Computer Science \quad
+        \textsuperscript{2}Computer Science and Engineering \\
         \texttt{\{dwsaddi, kemlin, ryjli, mpfulde, jonlagasca\}@ucdavis.edu}
     }
 
@@ -86,46 +86,56 @@
 
 \begin{abstract}
     The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform for evaluating embodied Large Language Model agents in a simulated game environment.
-    As LLMs increasingly integrate into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a well-documented, modifiable environment for benchmarking these agents.
+    As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a well-documented and modifiable environment for benchmarking these agents.
     The framework offers both structured quantitative benchmarking through diverse scenarios measuring specific capabilities and an open-world sandbox for qualitative assessment of decision-making behaviors over extended periods.
-    These complementary approaches enable researchers to evaluate how effectively embodied LLMs solve unseen tasks, communicate, and interact with responsive environments—key metrics for real-world applications of embodied AI systems.
+    These complementary approaches enable researchers to evaluate how effectively embodied LLMs solve unseen tasks, communicate, and interact with responsive environments---key metrics for real-world applications of embodied AI systems.
 \end{abstract}
 
-\section{Early Development}
+\section{Problem Identification}
 
 \subsection{Background}
-This project originated as a Senior Design Project at UC Davis, where students collaborate with industry professionals to develop solutions addressing practical needs.
+This project originated as a Senior Design Project at UC Davis, where students collaborate with industry professionals to develop solutions that address practical needs.
 We were particularly interested in working with Justin Jia (affiliated with Apple), who proposed developing a sandbox environment specifically designed for testing AI programs.
 Initial discussions and exploratory research guided our focus toward Large Language Models (LLMs) as a primary technology of interest.
 
 \subsection{Exploratory Research}
 
-\subsubsection{Focusing on Large Language Models}
-Our research identified significant gaps in environmental design for evaluating advanced AI systems.
-We examined existing benchmarking platforms, particularly NeuralMMO, which provides an open-source environment for measuring \textbf{reinforcement learning} algorithm performance.
-NeuralMMO is a game environment with high discrete input complexity, requiring agents to navigate a 2D grid world with tasks including resource management, exploration, and agent interaction.
-After studying its development trajectory, we observed that advanced algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could effectively solve most presented tasks regardless of the environment's complexity.
-
-This observation shifted our focus from reinforcement learning toward Large Language Models, which represent more recent advancements in artificial intelligence.
-We were particularly interested in the growing integration of LLMs into robotics and embodied systems.
-One crucial insight from Joseph Suarez, NeuralMMO's creator, significantly influenced our approach:
-\begin{quote}
-    "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\answerTODO{cite his thesis defense}
-\end{quote}
-
 \subsubsection{Definitions}
 We define agentic AI as systems capable of autonomous decision-making and environmental interaction.
 Embodied AI, our primary focus, represents a subset specifically concerned with agents that interact with physical or simulated physical worlds.
 
+\subsubsection{Focusing on Large Language Models}
+Our research identified significant gaps in environmental design for evaluating advanced AI systems.
+We examined existing benchmarking platforms, particularly NeuralMMO, which provides an open-source environment for measuring \textbf{reinforcement learning} algorithm performance.
+NeuralMMO is a game environment with high discrete input complexity, requiring agents to navigate a 2D grid world with tasks including resource management, exploration, and agent interaction.
+One crucial insight from Joseph Suarez, NeuralMMO's creator, significantly influenced our approach:
+\begin{quote}
+    "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\answerTODO{cite his thesis defense}
+\end{quote}
+However, despite continuous added complexity to the environment over the past few years, we observed that advanced algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could effectively solve most presented tasks.
+
+This observation shifted our focus from reinforcement learning toward Large Language Models, which represent more recent advancements in artificial intelligence.
+We were particularly interested in the growing integration of LLMs into robotics and embodied systems.
+
 \subsubsection{Environment Design}
-Several proposed embodied AI architectures use Minecraft as their testing environment.
-While Minecraft offers inherent complexity and extensive documentation, it presents significant limitations for research purposes.
+Several proposed embodied LLM architectures use Minecraft as their testing environment.
+Projects including NVIDIA's contributions to the MineDojo project and Project Sid by Altera attempt to provide prompting and training architectures for agents to exist in Minecraft.
+However, there are identifiable problems between these projects:
+\begin{itemize}
+    \item \textbf{Lack of Open-Source Availability:} Project Sid articulates a way for many-agents to exist within Minecraft, proposing interesting prompting architectures, but is not open-source. It is not clear how to reproduce the results produced by their environment.
+    \item \textbf{Limited Flexibility:} While MiniDojo projects, including NVIDIA's Voyager project have yielded impressive results are open-source, they are not useful as benchmarks of agentic AI. The measurements that are possible are specific to Minecraft, and do not generalize to other environments. For example, the metrics of area explored, percentage of available items collected, etc. are not useful for evaluating LLMs in a more generalizable way.
+\end{itemize}
+
+Additional barriers exist in the choice of environment. While Minecraft offers inherent complexity and extensive documentation, it presents significant limitations for research purposes.
 First, it requires a commercial license, creating accessibility barriers for researchers.
 Second, there is no standardized method for providing game state information to agents.
-Third, the environment was not specifically designed to test embodied AI capabilities.
 
 Although environments that more closely emulate the real world would provide better mapping for real-world robotic applications, we determined that focusing our efforts on standardizing contextualization and prompting systems would be more beneficial.
-This justified our decision to develop a Minecraft-like environment using the open-source Godot game engine, with a focus on creating flexible prompting and context-provision systems that could later be adapted to more realistic environments.
+We believe that focus on the design of a system that allows for more generic environmental design, future work can include adaptation to more realistic environments.
+Furthermore, designing a custom environment would allow us to tailor metrics specific to agentic AI evaluation.
+With these constraints in mind, we decided upon investigating the development of a somewhat Minecraft-like environment, while focusing more on the prompting architecture and evaluation metrics.
+
+\answerTODO{Mention Google Deepmind Creating Multimodal Interactive Agents with Imitation and Self-Supervised Learning }
 
 \subsubsection{Open-Source Requirements}
 Our research identified that many successful LLM evaluation solutions are not open-source, limiting their utility for broader research purposes.
@@ -133,62 +143,79 @@ By building our system with easy integration of new LLMs and prompting architect
 Our open-source approach ensures transparency, reproducibility, and adaptability—core values for scientific research tools.
 This constraint guided our decision to use the Godot game engine, which is open-source and allows for easy modification and expansion, and we believe is heading in a positive directions for potential use in environment design and research.
 
-\subsubsection{Research Use}
-Since the system is intended for benchmarking, we designed the backend Python websocket to support both cloud-hosted and locally-hosted LLMs.
+\subsubsection{Research Use Case}
+Since the system is intended for benchmarking, we wanted to ensure the backend Python websocket, which connects to the game environment, supported both cloud-hosted and locally-hosted LLMs.
 This flexibility allows researchers and enthusiasts to test the performance of various LLMs, especially as new models are released.
-Using abstraction layers, we can easily integrate new models into the system without requiring significant changes to the codebase on the development side.
-For higher-level access, a configuration file is used to streamline the connection of backend to a locally-hosted LLM, and provide users default options that demonstrate how to connect additional models.
+Using abstraction layers, new models can be integrated into the system without requiring significant changes to the codebase on the development side.
+For higher-level access, a configuration file will be used to streamline the connection of the backend to a locally-hosted LLM, and provide users default options that demonstrate how to connect additional models.
+
+In terms of measurement and validation strategy, we will implement a series of scenarios that test the capabilities both high and low-performing LLMs, and tracking success rate (adherence to the goal of the scenario).
+These scenarios will serve as our metrics capture meaningful dimensions of embodied intelligence like planning, adaptability, and environmental reasoning.
 
 In the current product, we support OpenAI API for GPT models, Google Gemini API, and have tested the integration of locally-hosted LLMs such as Ollama and Deepseek.
 These are also largely the models we used for testing our implementation of the prompting architecture and agentic pipelines.
 
-\subsubsection{Recap: Project Justification}
-Based on our research findings, we developed SPEEN as an open-source benchmarking environment specifically for evaluating embodied AI performance.
-In terms of open-source, our designed hope to ensure: easy modification, comprehensive documentation, and adherence to best practices to ensure project longevity.
-The prompting architecture was engineered to be easily expandable across environment types, allowing for future development of additional architectures or application to different environments.
-For the purpose of developing a sufficient proof of concept, we also developed a Minecraft-like environment that uses our prompting architecture, providing quantitative and qualitative evaluation use cases.
-Our design deliberately targets researchers and enthusiasts by addressing the identified limitations in existing systems.
+\subsection{Design Requirements}
+Based on our research findings, we had the sufficient justification to develop SPEEN as an open-source benchmarking environment specifically for evaluating embodied AI (LLM) performance.
+Listed below were our overarching design goals and requirements for the system:
+\begin{enumerate}
+    \item \textbf{Standardized Evaluation Framework:}
+        \begin{itemize}
+            \item Introduce a novel quantitative metrics and qualitative assessment framework for embodied LLM agents.
+            \item Provide standardized architecture for prompting and game state context provisioning.
+            \item Streamlined integration of new LLMs, prompting architectures, or evaluation methods.
+        \end{itemize}
+    \item \textbf{LLM Integration Capabilities:}
+        \begin{itemize}
+            \item Support both cloud-hosted and locally-hosted LLM connections for research/evaluation purposes.
+            \item Provide abstraction layers for integration of LLMs when cloud hosting.
+            \item Include high-level configuration options for connection parameters and API settings.
+        \end{itemize}
+    \item \textbf{Open-Source Compliance:}
+        \begin{itemize}
+            \item As a research tool, ensure the system is accessible and modifiable for researchers and enthusiasts.
+            \item Ensure all components follow appropriate open-source licensing.
+            \item Provide comprehensive documentation of system architecture and project structure.
+        \end{itemize}
+\end{enumerate}
+With these requirements of a benchmarking system in mind, we shall also implement the quantitative evaluation methods, qualitative evaluation methods, and the prompting architecture as a proof of concept.
+\begin{enumerate}
+    \item \textbf{Accessible Game Environment:}
+        \begin{itemize}
+            \item Develop a Minecraft-like 3D environment using the open-source Godot engine.
+            \item Create a world with sufficient complexity for testing embodied AI behaviors.
+            \item Design intuitive interfaces for human researchers to monitor and evaluate agent performance.
+        \end{itemize}
+    \item \textbf{Structured Scenarios:}
+        \begin{itemize}
+            \item Implement diverse testing scenarios targeting specific embodied capabilities.
+            \item Create both directed tasks and open-ended challenges.
+            \item Support automated performance scoring where appropriate.
+        \end{itemize}
+    \item \textbf{Prompting Architecture:}
+        \begin{itemize}
+            \item Implement a prompting architecture emulating chain-of-thought and goal-based prompting systems.
+            \item Allowing for easy modification and expansion of the prompting system.
+        \end{itemize}
+\end{enumerate}
 
-\section{Implementation}
+\section{Early Development}
+
+\section{Concept down-selection and further development}
+
+\section{Modeling, prototyping, and/or development testing}
+
+\section{Verification that design meets requirements}
+
+Identify areas of improvement and repeat
+
+\section{Helpful formatting tools from Neurips}
 
 \paragraph{Paragraphs}
-
 
 There is also a \verb+\paragraph+ command available, which sets the heading in
 bold, flush left, and inline with the text, with the heading followed by 1\,em
 of space.
-
-
-\section{Citations, figures, tables, references}
-\label{others}
-
-
-These instructions apply to everyone.
-
-
-\subsection{Citations within the text}
-
-
-The \verb+natbib+ package will be loaded for you by default.  Citations may be
-author/year or numeric, as long as you maintain internal consistency.  As to the
-format of the references themselves, any style is acceptable as long as it is
-used consistently.
-
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-    \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations appropriate for
-use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-    Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
 
 If you wish to load the \verb+natbib+ package with options, you may add the
 following before loading the \verb+neurips_2025+ package:
@@ -196,13 +223,11 @@ following before loading the \verb+neurips_2025+ package:
    \PassOptionsToPackage{options}{natbib}
 \end{verbatim}
 
-
 If \verb+natbib+ clashes with another package you load, you can add the optional
 argument \verb+nonatbib+ when loading the style file:
 \begin{verbatim}
    \usepackage[nonatbib]{neurips_2025}
 \end{verbatim}
-
 
 As submission is double blind, refer to your own published work in the third
 person. That is, use ``In the previous work of Jones et al.\ [4],'' not ``In our
@@ -210,22 +235,17 @@ previous work [4].'' If you cite your other papers that are not widely available
 (e.g., a journal paper under review), use anonymous author names in the
 citation, e.g., an author of the form ``A.\ Anonymous'' and include a copy of the anonymized paper in the supplementary material.
 
-
 \subsection{Footnotes}
-
 
 Footnotes should be used sparingly.  If you do require a footnote, indicate
 footnotes with a number\footnote{Sample of the first footnote.} in the
 text. Place the footnotes at the bottom of the page on which they appear.
 Precede the footnote with a horizontal rule of 2~inches (12~picas).
 
-
 Note that footnotes are properly typeset \emph{after} punctuation
 marks.\footnote{As in this example.}
 
-
 \subsection{Figures}
-
 
 \begin{figure}
     \centering
@@ -233,31 +253,25 @@ marks.\footnote{As in this example.}
     \caption{Sample figure caption.}
 \end{figure}
 
-
 All artwork must be neat, clean, and legible. Lines should be dark enough for
 purposes of reproduction. The figure number and caption always appear after the
 figure. Place one line space before the figure caption and one line space after
 the figure. The figure caption should be lower case (except for first word and
 proper nouns); figures are numbered consecutively.
 
-
 You may use color figures.  However, it is best for the figure captions and the
 paper body to be legible if the paper is printed in either black/white or in
 color.
 
-
 \subsection{Tables}
-
 
 All tables must be centered, neat, clean and legible.  The table number and
 title always appear before the table.  See Table~\ref{sample-table}.
-
 
 Place one line space before the table title, one line space after the
 table title, and one line space after the table. The table title must
 be lower case (except for first word and proper nouns); tables are
 numbered consecutively.
-
 
 Note that publication-quality tables \emph{do not contain vertical rules.} We
 strongly suggest the use of the \verb+booktabs+ package, which allows for
@@ -266,7 +280,6 @@ typesetting high-quality, professional tables:
     \url{https://www.ctan.org/pkg/booktabs}
 \end{center}
 This package was used to typeset Table~\ref{sample-table}.
-
 
 \begin{table}
     \caption{Sample table title}
@@ -295,87 +308,6 @@ particular, do not modify the width or length of the rectangle the text should
 fit into, and do not change font sizes (except perhaps in the
 \textbf{References} section; see below). Please note that pages should be
 numbered.
-
-
-\section{Preparing PDF files}
-
-
-Please prepare submission files with paper size ``US Letter,'' and not, for
-example, ``A4.''
-
-
-Fonts were the main cause of problems in the past years. Your PDF file must only
-contain Type 1 or Embedded TrueType fonts. Here are a few instructions to
-achieve this.
-
-
-\begin{itemize}
-
-
-    \item You should directly generate PDF files using \verb+pdflatex+.
-
-
-    \item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
-          menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-          also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-          available out-of-the-box on most Linux machines.
-
-
-    \item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
-          "solid" shapes instead.
-
-
-    \item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
-          the equivalent AMS Fonts:
-          \begin{verbatim}
-   \usepackage{amsfonts}
-\end{verbatim}
-          followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or \verb+\mathbb{C}+
-          for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You can also use the following
-          workaround for reals, natural and complex:
-          \begin{verbatim}
-   \newcommand{\RR}{I\!\!R} %real numbers
-   \newcommand{\Nat}{I\!\!N} %natural numbers
-   \newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
-          Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
-
-
-\end{itemize}
-
-
-If your file contains type 3 fonts or non embedded TrueType fonts, we will ask
-you to fix it.
-
-
-\subsection{Margins in \LaTeX{}}
-
-
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+ from the \verb+graphicx+ package. Always specify the
-figure width as a multiple of the line width as in the example below:
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]{myfile.pdf}
-\end{verbatim}
-See Section 4.4 in the graphics bundle documentation
-(\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
-
-
-A number of width problems arise when \LaTeX{} cannot properly hyphenate a
-line. Please give LaTeX hyphenation hints using the \verb+\-+ command when
-necessary.
-
-\begin{ack}
-    Use unnumbered first level headings for the acknowledgments. All acknowledgments
-    go at the end of the paper before the list of references. Moreover, you are required to declare
-    funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
-    More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2025/PaperInformation/FundingDisclosure}.
-
-
-    Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to automatically hide this section in the anonymized submission.
-\end{ack}
 
 \section*{References}
 
