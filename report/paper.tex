@@ -85,11 +85,10 @@
 \maketitle
 
 \begin{abstract}
-    The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform designed for the quantitative and qualitative evaluation of embodied Large Language Model (LLM) agents by allowing AI agents to perform tasks in a simulated environment.
-    As LLMs are increasingly being integrated into robotics and other embodied systems, there is a growing need for standardized evaluation frameworks that can assess their performance in real-world scenarios. 
-    SPEEN attempts to address this need by providing a easily modifiable baseline benchmarking environment allowing researchers to evaluate LLM agents' capabilities in various tasks that map to real-world applications of embodied intelligence, including communication and interactions with a responsive environment.
-    The framework features two complementary evaluation approaches. The first is a structured quantitative benchmarking system comprising diverse scenarios that measure agent capabilities in specific tasks ranging from taking simple actions to cooperative puzzle solving scenarios.
-    The second was designed to be similar to an open-world sandbox environment, allowing for less restrictions on agent behavior and decision-making, and for qualitative assessment of agent decision-making and goal-oriented behavior over extended time periods.
+    The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform for evaluating embodied Large Language Model agents in a simulated game environment. 
+    As LLMs increasingly integrate into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a well-documented, modifiable environment for benchmarking these agents. 
+    The framework features both structured quantitative benchmarking through diverse scenarios measuring specific capabilities, and an open-world sandbox environment for qualitative assessment of decision-making and goal-oriented behavior over extended periods.
+    These complementary approaches enable researchers to evaluate how effectively embodied LLMs can solve unseen tasks, communicate, and interact with responsive environments---key metrics for real-world applications of embodied AI systems.
 \end{abstract}
 
 \section{Early Development}
@@ -97,128 +96,57 @@
 \subsection{Background}
 
     This project was started from the Senior Design Project at UC Davis, where students work with clients in-industry to develop a project that meets their needs.
-    We were particularly interested in working with \textit{Justin Jia} affiliated with \textit{Apple}, who was interested in designing some kind of sandbox environment specifically designed to help test AI programs, to whom we were succesfully assigned.
+    We were particularly interested in working with \textit{Justin Jia} affiliated with \textit{Apple}, who was interested in designing some kind of sandbox environment specifically designed to help test AI programs, to whom we were successfully assigned.
     Exploratory research and early project discussions with our client led us to focus our work on Large Language Models (LLMs), which will be described in the following section.
 
 \subsection{Exploratory Research}
 
-    We identified several problems with the current state of evaluating and testing of artificial intelligence via environmental design.
-    We began with investigating similar projects within this space, and found that projects like NeuralMMO that attempted to provide an open-source environment for measuring the performance of reinforcement learning algorithms. 
-    NeuralMMO focused on creating a discretized game environment with large input complexity, requiring agents to learn how to navigate a 2D grid world with a variety of tasks and challenges, including resource management, exploration, as well as combat or even cooperation with other agents.
-    However, as the project continued to be developed and despite the complexity of additional features or environmental constraints added to the environment, a general conclusion was that highly performant algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could learn to solve the tasks presented in the environment.
-    This led us to focus our efforts away from reinforcement learning and towards LLMs, which are a more recent development in the field of artificial intelligence, and are notable for recent integration of LLM techology into robotics and other embodied systems.
-    One large takeaway from [Joseph], the creator of NeuralMMO, was the following insight on designing benchmarking systems for AI: it is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation.
-    This heavily informed our future design processes.
+    \subsubsection{Focusing on Large Language Models}
+    Our exploratory research identified significant gaps in environmental design for evaluating AI systems.
+    We first examined existing projects in this space of benchmarking and testing, including NeuralMMO, which provides an open-source environment for measuring reinforcement learning algorithm performance.
 
-    To clarify, we define agentic AI as systems capable of making decisions and taking actions in the world, and to react to challenges and changes in the environment.
-    We further separate our focus onto embodied AI, which is a subset of agentic AI that interacts with a physical world.
-    We argue that this project is embodied AI.
+    NeuralMMO offers a game environment with high discrete input complexity, requiring agents to navigate a 2D grid world with diverse tasks including resource management, exploration, and agent interaction.
+    After years of continued development and increasing environmental complexity, we observed that advanced algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could effectively solve most tasks presented.
+    This observation shifted our focus from reinforcement learning toward Large Language Models (LLMs), which represent more recent advancements in artificial intelligence.
+    We were particularly interested in growing research and integration of LLMs into robotics and embodied systems.
+    A crucial insight from Joseph Suarez, NeuralMMO's creator, significantly influenced our approach: 
+    \begin{quote}
+        "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\answerTODO{cite his thesis defense}
+    \end{quote}
 
-    Another fallback within the field of AI benchmarking and research is the lack of a standardized framework for evaluating the performance of LLMs in real-world scenarios. fact check this shit.
-    While there exists several projects that claim to present effective prompting architectures, none of the large ones by NVIDIA, Altera, are open-source, and are applied to the environment of Minecraft which serves as an additional barrier to entry for enthusiasts and researchers.
+    \paragraph{Definitions}
+    For clarity, we define agentic AI as systems capable of autonomous decision-making and environmental interaction.
+    We further focus on embodied AI, a subset that specifically interacts with physical or simulated physical worlds.
 
-    We concluded that the suitable direction to take our project is in this: \emph{Designing an open-source benchmarking environment specifically designed for evaluating the performance and behavior of embodied AI.}
-    We particularly designed the environment for the testing of Large Language Models, and wanted to make the environment and setup easily modifiable, documented, adhering to best practices, to assist in the project longetivty and usefulness.
+    \paragraph{Environment Design}
+    Several proposed prompting and embodied AI architectures build upon Minecraft as the chosen game environment.
+    This choice creates barriers for researchers and enthusiasts by requiring a license to operate.
+    Minecraft would be an good choice of environment given its inherent complexity and large corpus of information about it available on the internet.
+    In a similar sense, the output of embodied AI architectures is easily intepretable, which positively contributes to the understandability of AI output in terms of benchmarking.
+    
+    However, a significant fallback of using Minecraft is that there is not standardized solution for providing game state information to the agents, nor is the environment designed to test embodied AI.
+    While environments designed to specific more closely emulate the real world would be a better mapping, we believed that building the necessary overarching systems for the interaction of an LLM and any frontend environment would be a better project focus.
+    This justifies our choice to keep our developed environment similar to Minecraft, further justified by the time constraints of the project.
+    We hope to see our solutions for prompting and providing context about the game environment to an LLM backend, which was built within the open-source Godot game engine, to be applied in the development of similar environmental design that better maps to real-world robotics also using Godot.
 
+    \paragraph{Open-Source}
+    A similar problem we identified that further inspired our project direction is the fact that some of the supposedly successful solutions are not open-source.
+    By building our systems to allow for easy integrations of newly developed LLMs or prompting architectures into our environment, we hope to solve this identified drawback.
+    
+    \paragraph{Project Justification} 
+    Based on our research, we decided to take our project in the direction of developing an open-source benchmarking environment specifically for evaluating embodied AI performance and behavior.
+    We planned to tailor our environment for testing large language models, highlighting easy modification, comprehensive documentation, and adherence to best open-source practices to ensure project longevity and utility.
+    The prompting architecture should be easily expandable to any environment type or setup to allow for future development into additional prompting architectures or transferring the same architecture to new environments.
+    This justified our choice to develop our environment to be similar to Minecraft, while allowing the backend prompting architecture to be easily modifiable and transferrable to separate environments developed within the Godot game engine.
+    Our design deliberately targets researchers and enthusiasts, with solutions built specifically to solve the identified drawbacks.
 
-\subsection{Retrieval of style files}
-
-
-The style files for NeurIPS and other conference information are available on
-the website at
-\begin{center}
-  \url{https://neurips.cc}
-\end{center}
-The file \verb+neurips_2025.pdf+ contains these instructions and illustrates the
-various formatting requirements your NeurIPS paper must satisfy.
-
-
-The only supported style file for NeurIPS 2025 is \verb+neurips_2025.sty+,
-rewritten for \LaTeXe{}.  \textbf{Previous style files for \LaTeX{} 2.09,
-  Microsoft Word, and RTF are no longer supported!}
-
-
-The \LaTeX{} style file contains three optional arguments: \verb+final+, which
-creates a camera-ready copy, \verb+preprint+, which creates a preprint for
-submission to, e.g., arXiv, and \verb+nonatbib+, which will not load the
-\verb+natbib+ package for you in case of package clash.
-
-
-\paragraph{Preprint option}
-If you wish to post a preprint of your work online, e.g., on arXiv, using the
-NeurIPS style, please use the \verb+preprint+ option. This will create a
-nonanonymized version of your work with the text ``Preprint. Work in progress.''
-in the footer. This version may be distributed as you see fit, as long as you do not say which conference it was submitted to. Please \textbf{do
-  not} use the \verb+final+ option, which should \textbf{only} be used for
-papers accepted to NeurIPS.
+\subsection{Technologies}
+    We first needed an environment with which the LLMs can interact with for benchmarking. Game engines are the best option to streamline the creation of simulated environments because they provide the tools for us to conveniently build our environments while abstracting low-level calculations and implementations that would greatly hinder our project development. In spirit of our open-source requirement, we chose Godot to be our game engine due to it also being open-source and many of the project members are familiar with using the game engine, reducing the overhead of learning the fundamentals of using a game engine. Minecraft as our simulated environment would've been ideal since the environment is already made and rich with game features to test the LLMs on, removing the portion of our project timeline to develop the environment. However, Minecraft is not an open-source game which is a required attribute for our project. Furthermore, users of our projects would have to buy a license for the game which restricts accessibility, another core attribute of this project.
+    
+    We intend for our project to work with any LLMs, cloud-hosted or locally-hosted, so that users can use our project to benchmark currently existing and developing LLMs. Additionally, we need LLMs to test our implementation of our LLM and agent body pipelines. Thus, we chose GPT o-models, Gemini 2.0 Flash-lite, Ollama 4, and Deepseek as our set of models for testing. GPT and Gemini served as test subjects that guided our integration of cloud-hosted LLMs to Godot while Ollama and Deepseek serves the same purpose but for locall-hosted LLM integration. We also wanted to provide a suite of default options for the users to streamline setup and provide a reference on how they can integrate their own LLMs to our project.
 
 
-At submission time, please omit the \verb+final+ and \verb+preprint+
-options. This will anonymize your submission and add line numbers to aid
-review. Please do \emph{not} refer to these line numbers in your paper as they
-will be removed during generation of camera-ready copies.
-
-
-The file \verb+neurips_2025.tex+ may be used as a ``shell'' for writing your
-paper. All you have to do is replace the author, title, abstract, and text of
-the paper with your own.
-
-
-The formatting instructions contained in these style files are summarized in
-Sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
-
-
-\section{General formatting instructions}
-\label{gen_inst}
-
-
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).  Use 10~point
-type with a vertical spacing (leading) of 11~points.  Times New Roman is the
-preferred typeface throughout, and will be selected for you by default.
-Paragraphs are separated by \nicefrac{1}{2}~line space (5.5 points), with no
-indentation.
-
-
-The paper title should be 17~point, initial caps/lower case, bold, centered
-between two horizontal rules. The top rule should be 4~points thick and the
-bottom rule should be 1~point thick. Allow \nicefrac{1}{4}~inch space above and
-below the title to rules. All pages should start at 1~inch (6~picas) from the
-top of the page.
-
-
-For the final version, authors' names are set in boldface, and each name is
-centered above the corresponding address. The lead author's name is to be listed
-first (left-most), and the co-authors' names (if different address) are set to
-follow. If there is only one co-author, list both author and co-author side by
-side.
-
-
-Please pay special attention to the instructions in Section \ref{others}
-regarding figures, tables, acknowledgments, and references.
-
-\section{Headings: first level}
-\label{headings}
-
-
-All headings should be lower case (except for first word and proper nouns),
-flush left, and bold.
-
-
-First-level headings should be in 12-point type.
-
-
-\subsection{Headings: second level}
-
-
-Second-level headings should be in 10-point type.
-
-
-\subsubsection{Headings: third level}
-
-
-Third-level headings should be in 10-point type.
-
+\section{Implementation}
 
 \paragraph{Paragraphs}
 
