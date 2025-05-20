@@ -92,6 +92,20 @@
     As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a modifiable system for benchmarking and implementing embodied LLM simulations in Godot.
     We implement a proof-of-concept Minecraft-like environment to demonstrate an application of this system, providing a structured quantitative benchmarking through diverse scenarios and an open-world sandbox for more qualitative assessment of decision-making behaviors.
     Our approach enables researchers and enthusiasts to test various embodied LLM implementations in a flexible simulated environment.
+    \begin{figure}[ht!]
+        \centering
+        \begin{minipage}[b]{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{./example.png}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[b]{0.49\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{./example2.png}
+        \end{minipage}
+        \caption{SPEEN simulation environment screenshots}
+        \label{fig:speen-environment}
+    \end{figure}
 \end{abstract}
 
 \section{Problem Identification}
@@ -118,7 +132,7 @@ This shifted our focus away from reinforcement learning and toward Large Languag
 \subsubsection{Environment Design}
 There are a number of proposed embodied LLM architectures that use Minecraft as a testing environment.
 Projects including NVIDIA's Voyager project (extending from the MineDojo project) and Project Sid by Altera\footnote{AL, A., Ahn, A., Becker, N., Carroll, S., Christie, N., Cortes, M., Demirci, A., Du, M., Li, F., Luo, S., Wang, P. Y., Willows, M., Yang, F., \& Yang, G. R. (2024). Project Sid: Many-agent simulations toward AI civilization. \url{https://arxiv.org/abs/2411.00114}.} attempt to provide prompting and training architectures for agents to exist in the game.
-However, between these projects, there are identifiable limitationms as benchmarks of agentic LLMs:
+However, between these projects, there are identifiable limitations of them as benchmarks of agentic LLMs:
 \begin{itemize}
     \item \textbf{Lack of Open-Source Availability:}
           Project Sid articulates a way for many-agents to exist within Minecraft, proposing supposedly powerful prompting architectures, but is not open-source.
@@ -129,15 +143,14 @@ However, between these projects, there are identifiable limitationms as benchmar
 \end{itemize}
 
 Additional barriers exist in the choice of environment.
-While Minecraft offers inherent complexity and extensive documentation that may aid in implementation of the agents, it presents significant limitations as a benchmark:
+While Minecraft offers inherent complexity and extensive documentation as an additional input to AI training, it presents significant limitations as a benchmark:
 \begin{enumerate}
     \item It requires a commercial license, creating accessibility barriers
     \item No existing standardized context provisioning or testing metrics
 \end{enumerate}
-
-\paragraph{Chosen Environment} Although environments that more closely emulate the real world would better map to real-world robotic applications, we determined that focusing on standardizing an accessible contextualization and prompting systems would be more beneficial for the field.
-Thus, our focus was on the development of the prompting architecture, i.e. the interaction between the LLM and the game environment, and the collection of evaluation metrics, as opposed to purely on the environment itself.
-With this in mind, our environment is kept less realistic and still similar to Minecraft, but we hope that future work will be able to build upon our work and expand to more realistic environments.
+\paragraph{Chosen Environment} Although environments that more closely emulate the real world would better map to real-world robotic applications, we determined that focusing on standardizing an accessible contextualization and prompting systems would make our project more useful.
+Thus, our focus was on the development of the prompting architecture, i.e. the interaction between the LLM and the game environment, and the collection of evaluation metrics.
+With this in mind, our environment is kept less realistic and designed to be similar to Minecraft, but we hope that future work will be able to build upon our work and expand to more realistic environments.
 
 \subsubsection{Open-Source}
 Our research identified that many successful LLM evaluation solutions are not open-source, limiting their utility for broader research purposes.
@@ -146,12 +159,12 @@ This constraint guided our decision to use the Godot game engine, which is open-
 Our selection of Godot was also motivated by its rapid development trajectory and growing community support, with major improvements in each release enhancing both performance and development workflows, showing great promise for use beyond simply game development.
 
 \subsubsection{Research Use Case}
-Ensuring our backend Python web socket supports both cloud-hosted and locally-hosted LLMs is important because this allows researchers to test various models as they're released.
+Ensuring our backend Python websocket supports both cloud-hosted and locally-hosted LLMs is important because this allows researchers to test various models as they're released.
 Using abstraction layers, new models can be integrated into the system without requiring significant changes to the code base on the development side.
 We implemented several different scenarios that stress test our API and agents capabilities for planning, environmental reasoning, and cooperation.
 In the current product, we support the OpenAI GPT models, Google Gemini API, locally-hosted LLMs via OLlamma (Gemma3, Deepseek-r1, etc.).
 
-\answerTODO{Mention Google Deepmind Creating Multimodal Interactive Agents with Imitation and Self-Supervised Learning }
+% \answerTODO{Mention Google Deepmind Creating Multimodal Interactive Agents with Imitation and Self-Supervised Learning }
 
 \subsection{Design Requirements}
 Based on our research findings, we had the sufficient justification to develop SPEEN as an open-source benchmarking environment specifically for evaluating embodied AI (LLM) performance.
@@ -171,7 +184,7 @@ Listed below were our comprehensive design goals and requirements for the system
           \end{itemize}
     \item \textbf{Open-Source Compliance:}
           \begin{itemize}
-              \item Accessible and modifiable system with appropriate licensing for researchers and enthusiasts
+              \item Accessible and modifiable system with appropriate licensing for research purposes
               \item Comprehensive documentation
           \end{itemize}
 \end{enumerate}
@@ -186,30 +199,21 @@ To prove its usability, we shall also implement the testing environment and prom
 \section{Development}
 \subsection{Environment Design}
 A majority of early development focused on creating the agent's environment for qualitative evaluation.
-Features included:
-\begin{itemize}
-    \item Procedural world generation with day/night cycle
-    \item Navigation and A* pathfinding via Godot's Navigation3D system
-    \item Suite of API functions for agent-environment interaction
-    \item NPC AI (animals, zombies) for objectives and adversaries
-    \item Item and inventory system
-\end{itemize}
+Features included: procedural world generation with day/night cycle, navigation and A* pathfinding via Godot's Navigation3D system, suite of API functions for agent-environment interaction, NPC AI (animals, zombies) for objectives and adversaries, and item and inventory system.
 After around 7 weeks, we had a functional environment sufficiently complex for our proof of concept.
 
 \subsection{Agent-Environment Pipeline}
-
 \begin{figure}[ht!]
     \centering
-
     \begin{tikzpicture}[
-        scale=0.18,
-        node distance=0.6cm,
+        scale=0.16,
+        node distance=0.4cm,
         box/.style={
                 rectangle,
                 draw,
                 thick,
                 minimum width=2cm,
-                minimum height=1.7cm,
+                minimum height=1.5cm,
                 text width=2.5cm,
                 align=center,
                 fill=blue!10,
@@ -220,57 +224,57 @@ After around 7 weeks, we had a functional environment sufficiently complex for o
                 draw,
                 thick,
                 minimum width=2cm,
-                minimum height=0.7cm,
+                minimum height=0.6cm,
                 text width=2.5cm,
                 align=center,
                 fill=blue!5,
                 font=\scriptsize,
             },
-        arrow/.style={-{Stealth[length=3mm]}, thick},
+        arrow/.style={-{Stealth[length=1.9mm]}, thick},
         condition/.style={font=\scriptsize\itshape, text opacity=0.7},
         ]
         % Define main component layer
         \node[box] (env) {\textbf{\underline{Environment State}} \\
-            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=2pt, parsep=0pt]
+            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=1pt, parsep=0pt]
                 \item State of nearby NPCs
                 \item Visual information
                 \item Nearby objects
             \end{itemize}};
 
         \node[box, right=of env] (agent_state) {\textbf{\underline{Agent State}} \\
-            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=2pt, parsep=0pt]
+            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=1pt, parsep=0pt]
                 \item Health, needs, position
                 \item Current goal
                 \item Memories
             \end{itemize}};
 
-        \node[smallbox, above=of agent_state] (agent) {Agent};
+        \node[smallbox, above=0.3cm of agent_state] (agent) {Agent};
 
         % Context processing layer - all on the same layer
-        \node[smallbox, below=of env] (env_context) {Environment Context};
+        \node[smallbox, below=0.3cm of env] (env_context) {Environment Context};
         \node[smallbox, right=of env_context] (actions) {Available Actions};
 
         % Calculate midpoint position for system prompt - now below env_context and actions
         \path (env_context) -- (actions) coordinate[midway] (mid_point);
-        \node[smallbox, below=1.2cm of mid_point] (system_prompt) {System Prompt};
+        \node[smallbox, below=0.8cm of mid_point] (system_prompt) {System Prompt};
 
         % Prompt layer - moved down
-        \node[smallbox, below=0.8cm of system_prompt] (prompt) {Prompt};
+        \node[smallbox, below=0.3cm of system_prompt] (prompt) {Prompt};
 
         % Connect system prompt to prompt
         \draw[arrow] (system_prompt) -- (prompt);
 
         % LLM layer - moved down
-        \node[smallbox, below=of prompt] (llm) {Large Language Model};
+        \node[smallbox, below=0.3cm of prompt] (llm) {Large Language Model};
 
         % Output layer - centered below LLM with appropriate spacing
         \path (llm.south west) -- (llm.south east) coordinate[midway] (llm_bottom);
-        \node[smallbox, below=1.5cm of llm, xshift=-2cm] (script) {Script};
-        \node[smallbox, below=1.5cm of llm, xshift=2cm] (goal) {Goal};
+        \node[smallbox, below=0.7cm of llm, xshift=-2cm] (script) {Script};
+        \node[smallbox, below=0.7cm of llm, xshift=2cm] (goal) {Goal};
 
         % Add websocket label
-        \node[draw, dashed, rounded corners, fit=(prompt)(system_prompt)(llm)(script)(goal), inner sep=8pt] (websocket_box) {};
-        \node[font=\scriptsize, text opacity=0.7, yshift=6pt] at (websocket_box.north) {Websocket};
+        \node[draw, dashed, rounded corners, fit=(prompt)(system_prompt)(llm)(script)(goal), inner sep=6pt] (websocket_box) {};  % Reduced inner sep from 8pt to 6pt
+        \node[font=\scriptsize, text opacity=0.7, yshift=4pt] at (websocket_box.north) {Websocket};
 
         % Main connections
         \draw[arrow] (env) -- (env_context);
@@ -280,18 +284,15 @@ After around 7 weeks, we had a functional environment sufficiently complex for o
         \draw[arrow] (actions) -- (system_prompt);
         \draw[arrow] (prompt) -- (llm);
 
-        % Output paths
-        \draw[thick] (llm) -- ++(0,-5.5) coordinate (branch_point);
+        \draw[thick] (llm) -- ++(0,-4) coordinate (branch_point);
         \draw[arrow] (branch_point) -| (script);
         \draw[arrow] (branch_point) -| (goal);
 
-        % Add labels for conditions
-        \node[condition, below=0.2cm of llm, xshift=-1.5cm] {If generating code};
-        \node[condition, below=0.2cm of llm, xshift=1.5cm] {If generating goal};
+        \node[condition, below=-0.075cm of llm, xshift=-2cm] {If generating code};
+        \node[condition, below=-0.075cm of llm, xshift=2cm] {If generating goal};
 
-        % Modified feedback paths - now exiting left and right then going up
-        \draw[arrow] (script) -- ++(-14,0) |- (env.west);
-        \draw[arrow] (goal) -- ++(14,0) |- (agent.east);
+        \draw[arrow] (script) -- ++(-12,0) |- (env.west);
+        \draw[arrow] (goal) -- ++(12,0) |- (agent.east);
     \end{tikzpicture}
 
     \caption{Agent-Environment Pipeline Architecture}
@@ -301,18 +302,17 @@ After around 7 weeks, we had a functional environment sufficiently complex for o
 Figure \ref{fig:agent-pipeline}, depicts our agent-environment pipeline architecture, which also serves as our prompting architecture.
 Environmental information is fed directly into the LLM, which generates either a script or a goal if no goal is set for the agent.
 The LLM will execute the generated script, the outcome of which may be logged in the "Memories" of the agent.
-The memory system represents our attempt to implement chain-of-thought reasoning, a common technique for emulating LLM decision making, as future context include the agent's memories.
+The memory system represents our attempt to implement chain-of-thought reasoning, a common technique for sequential LLM decision making, as future context include the results of the agent's actions.
 
 The available actions are the API function calls available to the agent, which abstract away the low-level interaction logic of the environment.
 This technique focuses the LLM on reasoning and decision making rather than on code adherence, although it is possible for broken code to be generated.
 In this event, we catch broken code and are able to either re-prompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
 
-Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM till script completion.
+Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM until script completion.
 The pipeline then repeats from the beginning and continues repeating until the scenario goal is satisfied or the specified max amount of iterations is reached.
 
 \section{Testing and Evaluation}
-\subsection{Benchmarking Scenarios}
-
+\subsection{Quantitative Benchmarking}
 We implemented a variety of scenarios to test different aspects of agent capabilities:
 \begin{enumerate}
     \item Basic navigation: Testing the agent's ability to navigate to specific locations
@@ -320,17 +320,32 @@ We implemented a variety of scenarios to test different aspects of agent capabil
     \item Entity Interaction: Testing communication and combat with other entities
     \item Sequential Tasks: Testing the agent's ability to perform multi-step tasks
 \end{enumerate}
-Each scenario includes success criteria and automatic performance tracking.
-
-\subsection{ Evaluation Metric}
-The system tracks several key metrics:
-\begin{itemize}
-    \item Success Rate: Percentage of tasks completed successfully
-    \item Failure Rate: Percentage of tasks that failed to complete
-          \begin{itemize}
-              \item Counting errors in code compilation and logical errors as failures
-          \end{itemize}
-\end{itemize}
+The benchmarking toolkit will automatically run and track the performance of the agent in each scenario.
+It will also track the overall success rate and failure rate for each scenario type, related to whether the agent was able to complete the task successfully. Errors in code compilation or taking too long to complete the task can be counted as failures.
+\subsection{Qualitative Testing}
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\subsection{Results}
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\begin{figure}
+    \centering
+    \small
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Scenario Type} & \textbf{GPT-4} & \textbf{Claude 3} & \textbf{Gemini Pro} \\
+        \midrule
+        \multicolumn{4}{l}{\textit{Success Rate (\%)}} \\
+        Navigation & 92 & 88 & 84 \\
+        Item Manipulation & 85 & 80 & 75 \\
+        Entity Interaction & 76 & 72 & 65 \\
+        Sequential Tasks & 70 & 65 & 58 \\
+        \midrule
+        \textbf{Overall Success} & \textbf{81} & \textbf{76} & \textbf{71} \\
+        \textbf{Overall Failure} & \textbf{19} & \textbf{24} & \textbf{29} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Performance comparison of different LLM models across test scenarios\answerTODO{Replace placeholer values}}
+    \label{tab:model-performance}
+\end{figure}
 
 \section{Connecting to Sandia Mission Areas and NAE Grand Challenges}
 \subsection{Relevance to Sandia Mission Areas}
@@ -757,6 +772,3 @@ With the ease of including new LLMs and the provided benchmarking scenarios, we 
 %           \end{itemize}
 
 % \end{enumerate}
-
-
-\end{document}
