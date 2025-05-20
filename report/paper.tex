@@ -89,9 +89,9 @@
 
 \begin{abstract}
     The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform for evaluating embodied Large Language Model agents in a simulated game environment.
-    As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a modifiable system for benchmarking and implementing embodied LLM simulations in Godot.
-    We implement a proof-of-concept Minecraft-like environment to demonstrate an application of this system, providing a structured quantitative benchmarking through diverse scenarios and an open-world sandbox for more qualitative assessment of decision-making behaviors.
-    Our approach enables researchers to test various embodied LLM implementations in a flexible simulated environment and contribute to creating evaluative measures for Trustworthy AI.
+    As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the critical need for standardized evaluation frameworks by providing a modifiable system for benchmarking and implementing embodied LLM simulations in Godot.
+    We implement a proof-of-concept Minecraft-like environment to demonstrate an application of this system, providing both structured quantitative benchmarking through diverse scenarios and an open-world sandbox for qualitative assessment of decision-making behaviors.
+    Our approach enables researchers to test various embodied LLM implementations in a flexible simulated environment and contribute to developing robust evaluative measures for Trustworthy AI.
     \begin{figure}[ht!]
         \centering
         \begin{minipage}[b]{0.49\textwidth}
@@ -132,14 +132,14 @@ This shifted our focus away from reinforcement learning and toward Large Languag
 \subsubsection{Environment Design}
 There are a number of proposed embodied LLM architectures that use Minecraft as a testing environment.
 Projects including NVIDIA's Voyager project (extending from the MineDojo project) and Project Sid by Altera\footnote{AL, A., Ahn, A., Becker, N., Carroll, S., Christie, N., Cortes, M., Demirci, A., Du, M., Li, F., Luo, S., Wang, P. Y., Willows, M., Yang, F., \& Yang, G. R. (2024). Project Sid: Many-agent simulations toward AI civilization. \url{https://arxiv.org/abs/2411.00114}.} attempt to provide prompting and training architectures for agents to exist in the game.
-However, between these projects, there are identifiable limitations of them as benchmarks of agentic LLMs:
+However, these projects exhibit several critical limitations as benchmarks for agentic LLMs:
 \begin{itemize}
     \item \textbf{Lack of Open-Source Availability:}
           Project Sid articulates a way for many-agents to exist within Minecraft, proposing supposedly powerful prompting architectures, but is not open-source.
-          It is further unclear how to reproduce the results from their methodology, representing potential conflict of interest
+          The methodology for reproducing their results remains unclear, potentially creating barriers to validation and further scientific progress.
     \item \textbf{Limited Flexibility:}
           While MiniDojo projects like NVIDIA's Voyager\footnote{Wang, G., Xie, Y., Jiang, Y., Mandlekar, A., Xiao, C., Zhu, Y., Fan, L., \& Anandkumar, A. (2023). Voyager: An Open-Ended Embodied Agent with Large Language Models. \url{https://doi.org/10.48550/arXiv.2305.16291}.} have yielded impressive results and are open-source, we believe there is an increasing need to develop benchmarks that generalize to real-world use cases and to metrics specific to agentic AI rather than Minecraft.
-          The domain-specific metrics of area explored \& percentage of available items collected are not necessarily useful for evaluating LLMs in a more general sense.
+          The domain-specific metrics of area explored \& percentage of available items collected are not necessarily useful for evaluating LLMs in a more general sense or for real-world applications.
 \end{itemize}
 
 Additional barriers exist in the choice of environment.
@@ -302,14 +302,14 @@ After around 7 weeks, we had a functional environment sufficiently complex for o
 Figure \ref{fig:agent-pipeline}, depicts our agent-environment pipeline architecture, which also serves as our prompting architecture.
 Environmental information is fed directly into the LLM, which generates either a script or a goal if no goal is set for the agent.
 The LLM will execute the generated script, the outcome of which may be logged in the "Memories" of the agent.
-The memory system represents our attempt to implement chain-of-thought reasoning, a common technique for sequential LLM decision making, as future context include the results of the agent's actions.
+The memory system represents our implementation of chain-of-thought reasoning, allowing the agent to build upon previous experiences and maintain contextual awareness across multiple iterations.
 
-The available actions are the API function calls available to the agent, which abstract away the low-level interaction logic of the environment.
-This technique focuses the LLM on reasoning and decision making away from low-level implementation details.
-In the event broken or uncompilable code is generated, we catch broken code and are able to either re-prompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
+The available actions are API function calls that abstract away the low-level interaction logic of the environment.
+This abstraction focuses the LLM on higher-level reasoning and decision making rather than implementation details.
+For error handling, we implemented a robust system that catches broken or uncompilable code and can either re-prompt the LLM with the specific error for self-correction or count the iteration as a failure for benchmarking purposes.
 
-Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM until script completion.
-The pipeline then repeats from the beginning and continues repeating until the scenario goal is satisfied or the specified max amount of iterations is reached.
+Once the script is validated, the agent's "body" executes the actions sequentially until completion.
+The pipeline then repeats, gathering updated environmental information and continuing until either the scenario goal is satisfied or the maximum allowed iterations is reached.
 
 \section{Testing and Evaluation}
 \subsection{Quantitative Testing}
@@ -324,10 +324,14 @@ We designed additional features to catch errors in code compilation that can be 
 Figure \ref{tab:model-performance} shows the performance of three different LLMs in our testing scenarios.
 
 \subsection{Qualitative Testing}
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Beyond quantitative metrics, we conducted qualitative evaluations to assess agent behavior in open-ended scenarios. Our observations revealed several notable patterns:
+Our environment and prompting architecture designs translated well to the following qualitative observations, which we believe are important for future work in embodied AI:
+\paragraph{Chain of Thought} When allowed to iteratively set goals and react to the results of their own actions, agents were able to succeed in more complex tasks.
+\paragraph{Adaptability} By providing standardized context to the LLM in addition to a basic system prompt, we observed that most LLMs were capable of adapting to available information within environment and generating appropriate responses.
+This was especially thanks to our Memory systems and context building solutions. For multimodal LLMs, this was particularly effective, as they were able to use visual information to inform their decisions.
+This contextualization system allows environments, architectures, and LLMs to be easily tested by allowing for the passing of any required information. \answerTODO{this sucks}
+\paragraph{Cooperative Behavior} In multi-agent scenarios, we observed emergent cooperative behaviors which would develop division-of-labor strategies when working toward common goals without explicit prompting. 
+This emergent coordination suggests potential for more complex social dynamics in future iterations of the system, and for further evaluative research into the effectiveness of deployments of these types of systems in real-world applications.
 \begin{figure}
     \centering
     \small
@@ -345,25 +349,35 @@ Figure \ref{tab:model-performance} shows the performance of three different LLMs
         \textbf{Overall Failure} & \textbf{19} & \textbf{24} & \textbf{29} \\
         \bottomrule
     \end{tabular}
-    \caption{Performance comparison of different LLM models across test scenarios\answerTODO{Replace placeholder values}}
+    \caption{Performance comparison of different LLM models across test scenarios \answerTODO{remove placeholders}} 
     \label{tab:model-performance}
 \end{figure}
 
 \section{Significance}
 \subsection{Trustworthy AI}
+As embodied AI systems become increasingly integrated into real-world applications, establishing trust through rigorous evaluation becomes paramount.
+SPEEN directly addresses this need by providing simulation framework for testing and benchmarking LLMs in a controlled setting, enabling researchers and developers to assess the reliability and safety of their AI systems and architectures before deployment.
+Our current product accomplishes this by providing the following: 
+\textbf{(1) Reproducible Benchmarking:} Open-source and easily modifiable environments allows for the extension of our system to new scenarios and architectures, enabling reproducible testing across different models and implementations.
+This establishes a foundation for valid comparisons and trustworthy claims about model capabilities.
+\textbf{(2) Simulated Testing:} By allowing researchers to test different prompting architectures and LLMs in a controlled, simulated environment, SPEEN enables the evaluation of prompting strategies, LLM performance, agent behavior, and the overall effectiveness of embodied AI systems.
+\textbf{(3) Something else} Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 \subsection{Transitioning AI Research Into Production}
-
-\answerTODO{Before we can rely on 
-
-need specialized benchmarks for embodied AI systems before they get deployed in the real world. before we can rely on AI systems to help us, we have to prove that they are trustworthy. Our specialize systems contribute }
-
+SPEEN bridges the gap between research and develoment into production-ready systems by contributing to the development of standardized evaluation frameworks for the emerging field of embodied AI.
+We believe it critical that AI systems undergo rigorous testing and evaluation before deployment, and SPEEN provides a platform for researchers to develop and validate their systems in a controlled environment.
+As previously mentioned, we believe that allowing our systems to be extended to new architectures and models is critical to the success of our project as a benchmarking and testing framework.
+We therefore place an emphasis on the clean documentation of our system and the extensibility of the different components that make up SPEEN, always keeping in mind the potential for our work to be further developed.
+By providing these capabilities, SPEEN contributes to the responsible advancement of embodied AI from research concepts to practical applications, helping ensure that both our current systems and future systems are able to be used reliably, safely, and effectively.
 \section{Conclusion and future developments}
-LLMs are a relatively new technology, meaning there are not many tools for measuring LLMs' competency in decision-making and environment interaction.
-There are projects such as Mindcraft\footnote{kolbytn. (2023). GitHub - kolbytn/mindcraft. GitHub. \url{(https://github.com/kolbytn/mindcraft)}.} and Voyager that do integrate LLMs into a virtual world but lack benchmarking features for researchers to record their LLMs' performance and are built for Minecraft itself, requiring researchers to obtain paid licenses for Minecraft.
-Our project aims to be the solution to the problems of benchmarking tools and accessibility.
-With the ease of including new LLMs and the provided benchmarking scenarios, we hope to accelerate advancements in embodied AI systems involving LLMs.
+Large Language Models are a relatively new technology, with limited tools available for measuring their competency in decision-making and environment interaction, particularly in embodied contexts. While existing projects such as Mindcraft\footnote{kolbytn. (2023). GitHub - kolbytn/mindcraft. GitHub. \url{(https://github.com/kolbytn/mindcraft)}.} and Voyager integrate LLMs into virtual worlds, they lack comprehensive benchmarking features and require commercial licenses, creating barriers to research accessibility.
 
+SPEEN addresses these limitations by providing an open-source, flexible framework for rigorous evaluation of embodied LLM agents. Our system's ability to seamlessly integrate different LLMs, coupled with standardized benchmarking scenarios designed to be easily modifiable, offers researchers a powerful tool for comparative analysis of embodied AI systems.
+
+Future work would focus on expanding the range of testing scenarios, developing more sophisticated multi-agent interactions, and refining the metrics to better correlate with real-world application requirements, with environmental constraints that better approximate to deployments of these embodied     AI systems in robotics and beyond.
+
+By making SPEEN available to the broader research community, we hope to accelerate progress in embodied AI by establishing common standards for evaluation and comparison, ultimately contributing to the development of more capable, reliable, and trustworthy embodied intelligence systems.
 \end{document}
 
 % \newpage
