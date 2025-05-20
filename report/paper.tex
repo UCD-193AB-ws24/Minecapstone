@@ -43,8 +43,7 @@
 % \usepackage[preprint]{neurips_2025}
 
 % to avoid loading the natbib package, add option nonatbib:
-%    \usepackage[nonatbib]{neurips_2025}
-
+%\usepackage[nonatbib]{neurips_2025}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -56,6 +55,7 @@
 \usepackage{xcolor}         % colors
 \usepackage{tikz}           % diagrams
 \usepackage{enumitem}       % customized lists
+\usepackage{natbib}
 \usetikzlibrary{arrows.meta,shapes,positioning,fit,backgrounds,calc}
 
 % Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
@@ -89,49 +89,42 @@
 
 \begin{abstract}
     The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform for evaluating embodied Large Language Model agents in a simulated game environment.
-    As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a well-documented and modifiable system for utilizing and benchmarking embodied LLMs using the game development engine, Godot.
-    We implement a proof-of-concept Minecraft-like environment that utilizes our systems to demonstrate structured quantitative benchmarking through diverse scenarios as well as an open-world sandbox for more qualitative assessment of decision-making behaviors over extended periods.
-    Our approach enables researchers and enthusiasts to test the implementation of  embodied LLMs in a simulated environment,
-    % These complementary approaches enable researchers to evaluate how effectively embodied LLMs solve unseen tasks, communicate, and interact with responsive environments---key metrics for real-world applications of embodied AI systems.
+    As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a modifiable system for benchmarking and implementing embodied LLM simulations in Godot.
+    We implement a proof-of-concept Minecraft-like environment to demonstrate an application of this system, providing a structured quantitative benchmarking through diverse scenarios and an open-world sandbox for more qualitative assessment of decision-making behaviors.
+    Our approach enables researchers and enthusiasts to test various embodied LLM implementations in a flexible simulated environment.
 \end{abstract}
 
 \section{Problem Identification}
 
-\subsection{Background}
-This project originated as a Senior Design Project at UC Davis, where our team collaborated with Justin Jia (affiliated with Apple) to address practical needs in AI testing.
-The overaching goal of the project at this stage was to develop a sandbox environment specifically for testing AI programs.
-Initial discussions led us to focus on Large Language Models (LLMs) as a primary technology of interest.
+\paragraph{Background}
+This project originated as a Senior Design Project at UC Davis in collaboration with Justin Jia (affiliated with Apple) to address practical needs in AI testing.
+The overarching goal of the project at this stage was to develop a sandbox environment specifically for testing AI programs.
 
 \subsection{Exploratory Research}
 
-\subsubsection{Definitions}
-We define agentic AI as systems capable of autonomous decision-making and environmental interaction.
-Embodied AI, our primary focus, represents a subset specifically concerned with agents that interact with physical or simulated physical worlds.
-In the following sections, we justify our choice of LLMs as the core technology for our agents.
+\paragraph{Definitions}
+We define agentic AI as systems capable of autonomous decision-making and environmental interaction, with embodied AI specifically concerning agents that interact with physical or simulated worlds.
 
 \subsubsection{Focusing on Large Language Models}
 Our research identified significant gaps in environmental design for evaluating advanced AI systems.
-We examined existing benchmarking platforms, particularly NeuralMMO, which provides an open-source environment for measuring \textbf{reinforcement learning} algorithm performance.
-NeuralMMO is a game environment with high discrete input complexity, requiring agents to navigate a 2D grid world with tasks including resource management, exploration, and agent interaction.
-One crucial insight from Joseph Suarez, NeuralMMO's creator, significantly influenced our approach:
+We examined existing platforms like NeuralMMO, which provides an open-source environment for measuring \textbf{reinforcement learning} algorithm performance in a 2D grid world with complex tasks that emulate a massively multiplayer online game.
+A key insight from NeuralMMO's creator Joseph Suarez influenced our approach:
 \begin{quote}
-    "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\answerTODO{cite his thesis defense}
+    "It is very easy to create an interesting looking simulator. It is very hard, under the constraints of making useful AI research [to create an environment meant for testing and training AI]…it is not just a game, it is an AI simulation."\footnote{Suarez, J. (2024, May 14). Joseph Suarez Thesis Defense - Neural MMO. YouTube. \url{https://www.youtube.com/watch?v=wwTOFYgtAWg}.}
 \end{quote}
-However, despite continuous added complexity to the environment over the past few years, we observed that advanced algorithms like Proximal Policy Optimization (PPO), given sufficient compute, could effectively solve most presented tasks.
-
-This observation shifted our focus from reinforcement learning toward Large Language Models, which represent more recent advancements in artificial intelligence.
-We were particularly interested in the growing integration of LLMs, which have proven highly capable in natural language understanding and code generation, into robotics and embodied systems.
+Furthermore, despite increasing environmental complexity, advanced algorithms like PPO were observed to be able to effectively solve most tasks given sufficient computation.
+This shifted our focus away from reinforcement learning and toward Large Language Models, which have shown recent promise in integration with robotics and embodied systems.
 
 \subsubsection{Environment Design}
-Several proposed embodied LLM architectures use Minecraft as their testing environment.
-Projects including NVIDIA's Voyager project (extending from the MineDojo project) and Project Sid by Altera attempt to provide prompting and training architectures for agents to exist in Minecraft.
-However, there are identifiable problems between these projects:
+There are a number of proposed embodied LLM architectures that use Minecraft as a testing environment.
+Projects including NVIDIA's Voyager project (extending from the MineDojo project) and Project Sid by Altera\footnote{AL, A., Ahn, A., Becker, N., Carroll, S., Christie, N., Cortes, M., Demirci, A., Du, M., Li, F., Luo, S., Wang, P. Y., Willows, M., Yang, F., \& Yang, G. R. (2024). Project Sid: Many-agent simulations toward AI civilization. \url{https://arxiv.org/abs/2411.00114}.} attempt to provide prompting and training architectures for agents to exist in the game.
+However, between these projects, there are identifiable limitationms as benchmarks of agentic LLMs:
 \begin{itemize}
     \item \textbf{Lack of Open-Source Availability:}
           Project Sid articulates a way for many-agents to exist within Minecraft, proposing supposedly powerful prompting architectures, but is not open-source.
           It is further unclear how to reproduce the results from their methodology, representing potential conflict of interest
     \item \textbf{Limited Flexibility:}
-          While MiniDojo projects like NVIDIA's Voyager have yielded impressive results and are open-source, we believe there is an increasing need to develop benchmarks that generalize to real-world use cases and to metrics specific to agentic AI rather than Minecraft.
+          While MiniDojo projects like NVIDIA's Voyager\footnote{Wang, G., Xie, Y., Jiang, Y., Mandlekar, A., Xiao, C., Zhu, Y., Fan, L., \& Anandkumar, A. (2023). Voyager: An Open-Ended Embodied Agent with Large Language Models. \url{https://doi.org/10.48550/arXiv.2305.16291}.} have yielded impressive results and are open-source, we believe there is an increasing need to develop benchmarks that generalize to real-world use cases and to metrics specific to agentic AI rather than Minecraft.
           The domain-specific metrics of area explored \& percentage of available items collected are not necessarily useful for evaluating LLMs in a more general sense.
 \end{itemize}
 
@@ -141,28 +134,24 @@ While Minecraft offers inherent complexity and extensive documentation that may 
     \item It requires a commercial license, creating accessibility barriers
     \item No existing standardized context provisioning or testing metrics
 \end{enumerate}
-Although environments that more closely emulate the real world would better map to real-world robotic applications, we determined that focusing on standardizing an accessible contextualization and prompting systems would be more beneficial.
-Thus, our focus was on the development of the prompting architecture, e.g. the interaction between the LLM and the game environment, and the collection of evaluation metrics, as opposed to purely on the environment itself.
+
+\paragraph{Chosen Environment} Although environments that more closely emulate the real world would better map to real-world robotic applications, we determined that focusing on standardizing an accessible contextualization and prompting systems would be more beneficial for the field.
+Thus, our focus was on the development of the prompting architecture, i.e. the interaction between the LLM and the game environment, and the collection of evaluation metrics, as opposed to purely on the environment itself.
 With this in mind, our environment is kept less realistic and still similar to Minecraft, but we hope that future work will be able to build upon our work and expand to more realistic environments.
 
-\answerTODO{Mention Google Deepmind Creating Multimodal Interactive Agents with Imitation and Self-Supervised Learning }
-
-\subsubsection{Open-Source Requirements}
+\subsubsection{Open-Source}
 Our research identified that many successful LLM evaluation solutions are not open-source, limiting their utility for broader research purposes.
 By building our system to allow for transparent and reproducible integration of new LLMs and prompting architectures, we aim to address this limitation.
-This constraint guided our decision to use the Godot game engine, which is open-source and allows for easy modification and expansion, and we believe is heading in a positive directions for potential use in environment design and research.
+This constraint guided our decision to use the Godot game engine, which is open-source and allows for easy modification and expansion.
+Our selection of Godot was also motivated by its rapid development trajectory and growing community support, with major improvements in each release enhancing both performance and development workflows, showing great promise for use beyond simply game development.
 
 \subsubsection{Research Use Case}
-Since the system is intended for benchmarking, we wanted to ensure the backend Python websocket, which connects to the game environment, supported both cloud-hosted and locally-hosted LLMs.
-This flexibility allows researchers and enthusiasts to test the performance of various LLMs, especially as new models are released.
-Using abstraction layers, new models can be integrated into the system without requiring significant changes to the codebase on the development side.
-For higher-level access, a configuration file would be used to streamline the selection of models and their parameters, including locally-hosted LLMs.
+Ensuring our backend Python web socket supports both cloud-hosted and locally-hosted LLMs is important because this allows researchers to test various models as they're released.
+Using abstraction layers, new models can be integrated into the system without requiring significant changes to the code base on the development side.
+We implemented several different scenarios that stress test our API and agents capabilities for planning, environmental reasoning, and cooperation.
+In the current product, we support the OpenAI GPT models, Google Gemini API, locally-hosted LLMs via Ollamma (Gemma3, Deepseek-r1, etc.).
 
-In terms of measurement and validation strategy, we will implement a series of scenarios that test the capabilities both high and low-performing LLMs, and tracking success rate (adherence to the goal of the scenario).
-These scenarios will serve as our metrics capture meaningful dimensions of embodied intelligence like planning, adaptability, and environmental reasoning.
-
-In the current product, we support the OpenAI API for GPT models, Google Gemini API, and have tested the integration of locally hosted LLMs using Ollama such as Gemma3, Deepseek-r1, and other available models.
-These are also largely the models we used for testing our implementation of the prompting architecture, agentic pipeline, and evaluation metrics.
+\answerTODO{Mention Google Deepmind Creating Multimodal Interactive Agents with Imitation and Self-Supervised Learning }
 
 \subsection{Design Requirements}
 Based on our research findings, we had the sufficient justification to develop SPEEN as an open-source benchmarking environment specifically for evaluating embodied AI (LLM) performance.
@@ -170,72 +159,57 @@ Listed below were our comprehensive design goals and requirements for the system
 \begin{enumerate}
     \item \textbf{Standardized Evaluation Framework:}
           \begin{itemize}
-              \item Implement quantitative metrics and qualitative assessment framework for embodied LLM agents in Godot.
-              \item Provide standardized system for prompting and game state context provisioning.
-              \item Streamline integration of any LLM, prompting architectures, or evaluation methods.
+              \item Quantitative metrics and qualitative assessment for embodied LLM agents
+              \item Standardized prompting and game state context provisioning
+              \item Streamlined integration of LLMs, prompting architectures, and evaluation methods
           \end{itemize}
     \item \textbf{LLM Integration Capabilities:}
           \begin{itemize}
-              \item Support both cloud-hosted and locally-hosted LLM connections for research/evaluation purposes.
-              \item Provide abstraction layers for integration of LLMs when cloud hosting.
-              \item Include high-level configuration options for connection parameters and API settings.
+              \item Support for cloud and locally-hosted LLMs
+              \item Abstraction layers for seamless integration of any LLM
+              \item High-level configuration options
           \end{itemize}
     \item \textbf{Open-Source Compliance:}
           \begin{itemize}
-              \item As a research tool, ensure the system is accessible and modifiable for researchers and enthusiasts.
-              \item Ensure appropriate open-source licensing.
-              \item Provide comprehensive documentation of system architecture and project structure.
+              \item Accessible and modifiable system with appropriate licensing for researchers and enthusiasts
+              \item Comprehensive documentation
           \end{itemize}
 \end{enumerate}
 These are the requirements of the system we plan to achieve.
 To prove its usability, we shall also implement the testing environment and prompting architecture as a proof of concept.
 \begin{enumerate}
-    \item \textbf{Accessible Game Environment:}
-          \begin{itemize}
-              \item Develop a Minecraft-like 3D environment using the open-source Godot engine.
-              \item Create a world with sufficient complexity for testing embodied AI behaviors.
-              \item Design intuitive interfaces for human researchers to monitor and evaluate agent performance.
-          \end{itemize}
-    \item \textbf{Structured Scenarios:}
-          \begin{itemize}
-              \item Implement diverse testing scenarios targeting specific embodied capabilities.
-              \item Create both directed tasks and open-ended challenges.
-              \item Support automated performance scoring where appropriate.
-          \end{itemize}
-    \item \textbf{Prompting Architecture:}
-          \begin{itemize}
-              \item Implement a prompting architecture emulating chain-of-thought and goal-based prompting systems.
-              \item Allowing for easy modification and expansion of the prompting system.
-          \end{itemize}
+    \item \textbf{Accessible Game Environment:} A Minecraft-like 3D environment in Godot with sufficient complexity and intuitive interfaces for human researchers to monitor and evaluate agent performance
+    \item \textbf{Structured Scenarios:} Diverse testing scenarios with automated performance scoring
+    \item \textbf{Prompting Architecture:} Implement a prompting architecture emulating chain-of-thought and goal-based prompting systems with support for easy modification
 \end{enumerate}
 
 \section{Development}
 \subsection{Environment Design}
-A majority of early development was spent on agent's environment for the qualitative evaluation use case.
+A majority of early development focused on creating the agent's environment for qualitative evaluation.
 Features included:
 \begin{itemize}
-    \item Procedural world generation with day/night cycle (qualitative)
+    \item Procedural world generation with day/night cycle
     \item Navigation and A* pathfinding via Godot's Navigation3D system
-    \item Suite of API functions for the agent to call in order to interact with the environment
-    \item NPC AI to act as objectives and adversaries for benchmarking (animals, zombies)
-    \item An item and inventory system to allow for item collection and manipulation
+    \item Suite of API functions for agent-environment interaction
+    \item NPC AI (animals, zombies) for objectives and adversaries
+    \item Item and inventory system
 \end{itemize}
-At the end of the first 10 weeks, we had a functional environment that was sufficiently complex for our proof of concept.
-This led directly into the development of the prompting architecture and the agent-to-environment pipeline.
+After around 7 weeks, we had a functional environment sufficiently complex for our proof of concept.
+
 \subsection{Agent-Environment Pipeline}
 
 \begin{figure}[ht!]
     \centering
 
     \begin{tikzpicture}[
-        scale=0.2,
+        scale=0.18,
         node distance=0.6cm,
         box/.style={
                 rectangle,
                 draw,
                 thick,
                 minimum width=2cm,
-                minimum height=1.2cm,
+                minimum height=1.7cm,
                 text width=2.5cm,
                 align=center,
                 fill=blue!10,
@@ -256,14 +230,15 @@ This led directly into the development of the prompting architecture and the age
         condition/.style={font=\scriptsize\itshape, text opacity=0.7},
         ]
         % Define main component layer
-        \node[box] (env) {Environment State \\
-            \begin{itemize}[leftmargin=0.8em, itemsep=0pt, topsep=2pt, parsep=0pt]
-                \item State of nearby entities
+        \node[box] (env) {\textbf{\underline{Environment State}} \\
+            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=2pt, parsep=0pt]
+                \item State of nearby NPCs
                 \item Visual information
+                \item Nearby objects
             \end{itemize}};
 
-        \node[box, right=of env] (agent_state) {Agent State \\
-            \begin{itemize}[leftmargin=0.8em, itemsep=0pt, topsep=2pt, parsep=0pt]
+        \node[box, right=of env] (agent_state) {\textbf{\underline{Agent State}} \\
+            \begin{itemize}[leftmargin=1em, itemsep=0pt, topsep=2pt, parsep=0pt]
                 \item Health, needs, position
                 \item Current goal
                 \item Memories
@@ -322,16 +297,19 @@ This led directly into the development of the prompting architecture and the age
     \caption{Agent-Environment Pipeline Architecture}
     \label{fig:agent-pipeline}
 \end{figure}
-Figure \ref{fig:agent-pipeline}, depicts our agent-environment pipeline architecture, whic also serves as our prompting architecture. Environmental information is fed directly into the LLM, which generates either a script or a goal if no goal is set for the agent.
 
-If the LLM generated a script, the agent will execute the script, the outcome of which may be logged in the "Memories" of the agent. 
-This allows for chain-of-thought reasoning, a common technique for emulating LLM decision making.
+Figure \ref{fig:agent-pipeline}, depicts our agent-environment pipeline architecture, which also serves as our prompting architecture.
+Environmental information is fed directly into the LLM, which generates either a script or a goal if no goal is set for the agent.
+The LLM will execute the generated script, the outcome of which may be logged in the "Memories" of the agent.
+The memory system represents our attempt to implement chain-of-thought reasoning, a common technique for emulating LLM decision making, as future context include the agent's memories.
 
-The available actions are the function calls available to the agent, which abstract away the low-level interaction logic of the environment. 
-This technique focuses the LLM on reasoning and decision making rather than on code adherence, although it is possible for broken code to be generated. In this event, we catch broken code and are able to either reprompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
+The available actions are the API function calls available to the agent, which abstract away the low-level interaction logic of the environment.
+This technique focuses the LLM on reasoning and decision making rather than on code adherence, although it is possible for broken code to be generated.
+In this event, we catch broken code and are able to either re-prompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
 
-Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM.
-With our pipelines complete, we moved on to designing scenarios that will measure the LLMs' reasoning and correctness.
+Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM till script completion.
+The pipeline then repeats from the beginning and continues repeating until the scenario goal is satisfied or the specified max amount of iterations is reached.
+
 \section{Testing and Evaluation}
 \subsection{Benchmarking Scenarios}
 
@@ -378,8 +356,11 @@ Our work addresses aspects of multiple National Academy of Engineering Grand Cha
 
 \section{Conclusion and future developments}
 LLMs are a relatively new technology, meaning there are not many tools for measuring LLMs' competency in decision-making and environment interaction.
-There are projects such as Mindcraft and Voyager that do integrate LLMs into a virtual world but lack benchmarking features for researchers to record their LLMs' performance and are built for Minecraft itself, requiring researchers to obtain paid licenses for Minecraft.
+There are projects such as Mindcraft\footnote{kolbytn. (2023). GitHub - kolbytn/mindcraft. GitHub. \url{(https://github.com/kolbytn/mindcraft)}.} and Voyager that do integrate LLMs into a virtual world but lack benchmarking features for researchers to record their LLMs' performance and are built for Minecraft itself, requiring researchers to obtain paid licenses for Minecraft.
 Our project aims to be the solution to the problems of benchmarking tools and accessibility.
+With the ease of including new LLMs and the provided benchmarking scenarios, we hope to accelerate advancements in embodied AI systems involving LLMs.
+
+\end{document}
 
 % \newpage
 
