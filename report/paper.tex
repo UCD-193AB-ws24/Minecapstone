@@ -91,7 +91,7 @@
     The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open-source platform for evaluating embodied Large Language Model agents in a simulated game environment.
     As LLMs are increasingly integrated into robotics and embodied systems, SPEEN addresses the need for standardized evaluation frameworks by providing a modifiable system for benchmarking and implementing embodied LLM simulations in Godot.
     We implement a proof-of-concept Minecraft-like environment to demonstrate an application of this system, providing a structured quantitative benchmarking through diverse scenarios and an open-world sandbox for more qualitative assessment of decision-making behaviors.
-    Our approach enables researchers and enthusiasts to test various embodied LLM implementations in a flexible simulated environment.
+    Our approach enables researchers to test various embodied LLM implementations in a flexible simulated environment and contribute to creating evaluative measures for Trustworthy AI.
     \begin{figure}[ht!]
         \centering
         \begin{minipage}[b]{0.49\textwidth}
@@ -153,8 +153,8 @@ Thus, our focus was on the development of the prompting architecture, i.e. the i
 With this in mind, our environment is kept less realistic and designed to be similar to Minecraft, but we hope that future work will be able to build upon our work and expand to more realistic environments.
 
 \subsubsection{Open-Source}
-Our research identified that many successful LLM evaluation solutions are not open-source, limiting their utility for broader research purposes.
-By building our system to allow for transparent and reproducible integration of new LLMs and prompting architectures, we aim to address this limitation.
+Our research identified issues in agentic LLM projects being closed source, limiting their utility for broader research purposes.
+By building our system to allow for transparent and reproducible integration of new LLMs and prompting architecture, we hope to address these limitations.
 This constraint guided our decision to use the Godot game engine, which is open-source and allows for easy modification and expansion.
 Our selection of Godot was also motivated by its rapid development trajectory and growing community support, with major improvements in each release enhancing both performance and development workflows, showing great promise for use beyond simply game development.
 
@@ -203,7 +203,7 @@ Features included: procedural world generation with day/night cycle, navigation 
 After around 7 weeks, we had a functional environment sufficiently complex for our proof of concept.
 
 \subsection{Agent-Environment Pipeline}
-\begin{figure}[ht!]
+\begin{figure}
     \centering
     \begin{tikzpicture}[
         scale=0.16,
@@ -305,26 +305,28 @@ The LLM will execute the generated script, the outcome of which may be logged in
 The memory system represents our attempt to implement chain-of-thought reasoning, a common technique for sequential LLM decision making, as future context include the results of the agent's actions.
 
 The available actions are the API function calls available to the agent, which abstract away the low-level interaction logic of the environment.
-This technique focuses the LLM on reasoning and decision making rather than on code adherence, although it is possible for broken code to be generated.
-In this event, we catch broken code and are able to either re-prompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
+This technique focuses the LLM on reasoning and decision making away from low-level implementation details.
+In the event broken or uncompilable code is generated, we catch broken code and are able to either re-prompt with the error for self-fixing behavior, or alternatively count the iteration as a failure.
 
 Once the script is ready to be ran, the agent's "body" will execute the input actions from the LLM until script completion.
 The pipeline then repeats from the beginning and continues repeating until the scenario goal is satisfied or the specified max amount of iterations is reached.
 
 \section{Testing and Evaluation}
-\subsection{Quantitative Benchmarking}
-We implemented a variety of scenarios to test different aspects of agent capabilities:
-\begin{enumerate}
-    \item Basic navigation: Testing the agent's ability to navigate to specific locations
-    \item Item manipulation: Testing picking up and giving items
-    \item Entity Interaction: Testing communication and combat with other entities
-    \item Sequential Tasks: Testing the agent's ability to perform multi-step tasks
-\end{enumerate}
+\subsection{Quantitative Testing}
+We implemented several types of scenarios to test different aspects of agent capabilities in the current product:
+\textbf{(1)Prompt adherence scenarios} test navigation and item manipulation to evaluate the agent's ability to correctly control their bodies;
+\textbf{(2)Entity interaction scenarios} assess the agent's ability to react to and interact with changes in real-time entity state;
+\textbf{(3)Sequential reasoning tasks} evaluate the agent's ability to perform multi-step tasks; and
+\textbf{(4)Multi-agent tasks} test many-agent interaction in scenarios requiring collaboration or competition.
 The benchmarking toolkit will automatically run and track the performance of the agent in each scenario.
-It will also track the overall success rate and failure rate for each scenario type, related to whether the agent was able to complete the task successfully. Errors in code compilation or taking too long to complete the task can be counted as failures.
+It will also track the overall success rate and failure rate for each scenario type, related to whether the agent was able to complete the task successfully.
+We designed additional features to catch errors in code compilation that can be repaired as well as detecting 'taking too long' to be counted as failures.
+Figure \ref{tab:model-performance} shows the performance of three different LLMs in our testing scenarios.
+
 \subsection{Qualitative Testing}
 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-\subsection{Results}
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 \begin{figure}
     \centering
@@ -334,40 +336,27 @@ It will also track the overall success rate and failure rate for each scenario t
         \textbf{Scenario Type} & \textbf{GPT-4} & \textbf{Claude 3} & \textbf{Gemini Pro} \\
         \midrule
         \multicolumn{4}{l}{\textit{Success Rate (\%)}} \\
-        Navigation & 92 & 88 & 84 \\
-        Item Manipulation & 85 & 80 & 75 \\
-        Entity Interaction & 76 & 72 & 65 \\
-        Sequential Tasks & 70 & 65 & 58 \\
+        Prompt adherence        & 92 & 88 & 84 \\
+        Entity interaction      & 85 & 80 & 75 \\
+        Sequential reasoning    & 76 & 72 & 65 \\
+        Multi-agent             & 70 & 65 & 58 \\
         \midrule
         \textbf{Overall Success} & \textbf{81} & \textbf{76} & \textbf{71} \\
         \textbf{Overall Failure} & \textbf{19} & \textbf{24} & \textbf{29} \\
         \bottomrule
     \end{tabular}
-    \caption{Performance comparison of different LLM models across test scenarios\answerTODO{Replace placeholer values}}
+    \caption{Performance comparison of different LLM models across test scenarios\answerTODO{Replace placeholder values}}
     \label{tab:model-performance}
 \end{figure}
 
-\section{Connecting to Sandia Mission Areas and NAE Grand Challenges}
-\subsection{Relevance to Sandia Mission Areas}
-Our project aligns with several Sandia National Laboratories' mission areas:
-\begin{enumerate}
-    \item Computing and Information Sciences: SPEEN provides a platform for evaluating and improving computational intelligence systems, directly supporting Sandia's work in advanced computing and software engineering.
-          Our system enables systematic testing of AI capabilities.
-    \item National Security Technologies: By developing evaluation frameworks for embodied AI, we contribute to technologies that could enhance decision-making systems relevant to nation security applications.
-          Autonomous AI systems require rigorous evaluation before deployment, which SPEEN facilitates
-    \item Engineering Sciences: The design and implementation of our evaluation environment draws on principles from systems engineering, human-machine interfaces, and simulation technology, all core engineering areas within Sandia's scope of research
-\end{enumerate}
+\section{Significance}
+\subsection{Trustworthy AI}
 
-\subsection{Connection to NAE Grand Challenges}
-Our work addresses aspects of multiple National Academy of Engineering Grand Challenges
-\begin{enumerate}
-    \item Engineer the Tools of Scientific Discovery: SPEEN serves as a tool for scientific discovery in the field of artificial intelligence, allowing researchers to systematically evaluate and improve embodied AI systems.
-          This directly supports NAE's challenge to develop better tools for scientific understanding
-    \item Enhanced Virtual Reality: Our platform advances techniques for creating interactive, responsive virtual environments with intelligent agents.
-          These environments can simulate and test what AI systems that could operate in the physical world.
-    \item Advanced AI for Improved Quality of Life: By developing better evaluation methods for embodied AI, we contribute to the broader goal of creating AI systems that can effectively assist humans in daily life and critical operations.
-          Reliable AI requires thorough testing like those we've developed.
-\end{enumerate}
+\subsection{Transitioning AI Research Into Production}
+
+\answerTODO{Before we can rely on 
+
+need specialized benchmarks for embodied AI systems before they get deployed in the real world. before we can rely on AI systems to help us, we have to prove that they are trustworthy. Our specialize systems contribute }
 
 \section{Conclusion and future developments}
 LLMs are a relatively new technology, meaning there are not many tools for measuring LLMs' competency in decision-making and environment interaction.
