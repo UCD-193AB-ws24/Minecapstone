@@ -87,8 +87,10 @@ func actor_setup():
 	# # Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
-	
-	#set_goal(goal)
+
+	for i in range(16):
+		await get_tree().physics_frame
+
 	set_goal.call_deferred(goal)
 
 func _process_command_queue() -> void:
