@@ -17,7 +17,7 @@ func _on_item_added(item):
 	"""function is triggered by the item_added signal of the scenario box inventory.
 	Checks if the item added is the required item and if so, log success. Otherwise, log failure.
 	Then reset the scenario."""
-	timer.stop()
+	timeout_timer.stop()
 	print("Item received: " + item.Name)
 	if item.Name == "Wood Pickaxe" and correct_zombie_dead:
 		track_success()

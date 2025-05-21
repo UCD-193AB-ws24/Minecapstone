@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ModelData" load_steps=4 format=3 uid="uid://c0uum62k51nw5"]
 
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/option_list_data_builder.gd" id="1_4noyt"]
-[ext_resource type="Script" path="res://addons/gdquest_model_viewer_3d/viewer/model_data_builder.gd" id="2_8yamy"]
+[ext_resource type="Script" uid="uid://i2tv387amtqd" path="res://addons/gdquest_model_viewer_3d/viewer/option_list_data_builder.gd" id="1_4noyt"]
+[ext_resource type="Script" uid="uid://d1jrh47qy7bas" path="res://addons/gdquest_model_viewer_3d/viewer/model_data_builder.gd" id="2_8yamy"]
 [ext_resource type="Texture2D" uid="uid://71jjagmyh0fq" path="res://resources/beetle_bot_vignette.png" id="3_nhhax"]
 
 [resource]
