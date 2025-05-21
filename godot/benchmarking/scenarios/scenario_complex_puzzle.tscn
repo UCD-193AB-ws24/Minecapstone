@@ -1,17 +1,18 @@
-[gd_scene load_steps=15 format=3 uid="uid://bn0axxswwxpsh"]
+[gd_scene load_steps=15 format=3 uid="uid://b16icb5754x2k"]
 
 [ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_bbo18"]
 [ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_ri8fu"]
-[ext_resource type="Shader" uid="uid://b41rbb5l2cisn" path="res://shaders/glass.gdshader" id="3_n3c50"]
+[ext_resource type="Shader" path="res://shaders/glass.gdshader" id="3_n3c50"]
 [ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="3_uimmx"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="4_us0x5"]
 [ext_resource type="Script" uid="uid://bm4uheg223u0d" path="res://benchmarking/scenarios/scenario_complex_puzzle.gd" id="5_t4jf7"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_u0vnw"]
+vertices = PackedVector3Array(-27.88, 1.5, 2.76, -27.4, 1.5, 2.6, -27.4, 1.5, -2.52, -27.88, 1.5, -2.68, -36.36, 1.5, -14.68, -44.68, 1.5, -7.32, -44.68, 1.5, 0.04, -27.88, 1.5, -8.76, -27.88, 1.5, -14.68, -36.36, 1.5, 14.76, -27.88, 1.5, 14.76, -27.88, 1.5, 8.68, -44.68, 1.5, 7.4, -44.68, 1.5, 14.76, -44.68, 1.5, -14.68, -26.76, 10.5, -1.72, -23.24, 10.5, -1.72, -23.24, 11.5, -3, -26.76, 11.5, -3, -22.76, 11.5, -8.92, -22.76, 11.5, -14.68, -27.24, 11.5, -14.68, -27.24, 11.5, -8.92, -27.24, 11.5, -3.16, -22.76, 11.5, -3.16, -22.6, 1.5, -2.52, -22.6, 1.5, 2.6, -22.12, 1.5, 2.76, -22.12, 1.5, -2.68, -8.68, 1.5, 14.76, 4.76, 1.5, 7.4, 4.76, 1.5, 0.04, -8.68, 1.5, -14.68, -15.4, 1.5, -14.68, -22.12, 1.5, -14.68, -22.12, 1.5, -8.76, -22.12, 1.5, 8.68, -22.12, 1.5, 14.76, -15.4, 1.5, 14.76, -1.96, 1.5, 14.76, 4.76, 1.5, 14.76, 4.76, 1.5, -7.32, 4.76, 1.5, -14.68, -1.96, 1.5, -14.68, -27.08, 1.5, -8.92, -27.08, 1.5, -3.32, -22.92, 1.5, -3.32, -22.92, 1.5, -8.92, -22.92, 1.5, -14.52, -27.08, 1.5, -14.52, -26.6, 1.5, -2.52, -26.6, 1.5, 2.6, -23.4, 1.5, 2.6, -23.4, 1.5, -2.52, -26.76, 10.5, 1.8, -23.24, 10.5, 1.8, -23.24, 11.5, 3.08, -26.76, 11.5, 3.08, -27.24, 11.5, 9, -27.24, 11.5, 14.76, -22.76, 11.5, 14.76, -22.76, 11.5, 9, -22.76, 11.5, 3.24, -27.24, 11.5, 3.24, -27.08, 1.5, 9, -27.08, 1.5, 14.6, -22.92, 1.5, 14.6, -22.92, 1.5, 9, -22.92, 1.5, 3.4, -27.08, 1.5, 3.4)
+polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(2, 0, 3), PackedInt32Array(6, 5, 4), PackedInt32Array(4, 8, 7), PackedInt32Array(11, 10, 9), PackedInt32Array(9, 13, 12), PackedInt32Array(5, 14, 4), PackedInt32Array(0, 11, 9), PackedInt32Array(4, 7, 3), PackedInt32Array(12, 6, 9), PackedInt32Array(9, 6, 0), PackedInt32Array(0, 6, 3), PackedInt32Array(3, 6, 4), PackedInt32Array(18, 17, 15), PackedInt32Array(15, 17, 16), PackedInt32Array(22, 21, 19), PackedInt32Array(19, 21, 20), PackedInt32Array(18, 23, 17), PackedInt32Array(17, 23, 24), PackedInt32Array(24, 23, 22), PackedInt32Array(24, 22, 19), PackedInt32Array(25, 28, 26), PackedInt32Array(26, 28, 27), PackedInt32Array(30, 29, 31), PackedInt32Array(31, 29, 27), PackedInt32Array(31, 27, 28), PackedInt32Array(31, 28, 32), PackedInt32Array(35, 34, 33), PackedInt32Array(38, 37, 36), PackedInt32Array(30, 40, 39), PackedInt32Array(43, 42, 41), PackedInt32Array(36, 27, 38), PackedInt32Array(38, 27, 29), PackedInt32Array(35, 33, 28), PackedInt32Array(28, 33, 32), PackedInt32Array(30, 39, 29), PackedInt32Array(43, 41, 32), PackedInt32Array(32, 41, 31), PackedInt32Array(47, 46, 44), PackedInt32Array(44, 46, 45), PackedInt32Array(44, 49, 47), PackedInt32Array(47, 49, 48), PackedInt32Array(53, 52, 50), PackedInt32Array(50, 52, 51), PackedInt32Array(15, 16, 54), PackedInt32Array(54, 16, 55), PackedInt32Array(57, 54, 56), PackedInt32Array(56, 54, 55), PackedInt32Array(61, 60, 58), PackedInt32Array(58, 60, 59), PackedInt32Array(56, 62, 57), PackedInt32Array(57, 62, 63), PackedInt32Array(63, 62, 61), PackedInt32Array(63, 61, 58), PackedInt32Array(67, 66, 64), PackedInt32Array(64, 66, 65), PackedInt32Array(64, 69, 67), PackedInt32Array(67, 69, 68)]
 geometry_parsed_geometry_type = 1
 cell_size = 0.16
 cell_height = 0.5
-agent_radius = 0.32
 agent_max_climb = 1.0
 agent_max_slope = 90.0
 edge_max_length = 10.0
@@ -88,10 +89,22 @@ material = SubResource("ShaderMaterial_bbo18")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 
 [node name="Agent" parent="." instance=ExtResource("4_us0x5")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -15.3009, 2.94337, 7.87137)
-goal = "Walk to (-30, 15)"
-scenario_goal = ""
-_speed = 10.0
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, 5)
+goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+infinite_decisions = true
+
+[node name="Agent2" parent="." instance=ExtResource("4_us0x5")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, -5)
+goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+infinite_decisions = true
+
+[node name="context" parent="Agent2" index="3"]
+visible = false
+
+[node name="Label3D" parent="Agent2" index="9"]
+visible = false
 
 [node name="RedPlatform" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.25, 7.5)
@@ -123,7 +136,7 @@ material = SubResource("StandardMaterial3D_r23cj")
 [node name="Label3D" type="Label3D" parent="BluePlatform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0236511, 2, -0.0087719)
 billboard = 1
-text = "Coordinates are (-15, 7.5)"
+text = "Coordinates are (-15, -7.5)"
 font_size = 140
 outline_size = 48
 
@@ -143,7 +156,7 @@ material = SubResource("StandardMaterial3D_t4jf7")
 [node name="Label3D" type="Label3D" parent="GreenPlatform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0236511, 2, -0.0087719)
 billboard = 1
-text = "Coordinates are (-15, 7.5)"
+text = "Coordinates are (-37.5, 0)"
 font_size = 140
 outline_size = 48
 
@@ -158,6 +171,8 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_t4jf7")
-timeout_time = 5000.0
+scenario_duration_seconds = 9000.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+
+[editable path="Agent2"]

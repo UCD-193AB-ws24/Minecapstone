@@ -5,7 +5,8 @@ extends ScenarioManager
 var red_touched = false
 var blue_touched = false
 var door_unlocked = false
-var door = $"../NavigationMesher/Door"
+@onready var door = $"../NavigationMesher/Door"
+@onready var navmesher = $"../NavigationMesher"
 
 func _ready() -> void:
 	super()
@@ -37,7 +38,11 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 		print("Door unlocked!")
 		door.visible = false
 		door.use_collision = false
+		
+		for i in range(16):
+			await get_tree().physics_frame
 
+		navmesher.BakeNavmesh()
 
 func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "RedPlatform":

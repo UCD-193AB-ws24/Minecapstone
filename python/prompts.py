@@ -17,6 +17,7 @@ IMPORTANT: THE FOLLOWING FUNCTIONS REQUIRE AWAIT:
 - await look_at_target(target_name) -> Makes the agent look at the specified entity.
 - await give_to(agent_name, item_name, amount) -> Moves to the agent and gives them the specified item and amount. Default amount is 1. Only items in your inventory can be given.
 - await pick_up_item(item_name) -> Moves to the item, specified by item_name, and adds it to your inventory.
+- await wait(duration) -> Waits for the specified duration in seconds.
 
 Example:
 var reached = await move_to_position(30, 0)

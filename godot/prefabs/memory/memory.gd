@@ -4,13 +4,13 @@ extends RefCounted
 
 # Base properties for all memory items
 var timestamp: float
-var type: String
+var content: String
 
 
-func _init(memory_type: String):
+func _init(memory_content: String = ""):
 	timestamp = Time.get_ticks_msec() / 1000.0
-	type = memory_type
+	content = memory_content
 
 
 func format_for_prompt() -> String:
-	return "* Memory (%s): %s" % [type, str(timestamp)]
+	return "		* Memory at time %s: %s" % [timestamp, content]

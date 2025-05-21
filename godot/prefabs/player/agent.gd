@@ -104,14 +104,14 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
-			if _command_queue.is_empty() and (infinite_decisions or prompt_allowance > 0):
+			if _command_queue.is_empty() and (infinite_decisions): # or prompt_allowance > 0):
 				#Agent consumes a prompt allowance
-				if prompt_allowance > 0:
-					prompt_allowance -= 1
+				# if prompt_allowance > 0:
+				# 	prompt_allowance -= 1
 				_generate_new_goal()
-			elif prompt_allowance < 0:
-				# No more prompt allowance, emit _out_of_prompts signal
-				out_of_prompts.emit()
+			# elif prompt_allowance < 0:
+			# 	# No more prompt allowance, emit _out_of_prompts signal
+			# 	out_of_prompts.emit()
 		
 		_is_processing_commands = false
 
@@ -181,7 +181,7 @@ func build_prompt_context() -> String:
 	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
 	context += "	All detected items: " + _get_all_detected_items()
 	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
-	context += "	your five most recent memories: " + memories.format_recent_for_prompt(5) + "\n"
+	context += "	Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
 	# print(context)
@@ -244,6 +244,10 @@ func encode_image_to_base64(image: Image) -> String:
 # Get all memories of a specific type
 func get_memories_by_type(memory_type: String) -> Array[Memory]:
 	return memories.get_by_type(memory_type)
+
+
+func wait(time: float) -> bool:
+	return await get_tree().create_timer(time).timeout
 
 
 # TODO: investigate effectiveness of recording actions taken by agent

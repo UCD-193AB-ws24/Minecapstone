@@ -21,12 +21,32 @@ func get_position() -> Vector3:
 
 func move_to_position(x: float, y: float):
 	label.text = "Moving to position: " + str(x) + ", " + str(y)
-	return await agent.move_to_position(x, y, 1.5)
+
+	var result = await agent.move_to_position(x, y, 2)
+
+	if result == true:
+		var memory = Memory.new("You moved to position " + str(x) + ", " + str(y))
+		agent.memories.add_memory(memory)
+	else:
+		var memory = Memory.new("You failed to move to position " + str(x) + ", " + str(y))
+		agent.memories.add_memory(memory)
+
+	return result
 
 
 func move_to_target(target_name: String, distance_away: float = 2.0):
 	label.text = "Moving to target: " + target_name
-	return await agent.move_to_target(target_name, distance_away)
+
+	var result = await agent.move_to_target(target_name, distance_away)
+	
+	if result == true:
+		var memory = Memory.new("You moved to the target " + target_name)
+		agent.memories.add_memory(memory)
+	else:
+		var memory = Memory.new("You failed to move to the target " + target_name)
+		agent.memories.add_memory(memory)
+
+	return result
 
 
 func look_at_target(target_name: String):
@@ -47,6 +67,11 @@ func discard(itemName: String, amount: int):
 func give_to(agent_name: String, item_name: String, amount: int = 1):
 	label.text = "Giving " + str(amount) + " " + item_name + " to " + agent_name
 	agent.give_to(agent_name, item_name, amount)
+
+
+func wait(time: float):
+	label.text = "Waiting for " + str(time) + " seconds."
+	await agent.wait(time)
 
 
 func say(msg: String) -> void:
