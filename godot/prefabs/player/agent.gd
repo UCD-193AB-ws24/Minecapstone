@@ -111,7 +111,7 @@ func _process_command_queue() -> void:
 				if prompt_allowance > 0:
 					prompt_allowance -= 1
 				_generate_new_goal()
-			elif prompt_allowance < 0:
+			elif prompt_allowance < 0 and not infinite_decisions:
 				# No more prompt allowance, emit _out_of_prompts signal
 				out_of_prompts.emit()
 		

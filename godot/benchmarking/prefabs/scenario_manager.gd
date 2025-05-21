@@ -10,7 +10,7 @@ var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 100
+var MAX_ITERATIONS: int = 33
 
 
 var timeout_timer:Timer

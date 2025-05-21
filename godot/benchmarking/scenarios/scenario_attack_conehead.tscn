@@ -50,8 +50,8 @@ goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the animal with the cone shaped head and then eat its meat in your inventory"
 prompt_allowance = 0
 visual_mode = true
-attack_damage = 50.0
-_speed = 4.0
+attack_damage = 100.0
+_speed = 8.0
 
 [node name="Animal4" parent="." instance=ExtResource("5_vh2i8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45499, 0.409239, 1.80066)
