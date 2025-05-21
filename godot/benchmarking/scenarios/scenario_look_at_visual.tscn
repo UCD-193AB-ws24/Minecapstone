@@ -5,5 +5,5 @@
 [node name="World" instance=ExtResource("1_hg1hm")]
 
 [node name="Agent" parent="." index="5"]
-goal = "Without moving, ook at the entity on the left."
+goal = "Without moving, look at the entity on the left."
 visual_mode = true

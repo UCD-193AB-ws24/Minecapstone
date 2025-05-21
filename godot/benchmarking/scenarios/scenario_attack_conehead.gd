@@ -22,9 +22,8 @@ func _on_died(deadName: String):
 		conehead_dead = true
 	else:
 		track_failure()
-		reset()
 
-		for i in range(10):
+		for i in range(16):
 			await get_tree().physics_frame
 
 		reset_connections()
@@ -36,16 +35,15 @@ func _on_food_eaten(food_name: String, _id:int):
 		track_success()
 	else:
 		track_failure()
-	reset()
 
-	for i in range(10):
+	for i in range(16):
 		await get_tree().physics_frame
 
 	reset_connections()
 
-func _out_of_time():
+func track_timeout():
 	super()
-	for i in range(10):
+	for i in range(16):
 		await get_tree().physics_frame
 	reset_connections()
 

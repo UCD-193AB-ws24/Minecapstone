@@ -46,3 +46,7 @@ func next_scene() -> void:
 						result.failure_count,
 						result.error_count
 					])
+					
+			# TODO: probably out the results to a file? just quitting for now otherwise it repeats the last scene repeatedly
+			get_tree().current_scene.queue_free()
+			get_tree().quit()

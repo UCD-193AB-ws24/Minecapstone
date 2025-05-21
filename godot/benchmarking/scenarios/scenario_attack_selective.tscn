@@ -44,6 +44,8 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
 prompt_allowance = 1
+attack_damage = 100.0
+_speed = 8.0
 
 [node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)

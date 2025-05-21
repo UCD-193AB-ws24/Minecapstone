@@ -87,8 +87,10 @@ func actor_setup():
 	# # Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
-	
-	#set_goal(goal)
+
+	for i in range(16):
+		await get_tree().physics_frame
+
 	set_goal.call_deferred(goal)
 
 func _process_command_queue() -> void:
@@ -109,9 +111,9 @@ func _process_command_queue() -> void:
 				# if prompt_allowance > 0:
 				# 	prompt_allowance -= 1
 				_generate_new_goal()
-			# elif prompt_allowance < 0:
-			# 	# No more prompt allowance, emit _out_of_prompts signal
-			# 	out_of_prompts.emit()
+			elif prompt_allowance < 0 and not infinite_decisions:
+				# No more prompt allowance, emit _out_of_prompts signal
+				out_of_prompts.emit()
 		
 		_is_processing_commands = false
 

@@ -19,7 +19,7 @@ func _ready() -> void:
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
-	timeout_timer.timeout.connect(_out_of_time)
+	timeout_timer.timeout.connect(track_timeout)
 	add_child(timeout_timer)
 	reset_timer()
 
@@ -59,12 +59,6 @@ func reset():
 	await _restore_initial_state()
 	reset_timer()
 
-
-func _out_of_time():
-	"""Function is to be triggered by the out_of_time signal of an agent.
-	Function check if agent is out of time and if so, log failure and reset the scenario"""
-	track_failure()
-	reset()
 
 
 func reset_timer():
@@ -135,6 +129,9 @@ func _restore_initial_state():
 		node.queue_free()
 
 	# Wait for full removal to prevent name collisions
+	if not get_tree():
+		return
+		
 	for i in range(16):	await get_tree().physics_frame
 
 	for json_string in save_data.split("\n"):
@@ -151,7 +148,13 @@ func _restore_initial_state():
 
 		# Firstly, we need to create the object and add it to the tree and set its position.
 		var new_object = load(node_data["filename"]).instantiate()
-		get_node(node_data["parent"]).add_child(new_object)
+
+		# Build version temp fix
+		if (node_data["parent"] == "/root/World"):
+			get_parent().add_child(new_object)
+		else:
+			get_node(node_data["parent"]).add_child(new_object)
+		
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 
 		
