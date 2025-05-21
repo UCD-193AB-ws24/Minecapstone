@@ -115,10 +115,11 @@
 \usepackage[verbose=true,letterpaper]{geometry}
 \AtBeginDocument{
   \newgeometry{
-    textheight=9in,
-    textwidth=5.5in,
-    top=1in,
-    headheight=12pt,
+    top=0.95in,
+    left=0.95in,
+    right=0.95in,
+    bottom=0.95in,
+    headheight=6pt,
     headsep=25pt,
     footskip=30pt
   }
@@ -162,28 +163,28 @@
 \providecommand{\section}{}
 \renewcommand{\section}{%
   \@startsection{section}{1}{\z@}%
-                {-2.0ex \@plus -0.5ex \@minus -0.2ex}%
-                { 1.5ex \@plus  0.3ex \@minus  0.2ex}%
+                {-1ex \@plus -0.5ex \@minus -0.2ex}%
+                { 1ex \@plus  0.3ex \@minus  0.2ex}%
                 {\large\bf\raggedright}%
 }
 \providecommand{\subsection}{}
 \renewcommand{\subsection}{%
   \@startsection{subsection}{2}{\z@}%
-                {-1.8ex \@plus -0.5ex \@minus -0.2ex}%
+                {-1ex \@plus -0.5ex \@minus -0.2ex}%
                 { 0.8ex \@plus  0.2ex}%
                 {\normalsize\bf\raggedright}%
 }
 \providecommand{\subsubsection}{}
 \renewcommand{\subsubsection}{%
   \@startsection{subsubsection}{3}{\z@}%
-                {-1.5ex \@plus -0.5ex \@minus -0.2ex}%
+                {-1ex \@plus -0.5ex \@minus -0.2ex}%
                 { 0.5ex \@plus  0.2ex}%
                 {\normalsize\bf\raggedright}%
 }
 \providecommand{\paragraph}{}
 \renewcommand{\paragraph}{%
   \@startsection{paragraph}{4}{\z@}%
-                {1.5ex \@plus 0.5ex \@minus 0.2ex}%
+                {0.2ex \@plus 0.2ex \@minus 0.2ex}%
                 {-1em}%
                 {\normalsize\bf}%
 }
@@ -229,10 +230,10 @@
 \setlength{\parskip  }{5.5\p@}
 
 % list formatting
-\setlength{\topsep       }{4\p@ \@plus 1\p@   \@minus 2\p@}
-\setlength{\partopsep    }{1\p@ \@plus 0.5\p@ \@minus 0.5\p@}
-\setlength{\itemsep      }{2\p@ \@plus 1\p@   \@minus 0.5\p@}
-\setlength{\parsep       }{2\p@ \@plus 1\p@   \@minus 0.5\p@}
+\setlength{\topsep       }{0.5\p@ \@plus 0.5\p@   \@minus 0.5\p@}
+\setlength{\partopsep    }{0.5\p@ \@plus 0.5\p@ \@minus 0.5\p@}
+\setlength{\itemsep      }{0.5\p@ \@plus 0.5\p@   \@minus 0.5\p@}
+\setlength{\parsep       }{0.5\p@ \@plus 0.5\p@   \@minus 0.5\p@}
 \setlength{\leftmargin   }{3pc}
 \setlength{\leftmargini  }{\leftmargin}
 \setlength{\leftmarginii }{2em}
@@ -243,13 +244,13 @@
 \def\@listii {\leftmargin\leftmarginii
               \labelwidth\leftmarginii
               \advance\labelwidth-\labelsep
-              \topsep  2\p@ \@plus 1\p@    \@minus 0.5\p@
-              \parsep  1\p@ \@plus 0.5\p@ \@minus 0.5\p@
+              \topsep  0.5\p@ \@plus 0.5\p@    \@minus 0.5\p@
+              \parsep  0.5\p@ \@plus 0.5\p@ \@minus 0.5\p@
               \itemsep \parsep}
 \def\@listiii{\leftmargin\leftmarginiii
               \labelwidth\leftmarginiii
               \advance\labelwidth-\labelsep
-              \topsep    1\p@ \@plus 0.5\p@ \@minus 0.5\p@
+              \topsep    0.5\p@ \@plus 0.5\p@ \@minus 0.5\p@
               \parsep    \z@
               \partopsep 0.5\p@ \@plus 0\p@ \@minus 0.5\p@
               \itemsep \topsep}
@@ -345,7 +346,7 @@
 % abstract styling
 \renewenvironment{abstract}%
 {%
-  \vskip 0.075in%
+  \vskip 0.05cm%
   \centerline%
   {\large\bf Abstract}%
   \vspace{0.5ex}%
@@ -354,7 +355,7 @@
 {
   \par%
   \end{quote}%
-  \vskip 1ex%
+  \vskip 0.5ex%
 }
 
 % For the paper checklist

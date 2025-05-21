@@ -69,7 +69,6 @@ func _process(delta):
 	
 	# Update sun rotation
 	sun.rotation.x += rotation_speed * delta * time_scale
-	sun.rotation.y = deg_to_rad(180.0)
 	
 	# Keep sun rotation within range to prevent float precision issues over time
 	if sun.rotation.x > 2 * PI:

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://becer5tyhbd6" path="res://benchmarking/benchmarker.gd" id="1_e8rto"]
 [ext_resource type="PackedScene" uid="uid://dv3bymhjo7lxh" path="res://benchmarking/scenarios/scenario_look_at_visual.tscn" id="3_4vu3a"]
+[ext_resource type="PackedScene" uid="uid://dv3bymhjo7lxh" path="res://benchmarking/scenarios/scenario_look_at_visual.tscn" id="3_4vu3a"]
 [ext_resource type="PackedScene" uid="uid://1vp0ettxgy1v" path="res://benchmarking/scenarios/scenario_attack_baseline.tscn" id="3_33u7m"]
 [ext_resource type="PackedScene" uid="uid://cx1ddo5r36ls8" path="res://benchmarking/scenarios/scenario_attack_selective.tscn" id="4_33u7m"]
 [ext_resource type="PackedScene" uid="uid://4qk2pax7q8r2" path="res://benchmarking/scenarios/scenario_attack_sequential.tscn" id="5_py4s2"]

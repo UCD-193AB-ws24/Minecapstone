@@ -60,7 +60,7 @@ ChunkScene = ExtResource("4_b2ttj")
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
 low_graphics_mode = false
-day_duration_seconds = 5.0
+day_duration_seconds = 10000.0
 night_duration_seconds = 1.0
 
 [node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
@@ -69,7 +69,7 @@ mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, 8.74228e-08, 3.82137e-15, 0, -4.37114e-08, 1, 8.74228e-08, 1, 4.37114e-08, 0, 35, 0)
+transform = Transform3D(-1, 6.29926e-08, -6.06191e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -79,7 +79,7 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 8.74228e-08, -3.82137e-15, 0, -4.37114e-08, -1, -8.74228e-08, 1, -4.37114e-08, -0.0167961, 35, 0.0408497)
+transform = Transform3D(1, 6.29926e-08, 6.06191e-08, 0, 0.693402, -0.720552, -8.74228e-08, 0.720552, 0.693402, -0.0167961, 35, 0.0408497)
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
