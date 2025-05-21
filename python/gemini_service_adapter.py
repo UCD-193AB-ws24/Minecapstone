@@ -34,13 +34,13 @@ class GeminiServiceAdapter(LLMService):
             top_k=self.settings.get("goal_top_k", 50)
         )
         
-        print(f"Initialized Gemini service with model: {self.model_name}")
+        print(f"Initialized Gemini service with model: {self.model}")
 
     @property
     def supports_vision(self) -> bool:
         """Return whether this model supports vision"""
         # Gemini 1.5/2.0 models support vision
-        return "gemini" in self.model_name and any(version in self.model_name for version in ["1.5", "2.0"])
+        return "gemini" in self.model and any(version in self.model for version in ["1.5", "2.0"])
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using Gemini with optional image data"""
@@ -49,7 +49,7 @@ class GeminiServiceAdapter(LLMService):
             full_prompt = f"{self.system_prompt}\n\n{prompt}\n{self.user_preprompt}"
             
             # Get Gemini model
-            model = genai.GenerativeModel(self.model_name)
+            model = genai.GenerativeModel(self.model)
             
             # Make request to Gemini API through the client
             if image_data and self.supports_vision:
@@ -168,7 +168,7 @@ Respond with your goal in the following JSON format:
 """
             
             # Get Gemini model
-            model = genai.GenerativeModel(self.model_name)
+            model = genai.GenerativeModel(self.model)
             
             # Make request to Gemini API through the client
             if image_data and self.supports_vision:
