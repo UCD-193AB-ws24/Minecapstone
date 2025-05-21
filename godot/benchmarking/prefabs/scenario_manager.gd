@@ -153,7 +153,10 @@ func _restore_initial_state():
 
 		# Firstly, we need to create the object and add it to the tree and set its position.
 		var new_object = load(node_data["filename"]).instantiate()
-		get_node(node_data["parent"]).add_child(new_object)
+		if (node_data["parent"] == "/root/World"):
+			get_parent().add_child(new_object)
+		else:
+			get_node(node_data["parent"]).add_child(new_object)
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 
 		
