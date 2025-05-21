@@ -30,8 +30,9 @@ func next_scene() -> void:
 			_current_scene_name = current_scene.to_string()
 			print("Switching to scene: %s" % _current_scene_name)
 			if current_scene.can_instantiate():
-				get_tree().change_scene_to_packed(current_scene)
+				await get_tree().change_scene_to_packed(current_scene)
 				await get_tree().scene_changed
+				await get_tree().process_frame
 				var sm = get_tree().current_scene.get_node("ScenarioManager")
 				await get_tree().physics_frame
 		else:
@@ -46,3 +47,6 @@ func next_scene() -> void:
 						result.failure_count,
 						result.error_count
 					])
+					
+			# TODO probably out the results to a file? just quitting for now otherwise it repeats the last scene repeatedly
+			get_tree().quit()
