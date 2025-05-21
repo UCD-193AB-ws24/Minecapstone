@@ -7,7 +7,6 @@
 script/source = "extends Node
 
 var scenario_manager
-
 var inventory_manager
 
 func _ready() -> void:
@@ -30,7 +29,7 @@ albedo_color = Color(0.133792, 0.889366, 0, 1)
 
 [node name="ScenarioBox" type="StaticBody3D"]
 script = SubResource("GDScript_qy66u")
-metadata/Name = "storage"
+metadata/Interactable = true
 metadata/Category = "storage"
 metadata/Function = "Drop a certain Item into this interactable to satisfy the scenario goal."
 

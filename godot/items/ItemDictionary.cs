@@ -16,6 +16,11 @@ public partial class ItemDictionary : Node
 			(Texture2D)GD.Load("res://assets/dirt.png"))
 		},
 		{"Sand", new Block("Sand", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/sand.png"))},
+		{"Wood", new Block("Wood", Placeholder, 64, false, 
+			(Texture2D)GD.Load("res://assets/side_wood.png"), 
+			(Texture2D)GD.Load("res://assets/wood.png"), 
+			(Texture2D)GD.Load("res://assets/side_wood.png"), 
+			HarvestLevel: 1, Proficency: Proficency.WOOD)},
 		{"Wood Pickaxe", new Tool("Wood Pickaxe", Placeholder, 1, true, 1, 0, Proficency.STONE)},
 		{"Iron Ore", new Block("Iron Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/iron_ore.png"), HarvestLevel: 2, Proficency: Proficency.STONE)},
 		{"Copper Ore", new Block("Copper Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/copper_ore.png"),  HarvestLevel: 1, Proficency: Proficency.STONE)},
