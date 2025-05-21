@@ -151,7 +151,6 @@ While Minecraft offers inherent complexity and extensive documentation as an add
     \item It requires a commercial license, creating accessibility barriers
     \item There are no existing standardized context provisioning or testing metrics
 \end{enumerate}
-\vspace{-0.45em}
 
 \paragraph{Chosen Environment} While environments that closely emulate the real world would map better to real-world robotic applications, we believed that focusing on standardizing an accessible contextualization and prompting system would make our project more beneficial for future work.
 Thus, our primary goal was to develop a modifiable prompting architecture---i.e., the interaction between the LLM and the game environment---and the evaluation of agentic LLMs in an equally modular simulated environment.
@@ -197,12 +196,6 @@ To prove its usability, we shall also implement the testing environment and prom
     \item \textbf{Structured Scenarios:} Diverse testing scenarios with automated performance scoring
     \item \textbf{Prompting Architecture:} Implemented a prompting architecture emulating chain-of-thought and goal-based prompting systems with support for easy modification
 \end{enumerate}
-
-\section{Development}
-\subsection{Environment Design}
-The majority of early development focused on creating the agent's environment for qualitative evaluation.
-Features included procedural world generation with day/night cycle, navigation and A* pathfinding via Godot's Navigation3D system, a suite of API functions for agent-environment interaction, NPC AI (animals, zombies) for objectives and adversaries, and an item and inventory system.
-After 7 weeks, we had a functional environment sufficiently complex for our proof of concept.
 
 \subsection{Agent-Environment Pipeline}
 \begin{figure}
@@ -300,16 +293,19 @@ After 7 weeks, we had a functional environment sufficiently complex for our proo
     \label{fig:agent-pipeline}
 \end{figure}
 
+\section{Development}
+\subsection{Environment Design}
+The majority of early development focused on creating the agent's environment for qualitative evaluation.
+Features included procedural world generation with day/night cycle, navigation and A* pathfinding via Godot's Navigation3D system, a suite of API functions for agent-environment interaction, NPC AI (animals, zombies) for objectives and adversaries, and an item and inventory system.
+After 7 weeks, we had a functional environment sufficiently complex for our proof of concept.
+
 Figure \ref{fig:agent-pipeline} illustrates our agent-environment pipeline architecture, which also serves as our prompting architecture.
 Environmental information is fed directly into the LLM, which either generates a script containing the desired actions based on the current goal, or generates a new goal after completing a previous task.
-The generated script is executed by the environment, and the outcome is logged in the agent's "Memories," which updates the agent state, enabling persistent contextual awareness across iterations.
-
-This memory system implements chain-of-thought reasoning, allowing the agent to build upon previous experiences and maintain contextual awareness across multiple decision cycles, which proved crucial for solving complex sequential tasks.
+The generated script is executed by the environment, and the outcome is logged in the agent's "Memories," which updates the agent state, enabling persistent contextual awareness across iterations. This memory system implements chain-of-thought reasoning, allowing the agent to build upon previous experiences and maintain contextual awareness across multiple decision cycles, which proved crucial for solving complex sequential tasks.
 
 The available actions are provided in the System Prompt, designed to remove the need for low-level implementation details and allow the benchmark to focus on reasoning and decision-making.
 For error handling, we implemented a system that catches broken code and can either re-prompt the LLM with the specific error for self-correction, or count the iteration as a failure for benchmarking.
-
-Once validated, the agent's "body" executes the actions sequentially until completion.
+Once validated, the agent's "body" executes the actions sequentially until completion. 
 The pipeline then repeats, gathering updated environmental information and continuing until either the scenario goal is satisfied or the maximum allowed iterations is reached.
 
 \section{Testing and Evaluation}
