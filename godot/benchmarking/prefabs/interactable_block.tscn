@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b3421d1bnf528"]
 
-[ext_resource type="PackedScene" path="res://benchmarking/prefabs/interactable.tscn" id="1_7prxp"]
+[ext_resource type="PackedScene" uid="uid://bytihxq3opyho" path="res://benchmarking/prefabs/interactable.tscn" id="1_7prxp"]
 [ext_resource type="Script" path="res://benchmarking/prefabs/interactable_block.gd" id="2_wjhm1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wjhm1"]

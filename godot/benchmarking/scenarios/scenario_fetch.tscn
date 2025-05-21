@@ -65,11 +65,15 @@ attack_disabled = true
 
 [node name="Zombie1" parent="." instance=ExtResource("6_53nu6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.16051, 0.519879, -2.89983)
+wander_range = 10.0
+wander_change_time = 10.0
 move_disabled = true
 attack_disabled = true
 
 [node name="Zombie2" parent="." instance=ExtResource("6_53nu6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.18463, 0.519879, -1.90397)
+wander_range = 10.0
+wander_change_time = 10.0
 move_disabled = true
 attack_disabled = true
 

@@ -62,7 +62,7 @@ mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, 6.29926e-08, -6.06191e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
+transform = Transform3D(-1, 6.29927e-08, -6.0619e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -72,7 +72,7 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 6.29926e-08, 6.06191e-08, 0, 0.693402, -0.720552, -8.74228e-08, 0.720552, 0.693402, -0.0167961, 35, 0.0408497)
+transform = Transform3D(1, 6.29927e-08, 6.06191e-08, 0, 0.693401, -0.720553, -8.74228e-08, 0.720553, 0.693401, -0.0167961, 35, 0.0408497)
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true

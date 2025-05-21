@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bu0pvephd0hii"]
+[gd_scene load_steps=2 format=3 uid="uid://ckec5gv8ix8bm"]
 
 [ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="1_u2oaa"]
 
