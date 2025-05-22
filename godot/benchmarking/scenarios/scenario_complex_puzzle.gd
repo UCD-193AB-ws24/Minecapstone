@@ -8,6 +8,7 @@ var door_unlocked = false
 @onready var door = $"../NavigationMesher/Door"
 @onready var navmesher = $"../NavigationMesher"
 
+
 func _ready() -> void:
 	super()
 	reload()
@@ -43,6 +44,7 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 			await get_tree().physics_frame
 
 		navmesher.BakeNavmesh()
+
 
 func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "RedPlatform":
