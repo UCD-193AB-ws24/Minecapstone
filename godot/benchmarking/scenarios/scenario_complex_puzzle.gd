@@ -64,6 +64,9 @@ func reset():
 	blue_touched = false
 	num_agents_on_green = 0
 
+	for i in range(16):	await get_tree().physics_frame
+	navmesher.BakeNavmesh()
+
 
 func reset_connections():
 	var red_platform = get_parent().find_child("RedPlatform").get_node("Area3D")

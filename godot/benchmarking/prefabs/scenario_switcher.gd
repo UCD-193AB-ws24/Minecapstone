@@ -26,7 +26,7 @@ func next_scene() -> void:
 	if enabled:
 		if scene_list.size() > 0:
 			var current_scene = scene_list.pop_front()
-			_current_scene_name = current_scene.to_string()
+			_current_scene_name = current_scene.resource_path.get_file()
 			print("Switching to scene: %s" % _current_scene_name)
 			if current_scene.can_instantiate():
 				get_tree().change_scene_to_packed(current_scene)
