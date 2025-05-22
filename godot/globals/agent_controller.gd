@@ -56,7 +56,7 @@ func look_at_target(target_name: String):
 
 func attack_target(target_name: String, num_attacks: int = 1):
 	label.text = "Attacking entity " + target_name + " " + str(num_attacks) + " times."
-	await agent.attack_target(target_name, num_attacks)
+	return await agent.attack_target(target_name, num_attacks)
 
 
 func discard(itemName: String, amount: int):
@@ -77,10 +77,16 @@ func wait(time: float):
 func say(msg: String) -> void:
 	message_broker.send_message(msg, agent.hash_id)
 
+	var message_memory = MessageMemory.new(msg, "You")
+	agent.memories.add_memory(message_memory)
+
 
 func say_to(msg: String, target_agent: String) -> void:
 	var target_id = AgentManager.get_agent(target_agent).agent_hash_id
 	message_broker.send_message(msg, agent.hash_id, target_id)
+
+	var message_memory = MessageMemory.new(msg, "You", target_agent)
+	agent.memories.add_memory(message_memory)
 
 
 func pick_up_item(item_name: String):

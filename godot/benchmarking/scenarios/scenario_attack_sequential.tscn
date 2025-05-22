@@ -48,8 +48,6 @@ attack_damage = 50.0
 
 [node name="Zombie" parent="." instance=ExtResource("10_cq45f")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
-wander_range = 10.0
-wander_change_time = 10.0
 move_disabled = true
 _speed = 2.0
 
@@ -62,10 +60,6 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("1_ipsoo")
-
-[node name="Timer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
+scenario_duration_seconds = 30.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

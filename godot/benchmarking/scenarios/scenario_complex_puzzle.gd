@@ -13,23 +13,7 @@ var door_unlocked = false
 func _ready() -> void:
 	super()
 	scenario_duration_seconds = 90.0
-	reload()
-
-
-func reload():
-	var red_platform = get_parent().find_child("RedPlatform").get_node("Area3D")
-	var blue_platform = get_parent().find_child("BluePlatform").get_node("Area3D")
-	var green_platform = get_parent().find_child("GreenPlatform").get_node("Area3D")
-	
-	red_platform.connect("body_entered", _on_touch_platform.bind("RedPlatform"))
-	blue_platform.connect("body_entered", _on_touch_platform.bind("BluePlatform"))
-	red_platform.connect("body_exited", _on_touch_platform_exit.bind("RedPlatform"))
-	blue_platform.connect("body_exited", _on_touch_platform_exit.bind("BluePlatform"))
-
-	success_count = 0
-	failure_count = 0
-	green_platform.connect("body_entered", _on_touch_platform.bind("GreenPlatform"))
-	green_platform.connect("body_exited", _on_touch_platform_exit.bind("GreenPlatform"))
+	reset_connections()
 
 
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
@@ -68,3 +52,30 @@ func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
 	elif platform_name == "GreenPlatform":
 		num_agents_on_green -= 1
 		# print("Green platform exited")
+
+
+func reset():
+	await super()
+	reset_connections()
+	door_unlocked = false
+	door.visible = true
+	door.use_collision = true
+	red_touched = false
+	blue_touched = false
+	num_agents_on_green = 0
+
+
+func reset_connections():
+	var red_platform = get_parent().find_child("RedPlatform").get_node("Area3D")
+	var blue_platform = get_parent().find_child("BluePlatform").get_node("Area3D")
+	var green_platform = get_parent().find_child("GreenPlatform").get_node("Area3D")
+	
+	red_platform.connect("body_entered", _on_touch_platform.bind("RedPlatform"))
+	blue_platform.connect("body_entered", _on_touch_platform.bind("BluePlatform"))
+	red_platform.connect("body_exited", _on_touch_platform_exit.bind("RedPlatform"))
+	blue_platform.connect("body_exited", _on_touch_platform_exit.bind("BluePlatform"))
+
+	success_count = 0
+	failure_count = 0
+	green_platform.connect("body_entered", _on_touch_platform.bind("GreenPlatform"))
+	green_platform.connect("body_exited", _on_touch_platform_exit.bind("GreenPlatform"))

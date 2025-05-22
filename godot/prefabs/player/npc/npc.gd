@@ -201,7 +201,7 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.25):
 
 
 var timed_out = false
-func move_to_position(x: float, y: float, distance_away: float = 1.25):
+func move_to_position(x: float, y: float, distance_away: float = 2):
 	set_target_position(Vector3(x, 1000, y), distance_away)
 
 	# TODO: replace timeout with a check if the npc is stuck (haven't moved for 5 seconds)
@@ -212,6 +212,9 @@ func move_to_position(x: float, y: float, distance_away: float = 1.25):
 	timer.start(10)
 
 	timer.timeout.connect(func(): timed_out = true)
+
+	# if navigation_agent.is_target_reachable():
+	# 	return false
 
 	while not navigation_agent.is_target_reached() and not timed_out:
 		await get_tree().process_frame

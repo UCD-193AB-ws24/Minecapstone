@@ -15,15 +15,21 @@ class_name Agent extends NPC
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
 
+
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
 
+
 signal out_of_prompts
+
 
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
+
 func _ready() -> void:
+	MessageBroker.message.connect(_on_message_received)
 	super()
+
 
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
@@ -141,6 +147,8 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == -1, the message is for all agents
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
+	
+
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
 		#get agents by id
 		var from_agent =  MessageBroker.get_agent_by_id(from_id)
@@ -152,10 +160,14 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 
 		# Convert from_id to a color
 		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
-		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.name, from_color, from_agent.name, msg])
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.debug_id, from_color, from_agent.debug_id, msg])
 
 		# Included this message in the agent's memory
-		var message_memory = MessageMemory.new(msg, from_agent.name, to_agent.name)
+		var message_memory
+		if to_id == -1:
+			message_memory = MessageMemory.new(msg, from_agent.name)
+		else:
+			message_memory = MessageMemory.new(msg, from_agent.name, "You")
 		memories.add_memory(message_memory)
 
 

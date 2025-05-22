@@ -47,7 +47,13 @@ func track_error():
 
 func track_timeout():
 	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
-	track_failure()
+	await track_failure()
+
+
+# func _out_of_prompts():
+# 	"""Function is to be triggered by the out_of_prompts signal of an agent.
+# 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
+# 	await track_failure()
 
 
 func reset():
@@ -155,8 +161,6 @@ func _restore_initial_state():
 			
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 		new_object.name = node_data["name"]
-		
-		print(new_object.name)
 		
 		# Now we set the remaining variables.
 		for i in node_data.keys():
