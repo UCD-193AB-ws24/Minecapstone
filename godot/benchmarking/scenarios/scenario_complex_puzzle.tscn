@@ -90,24 +90,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 
 [node name="Agent" parent="." instance=ExtResource("4_us0x5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, 5)
-goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
-scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+goal = "Satisfy the scenario goal."
+scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. The door opens permanently if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
 infinite_decisions = true
 
 [node name="Agent2" parent="." instance=ExtResource("4_us0x5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, -5)
-goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
-scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is still closed. The door opens if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0)."
+goal = "Satisfy the scenario goal."
+scenario_goal = "Get to the green platform which is locked behind an impassable door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. The door opens permanently if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
 infinite_decisions = true
 
-[node name="context" parent="Agent2" index="3"]
-visible = false
-
-[node name="Label3D" parent="Agent2" index="9"]
-visible = false
-
 [node name="RedPlatform" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.25, 7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.25, 9.5)
 radius = 5.0
 height = 1.0
 sides = 32
@@ -127,7 +121,7 @@ shape = SubResource("CylinderShape3D_i3n5n")
 debug_color = Color(1, 1, 1, 0.42)
 
 [node name="BluePlatform" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.25, -7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0.25, -9.5)
 radius = 5.0
 height = 1.0
 sides = 32
@@ -174,5 +168,3 @@ script = ExtResource("5_t4jf7")
 scenario_duration_seconds = 9000.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-
-[editable path="Agent2"]

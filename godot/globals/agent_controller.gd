@@ -99,11 +99,11 @@ func place_block(coordinates: Vector3i):
 
 
 func eat_food(food_name: String = "") -> void:
-	var success = agent.eat_food(food_name)
-	if success:
-		label.text = "Successfully ate food"
-	else:
-		label.text = "Failed to eat food"
+	# TODO: this is a temporary fix to avoid the agent from eating food too fast after receiving
+	# an item. a real fix to extend to other item interactions is to process awaits after each item?
+	for i in range(16):
+		await agent.get_tree().physics_frame
+	agent.call_deferred("eat_food", food_name)
 
 
 func eval():

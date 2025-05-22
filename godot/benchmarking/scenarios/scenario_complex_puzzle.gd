@@ -35,21 +35,21 @@ func reload():
 func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "RedPlatform":
 		red_touched = true
-		print("Red platform touched")
+		# print("Red platform touched")
 	elif platform_name == "BluePlatform":
 		blue_touched = true
-		print("Blue platform touched")
+		# print("Blue platform touched")
 	elif platform_name == "GreenPlatform":
 		num_agents_on_green += 1
-		print("Green platform touched")
+		# print("Green platform touched")
 
 	if num_agents_on_green == 2:
-		print("YES! Two agents on the green platform!")
+		# print("YES! Two agents on the green platform!")
 		track_success()
 
 	if red_touched and blue_touched and !door_unlocked:
 		door_unlocked = true
-		print("Door unlocked!")
+		# print("Door unlocked!")
 		door.visible = false
 		door.use_collision = false
 		
@@ -61,10 +61,10 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
 	if platform_name == "RedPlatform":
 		red_touched = false
-		print("Red platform exited")
+		# print("Red platform exited")
 	elif platform_name == "BluePlatform":
 		blue_touched = false
-		print("Blue platform exited")
+		# print("Blue platform exited")
 	elif platform_name == "GreenPlatform":
 		num_agents_on_green -= 1
-		print("Green platform exited")
+		# print("Green platform exited")

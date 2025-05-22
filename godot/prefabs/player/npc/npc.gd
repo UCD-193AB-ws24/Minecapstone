@@ -29,6 +29,7 @@ func _ready():
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	var collision_shape = detection_area.get_node("CollisionShape3D")
 	collision_shape.shape.radius = detection_range
+	await get_tree().physics_frame
 	label = get_node("Label3D")
 	if label:
 		label.text = self.name
@@ -185,7 +186,7 @@ func give_to(agent_name: String, item_name:String, amount:int):
 	# print(round(agent_ref.global_position.y - self.global_position.y))
 
 
-func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
+func set_target_position(movement_target: Vector3, distance_away:float = 1.25):
 	navigation_agent.target_desired_distance = distance_away
 	 # standard head angle for dropping item towards receiving agent who is [-1, 1] block level
 
@@ -200,7 +201,7 @@ func set_target_position(movement_target: Vector3, distance_away:float = 1.0):
 
 
 var timed_out = false
-func move_to_position(x: float, y: float, distance_away: float = 1.0):
+func move_to_position(x: float, y: float, distance_away: float = 1.25):
 	set_target_position(Vector3(x, 1000, y), distance_away)
 
 	# TODO: replace timeout with a check if the npc is stuck (haven't moved for 5 seconds)
@@ -328,9 +329,9 @@ func pick_up_item(item_name: String):
 	if item == null:
 		print("Item '%s' not found in detected items." % item_name)
 	#TODO: after moving to item, check if the item is still in the world to verify it has been picked up. Keep moving to item if the item still exists in the world
+	
 	while detected_items.has(item):
-		await move_to_position(item.global_position.x, item.global_position.z)
-	print("Picking up item complete.")
+		return await move_to_position(item.global_position.x, item.global_position.z)
 
 
 # Attacks specificaly the current target
@@ -446,7 +447,6 @@ func _on_player_death():
 	# Want to despawn instead of respawning at spawn point
 	# Drop loot
 	inventory_manager.DropAllItems()
-	print("has_died emitted")
 	has_died.emit(str(self.name))
 	# Don't actually queue free here anymore since want to let LLM agents respawn
 	# queue_free()

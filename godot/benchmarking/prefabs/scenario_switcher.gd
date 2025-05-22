@@ -22,7 +22,6 @@ func save_results(success_count, failure_count, error_count) -> void:
 
 
 func next_scene() -> void:
-	print("Switching to next scene...")
 	await get_tree().physics_frame
 	if enabled:
 		if scene_list.size() > 0:

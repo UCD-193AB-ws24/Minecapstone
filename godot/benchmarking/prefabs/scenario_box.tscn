@@ -15,7 +15,6 @@ func _ready() -> void:
 
 func check_box():
 	var amount = inventory_manager.GetItemCount(\"Dirt\")
-	print(\"Dirt amount: \", amount)
 	if amount > 0:
 		scenario_manager.track_success()
 "

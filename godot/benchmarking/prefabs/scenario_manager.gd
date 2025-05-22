@@ -92,7 +92,6 @@ func next_iteration():
 func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
 		_restore_initial_state()
-		print("State loaded.")
 
 
 func _capture_initial_state():
@@ -115,7 +114,7 @@ func _capture_initial_state():
 		var json_string = JSON.stringify(node_data)
 
 		save_data += json_string + "\n"
-		print("Saved the scene")
+	print("Saved the scene")
 	
 
 func _restore_initial_state():
@@ -153,9 +152,11 @@ func _restore_initial_state():
 			get_parent().add_child(new_object)
 		else:
 			get_node(node_data["parent"]).add_child(new_object)
-		
+			
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
-
+		new_object.name = node_data["name"]
+		
+		print(new_object.name)
 		
 		# Now we set the remaining variables.
 		for i in node_data.keys():

@@ -1,8 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://e62feh5lmdxr"]
+[gd_scene load_steps=17 format=3 uid="uid://e62feh5lmdxr"]
 
 [ext_resource type="Script" uid="uid://becer5tyhbd6" path="res://benchmarking/benchmarker.gd" id="1_e8rto"]
 [ext_resource type="PackedScene" uid="uid://b16icb5754x2k" path="res://benchmarking/scenarios/scenario_complex_puzzle.tscn" id="2_iwud5"]
+[ext_resource type="PackedScene" uid="uid://dv3bymhjo7lxh" path="res://benchmarking/scenarios/scenario_look_at_visual.tscn" id="3_4vu3a"]
+[ext_resource type="PackedScene" uid="uid://1vp0ettxgy1v" path="res://benchmarking/scenarios/scenario_attack_baseline.tscn" id="3_33u7m"]
+[ext_resource type="PackedScene" uid="uid://ddr2des6bssim" path="res://benchmarking/scenarios/scenario_attack_conehead.tscn" id="3_xnluh"]
+[ext_resource type="PackedScene" uid="uid://cx1ddo5r36ls8" path="res://benchmarking/scenarios/scenario_attack_selective.tscn" id="4_33u7m"]
+[ext_resource type="PackedScene" uid="uid://4qk2pax7q8r2" path="res://benchmarking/scenarios/scenario_attack_sequential.tscn" id="5_76r4y"]
+[ext_resource type="PackedScene" uid="uid://bl2cidw8ydcat" path="res://benchmarking/scenarios/scenario_look_at.tscn" id="6_xnluh"]
+[ext_resource type="PackedScene" uid="uid://ct8loqnh6o263" path="res://benchmarking/scenarios/scenario_fetch.tscn" id="7_d66b8"]
+[ext_resource type="PackedScene" uid="uid://b7yt0mo7s3q1q" path="res://benchmarking/scenarios/scenario_moveto.tscn" id="7_ullmd"]
+[ext_resource type="PackedScene" uid="uid://dt0x3vtwyabsa" path="res://benchmarking/scenarios/scenario_moveto_visual.tscn" id="8_pyoan"]
+[ext_resource type="PackedScene" uid="uid://c8qpd4twf2vpq" path="res://benchmarking/scenarios/scenario_give_selective.tscn" id="10_pyoan"]
+[ext_resource type="PackedScene" uid="uid://c12sfy6hssvwh" path="res://benchmarking/scenarios/scenario_meat_baseline.tscn" id="11_n0t3p"]
+[ext_resource type="PackedScene" uid="uid://dpu8upchk5jkb" path="res://benchmarking/scenarios/scenario_say.tscn" id="11_r0tbh"]
+[ext_resource type="PackedScene" uid="uid://dn136guthf0iy" path="res://benchmarking/scenarios/scenario_meat_collect.tscn" id="12_0i14i"]
+[ext_resource type="PackedScene" uid="uid://0khhh01v1rh" path="res://benchmarking/scenarios/scenario_meat_give.tscn" id="13_n4cwj"]
 
 [node name="Benchmarker" type="Node3D"]
 script = ExtResource("1_e8rto")
-scene_list = Array[PackedScene]([ExtResource("2_iwud5")])
+scene_list = Array[PackedScene]([ExtResource("3_33u7m"), ExtResource("3_xnluh"), ExtResource("4_33u7m"), ExtResource("5_76r4y"), ExtResource("2_iwud5"), ExtResource("7_d66b8"), ExtResource("10_pyoan"), ExtResource("6_xnluh"), ExtResource("3_4vu3a"), ExtResource("11_n0t3p"), ExtResource("12_0i14i"), ExtResource("13_n4cwj"), ExtResource("7_ullmd"), ExtResource("8_pyoan"), ExtResource("11_r0tbh")])

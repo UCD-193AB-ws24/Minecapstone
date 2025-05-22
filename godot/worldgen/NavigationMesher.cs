@@ -12,14 +12,14 @@ public partial class NavigationMesher : NavigationRegion3D {
 		if (chunkManager != null) {
 			CallDeferred(nameof(BakeNavmesh));
 		}
-		else {
-			GD.Print("ChunkManager node not found");
-		}
+		// else {
+		// 	GD.Print("ChunkManager node not found");
+		// }
 		// TODO: otherwise, queue a bake so the bake occurs once IsFInishedBaking signal is emitted
 	}
 
 	private void BakeNavmesh() {
-		GD.Print("Generating navmesh...");
+		// GD.Print("Generating navmesh...");
 		if (!IsBaking()) {
 			BakeNavigationMesh(true);
 		}
@@ -27,7 +27,7 @@ public partial class NavigationMesher : NavigationRegion3D {
 
 	private void OnBakeFinished() {
 		int NumVertices = NavigationMesh.GetVertices().Length;
-		GD.Print("Navmesh baked with ", NumVertices, " vertices.");
+		// GD.Print("Navmesh baked with ", NumVertices, " vertices.");
 	}
 
 	// NavigationMeshGenerator::bake() is deprecated due to core threading changes. 

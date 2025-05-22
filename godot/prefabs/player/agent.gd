@@ -76,15 +76,11 @@ func _physics_process(delta):
 # Gets call-deferred in _ready of npc
 func actor_setup():
 	super()
-	# Register with message_broker
+	# Register with message_broker and agent_manager
 	MessageBroker.register_agent(self)
-	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
-
-	#register with agent_manager
 	AgentManager.register_agent(self)
 
-	print("My name is: ", self.name)
-	# # Wait for websocket connection
+	# Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
 

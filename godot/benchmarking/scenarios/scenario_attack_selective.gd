@@ -15,7 +15,6 @@ func _ready() -> void:
 func _on_zombie_died(deadName):
 	"""Function is to be triggered by the has_died signal of a zombie. 
 	Function checks if zombie died and if so, log success and reset the scenario"""
-	#print("died: " + deadName)
 	if deadName == "Zombie":
 		await track_success()
 		reset_connections()
