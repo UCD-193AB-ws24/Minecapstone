@@ -180,6 +180,7 @@ func build_prompt_context() -> String:
 	context += "Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
 	context += "Your name is " + self.name + "\n"
 	context += "Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "Current Time: " + str(Time.get_ticks_msec() / 1000.0) + "\n"
 	context += "- All detected entities:\n" + _get_all_detected_entities()
 	context += "- All detected items:\n" + _get_all_detected_items()
 	context += "- All detected interactables:\n" + _get_all_detected_interactables() + "\n"
@@ -248,7 +249,10 @@ func get_memories_by_type(memory_type: String) -> Array[Memory]:
 
 
 func wait(time: float) -> bool:
-	return await get_tree().create_timer(time).timeout
+	if await get_tree().create_timer(time).timeout:
+		return true
+	else:
+		return false
 
 
 # TODO: investigate effectiveness of recording actions taken by agent

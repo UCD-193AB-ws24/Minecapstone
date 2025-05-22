@@ -8,7 +8,7 @@ var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 1
+var MAX_ITERATIONS: int = 2
 
 
 var timeout_timer:Timer
@@ -58,7 +58,6 @@ func reset():
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count, ", Errors:", error_count)
 	await _restore_initial_state()
 	reset_timer()
-
 
 
 func reset_timer():

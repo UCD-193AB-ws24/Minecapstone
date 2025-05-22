@@ -15,4 +15,4 @@ func _init(msg: String, sender_name: String, recipient_name: String):
 
 
 func format_for_prompt() -> String:
-	return "		* Message from agent %s: %s" % [from_agent, message]
+	return "		* %s said (time = %s): %s" % [from_agent, timestamp, message]

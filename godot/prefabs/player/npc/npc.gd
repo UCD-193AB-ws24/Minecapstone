@@ -390,12 +390,11 @@ func  _get_all_detected_entities():
 		- Distance To: %s units
 		- Coordinates: (%s, %s)
 		- Inventory: %s
-		%s
 	""" % [
 		entity.name,
 		str(int(entity.health)),
 		str(int(global_position.distance_to(entity.global_position))),
-		# str(int(entity.global_position.x)), str(int(entity.global_position.z)),
+		str(int(entity.global_position.x)), str(int(entity.global_position.z)),
 		inventory_data
 	]
 	else:

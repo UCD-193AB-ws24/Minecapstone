@@ -13,4 +13,4 @@ func _init(memory_content: String = ""):
 
 
 func format_for_prompt() -> String:
-	return "		* Memory at time %s: %s" % [timestamp, content]
+	return "		* Event (time = %s seconds): %s" % [timestamp, content]

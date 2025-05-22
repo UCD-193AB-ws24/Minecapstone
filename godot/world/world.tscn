@@ -52,7 +52,6 @@ ChunkScene = ExtResource("4_b2ttj")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
-low_graphics_mode = false
 day_duration_seconds = 10000.0
 night_duration_seconds = 1.0
 
