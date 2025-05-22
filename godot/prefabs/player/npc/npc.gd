@@ -315,7 +315,6 @@ func attack_target(target_name: String, num_attacks: int = 1):
 		
 		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
-	print("huhh!")
 
 	current_target = null
 	return true
@@ -334,7 +333,7 @@ func pick_up_item(item_name: String):
 	#TODO: after moving to item, check if the item is still in the world to verify it has been picked up. Keep moving to item if the item still exists in the world
 	
 	while detected_items.has(item):
-		return await move_to_position(item.global_position.x, item.global_position.z)
+		return await move_to_position(item.global_position.x, item.global_position.z, 1.25)
 
 
 # Attacks specificaly the current target
@@ -388,8 +387,7 @@ func  _get_all_detected_entities():
 			if entity_inventory != null:
 				inventory_data = entity_inventory.GetInventoryData()
 			# print(entity.name + "'s inventory: ", inventory_data)	
-			context += """
-	- %s
+			context += """	- %s
 		- Health: %s
 		- Distance To: %s units
 		- Coordinates: (%s, %s)

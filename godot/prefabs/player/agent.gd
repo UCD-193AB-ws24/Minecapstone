@@ -108,10 +108,10 @@ func _process_command_queue() -> void:
 			_command_queue.pop_front()
 			
 			# If all are processed, make request to LLM
-			if _command_queue.is_empty() and (infinite_decisions): # or prompt_allowance > 0):
+			if _command_queue.is_empty() and (infinite_decisions or prompt_allowance > 0):
 				#Agent consumes a prompt allowance
-				# if prompt_allowance > 0:
-				# 	prompt_allowance -= 1
+				if prompt_allowance > 0:
+					prompt_allowance -= 1
 				_generate_new_goal()
 			elif prompt_allowance < 0 and not infinite_decisions:
 				# No more prompt allowance, emit _out_of_prompts signal

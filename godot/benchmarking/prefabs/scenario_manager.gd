@@ -50,6 +50,7 @@ func track_timeout():
 	await track_failure()
 
 
+# TODO: connect out_of_prompts signal of the agents to this function
 # func _out_of_prompts():
 # 	"""Function is to be triggered by the out_of_prompts signal of an agent.
 # 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
