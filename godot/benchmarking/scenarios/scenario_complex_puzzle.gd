@@ -12,7 +12,6 @@ var door_unlocked = false
 
 func _ready() -> void:
 	super()
-	scenario_duration_seconds = 90.0
 	reset_connections()
 
 
@@ -78,7 +77,7 @@ func reset_connections():
 	red_platform.connect("body_exited", _on_touch_platform_exit.bind("RedPlatform"))
 	blue_platform.connect("body_exited", _on_touch_platform_exit.bind("BluePlatform"))
 
-	success_count = 0
-	failure_count = 0
+	# success_count = 0
+	# failure_count = 0
 	green_platform.connect("body_entered", _on_touch_platform.bind("GreenPlatform"))
 	green_platform.connect("body_exited", _on_touch_platform_exit.bind("GreenPlatform"))

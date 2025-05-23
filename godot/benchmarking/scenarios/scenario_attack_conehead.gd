@@ -7,6 +7,7 @@ var animal4: NPC_Animal
 var animal5: NPC_Animal
 var agent:Agent
 var conehead_dead: bool
+var conehead_name: String
 
 
 func _ready() -> void:
@@ -17,7 +18,7 @@ func _ready() -> void:
 func _on_died(deadName: String):
 	"""Triggered by has_died signal. If the conehead animal dies, set conehead died flag true. 
 	If any other animal dies, log failure and reset the scenario. """
-	if deadName == conehead.name:
+	if deadName == conehead_name:
 		conehead_dead = true
 	else:
 		track_failure()
@@ -44,6 +45,7 @@ func reset_connections():
 	animal2 = get_parent().get_node("Animal2")
 	animal2.has_died.connect(_on_died)
 	conehead = get_parent().get_node("Animal3")
+	conehead_name = conehead.name
 	conehead.has_died.connect(_on_died)
 	animal4 = get_parent().get_node("Animal4")
 	animal4.has_died.connect(_on_died)

@@ -47,6 +47,7 @@ func track_error():
 
 func track_timeout():
 	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
+	print("timeout reached")
 	await track_failure()
 
 
@@ -70,6 +71,7 @@ func reset():
 func reset_timer():
 	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
 	Function resets the timer."""
+	print("starting timer at", scenario_duration_seconds)
 	timeout_timer.start(scenario_duration_seconds)
 
 

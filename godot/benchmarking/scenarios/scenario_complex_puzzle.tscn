@@ -53,7 +53,7 @@ albedo_color = Color(0, 0, 1, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t4jf7"]
 albedo_color = Color(0, 1, 0, 1)
 
-[node name="World" type="Node3D"]
+[node name="World2" type="Node3D"]
 
 [node name="UI" parent="." instance=ExtResource("1_bbo18")]
 
@@ -165,6 +165,6 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_t4jf7")
-scenario_duration_seconds = 9000.0
+scenario_duration_seconds = 180.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

@@ -217,6 +217,8 @@ func move_to_position(x: float, y: float, distance_away: float = 2):
 	# 	return false
 
 	while not navigation_agent.is_target_reached() and not timed_out:
+		if !get_tree():
+			break
 		await get_tree().process_frame
 		
 	timer.queue_free()
