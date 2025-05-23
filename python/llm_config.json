@@ -1,5 +1,6 @@
 {
 	"service": "local_llm",
+	"model": "deepseek-r1:latest",
 	"settings": {
 	  "config_path": "local_llm_config.json"
 	},
