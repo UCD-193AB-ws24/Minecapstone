@@ -3,14 +3,12 @@ extends Node
 
 
 signal scenario_complete(success_count: int, failure_count: int, error_count: int)
-
-
 var success_count: int = 0
 var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 33
+var MAX_ITERATIONS: int = 2
 
 
 var timeout_timer:Timer
@@ -49,7 +47,15 @@ func track_error():
 
 func track_timeout():
 	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
-	track_failure()
+	print("timeout reached")
+	await track_failure()
+
+
+# TODO: connect out_of_prompts signal of the agents to this function
+# func _out_of_prompts():
+# 	"""Function is to be triggered by the out_of_prompts signal of an agent.
+# 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
+# 	await track_failure()
 
 
 func reset():
@@ -62,10 +68,10 @@ func reset():
 	reset_timer()
 
 
-
 func reset_timer():
 	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
 	Function resets the timer."""
+	print("starting timer at", scenario_duration_seconds)
 	timeout_timer.start(scenario_duration_seconds)
 
 
@@ -95,7 +101,6 @@ func next_iteration():
 func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_L:
 		_restore_initial_state()
-		print("State loaded.")
 
 
 func _capture_initial_state():
@@ -118,7 +123,7 @@ func _capture_initial_state():
 		var json_string = JSON.stringify(node_data)
 
 		save_data += json_string + "\n"
-		print("Saved the scene")
+	print("Saved the scene")
 	
 
 func _restore_initial_state():
@@ -150,12 +155,15 @@ func _restore_initial_state():
 
 		# Firstly, we need to create the object and add it to the tree and set its position.
 		var new_object = load(node_data["filename"]).instantiate()
+
+		# Build version temp fix
 		if (node_data["parent"] == "/root/World"):
 			get_parent().add_child(new_object)
 		else:
 			get_node(node_data["parent"]).add_child(new_object)
+			
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
-
+		new_object.name = node_data["name"]
 		
 		# Now we set the remaining variables.
 		for i in node_data.keys():

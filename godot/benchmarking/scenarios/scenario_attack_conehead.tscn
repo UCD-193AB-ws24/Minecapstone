@@ -47,26 +47,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.30981, 4.18274, 9.54143)
 [node name="Agent" parent="." instance=ExtResource("3_gd63u")]
 transform = Transform3D(0.999848, 0, 0.0174524, 0, 1, 0, -0.0174524, 0, 0.999848, -0.340211, 0.578259, 10.7884)
 goal = "Satisfy the Scenario Goal"
-scenario_goal = "Kill the animal with the cone shaped head and then eat its meat in your inventory"
-prompt_allowance = 0
+scenario_goal = "Kill the animal with the cone shaped head, pick up its meat, and then eat it."
 visual_mode = true
 attack_damage = 100.0
-_speed = 8.0
-
-[node name="Animal4" parent="." instance=ExtResource("5_vh2i8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45499, 0.409239, 1.80066)
-move_disabled = true
+_speed = 4.0
 
 [node name="Animal" parent="." instance=ExtResource("5_vh2i8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.40819, 1, 5)
+move_disabled = true
+
+[node name="Animal2" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65584, 0.472456, 5)
 move_disabled = true
 
 [node name="Animal3" parent="." instance=ExtResource("7_pamg6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.42415, 0.519879, 1.43678)
 move_disabled = true
 
-[node name="Animal2" parent="." instance=ExtResource("5_vh2i8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65584, 0.472456, 5)
+[node name="Animal4" parent="." instance=ExtResource("5_vh2i8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45499, 0.409239, 1.80066)
 move_disabled = true
 
 [node name="Player" parent="." instance=ExtResource("6_s3ar6")]
@@ -74,11 +73,6 @@ transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("7_g0e3n")
-scenario_duration_seconds = 20
-
-[node name="ScenarioTimer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
+scenario_duration_seconds = 30.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/ScenarioTimer" to="ScenarioManager" method="spawn_scene"]

@@ -67,10 +67,20 @@ public partial class ChunkManager : Node
 				_chunks[index].Generate();
 			}
 		}
-
-		// Create the mesh using the block data
+		
+		// Place trees on a per-chunk basis before starting the chunk transition process
 		for (int x = 0; x < view_distance; x++) {
 			for (int z = 0; z < view_distance; z++) {
+				var index = (z * view_distance) + x;
+				_chunks[index].PlaceTrees();
+			}
+		}
+
+		// Create the mesh using the block data
+		for (int x = 0; x < view_distance; x++)
+		{
+			for (int z = 0; z < view_distance; z++)
+			{
 				var index = (z * view_distance) + x;
 				_chunks[index].Update();
 			}
@@ -87,22 +97,28 @@ public partial class ChunkManager : Node
 
 	// Generate the chunk at the desired position
 	public void UpdateChunkPosition(Chunk chunk, Vector2I currentPosition, Vector2I previousPosition) {
-		// if (_positionToChunk.TryGetValue(previousPosition, out var chunkAtPosition) && chunkAtPosition == chunk) {
-		// 	_positionToChunk.Remove(previousPosition);
-		// }
-
 		_chunkToPosition[chunk] = currentPosition;
 		_positionToChunk[currentPosition] = chunk;
 	}
 
-	// Creates and sets the block at the desired position within the current chunk
+	// Creates and sets the block at the desired global position
 	public void SetBlock(Vector3I globalPosition, Block block) {
-		var chunkTilePosition = new Vector2I(Mathf.FloorToInt(globalPosition.X / (float)Chunk.dimensions.X), Mathf.FloorToInt(globalPosition.Z / (float)Chunk.dimensions.Z));
-
+		// Calculate which chunk contains this global position
+		var chunkPos = new Vector2I(
+			Mathf.FloorToInt(globalPosition.X / (float)Chunk.dimensions.X),
+			Mathf.FloorToInt(globalPosition.Z / (float)Chunk.dimensions.Z)
+		);
+		
 		// Lock the position to the chunk in the event that the chunk is being updated
 		lock (_positionToChunk) {
-			if (_positionToChunk.TryGetValue(chunkTilePosition, out var chunk)) {
-				chunk.SetBlock((Vector3I)(globalPosition - chunk.GlobalPosition), block);
+			if (_positionToChunk.TryGetValue(chunkPos, out var chunk)) {
+				// Only set blocks that are within the valid Y range
+				var localPosition = new Vector3I(
+					Mathf.PosMod(globalPosition.X, Chunk.dimensions.X),
+					globalPosition.Y,
+					Mathf.PosMod(globalPosition.Z, Chunk.dimensions.Z)
+				);
+				chunk.SetBlock(localPosition, block);
 			}
 		}
 	}
@@ -113,7 +129,8 @@ public partial class ChunkManager : Node
 		// This class is a [Tool], do not run this if in Editor
 		if (Engine.IsEditorHint()) return;
 
-		lock (_playerPositionlock) {
+		lock (_playerPositionlock)
+		{
 			_playerPosition = player.GlobalPosition;
 		}
 	}

@@ -30,9 +30,7 @@ public partial class Item(string Name, Texture2D Icon, int MaxStackSize, bool Is
 		sprite.Texture = this.Icon;
 		droppedItem.SetMeta("ItemName", this.Name);
 		droppedItem._Ready();
-		GD.Print(droppedItem.GetMeta("ItemName") + " added to Clear");
 		droppedItem.AddToGroup("Clear");	
-		//GD.Print("droppedItem has name " + droppedItem.GetMeta("ItemName"));
 
 		return droppedItem;
 	}

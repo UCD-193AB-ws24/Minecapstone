@@ -7,8 +7,6 @@ var current_agent = null
 func _ready() -> void:
 	super()
 	
-	print("Meat eating scenario started")
-	
 	# Connect to node_added signal to detect new agents
 	get_tree().connect("node_added", _on_node_added)
 	

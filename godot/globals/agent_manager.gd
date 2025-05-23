@@ -12,7 +12,6 @@ class AgentEntry:
 
 var agent_dict = {}
 
-
 # func _ready() -> void:
 # 	#find all agents placed through Godot editor
 # 	for node in get_tree().current_scene.get_children():

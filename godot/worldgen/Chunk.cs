@@ -37,6 +37,9 @@ public partial class Chunk : StaticBody3D
 	private Node3D WorldGenerator;
 
 	private Block[,,] _blocks = new Block[dimensions.X, dimensions.Y, dimensions.Z];
+	
+	// Dictionary to store terrain heights for each x,z coordinate in the chunk
+	private Dictionary<Vector2I, int> _terrainHeights = new();
 
 	public Vector2I ChunkPosition { get; protected set; }
 	public List<Vector2I> SavedChunks = [];
@@ -52,6 +55,18 @@ public partial class Chunk : StaticBody3D
 	// transparency debug
 	private List<Block> transparentBlocks = new List<Block>{};
 
+	// Preloaded scene resources
+	private static readonly PackedScene _interactableBlockScene = GD.Load<PackedScene>("res://benchmarking/prefabs/interactable_block.tscn");
+
+	// Method to instantiate an interactable block
+	public Node3D InstantiateInteractableBlock(Vector3 position)	{
+		var interactableBlock = _interactableBlockScene.Instantiate<Node3D>();
+		interactableBlock.Name = "Tree";
+		AddChild(interactableBlock);
+		interactableBlock.CallDeferred(Node3D.MethodName.SetGlobalPosition, position + new Vector3(0.5f, 0.5f, 0.5f));
+		return interactableBlock;
+	}
+
 	// Sets the chunk position and generate and update the chunk at that position
 	// Instead of generating new chunks, just move existing chunks to the desired position, updating blocks and mesh
 	public void SetChunkPosition(Vector2I position, Node3D WorldGenerator, bool forceUpdate = false) {
@@ -60,12 +75,11 @@ public partial class Chunk : StaticBody3D
 		ChunkPosition = position;
 		this.WorldGenerator = WorldGenerator;
 
-
 		int VIEW_DISTANCE = (int)WorldGenerator.Get("VIEW_DISTANCE");
-		Offset = new Vector2I(VIEW_DISTANCE/2*16, VIEW_DISTANCE/2*16);
+		Offset = new Vector2I(VIEW_DISTANCE / 2 * 16, VIEW_DISTANCE / 2 * 16);
 
 		CallDeferred(Node3D.MethodName.SetGlobalPosition, new Vector3(ChunkPosition.X * dimensions.X, 0, ChunkPosition.Y * dimensions.Z));
-		
+
 		if (forceUpdate) {
 			Generate();
 			Update();
@@ -137,6 +151,9 @@ public partial class Chunk : StaticBody3D
 				var ironHeight = stoneHeight / 2;
 				var goldHeight = stoneHeight / 3;
 				var diamondHeight = stoneHeight / 5;
+
+				// Store the calculated terrain height for this x,z coordinate
+				_terrainHeights[new Vector2I(x, z)] = terrainHeight;
 
 				for (int y = 0; y < dimensions.Y; y++) {
 					if (IsSkippable(new Vector3I(x,y,z))){
@@ -389,19 +406,32 @@ public partial class Chunk : StaticBody3D
 		return transparentBlocks.Contains(_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z]);
 	}
 	
-	// Set a block in the chunk
+	// Set a block in the chunk at the specified local position
 	public void SetBlock(Vector3I blockPosition, Block block) {
+		// Set the block in the array
 		_blocks[blockPosition.X, blockPosition.Y, blockPosition.Z] = block;
+		
+		// Convert to global coordinates for the SavedBlocks dictionary
+		var globalCoordinates = new Vector3I(
+			(ChunkPosition.X * dimensions.X) + blockPosition.X,
+			blockPosition.Y,
+			(ChunkPosition.Y * dimensions.Z) + blockPosition.Z
+		);
+		
+		// Update the saved blocks dictionary
+		if (block == BlockManager.Instance.GetBlock("Air")) {
+			if (SavedBlocks.ContainsKey(globalCoordinates)) {
+				SavedBlocks.Remove(globalCoordinates);
+			}
+		}
+		else {
+			SavedBlocks[globalCoordinates] = block;
+		}
+
+		// Force update for this chunk and adjacent chunks if needed
 		Update();
 		
-		var globalCoordinates = new Vector3I((ChunkPosition.X * 16) + blockPosition.X, blockPosition.Y, (ChunkPosition.Y * 16) + blockPosition.Z);
-		
-		if (block == BlockManager.Instance.GetBlock("Air"))
-			SavedBlocks.Remove(globalCoordinates);
-		else
-			SavedBlocks[globalCoordinates] = block;
-
-		// Force update for adjacent chunks if an air block is set at the chunk edge.
+		// Force update for adjacent chunks if an air block is set at the chunk edge
 		if (block == BlockManager.Instance.GetBlock("Air")) {
 			// Check left edge
 			if (blockPosition.X == 0) {
@@ -426,8 +456,16 @@ public partial class Chunk : StaticBody3D
 		}
 	}
 	
-	// Get a block in the chunk
+	// Get a block in the chunk at the specified local position
 	public Block GetBlock(Vector3I blockPosition) {
+		// Bounds checking
+		if (blockPosition.X < 0 || blockPosition.X >= dimensions.X ||
+			blockPosition.Y < 0 || blockPosition.Y >= dimensions.Y ||
+			blockPosition.Z < 0 || blockPosition.Z >= dimensions.Z) {
+			// Return null for out-of-bounds requests
+			return null;
+		}
+		
 		return _blocks[blockPosition.X, blockPosition.Y, blockPosition.Z];
 	}
 
@@ -548,5 +586,93 @@ public partial class Chunk : StaticBody3D
 		}
 
 		return false;
+	}
+	
+	// Place trees within this chunk
+	public void PlaceTrees() {
+		if (WorldGenerator == null) {
+			GD.PrintErr("WorldGenerator reference is null");
+			return;
+		}
+		
+		// Get all tree positions from the world generator
+		var allTreePositions = WorldGenerator.Call("get_tree_positions").AsGodotArray<Vector2>();
+		if (allTreePositions == null || allTreePositions.Count == 0) {
+			return;
+		}
+
+		// Convert tree positions to global world space coordinates
+		int worldSize = (int)WorldGenerator.Get("VIEW_DISTANCE") * 16;
+		Vector2I worldOffset = new(worldSize/2, worldSize/2);
+		
+		// Get the wood block for tree trunks
+		var woodBlock = (Block)ItemDictionary.Get("Wood");
+		
+		// Set seed for consistent tree generation
+		var random = new Random(42 + ChunkPosition.X * 100 + ChunkPosition.Y); // Unique seed per chunk
+		
+		// Check each tree position to see if it falls within this chunk
+		foreach (var pos in allTreePositions) {
+			// Convert from world generator space to global coordinates
+			var globalX = (int)pos.X - worldOffset.X;
+			var globalZ = (int)pos.Y - worldOffset.Y;
+
+			// Check if this tree position belongs to this chunk
+			int chunkX = (int)Math.Floor((float)globalX / dimensions.X);
+			int chunkZ = (int)Math.Floor((float)globalZ / dimensions.Z);
+			if (chunkX != ChunkPosition.X || chunkZ != ChunkPosition.Y) {
+				continue; // Skip if not in this chunk
+			}
+
+			// Convert to local coordinates within this chunk
+			var localX = Mathf.PosMod(globalX, dimensions.X);
+			var localZ = Mathf.PosMod(globalZ, dimensions.Z);
+
+			// Get terrain height from the stored dictionary
+			var localPos = new Vector2I(localX, localZ);
+			if (!_terrainHeights.TryGetValue(localPos, out int terrainHeight)) {
+				continue; // Skip if terrain height not found
+			}
+
+			// Skip if the terrain is not suitable (e.g., water)
+			var surfaceBlock = _blocks[localX, terrainHeight, localZ];
+			if (surfaceBlock == null ||
+				!(surfaceBlock.Name == "Grass" || surfaceBlock.Name == "Dirt")) {
+				continue;
+			}
+
+			// Generate tree
+			int treeHeight = 3 + random.Next(4); // Random height between 3-6 blocks
+
+			// GD.Print("Placing tree at: " + new Vector3(globalX, terrainHeight + 1, globalZ) + " in chunk " + ChunkPosition + " Debug: " + chunkX + " " + chunkZ);
+			InstantiateInteractableBlock(new Vector3(globalX, terrainHeight + 1, globalZ));
+
+			// Ensure there's enough space above for the tree
+			if (terrainHeight + treeHeight >= dimensions.Y) {
+				treeHeight = dimensions.Y - terrainHeight - 1;
+				if (treeHeight <= 2) continue; // Skip if not enough height
+			}
+
+			// Place trunk
+			for (int h = 1; h <= treeHeight; h++) {
+				var blockPos = new Vector3I(localX, terrainHeight + h, localZ);
+
+				// Skip if there's already a block here
+				if (_blocks[blockPos.X, blockPos.Y, blockPos.Z] != BlockManager.Instance.GetBlock("Air")) {
+					continue;
+				}
+
+				_blocks[blockPos.X, blockPos.Y, blockPos.Z] = woodBlock;
+
+				// Save to the SavedBlocks dictionary
+				var globalCoordinates = new Vector3I(
+					globalX,
+					terrainHeight + h,
+					globalZ
+				);
+				SavedBlocks[globalCoordinates] = woodBlock;
+			}
+			// Future enhancement: Add leaves
+		}
 	}
 }

@@ -146,7 +146,6 @@ func run_script(input: String):
 	var start_pattern = "performing"
 	var end_pattern = "An error has occurred. Attempting to fix self..."
 
-	# print(start_pattern)
 	var err = script.reload()
 	if err != OK:
 		print_rich("[color=#FF786B]%s %s[/color]" % [end_pattern, err])

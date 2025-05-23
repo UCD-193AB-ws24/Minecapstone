@@ -7,7 +7,6 @@ FUNCTION REFERENCE:
 - get_position() -> Vector3: Returns your current position.
 - say(message) -> Sends a message to all nearby agents.
 - say_to(message, target_name) -> Sends a message to a specific agent.
-- eat_food(item_name) -> Consumes the specified food item. First letter of each word  must be capitalized.
 - pass: Skip your turn.
 
 IMPORTANT: THE FOLLOWING FUNCTIONS REQUIRE AWAIT:
@@ -17,6 +16,8 @@ IMPORTANT: THE FOLLOWING FUNCTIONS REQUIRE AWAIT:
 - await look_at_target(target_name) -> Makes the agent look at the specified entity.
 - await give_to(agent_name, item_name, amount) -> Moves to the agent and gives them the specified item and amount. Default amount is 1. Only items in your inventory can be given.
 - await pick_up_item(item_name) -> Moves to the item, specified by item_name, and adds it to your inventory.
+- await wait(duration) -> Waits for the specified duration in seconds.
+- await eat_food(item_name) -> Consumes the specified food item. First letter of each word must be capitalized.
 
 Example:
 var reached = await move_to_position(30, 0)

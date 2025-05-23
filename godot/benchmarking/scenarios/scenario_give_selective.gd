@@ -10,11 +10,7 @@ var agent_inventory
 
 
 func _ready() -> void:
-	agent = get_parent().get_node("Agent")
-	agent_inventory = agent.get_node("InventoryManager")
-	agent_inventory.AddItem(ItemDictionary.Get("Wood Pickaxe"), 1)
-	agent_inventory.AddItem(ItemDictionary.Get("Dirt"), 1)
-	agent_inventory.AddItem(ItemDictionary.Get("Stone"), 1)
+	reset_inventory()
 	scenario_box = get_parent().get_node("ScenarioBox")
 	scenario_box_adapter = scenario_box.get_node("SignalAdapter")
 	scenario_box_adapter.transit_signal.connect(_receive_transit_signal)

@@ -18,40 +18,32 @@ func _on_item_added(item):
 	Checks if the item added is the required item and if so, log success. Otherwise, log failure.
 	Then reset the scenario."""
 	timeout_timer.stop()
-	print("Item received: " + item.Name)
 	if item.Name == "Wood Pickaxe" and correct_zombie_dead:
 		track_success()
 	else:
 		track_failure()
-	reset()
 
 	for i in range(10):
 		await get_tree().physics_frame
 
 	reset_connections()
-
-func _out_of_time():
-	super()
-	for i in range(10):
-		await get_tree().physics_frame
-	reset_connections()
-
 
 
 func _on_died(deadName: String):
 	"""Triggered by has_died signal. If Zombie2 dies, set correct_zombie_dead flag true. 
 	If anything else dies, log failure and reset the scenario. """
-	print("this died: ", deadName)
 	if deadName == zombie2.name:
 		correct_zombie_dead = true
 	else:
 		track_failure()
-		reset()
 
-		for i in range(10):
-			await get_tree().physics_frame
 
-		reset_connections()
+func _restore_initial_state():
+	await super()
+
+	reset_connections()
+
+
 func reset_connections():
 	correct_zombie_dead = false
 	agent1 = get_parent().get_node("Agent1")

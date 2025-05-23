@@ -369,7 +369,6 @@ func _handle_attacking():
 		var target = raycast.get_collider()
 		if Input.is_action_just_pressed("mouse1"):
 			target.damage(10)
-			print("Entity has been attacked -- health is now: ", target.health)
 			_apply_knockback(target)
 
 
@@ -490,9 +489,12 @@ func _update_health_hunger_thirst(_delta):
 	if health <= 0:
 		_on_player_death()
 
+
 signal food_eaten(food_name: String, agent_hash_id: int)
 
+
 func eat_food(food_name: String = "") -> bool:
+	# print("Eating food: " + food_name)
 	var string_array = food_name.split(" ")
 	var formatted_food_name = ""
 	for word in string_array:
@@ -516,11 +518,12 @@ func eat_food(food_name: String = "") -> bool:
 
 			# Remove one of the food items from inventory
 			inventory_manager.ConsumeItem(food_name)
-			print("Ate " + food_name)
+			# print("Ate " + food_name)
 			
 			emit_signal("food_eaten", food_name, get_instance_id())
 			return true
 
+	# print("Failed to eat food: " + food_name)
 	return false
 
 
@@ -539,8 +542,7 @@ func damage(damage_amount: float):
 
 
 func _on_player_death():
-	print(str(self) + " has died!")
-
+	# print(str(self) + " has died!")
 	health = max_health
 	hunger = max_hunger
 	thirst = max_thirst

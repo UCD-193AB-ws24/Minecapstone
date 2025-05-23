@@ -44,14 +44,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7216, 6, 2.24452)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.78495, 2.03032, 4.89785)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Say to Agent2 to kill the zombie left of the animal and give you the item drops. Make sure to specify the zombie's name to Agent2."
-prompt_allowance = 0
+prompt_allowance = 5
 visual_mode = true
 
 [node name="Agent2" parent="." instance=ExtResource("3_5gkwf")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5.00872, 1.21307, 5)
 goal = "Do what Agent1 tells you to do."
 scenario_goal = ""
-prompt_allowance = 2
+prompt_allowance = 5
 attack_damage = 100.0
 _speed = 4.0
 
