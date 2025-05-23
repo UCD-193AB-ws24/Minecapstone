@@ -15,15 +15,21 @@ class_name Agent extends NPC
 @onready var _is_processing_commands: bool = false
 static var _command = preload("command.gd")
 
+
 @onready var debug_id : String = str(hash_id).substr(0, 3)
 @onready var debug_color : String = Color.from_hsv(float(hash_id) / 1000.0, 0.8, 1).to_html(false)
 
+
 signal out_of_prompts
+
 
 """ ============================================= GODOT FUNCTIONS ================================================== """
 
+
 func _ready() -> void:
+	MessageBroker.message.connect(_on_message_received)
 	super()
+
 
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
@@ -76,15 +82,11 @@ func _physics_process(delta):
 # Gets call-deferred in _ready of npc
 func actor_setup():
 	super()
-	# Register with message_broker
+	# Register with message_broker and agent_manager
 	MessageBroker.register_agent(self)
-	print("message connect status of " + self.name +" "+ str(MessageBroker.message.connect(_on_message_received)))
-
-	#register with agent_manager
 	AgentManager.register_agent(self)
 
-	print("My name is: ", self.name)
-	# # Wait for websocket connection
+	# Wait for websocket connection
 	if API.socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		await API.connected
 
@@ -145,6 +147,8 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 	# to_id == -1, the message is for all agents
 	# to_id == hash_id, the message is for this agent
 	# TODO: Curently does not remember messages sent by self, but probably should do that
+	
+
 	if (to_id == -1 or to_id == hash_id) and from_id != hash_id:
 		#get agents by id
 		var from_agent =  MessageBroker.get_agent_by_id(from_id)
@@ -156,10 +160,14 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 
 		# Convert from_id to a color
 		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
-		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.name, from_color, from_agent.name, msg])
+		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.debug_id, from_color, from_agent.debug_id, msg])
 
 		# Included this message in the agent's memory
-		var message_memory = MessageMemory.new(msg, from_agent.name, to_agent.name)
+		var message_memory
+		if to_id == -1:
+			message_memory = MessageMemory.new(msg, from_agent.name)
+		else:
+			message_memory = MessageMemory.new(msg, from_agent.name, "You")
 		memories.add_memory(message_memory)
 
 
@@ -171,22 +179,22 @@ func build_prompt_context() -> String:
 	"""Provides context about the game state for the LLM
 	"""
 
-	var context = "# Game Context\n"
+	var context = ""
 
 	if scenario_goal != "":
-		context += "	Your prime directive is to complete the goal: " + scenario_goal + "\n"
+		context += "Your prime directive is to complete the goal: " + scenario_goal + "\n"
 	
-	context += "	The current goal you have set for yourself is to: " + goal + "\n"
-	context += "	Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
-	context += "	Your name is " + self.name + "\n"
-	context += "	Self Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
-	context += "	All detected entities: " + _get_all_detected_entities() + "\n"
-	context += "	All detected items: " + _get_all_detected_items()
-	context += "	All detected interactables: " + _get_all_detected_interactables() + "\n"
-	context += "	your five most recent memories: " + memories.format_recent_for_prompt(5) + "\n"
+	context += "The current goal you have set for yourself is to: " + goal + "\n"
+	context += "Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
+	context += "Your name is " + self.name + "\n"
+	context += "Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "Current Time: " + str(Time.get_ticks_msec() / 1000.0) + "\n"
+	context += "- All detected entities:\n" + _get_all_detected_entities()
+	context += "- All detected items:\n" + _get_all_detected_items()
+	context += "- All detected interactables:\n" + _get_all_detected_interactables() + "\n"
+	context += "- Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
 
 	get_node("context").text = context.replace("\t", "    ")
-	# print(context)
 
 	return context
 
@@ -246,6 +254,13 @@ func encode_image_to_base64(image: Image) -> String:
 # Get all memories of a specific type
 func get_memories_by_type(memory_type: String) -> Array[Memory]:
 	return memories.get_by_type(memory_type)
+
+
+func wait(time: float) -> bool:
+	if await get_tree().create_timer(time).timeout:
+		return true
+	else:
+		return false
 
 
 # TODO: investigate effectiveness of recording actions taken by agent

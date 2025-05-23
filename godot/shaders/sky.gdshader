@@ -56,9 +56,6 @@ group_uniforms stars;
 	uniform float stars_scale : hint_range(0.1, 3.0, 0.01) = 1.0;
 	uniform float stars_opacity : hint_range(0.1, 1.0, 0.01) = 1.0;
 
-group_uniforms settings;
-	uniform float overwritten_time = 0.0;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Function for clouds noises. You can replace using "gen_fractal_ping_pong" with a simple texture reading.
 	// I was frustrated with the repeating texture that's why I included the algorithm in the code.
@@ -152,7 +149,7 @@ float sphere_intersect( vec3 view_dir, vec3 sphere_pos, float radius )
 
 void sky()
 {
-	float time = overwritten_time != 0.0 ? overwritten_time : TIME;
+	float time = TIME;
 
 	//////////////////// SKY ///////////////////////////////////////////////////////////////////////
 	float _eyedir_y = abs( sin( EYEDIR.y * PI * 0.5 ));

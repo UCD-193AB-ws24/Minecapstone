@@ -43,6 +43,9 @@ var precipitation_averages
 var combined_height_image
 var land_ocean_mask
 
+# Store the generated tree positions
+var tree_positions_list = []
+
 
 func _get_biome_index(x: int, y: int) -> int:
 	var pos = Vector2(x, y)
@@ -135,6 +138,13 @@ func _threaded_generate():
 	_display_image(combined_height_image)
 
 	var biome_map = _create_biome_map_image()
+	
+	# Generate tree positions and display them as red dots on the biome map
+	var low_density = float(SIZE) / 7
+	# var med_density = SIZE
+	# var high_density = SIZE * 1.5
+	var tree_positions = generate_trees(low_density)  # Higher density trees
+	biome_map = _overlay_trees_on_image(biome_map, tree_positions)
 	_display_image(biome_map)
 
 	# TODO: Wait for user input before completing world generation
@@ -322,6 +332,134 @@ func _display_land_ocean(mask):
 	call_deferred("_handle_loading_screen", texture)
 
 
+# Function to get grid cell for a position
+func get_cell(pos: Vector2, cell_size) -> Vector2:
+	var cell_x = floor(pos.x / cell_size)
+	var cell_y = floor(pos.y / cell_size)
+	return Vector2(cell_x, cell_y)
+
+
+func relax(positions: Array, iterations: int = 10) -> Array:
+	var relaxed_positions = positions.duplicate()
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
+	# Calculate the average spacing between points
+	var area = float(SIZE * SIZE)
+	var avg_spacing = sqrt(area / float(positions.size())) * 1.5
+	var cell_size = avg_spacing  # Use average spacing as cell size for spatial grid
+	
+	for i in range(iterations):
+		# Create a spatial grid for efficient neighbor lookup
+		# This reduces complexity from O(n²) to O(n + k) where k is number of nearby points
+		var grid = {}
+		
+		# Populate the grid
+		for idx in range(relaxed_positions.size()):
+			var pos = relaxed_positions[idx]
+			var cell = get_cell(pos, cell_size)
+			
+			if !grid.has(cell):
+				grid[cell] = []
+			grid[cell].append({"pos": pos, "idx": idx})
+		
+		var new_positions = []
+		
+		# For each point, find near points using grid cells
+		for idx in range(relaxed_positions.size()):
+			var pos = relaxed_positions[idx]
+			var cell = get_cell(pos, cell_size)
+			var force = Vector2(0, 0)
+			var nearby_count = 0
+			
+			# Check neighboring cells (including current cell)
+			for dx in range(-1, 2):
+				for dy in range(-1, 2):
+					var neighbor_cell = Vector2(cell.x + dx, cell.y + dy)
+					
+					if grid.has(neighbor_cell):
+						for point in grid[neighbor_cell]:
+							if point.idx == idx:
+								continue
+							
+							var other_pos = point.pos
+							var dist = pos.distance_to(other_pos)
+							
+							# Only consider points within our average spacing
+							if dist < avg_spacing:
+								var repulsion = (pos - other_pos).normalized() * (1.0 / max(dist, 0.1))
+								force += repulsion
+								nearby_count += 1
+			
+			# Apply force and small jitter to avoid grid-like patterns
+			if nearby_count > 0:
+				force = force.normalized() * min(avg_spacing * 0.2, force.length())
+				var new_pos = pos + force
+				new_pos.x += rng.randf_range(-1.0, 1.0)
+				new_pos.y += rng.randf_range(-1.0, 1.0)
+				new_positions.append(new_pos)
+			else:
+				# Small random movement if no neighbors
+				var new_pos = pos + Vector2(rng.randf_range(-2.0, 2.0), rng.randf_range(-2.0, 2.0))
+				new_positions.append(new_pos)
+		
+		relaxed_positions = new_positions
+		
+	# Ensure all positions are integers
+	for i in range(relaxed_positions.size()):
+		relaxed_positions[i].x = round(relaxed_positions[i].x)
+		relaxed_positions[i].y = round(relaxed_positions[i].y)
+	
+	return relaxed_positions
+
+
+func generate_trees(count: int) -> Array:
+	var positions = []
+	var rng = RandomNumberGenerator.new()
+	# Use a fixed seed for deterministic tree generation
+	rng.seed = int(abs(voronoi_noise.seed) + abs(height_noise.seed))
+	
+	for i in range(count):
+		var x = rng.randi_range(0, SIZE - 1)
+		var y = rng.randi_range(0, SIZE - 1)
+		positions.append(Vector2(x, y))
+	
+	# Spread out the tree positions to avoid clustering
+	positions = relax(positions)
+
+	# Filter out positions that are not on land and ensure inbounds
+	positions = positions.filter(
+		func(pos): 
+			return pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE and \
+				land_ocean_mask.has(Vector2(pos.x, pos.y)) and \
+				land_ocean_mask[Vector2(pos.x, pos.y)]
+	)
+
+	# Store the positions for later access
+	tree_positions_list = positions
+	
+	return positions
+
+
+func get_tree_positions() -> Array:
+	return tree_positions_list
+
+
+func _overlay_trees_on_image(image: Image, tree_positions: Array) -> Image:
+	var result_image = image.duplicate()
+	
+	for pos in tree_positions:
+		if pos.x >= 0 and pos.x < SIZE and pos.y >= 0 and pos.y < SIZE:
+			for dx in range(-1, 2):
+				for dy in range(-1, 2):
+					var x = pos.x + dx
+					var y = pos.y + dy
+					if x >= 0 and x < SIZE and y >= 0 and y < SIZE:
+						result_image.set_pixel(x, y, Color(1, 0, 0))
+	
+	return result_image
+
+
 func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) -> void:
 	if enabled:
 		$LoadingScreen.visible = true
@@ -330,6 +468,17 @@ func _handle_loading_screen(texture: ImageTexture = null, enabled: bool = true) 
 		$LoadingScreen.visible = false
 		$"LoadingScreen/CenterContainer/MarginContainer/TextureRect".texture = null
 		
+
 func _ready() -> void:
-	if not $"../NavigationMesher".find_child("ChunkManager"):
-		_handle_loading_screen(null, false)
+	# Disable the loading screen if the ChunkManager is not present
+	if has_node("../NavigationMesher"):
+		if not get_node("../NavigationMesher").find_child("ChunkManager"):
+			_handle_loading_screen(null, false)
+
+
+func _input(event: InputEvent) -> void:
+	# Debug: Press R to regenerate the world
+	if event is InputEventKey and event.pressed and event.keycode == KEY_R:
+		if not has_node("../NavigationMesher"):
+			_handle_loading_screen(null, true)
+			generate()

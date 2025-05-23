@@ -23,13 +23,12 @@ offset = Vector3(1000, 1000, 0)
 fractal_type = 0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_41cxm"]
-seed = 8600
-frequency = 0.0084
-fractal_gain = 0.46
-domain_warp_enabled = true
-domain_warp_amplitude = 0.5
-domain_warp_frequency = 1.0
-domain_warp_fractal_octaves = 10
+seed = 113350
+frequency = 0.0082
+offset = Vector3(0, -250, 0)
+fractal_gain = 0.25
+fractal_weighted_strength = 1.0
+domain_warp_amplitude = 1.0
 
 [node name="WorldGenerator" type="Node3D"]
 script = ExtResource("1_fhb02")
@@ -37,6 +36,7 @@ voronoi_noise = SubResource("FastNoiseLite_8mp4y")
 temperature_noise = SubResource("FastNoiseLite_yvk30")
 precipitation_noise = SubResource("FastNoiseLite_h7q52")
 height_noise = SubResource("FastNoiseLite_41cxm")
+VIEW_DISTANCE = 16
 
 [node name="LoadingScreen" type="Control" parent="."]
 layout_mode = 3
@@ -65,7 +65,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="LoadingScreen/CenterContainer"]
-custom_minimum_size = Vector2(250, 250)
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="LoadingScreen/CenterContainer/MarginContainer"]

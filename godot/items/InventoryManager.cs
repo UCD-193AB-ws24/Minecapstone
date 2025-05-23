@@ -6,25 +6,33 @@ using System.Linq;
 [Tool]
 public partial class InventoryManager : Node 
 {
+	// ============================= PROPERTIES =================================
+
 	[Export]
 	public float DropVelocity { get; set; } = 5;
+	
+	// TODO: Using an export here doesn't work on InventorySlots. 
+	// Set this up in player's ready function instead.
+	public int InventorySlots { get; set; } = 9;
+	public int SelectedSlot => _selectedSlot;
 	
 	private readonly Dictionary<string, List<int>> _nameToSlots = [];
 	private readonly Dictionary<int, InventoryItem> _slotsToItems = [];
 	private int _selectedSlot = 0;
 	private bool[] _inventorySlots;
-	// TODO, using an export here doesn't work on InventorySlots. 
-	// set this up in player's ready function instead.
-	public int InventorySlots { get; set; } = 9;
-	public int SelectedSlot => _selectedSlot;
-
+	
+	// ============================= SIGNALS ===================================
+	
 	[Signal]
-	public delegate void ItemAddedEventHandler(string signalName, Item[] items); //for signal adapter
-
-	public InventoryManager() {
+	public delegate void ItemAddedEventHandler(string signalName, Item[] items);
+	
+	public InventoryManager() 
+	{
 		_inventorySlots = new bool[InventorySlots];
 	}
 
+	// =========================== INVENTORY ACCESS ============================
+	
 	public int GetSpace() => Array.IndexOf(_inventorySlots, false);
 	
 	public Item GetSelectedItem() => 
@@ -32,236 +40,21 @@ public partial class InventoryManager : Node
 
 	public int GetSelectedAmount() => 
 		_inventorySlots[_selectedSlot] ? _slotsToItems[_selectedSlot].count : 0;
-
-	public void CycleUp() => 
-		_selectedSlot = _selectedSlot > 0 ? _selectedSlot - 1 : _inventorySlots.Length - 1;
 	
-	public void CycleDown() => 
-		_selectedSlot = _selectedSlot < _inventorySlots.Length - 1 ? _selectedSlot + 1 : 0;
-
-	public void ConsumeSelectedItem() {
-		if (!_inventorySlots[_selectedSlot]) return;
-		DecrementItemInSlot(_selectedSlot);
-	}
-	public void ConsumeItem(String itemName) {
-		// Consume one of itemName in inventory
-		// Check if itemName is in inventory
-		if (!_nameToSlots.ContainsKey(itemName)) return;
-		List<int> slotNums = _nameToSlots[itemName];
-		int slot = slotNums[0];
-		DecrementItemInSlot(slot);
-	}
-
-	public bool DropItem(String itemName, int amount) {
-		int currentAmount = amount;
-		if(!_nameToSlots.ContainsKey(itemName))
-		{
-			return false;
-		}
-		List<int> slotNums = _nameToSlots[itemName];
-		//check starting from the most recent slotnum 
-		for(int i = slotNums.Count - 1; i >= 0; i--) {
-			InventoryItem items = _slotsToItems[slotNums[i]];
-			if(items.count >= currentAmount) 
-			{
-				//spawn items equal to currentAmount
-				for (int j = 0; j < currentAmount; j++) {
-					SpawnDroppedItem(items.item);
-				}
-				items.count -= currentAmount;
-				if(items.count > 0)
-				{
-					//leftover amounts in item
-					return true;
-				}
-				// _inventorySlots[slotNums[i]] = false;
-				// _slotsToItems.Remove(slotNums[i]);
-				// _nameToSlots[itemName].Remove(slotNums[i]);
-				// //Check if there is anymore slots that contain the item
-				// if(_nameToSlots[itemName].Count <= 0)
-				// {
-				// 	_nameToSlots.Remove(itemName);
-				// }
-				ReleaseItemSlot(itemName, slotNums[i]);
-				return true;
-			} else 
-			{
-				//items.count < amount
-				//spawn items equal to currentAmount
-				for (int j = 0; j < items.count; j++) {
-					SpawnDroppedItem(items.item);
-				}
-				//subtract amount from item.count
-				amount -= items.count;
-				// _inventorySlots[slotNums[i]] = false;
-				// _slotsToItems.Remove(slotNums[i]);
-				// _nameToSlots[itemName].Remove(slotNums[i]);
-				ReleaseItemSlot(itemName, slotNums[i]);
-			}
-		}
-		//if the loop exits here, then the agent still has more it wants to drop but there's no more of the item to drop
-		//return true because the agent drops all quantities of the item 
-		return true;
-	}
-	
-	//FUNCTION FOR PLAYER: Drop one of the item currently selected in the hotbar
-	public bool DropSelectedItem() {
-		if (!_inventorySlots[_selectedSlot]) return false;
-		var item = _slotsToItems[_selectedSlot];
-		SpawnDroppedItem(item.item);
-		DecrementItemInSlot(_selectedSlot);
-		return true;
-	}
-	
-	public bool DropSelectedStack() {
-		if (!_inventorySlots[_selectedSlot]) return false;
-		
-		var item = _slotsToItems[_selectedSlot];
-		SpawnMultipleDroppedItems(item.item, item.count);
-		RemoveItemInSlot(_selectedSlot);
-		return true;
-	}
-	public void DropAllItems() {
-		for (int i = 0; i < _inventorySlots.Length; i++) {
-			if (_inventorySlots[i]) {
-				RemoveItemInSlot(i);
-			}
-		}
-	}
-
-	public bool AddItem(Item item, int amount) {
-		if (TryAddToExistingStack(item, amount)) 
-		{
-			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
-			Item[] items = new Item[1];
-			items[0] = item;
-			GD.Print(EmitSignal(nameof(ItemAdded), nameof(ItemAdded), items));
-			return true;
-		}
-		if (TryAddToNewSlot(item, amount))
-		{
-			GD.Print("Emitted add item signal. Owner is " + GetParent().Name);
-			Item[] items = new Item[1];
-			items[0] = item;
-			GD.Print(EmitSignal(nameof(ItemAdded), nameof(ItemAdded), items));
-			return true;
-		}
-		return false;
-	}
-	
-	// Returns list of slot numbers that have items named itemName
-	private List<int> ItemInInventory(string itemName) => 
-		_nameToSlots.TryGetValue(itemName, out List<int> slots) ? slots : null;
-
-	private bool TryAddToExistingStack(Item item, int amount) {
-		var slotNums = ItemInInventory(item.Name);
-		if (slotNums == null) return false;
-
-		foreach (int slot in slotNums) {
-			var existingItem = _slotsToItems[slot];
-			if (existingItem.count >= existingItem.item.MaxStackSize) continue;
-			
-			int itemCount = existingItem.count;
-			existingItem.count += amount;
-			_slotsToItems[slot] = existingItem;
-			
-			if (itemCount + 1 != _slotsToItems[slot].count) {
-				throw new InvalidOperationException($"Count mismatch: {itemCount + 1} vs {_slotsToItems[slot].count}");
-			}
-			return true;
-		}
-		return false;
-	}
-
-	private bool TryAddToNewSlot(Item item, int amount) {
-		// At this point, we know there is no room in any of the slots. Find a new slot and add to the slotNums list
-		int slot = GetSpace();
-
-		// Return false if inventory is full
-		if (slot == -1) return false;
-
-		if (!_nameToSlots.ContainsKey(item.Name)) {
-			_nameToSlots[item.Name] = [slot];
-		}
-		else {
-			_nameToSlots[item.Name].Add(slot);
-		}
-		
-		var itemStruct = new InventoryItem(item, amount);
-		_slotsToItems[slot] = itemStruct;
-		_inventorySlots[slot] = true;
-		return true;
-	}
-
-	private RigidBody3D SpawnDroppedItem(Item item) {
-		var droppedItem = (RigidBody3D)item.GenerateItem();
-		var agent = GetParent();
-		var world = agent.GetParent();
-		var head = (Node3D)agent.FindChild("Head");
-		
-		world.AddChild(droppedItem);
-
-		// Set timer till activating monitoring on dropped item
-		droppedItem.FindChild("CollectTimer").Call("pick_up_cooldown");
-		
-		// Drop item forward
-		Vector3 facingDir = -head.GlobalTransform.Basis.Z;
-		droppedItem.GlobalPosition = head.GlobalPosition;
-		droppedItem.LinearVelocity = facingDir.Normalized() * DropVelocity;
-		
-		return droppedItem;
-	}
-	
-	private void SpawnMultipleDroppedItems(Item item, int count) {
-		for(int i = 0; i < count; i++) {
-			var droppedItem = SpawnDroppedItem(item);
-		}
-	}
-	
-	private void RemoveItemInSlot(int slot) {
-		var item = _slotsToItems[slot];
-		SpawnMultipleDroppedItems(item.item, item.count);
-		item.count = 0;
-		
-		_inventorySlots[slot] = false;
-		_slotsToItems.Remove(slot);
-		_nameToSlots[item.item.Name].Remove(slot);
-	}
-	
-	private void DecrementItemInSlot(int slot) {
-		var item = _slotsToItems[slot];
-		item.count--;
-		if (item.count > 0) return;
-		
-		_inventorySlots[slot] = false;
-		_slotsToItems.Remove(slot);
-		_nameToSlots[item.item.Name].Remove(slot);
-	}
-
-	private void ReleaseItemSlot(String itemName, int slotNum)
+	public int GetItemCount(string itemName) 
 	{
-		_inventorySlots[slotNum] = false;
-		_slotsToItems.Remove(slotNum);
-		_nameToSlots[itemName].Remove(slotNum);
-		//Check if there is anymore slots that contain the item
-		if(_nameToSlots[itemName].Count <= 0)
+		if (!_nameToSlots.ContainsKey(itemName)) return 0;
+		
+		int totalAmount = 0;
+		foreach (int slotNum in _nameToSlots[itemName])
 		{
-			_nameToSlots.Remove(itemName);
+			totalAmount += _slotsToItems[slotNum].count;
 		}
-	}
-	public void PrintInventory() 
-	{
-		GD.Print("Printing inventory");
-		for (int i = 0; i < InventorySlots; i++) 
-		{
-			GD.Print(i.ToString() + " " + _slotsToItems[i].PrintInventoryItem() + " " + _slotsToItems[i].PrintAmount());
-		}
+		return totalAmount;
 	}
 	
 	public string GetInventoryData() 
 	{
-		//This function is for providing the inventory content to the LLM's prompt context
-		//also used for listing out mob drops in _get_all_detected_entities()
 		string inventory_str = "";
 		for (int i = 0; i < InventorySlots; i++)
 		{
@@ -270,27 +63,219 @@ public partial class InventoryManager : Node
 				inventory_str += $"{_slotsToItems[i].PrintInventoryItem()} ({_slotsToItems[i].PrintAmount()}x)";
 			}
 		}
-		
 		return inventory_str;
 	}
-
-	public int GetItemCount(String itemName) 
+	
+	public void PrintInventory() 
 	{
-		//GetItemCount checks if itemName is in inventory and returns the total amount of itemName in inventory
-		if (_nameToSlots.ContainsKey(itemName))
+		for (int i = 0; i < InventorySlots; i++) 
 		{
-			List<int> slotNums = _nameToSlots[itemName];
-			int totalAmount = 0;
-			//sum up all amounts of itemName in inventory
-			foreach (int slotNum in slotNums)
-			{
-				totalAmount += _slotsToItems[slotNum].count;
-				
-			}
-			return totalAmount;
-		} else {
-			return 0;
+			if (_inventorySlots[i])
+				GD.Print($"{i} {_slotsToItems[i].PrintInventoryItem()} {_slotsToItems[i].PrintAmount()}");
 		}
+	}
+	
+	// ========================= INVENTORY MANIPULATION ========================
+	
+	public void CycleUp() => 
+		_selectedSlot = _selectedSlot > 0 ? _selectedSlot - 1 : _inventorySlots.Length - 1;
+	
+	public void CycleDown() => 
+		_selectedSlot = _selectedSlot < _inventorySlots.Length - 1 ? _selectedSlot + 1 : 0;
 
+	public bool AddItem(Item item, int amount) 
+	{
+		bool added = TryAddToExistingStack(item, amount) || TryAddToNewSlot(item, amount);
+		
+		if (added)
+		{
+			Item[] items = [item];
+			EmitSignal(nameof(ItemAdded), nameof(ItemAdded), items);
+		}
+		
+		return added;
+	}
+	
+	public void ConsumeSelectedItem() 
+	{
+		if (!_inventorySlots[_selectedSlot]) return;
+		DecrementItemInSlot(_selectedSlot);
+	}
+	
+	public void ConsumeItem(string itemName) 
+	{
+		if (!_nameToSlots.ContainsKey(itemName)) return;
+		DecrementItemInSlot(_nameToSlots[itemName][0]);
+	}
+	
+	// ============================= ITEM DROPPING =============================
+	
+	public bool DropItem(string itemName, int amount) 
+	{
+		if (!_nameToSlots.ContainsKey(itemName)) return false;
+		
+		int remainingAmount = amount;
+		List<int> slotNums = _nameToSlots[itemName];
+		
+		for (int i = slotNums.Count - 1; i >= 0; i--) 
+		{
+			int slotNum = slotNums[i];
+			InventoryItem items = _slotsToItems[slotNum];
+			
+			if (items.count >= remainingAmount) 
+			{
+				SpawnMultipleDroppedItems(items.item, remainingAmount);
+				items.count -= remainingAmount;
+				
+				if (items.count > 0)
+				{
+					_slotsToItems[slotNum] = items;
+					return true;
+				}
+				
+				ReleaseItemSlot(itemName, slotNum);
+				return true;
+			} 
+			else 
+			{
+				SpawnMultipleDroppedItems(items.item, items.count);
+				remainingAmount -= items.count;
+				ReleaseItemSlot(itemName, slotNum);
+			}
+		}
+		
+		return true;
+	}
+	
+	public bool DropSelectedItem() 
+	{
+		if (!_inventorySlots[_selectedSlot]) return false;
+		
+		SpawnDroppedItem(_slotsToItems[_selectedSlot].item);
+		DecrementItemInSlot(_selectedSlot);
+		return true;
+	}
+	
+	public bool DropSelectedStack() 
+	{
+		if (!_inventorySlots[_selectedSlot]) return false;
+		
+		var item = _slotsToItems[_selectedSlot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		RemoveItemInSlot(_selectedSlot);
+		return true;
+	}
+	
+	public void DropAllItems() 
+	{
+		for (int i = 0; i < _inventorySlots.Length; i++) 
+		{
+			if (_inventorySlots[i]) RemoveItemInSlot(i);
+		}
+	}
+	
+	// ============================= PRIVATE METHODS ===========================
+	
+	private List<int> ItemInInventory(string itemName) => 
+		_nameToSlots.TryGetValue(itemName, out List<int> slots) ? slots : null;
+
+	private bool TryAddToExistingStack(Item item, int amount) 
+	{
+		var slotNums = ItemInInventory(item.Name);
+		if (slotNums == null) return false;
+
+		foreach (int slot in slotNums) 
+		{
+			var existingItem = _slotsToItems[slot];
+			if (existingItem.count >= existingItem.item.MaxStackSize) continue;
+			
+			existingItem.count += amount;
+			_slotsToItems[slot] = existingItem;
+			return true;
+		}
+		return false;
+	}
+
+	private bool TryAddToNewSlot(Item item, int amount) 
+	{
+		int slot = GetSpace();
+		if (slot == -1) return false;
+
+		if (!_nameToSlots.ContainsKey(item.Name)) 
+			_nameToSlots[item.Name] = [slot];
+		else 
+			_nameToSlots[item.Name].Add(slot);
+		
+		_slotsToItems[slot] = new InventoryItem(item, amount);
+		_inventorySlots[slot] = true;
+		return true;
+	}
+
+	private RigidBody3D SpawnDroppedItem(Item item) 
+	{
+		var droppedItem = (RigidBody3D)item.GenerateItem();
+		var agent = GetParent();
+		var world = agent.GetParent();
+		var head = (Node3D)agent.FindChild("Head");
+		
+		world.AddChild(droppedItem);
+		droppedItem.FindChild("CollectTimer").Call("pick_up_cooldown");
+		
+		Vector3 facingDir = -head.GlobalTransform.Basis.Z;
+		droppedItem.GlobalPosition = head.GlobalPosition;
+		droppedItem.LinearVelocity = facingDir.Normalized() * DropVelocity;
+		
+		return droppedItem;
+	}
+	
+	private void SpawnMultipleDroppedItems(Item item, int count) 
+	{
+		for (int i = 0; i < count; i++) SpawnDroppedItem(item);
+	}
+	
+	private void RemoveItemInSlot(int slot) 
+	{
+		var item = _slotsToItems[slot];
+		SpawnMultipleDroppedItems(item.item, item.count);
+		
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		
+		string itemName = item.item.Name;
+		_nameToSlots[itemName].Remove(slot);
+		
+		if (_nameToSlots[itemName].Count <= 0)
+			_nameToSlots.Remove(itemName);
+	}
+	
+	private void DecrementItemInSlot(int slot) 
+	{
+		var item = _slotsToItems[slot];
+		item.count--;
+		
+		if (item.count > 0) 
+		{
+			_slotsToItems[slot] = item;
+			return;
+		}
+		
+		_inventorySlots[slot] = false;
+		_slotsToItems.Remove(slot);
+		
+		string itemName = item.item.Name;
+		_nameToSlots[itemName].Remove(slot);
+		
+		if (_nameToSlots[itemName].Count <= 0)
+			_nameToSlots.Remove(itemName);
+	}
+
+	private void ReleaseItemSlot(string itemName, int slotNum)
+	{
+		_inventorySlots[slotNum] = false;
+		_slotsToItems.Remove(slotNum);
+		_nameToSlots[itemName].Remove(slotNum);
+		
+		if (_nameToSlots[itemName].Count <= 0)
+			_nameToSlots.Remove(itemName);
 	}
 }

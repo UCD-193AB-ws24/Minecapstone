@@ -11,13 +11,7 @@
 [ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="8_dqqhb"]
 [ext_resource type="Material" uid="uid://coaww57b48oh1" path="res://shaders/water.tres" id="9_ov2xu"]
 [ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="11_mcsb2"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_ov2xu"]
-seed = 8600
-frequency = 0.0084
-domain_warp_amplitude = 0.5
-domain_warp_frequency = 1.0
-domain_warp_fractal_octaves = 10
+[ext_resource type="Script" path="res://world/scenario_world.gd" id="12_mad0u"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ol1lb"]
 geometry_parsed_geometry_type = 1
@@ -42,8 +36,7 @@ orientation = 1
 
 [node name="WorldGenerator" parent="." instance=ExtResource("2_lh600")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
-height_noise = SubResource("FastNoiseLite_ov2xu")
-VIEW_DISTANCE = 10
+VIEW_DISTANCE = 4
 
 [node name="NavigationMesher" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_ol1lb")
@@ -59,7 +52,6 @@ ChunkScene = ExtResource("4_b2ttj")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("8_dqqhb")
 script = ExtResource("7_ffu4t")
-low_graphics_mode = false
 day_duration_seconds = 10000.0
 night_duration_seconds = 1.0
 
@@ -69,7 +61,7 @@ mesh = SubResource("QuadMesh_dqqhb")
 skeleton = NodePath("../..")
 
 [node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-1, 6.29926e-08, -6.06191e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
+transform = Transform3D(-1, 6.29927e-08, -6.0619e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
 light_angular_distance = 2.0
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -79,7 +71,7 @@ shadow_blur = 0.1
 directional_shadow_max_distance = 250.0
 
 [node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 6.29926e-08, 6.06191e-08, 0, 0.693402, -0.720552, -8.74228e-08, 0.720552, 0.693402, -0.0167961, 35, 0.0408497)
+transform = Transform3D(1, 6.29927e-08, 6.06191e-08, 0, 0.693401, -0.720553, -8.74228e-08, 0.720553, 0.693401, -0.0167961, 35, 0.0408497)
 shadow_enabled = true
 shadow_normal_bias = 3.0
 shadow_reverse_cull_face = true
@@ -91,12 +83,17 @@ directional_shadow_max_distance = 250.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 20, 5)
 
 [node name="Agent" parent="." instance=ExtResource("11_mcsb2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 25, -5)
-goal = "Attack the nearest zombie 100 times."
-visual_mode = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.40364, 25, -20.0734)
+goal = "Survive."
+scenario_goal = "Survive."
+detection_range = 100.0
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 30, 0)
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("12_mad0u")
+metadata/_custom_type_script = "uid://ssoph6jwg2ay"
 
 [connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

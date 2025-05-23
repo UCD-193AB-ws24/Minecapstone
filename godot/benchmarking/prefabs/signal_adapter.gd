@@ -6,5 +6,4 @@ signal transit_signal(signal_name:String, args: Array)
 
 func _on_transit(signal_name:String, args: Array) -> void:
 	"""pass c# signal to gdscript"""
-	print("passing item added signal to gdscript")
 	transit_signal.emit(signal_name, args)

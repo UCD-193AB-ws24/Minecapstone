@@ -23,9 +23,6 @@ enum SunPhase { Day, Night, Sunrise, Sunset }
 @export_range(0.0, 1.0) var clouds_cutoff: float = 0.3
 @export_range(0.0, 1.0) var clouds_weight: float = 0.0
 
-# Shader control
-@export var use_elapsed_time_for_shader: bool = false
-
 
 var elapsed_time: float = 0.0
 var previous_elevation: float = 0.0
@@ -124,8 +121,3 @@ func _update_shader_parameters():
 	
 	environment.sky.sky_material.set_shader_parameter("clouds_cutoff", clouds_cutoff)
 	environment.sky.sky_material.set_shader_parameter("clouds_weight", clouds_weight)
-	
-	if use_elapsed_time_for_shader:
-		environment.sky.sky_material.set_shader_parameter("overwritten_time", elapsed_time * 100.0)
-	else:
-		environment.sky.sky_material.set_shader_parameter("overwritten_time", 0.0)

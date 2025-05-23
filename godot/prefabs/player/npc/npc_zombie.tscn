@@ -11,6 +11,8 @@ albedo_color = Color(2.26215e-06, 0.466749, 0.271119, 1)
 
 [node name="NPCZombie" instance=ExtResource("1_h0f8g")]
 script = ExtResource("2_gbegp")
+wander_range = 10.0
+wander_change_time = 10.0
 
 [node name="Body" parent="." index="2"]
 material = SubResource("StandardMaterial3D_pld1n")

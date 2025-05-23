@@ -42,7 +42,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 1, -5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
-prompt_allowance = 0
 attack_damage = 100.0
 _speed = 10.0
 
@@ -58,9 +57,4 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("9_wvicf")
 
-[node name="ScenarioTimer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
-
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/ScenarioTimer" to="ScenarioManager" method="spawn_scene"]

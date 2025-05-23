@@ -22,18 +22,16 @@ func save_results(success_count, failure_count, error_count) -> void:
 
 
 func next_scene() -> void:
-	print("Switching to next scene...")
 	await get_tree().physics_frame
 	if enabled:
 		if scene_list.size() > 0:
 			var current_scene = scene_list.pop_front()
-			_current_scene_name = current_scene.to_string()
+			_current_scene_name = current_scene.resource_path.get_file()
 			print("Switching to scene: %s" % _current_scene_name)
 			if current_scene.can_instantiate():
 				get_tree().change_scene_to_packed(current_scene)
 				await get_tree().scene_changed
-				await get_tree().process_frame
-				var sm = get_tree().current_scene.get_node("ScenarioManager")
+				#var sm = get_tree().current_scene.get_node("ScenarioManager")
 				await get_tree().physics_frame
 		else:
 			enabled = false
@@ -48,6 +46,6 @@ func next_scene() -> void:
 						result.error_count
 					])
 					
-			# TODO probably out the results to a file? just quitting for now otherwise it repeats the last scene repeatedly
+			# TODO: probably out the results to a file? just quitting for now otherwise it repeats the last scene repeatedly
 			get_tree().current_scene.queue_free()
 			get_tree().quit()

@@ -49,6 +49,8 @@ _speed = 8.0
 
 [node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
+wander_range = 10.0
+wander_change_time = 10.0
 move_disabled = true
 _speed = 2.0
 
