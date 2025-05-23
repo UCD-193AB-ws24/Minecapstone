@@ -5,11 +5,6 @@ import google.generativeai as genai
 from typing import Optional
 from llm_service import LLMService
 
-
-
-
-
-
 class GeminiServiceAdapter(LLMService):
     """Adapter for Google's Gemini API with vision support"""
     
@@ -20,18 +15,29 @@ class GeminiServiceAdapter(LLMService):
         print(f"Configuring Gemini with API key")
         genai.configure(api_key=self.api_key)
         
+        # Load specific model settings if available
+        self.config = settings or {}
+        
+        # Support for model-specific configurations
+        if "model_configs" in self.config and self.model_name in self.config["model_configs"]:
+            model_config = self.config["model_configs"][self.model_name]
+            # Update settings with model-specific ones
+            for key, value in model_config.items():
+                if key not in self.config:
+                    self.config[key] = value
+        
         # Configure generation settings for code generation (low temperature for predictability)
         self.code_generation_config = genai.GenerationConfig(
-            temperature=self.settings.get("code_temperature", 0.2),
-            top_p=self.settings.get("code_top_p", 0.9),
-            top_k=self.settings.get("code_top_k", 20)
+            temperature=self.config.get("code_temperature", 0.2),
+            top_p=self.config.get("code_top_p", 0.9),
+            top_k=self.config.get("code_top_k", 20)
         )
             
         # Configure generation settings for goal generation (higher temperature for creativity)
         self.goal_generation_config = genai.GenerationConfig(
-            temperature=self.settings.get("goal_temperature", 0.8),
-            top_p=self.settings.get("goal_top_p", 0.95),
-            top_k=self.settings.get("goal_top_k", 50)
+            temperature=self.config.get("goal_temperature", 0.8),
+            top_p=self.config.get("goal_top_p", 0.95),
+            top_k=self.config.get("goal_top_k", 50)
         )
         
         print(f"Initialized Gemini service with model: {self.model}")
@@ -39,8 +45,10 @@ class GeminiServiceAdapter(LLMService):
     @property
     def supports_vision(self) -> bool:
         """Return whether this model supports vision"""
-        # Gemini 1.5/2.0 models support vision
-        return "gemini" in self.model and any(version in self.model for version in ["1.5", "2.0"])
+        if "supports_vision" in self.config:
+            return self.config["supports_vision"]
+        # Default check for known models
+        return "gemini" in self.model_name and any(version in self.model_name for version in ["1.5", "2.0"])
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using Gemini with optional image data"""
@@ -142,7 +150,6 @@ class GeminiServiceAdapter(LLMService):
             # Process the code lines (existing code continues here)
             code_lines = [line.replace("    ", "\t").replace("deg2rad", "deg_to_rad") for line in code_lines]
             formatted_code = "\n\t" + "\n\t".join(code_lines)
-            # print(f"Gemini generated script (length: {len(formatted_code)} chars)")
             return formatted_code
                 
         except Exception as e:

@@ -1,7 +1,6 @@
 import json
 from llm_service import LLMService
 
-
 class LLMServiceFactory:
     """Factory for creating model instances"""
     
@@ -31,5 +30,28 @@ class LLMServiceFactory:
         elif service_type == "gemini":
             from gemini_service_adapter import GeminiServiceAdapter
             return GeminiServiceAdapter(model=model, settings=settings)
+        elif service_type == "local_llm":
+            from local_llm_service_adapter import LocalLLMServiceAdapter
+            return LocalLLMServiceAdapter(model=model, settings=settings)
+        else:
+            raise ValueError(f"Unknown service type: {service_type}")
+    
+    @staticmethod
+    def create_from_config(config_data) -> LLMService:
+        """Create an LLM service directly from a config dictionary"""
+        service_type = config_data.get("service", "openai").lower()
+        model = config_data.get("model", "")
+        settings = config_data.get("settings", {})
+        
+        # Create the appropriate service
+        if service_type == "openai":
+            from openai_service_adapter import OpenAIServiceAdapter
+            return OpenAIServiceAdapter(model=model, settings=settings)
+        elif service_type == "gemini":
+            from gemini_service_adapter import GeminiServiceAdapter
+            return GeminiServiceAdapter(model=model, settings=settings)
+        elif service_type == "local_llm":
+            from local_llm_service_adapter import LocalLLMServiceAdapter
+            return LocalLLMServiceAdapter(model=model, settings=settings)
         else:
             raise ValueError(f"Unknown service type: {service_type}")
