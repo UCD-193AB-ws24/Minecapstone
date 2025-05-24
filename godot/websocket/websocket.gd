@@ -31,6 +31,10 @@ func _ready():
 	else:
 		# Wait for the socket to connect.
 		await get_tree().create_timer(2).timeout
+
+		socket.set_inbound_buffer_size(1024 * 1024) # 1MB
+		socket.set_outbound_buffer_size(1024 * 1024) # 1MB
+
 		print("Websocket peer connected to port 5000")
 		connected.emit()
 
@@ -60,6 +64,7 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 			"type": type,
 			"prompt": prompt
 		})
+	# print("Sending payload of length %d" % payload.length())
 	socket.send_text(payload)
 
 	# Wait for a non-empty response.
