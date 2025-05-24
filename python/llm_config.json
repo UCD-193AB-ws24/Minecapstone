@@ -1,26 +1,27 @@
 {
-	"service": "openai",
-	"model": "gpt-4o",
+	"service": "local_llm",
+	"model": "deepseek-r1:latest",
 	"settings": {
-		"temperature": 0.7,
-		"top_p": 0.95,
-		"top_k": 40,
-		"code_temperature": 0.2,
-		"goal_temperature": 0.8
+	  "config_path": "local_llm_config.json"
 	},
 	"available_services": {
-		"openai": {
-			"models": [
-				{ "name": "gpt-4o", "supports_vision": true },
-				{ "name": "gpt-4o-mini", "supports_vision": true },
-				{ "name": "gpt-4.1", "supports_vision": true }
-			]
-		},
-		"gemini": {
-			"models": [
-				{ "name": "gemini-1.5-pro", "supports_vision": true },
-				{ "name": "gemini-2.0-flash", "supports_vision": true }
-			]
-		}
+	  "openai": {
+		"models": [
+		  { "name": "gpt-4o", "supports_vision": true },
+		  { "name": "gpt-4o-mini", "supports_vision": true }
+		]
+	  },
+	  "gemini": {
+		"models": [
+		  { "name": "gemini-1.5-pro", "supports_vision": true },
+		  { "name": "gemini-2.0-flash", "supports_vision": true }
+		]
+	  },
+	  "local_llm": {
+		"models": [
+		  { "name": "deepseek-r1", "config_path": "local_llm_configs/deepseek_config.json" },
+		  { "name": "gemma3", "config_path": "local_llm_configs/gemma_config.json" }
+		]
+	  }
 	}
-}
+  }

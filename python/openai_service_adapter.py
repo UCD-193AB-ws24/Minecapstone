@@ -19,13 +19,26 @@ class OpenAIServiceAdapter(LLMService):
         # Initialize client with explicit API key
         self.client = OpenAI(api_key=self.api_key)
         
+        # Load specific model settings if available
+        self.config = settings or {}
+        
+        # Support for model-specific configurations
+        if "model_configs" in self.config and self.model in self.config["model_configs"]:
+            model_config = self.config["model_configs"][self.model]
+            # Update settings with model-specific ones
+            for key, value in model_config.items():
+                if key not in self.config:
+                    self.config[key] = value
+        
         print(f"Initialized OpenAI service with model: {self.model}")
 
     @property
     def supports_vision(self) -> bool:
-        """OpenAI gpt-4o and gpt-4o-mini supports vision"""
+        """Check if the model supports vision capabilities"""
+        if "supports_vision" in self.config:
+            return self.config["supports_vision"]
+        # Default check for known models
         return self.model in ["gpt-4o", "gpt-4o-mini", "gpt-4-vision", "gpt-4.1"]
-    
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using OpenAI with optional image data"""
@@ -50,12 +63,15 @@ class OpenAIServiceAdapter(LLMService):
                 {"role": "user", "content": prompt + "\n" + self.user_preprompt},
             ]
         
+        # Get temperature from settings
+        temperature = self.config.get("code_temperature", self.config.get("temperature", 0.7))
+        
         # Call the API
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
             response_format=LinesOfCodeWithinFunction,
-            temperature=self.settings.get("temperature", 0.7),
+            temperature=temperature,
         )
         
         response = json.loads(completion.choices[0].message.content)
@@ -66,7 +82,6 @@ class OpenAIServiceAdapter(LLMService):
      
         # Add a newline and tab to the beginning of each line
         formatted_code = "\n\t" + "\n\t".join(code_lines)
-        # print(f"OpenAI generated script (length: {len(formatted_code)} chars)")
         return formatted_code
     
     async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
@@ -92,12 +107,15 @@ class OpenAIServiceAdapter(LLMService):
                 {"role": "user", "content": context},
             ]
         
+        # Get temperature from settings
+        temperature = self.config.get("goal_temperature", self.config.get("temperature", 0.7))
+        
         # Call the API
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=messages,
             response_format=Goal,
-            temperature=self.settings.get("temperature", 0.7),
+            temperature=temperature,
         )
         
         response = json.loads(completion.choices[0].message.content)
