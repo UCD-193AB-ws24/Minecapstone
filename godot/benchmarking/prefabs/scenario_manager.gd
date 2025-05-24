@@ -19,7 +19,10 @@ func _ready() -> void:
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
-	timeout_timer.timeout.connect(track_timeout)
+	timeout_timer.timeout.connect(track_failure)
+
+	#TODO: connect agent out_of_prompts to track_failure
+
 	add_child(timeout_timer)
 	reset_timer()
 
@@ -43,19 +46,6 @@ func track_error():
 	error_count += 1
 	current_iteration += 1
 	await next_iteration()
-
-
-func track_timeout():
-	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
-	print("timeout reached")
-	await track_failure()
-
-
-# TODO: connect out_of_prompts signal of the agents to this function
-# func _out_of_prompts():
-# 	"""Function is to be triggered by the out_of_prompts signal of an agent.
-# 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
-# 	await track_failure()
 
 
 func reset():
