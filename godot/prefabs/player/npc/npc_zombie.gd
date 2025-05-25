@@ -11,6 +11,8 @@ enum ZombieState { WANDERING, CHASING, ATTACKING }
 var current_state: ZombieState = ZombieState.WANDERING
 var last_known_position: Vector3
 
+var drop_list:Array = ["RottenMeat"]
+
 
 func _init() -> void:
 	set_meta("npc_zombie", true)
@@ -19,6 +21,7 @@ func _init() -> void:
 func _ready():
 	super()
 	detected_entities_added.connect(_check_added_entity)
+	inventory_manager.AddItem(ItemDictionary.Get("Meat"), 1)
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	#inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 

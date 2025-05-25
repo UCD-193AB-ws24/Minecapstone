@@ -1,0 +1,140 @@
+[gd_scene load_steps=18 format=3 uid="uid://ciel13413rvlw"]
+
+[ext_resource type="PackedScene" uid="uid://bp2lv8kmupisq" path="res://world/ui.tscn" id="1_u0tmg"]
+[ext_resource type="PackedScene" uid="uid://cusvipgi8kqav" path="res://worldgen/world_generator.tscn" id="2_hgpyl"]
+[ext_resource type="Script" uid="uid://cj3o4vswsgmu2" path="res://worldgen/NavigationMesher.cs" id="2_ufr76"]
+[ext_resource type="PackedScene" uid="uid://je1pgwfoft3o" path="res://prefabs/player/agent.tscn" id="3_hl4od"]
+[ext_resource type="Script" uid="uid://beu7pn6pd3ojp" path="res://worldgen/BlockManager.cs" id="4_seorl"]
+[ext_resource type="PackedScene" uid="uid://0ypfn26rapdv" path="res://prefabs/player/player.tscn" id="4_uo207"]
+[ext_resource type="Script" uid="uid://byacnk46bfgm" path="res://worldgen/ChunkManager.cs" id="5_4rsyj"]
+[ext_resource type="PackedScene" uid="uid://bmodi1po6l8s2" path="res://worldgen/chunk.tscn" id="6_ay641"]
+[ext_resource type="Environment" uid="uid://dduchnkkscoka" path="res://world/sky/sky.tres" id="7_q2uts"]
+[ext_resource type="Script" uid="uid://bl4t81qusnvfa" path="res://world/sky/environment.gd" id="8_sliqn"]
+[ext_resource type="Material" uid="uid://coaww57b48oh1" path="res://shaders/water.tres" id="9_hab6h"]
+[ext_resource type="Script" uid="uid://r3sime1jcwi7" path="res://benchmarking/scenarios/scenario_resource_competition.gd" id="12_hgpyl"]
+[ext_resource type="PackedScene" uid="uid://c2lhqm3m0y0kw" path="res://prefabs/player/npc/npc_animal.tscn" id="13_4rsyj"]
+[ext_resource type="PackedScene" uid="uid://r2bjifgkjyun" path="res://prefabs/player/npc/npc_zombie.tscn" id="14_ay641"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hgpyl"]
+seed = 8600
+frequency = 0.0084
+domain_warp_amplitude = 0.5
+domain_warp_frequency = 1.0
+domain_warp_fractal_octaves = 10
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_heuk2"]
+geometry_parsed_geometry_type = 1
+cell_size = 0.16
+cell_height = 0.5
+agent_radius = 0.32
+agent_max_climb = 1.0
+agent_max_slope = 90.0
+edge_max_length = 10.0
+edge_max_error = 1.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_fk2ei"]
+material = ExtResource("9_hab6h")
+size = Vector2(2500, 2500)
+subdivide_width = 400
+subdivide_depth = 400
+orientation = 1
+
+[node name="World" type="Node3D"]
+
+[node name="UI" parent="." instance=ExtResource("1_u0tmg")]
+
+[node name="WorldGenerator" parent="." instance=ExtResource("2_hgpyl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.22598, 0)
+height_noise = SubResource("FastNoiseLite_hgpyl")
+VIEW_DISTANCE = 10
+
+[node name="NavigationMesher" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_heuk2")
+script = ExtResource("2_ufr76")
+
+[node name="BlockManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("4_seorl")
+
+[node name="ChunkManager" type="Node" parent="NavigationMesher"]
+script = ExtResource("5_4rsyj")
+ChunkScene = ExtResource("6_ay641")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("7_q2uts")
+script = ExtResource("8_sliqn")
+low_graphics_mode = false
+day_duration_seconds = 10000.0
+night_duration_seconds = 1.0
+
+[node name="Water" type="MeshInstance3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.94032, 14.035, -2.00584)
+mesh = SubResource("QuadMesh_fk2ei")
+skeleton = NodePath("../..")
+
+[node name="Sun" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(-1, 6.29927e-08, -6.0619e-08, 0, 0.693401, 0.720552, 8.74228e-08, 0.720552, -0.693401, 0.000641704, 35, -0.00138545)
+light_angular_distance = 2.0
+shadow_enabled = true
+shadow_normal_bias = 3.0
+shadow_reverse_cull_face = true
+shadow_opacity = 0.8
+shadow_blur = 0.1
+directional_shadow_max_distance = 250.0
+
+[node name="Moon" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(1, 6.29927e-08, 6.06191e-08, 0, 0.693401, -0.720553, -8.74228e-08, 0.720553, 0.693401, -0.0167961, 35, 0.0408497)
+shadow_enabled = true
+shadow_normal_bias = 3.0
+shadow_reverse_cull_face = true
+shadow_opacity = 0.3
+shadow_blur = 0.1
+directional_shadow_max_distance = 250.0
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.239523, 23.8613, -1.56535)
+
+[node name="Player" parent="." instance=ExtResource("4_uo207")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 0)
+
+[node name="Animal" parent="." instance=ExtResource("13_4rsyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8076, 20.966, 11.2135)
+
+[node name="Animal2" parent="." instance=ExtResource("13_4rsyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.0149, 20.3221, -21.212)
+
+[node name="Animal3" parent="." instance=ExtResource("13_4rsyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.0252, 21.016, -49.0909)
+
+[node name="Animal4" parent="." instance=ExtResource("13_4rsyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 20, 0)
+
+[node name="Animal5" parent="." instance=ExtResource("13_4rsyj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.827, 24.2983, 34.6537)
+
+[node name="Agent" parent="." instance=ExtResource("3_hl4od")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 15, 20, -15)
+goal = "Adhere to the Scenario Goal."
+scenario_goal = "Compete with the other agent to gather resources. Wood is worth 10 points, Rotten Meat is worth 10 points, and Meat is worth 5 points. Whoever gets to 100 points first wins."
+infinite_decisions = true
+prompt_allowance = -1
+self_fix_mode = true
+detection_range = 100.0
+
+[node name="Agent2" parent="." instance=ExtResource("3_hl4od")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0043, 19.9928, 14.9994)
+goal = "Adhere to the Scenario Goal."
+scenario_goal = "Compete with the other agent to gather resources. Wood is worth 10 points, Rotten Meat is worth 10 points, and Meat is worth 5 points. Whoever gets to 100 points first wins."
+infinite_decisions = true
+prompt_allowance = -1
+self_fix_mode = true
+detection_range = 100.0
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("12_hgpyl")
+animal_spawnable_scene = ExtResource("13_4rsyj")
+zombie_spawnable_scene = ExtResource("14_ay641")
+scenario_duration_seconds = 600.0
+
+[connection signal="world_generated" from="WorldGenerator" to="NavigationMesher/ChunkManager" method="OnWorldGenerated"]
+[connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
+[connection signal="WorldLoaded" from="NavigationMesher/ChunkManager" to="NavigationMesher" method="GenerateNavmesh"]
