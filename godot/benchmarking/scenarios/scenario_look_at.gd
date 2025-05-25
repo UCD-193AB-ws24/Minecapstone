@@ -24,8 +24,8 @@ func reset():
 
 # currently broken, still trying to figure out how to get raycast after a reset
 func _physics_process(_delta):
-	if raycast == null:
-		_find_agent()
+	# if raycast == null:
+	# 	_find_agent()
 	
 	if raycast and raycast.is_colliding():
 		var collider = raycast.get_collider()
