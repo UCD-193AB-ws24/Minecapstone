@@ -9,33 +9,22 @@ import os
 class GeminiServiceAdapter(LLMService):
     """Adapter for Google's Gemini API with vision support"""
     
-    def __init__(self, model="gemini-2.0-flash", settings=None):
-        super().__init__(model=model, settings=settings)
+    def __init__(self, model="gemini-2.0-flash", config_path: Optional[str] = None):
+        super().__init__(model, config_path)
         
         # Initialize the Gemini client with explicit API key
         print(f"Configuring Gemini with API key")
         os.environ["GEMINI_API_KEY"] = self.api_key
         genai.configure(api_key=self.api_key)
         
-        # Load specific model settings if available
-        self.config = settings or {}
-        
-        # Support for model-specific configurations
-        if "model_configs" in self.config and self.model in self.config["model_configs"]:
-            model_config = self.config["model_configs"][self.model]
-            # Update settings with model-specific ones
-            for key, value in model_config.items():
-                if key not in self.config:
-                    self.config[key] = value
-        
-        # Configure generation settings for code generation (low temperature for predictability)
+        # Configure generation configuration for code generation (low temperature for predictability)
         self.code_generation_config = genai.GenerationConfig(
             temperature=self.config.get("code_temperature", 0.2),
             top_p=self.config.get("code_top_p", 0.9),
             top_k=self.config.get("code_top_k", 20)
         )
             
-        # Configure generation settings for goal generation (higher temperature for creativity)
+        # Configure generation configuration for goal generation (higher temperature for creativity)
         self.goal_generation_config = genai.GenerationConfig(
             temperature=self.config.get("goal_temperature", 0.8),
             top_p=self.config.get("goal_top_p", 0.95),
@@ -47,9 +36,7 @@ class GeminiServiceAdapter(LLMService):
     @property
     def supports_vision(self) -> bool:
         """Return whether this model supports vision"""
-        if "supports_vision" in self.config:
-            return self.config["supports_vision"]
-        # Default check for known models
+        # TODO: use the actual config values rather than hardcoding
         return "gemini" in self.model and any(version in self.model for version in ["1.5", "2.0"])
         
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:

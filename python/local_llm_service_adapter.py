@@ -8,32 +8,13 @@ import os
 class LocalLLMServiceAdapter(LLMService):
     """Adapter for any locally run LLM"""
 
-    def __init__(self, model="default", settings = None):
-        super().__init__(model=model, settings=settings)
-    
-        # Load local config if specified
-        self.config = settings or {}
-        local_config = {}
-        
-        local_config_path = self.config.get("config_path", "./local_llm_config.json")
-        
-        if local_config_path.startswith("python/"):
-            local_config_path = local_config_path[7:]
-        
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        resolved_path = os.path.join(script_dir, local_config_path)
-        
-        try:
-            with open(resolved_path, 'r') as f:
-                local_config = json.load(f)
-                print(f"Loaded local LLM configuration from {resolved_path}")
-        except FileNotFoundError:
-            print(f"No local LLM config found at {resolved_path}, using defaults")
+    def __init__(self, model="default", config_path: Optional[str] = None):
+        super().__init__(model, config_path)
 
-        self.config = {**local_config, **settings}
-        
+        # TODO: fix this
+    
         # Get basic configuration
-        self.api_endpoint = self.config.get("api_endpoint", "http://localhost:8000/api/generate")
+        self.api_endpoint = self.config.get("api_endpoint", "http://localhost:11434/api/generate")
         self.model_name = model or self.config.get("model", "")
         self.timeout = self.config.get("timeout", 30)  # seconds
         
@@ -44,7 +25,7 @@ class LocalLLMServiceAdapter(LLMService):
     @property
     def supports_vision(self) -> bool:
         """Check if model supports vision"""
-        return self.settings.get("support_vision", False)
+        return self.config.get("support_vision", False)
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using local LLM with optional image data"""

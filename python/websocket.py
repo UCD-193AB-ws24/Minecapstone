@@ -53,9 +53,8 @@ class WebSocketServer:
         self.llm_service = LLMServiceFactory.get_service(self.config_path)
         
         # Log vision support
-        vision_status = "supports" if self.llm_service.supports_vision else "does not support"
-        print(f"LLM service {vision_status} vision/images")
-        
+        print(f"LLM service {'supports' if self.llm_service.supports_vision else 'does not support'} vision/images")
+
         # Start the WebSocket server
         server = await websockets.serve(
             self.handle_client, 
@@ -80,7 +79,7 @@ class WebSocketServer:
 async def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="LLM WebSocket Server")
-    parser.add_argument("--config", default="./llm_config.json", help="Path to the configuration file")
+    parser.add_argument("--config", default="./python/llm_config.json", help="Path to the configuration file")
     parser.add_argument("--host", default="localhost", help="Host to bind the server to")
     parser.add_argument("--port", type=int, default=5000, help="Port to bind the server to")
     args = parser.parse_args()

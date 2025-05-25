@@ -1,7 +1,7 @@
 {
   "api_endpoint": "http://localhost:11434/api/generate",
-  "model": "gemma3:latest",
-  "supports_vision": false,
+  "model": "gemma3:12b",
+  "supports_vision": true,
   "request_format": {
     "model": "{model}",
     "prompt": "{prompt}",

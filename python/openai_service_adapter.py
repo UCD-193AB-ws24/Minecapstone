@@ -13,30 +13,18 @@ class Goal(BaseModel):
 class OpenAIServiceAdapter(LLMService):
     """Adapter for OpenAI service with vision support"""
     
-    def __init__(self, model="gpt-4o", settings=None):
-        super().__init__(model=model, settings=settings)
+    def __init__(self, model="gpt-4o", config_path: Optional[str] = None):
+        super().__init__(model, config_path)
 
         # Initialize client with explicit API key
         self.client = OpenAI(api_key=self.api_key)
-        
-        # Load specific model settings if available
-        self.config = settings or {}
-        
-        # Support for model-specific configurations
-        if "model_configs" in self.config and self.model in self.config["model_configs"]:
-            model_config = self.config["model_configs"][self.model]
-            # Update settings with model-specific ones
-            for key, value in model_config.items():
-                if key not in self.config:
-                    self.config[key] = value
         
         print(f"Initialized OpenAI service with model: {self.model}")
 
     @property
     def supports_vision(self) -> bool:
         """Check if the model supports vision capabilities"""
-        if "supports_vision" in self.config:
-            return self.config["supports_vision"]
+        # TODO: use the actual config values rather than hardcoding
         # Default check for known models
         return self.model in ["gpt-4o", "gpt-4o-mini", "gpt-4-vision", "gpt-4.1"]
     
@@ -63,7 +51,7 @@ class OpenAIServiceAdapter(LLMService):
                 {"role": "user", "content": prompt + "\n" + self.user_preprompt},
             ]
         
-        # Get temperature from settings
+        # Get temperature from config
         temperature = self.config.get("code_temperature", self.config.get("temperature", 0.7))
         
         # Call the API
@@ -107,7 +95,7 @@ class OpenAIServiceAdapter(LLMService):
                 {"role": "user", "content": context},
             ]
         
-        # Get temperature from settings
+        # Get temperature from config
         temperature = self.config.get("goal_temperature", self.config.get("temperature", 0.7))
         
         # Call the API
