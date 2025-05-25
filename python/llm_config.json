@@ -1,6 +1,6 @@
 {
-	"service": "openai",
-	"model": "gpt-4o-mini",
+	"service": "local",
+	"model": "gemma3",
 
 	"available_services": {
 		"openai": {
@@ -15,7 +15,7 @@
 				{ "name": "gemini-2.0-flash", "supports_vision": true }
 			]
 		},
-		"local_llm": {
+		"local": {
 			"models": [
 				{
 					"name": "deepseek-r1",
