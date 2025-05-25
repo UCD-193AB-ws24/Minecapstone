@@ -19,7 +19,10 @@ func _ready() -> void:
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
-	timeout_timer.timeout.connect(track_timeout)
+	timeout_timer.timeout.connect(track_failure)
+
+	#TODO: connect agent out_of_prompts to track_failure
+
 	add_child(timeout_timer)
 	reset_timer()
 
@@ -45,19 +48,6 @@ func track_error():
 	await next_iteration()
 
 
-func track_timeout():
-	""" Simply calls track_failure() by default, meant to be easily overridden if needed in actual scenarios. """
-	print("timeout reached")
-	await track_failure()
-
-
-# TODO: connect out_of_prompts signal of the agents to this function
-# func _out_of_prompts():
-# 	"""Function is to be triggered by the out_of_prompts signal of an agent.
-# 	Function check if agent is out of prompts and if so, log failure and reset the scenario"""
-# 	await track_failure()
-
-
 func reset():
 	#Clear data from global classes
 	MessageBroker.clear_agents()
@@ -71,7 +61,7 @@ func reset():
 func reset_timer():
 	"""Function is to be triggered by the reset_timer signal of the scenario box adapter.
 	Function resets the timer."""
-	print("starting timer at", scenario_duration_seconds)
+	print("This scenario has a timeout of ", scenario_duration_seconds)
 	timeout_timer.start(scenario_duration_seconds)
 
 
