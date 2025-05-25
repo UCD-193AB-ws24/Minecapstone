@@ -8,8 +8,11 @@ import os
 class LocalLLMServiceAdapter(LLMService):
     """Adapter for any locally run LLM"""
 
-    def __init__(self, model="default", config_path: Optional[str] = None):
-        super().__init__(model, config_path)
+    def __init__(self, model="example", config_path: Optional[str] = None):
+        super().__init__("local", model, config_path)
+
+        config = self.config
+
 
         # TODO: fix this
     

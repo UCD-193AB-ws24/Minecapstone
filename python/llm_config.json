@@ -1,6 +1,6 @@
 {
-	"service": "local",
-	"model": "gemma3:12b",
+	"service": "openai",
+	"model": "gpt-4o-mini",
 
 	"available_services": {
 		"openai": {
@@ -25,7 +25,7 @@
 					"name": "gemma3",
 					"config_path": "local_llm_configs/gemma_config.json"
 				},
-								{
+				{
 					"name": "gemma3:12b",
 					"config_path": "local_llm_configs/local_llm_config.json"
 				},

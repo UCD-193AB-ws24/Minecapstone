@@ -8,7 +8,7 @@
             "name": "Python Debugger: Run Websocket",
             "type": "debugpy",
             "request": "launch",
-            "program": "websocket.py",
+            "program": "python\\websocket.py",
             "console": "integratedTerminal"
         }
     ]

@@ -13,8 +13,8 @@ class Goal(BaseModel):
 class OpenAIServiceAdapter(LLMService):
     """Adapter for OpenAI service with vision support"""
     
-    def __init__(self, model="gpt-4o", config_path: Optional[str] = None):
-        super().__init__(model, config_path)
+    def __init__(self, model="gpt-4o-mini", config_path: Optional[str] = None):
+        super().__init__("openai", model, config_path)
 
         # Initialize client with explicit API key
         self.client = OpenAI(api_key=self.api_key)

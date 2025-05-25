@@ -20,18 +20,18 @@ class LLMServiceFactory:
             print(f"Config file {config_path} not found. Using default OpenAI configuration.")
             config = {
                 "service": "openai",
-                "model": "gpt-4o"
+                "model": "gpt-4o-mini"
             }
         
-        service_type = config.get("service", "openai").lower()
-        model = config.get("model", "")
+        service = config['service'].lower()
+        model = config['model']
         
         # Create the appropriate service
-        if service_type == "openai":
+        if service == "openai":
             return OpenAIServiceAdapter(model, config_path)
-        elif service_type == "gemini":
+        elif service == "gemini":
             return GeminiServiceAdapter(model, config_path)
-        elif service_type == "local":
+        elif service == "local":
             return LocalLLMServiceAdapter(model, config_path)
         else:
-            raise ValueError(f"Unknown service type: {service_type}")
+            raise ValueError(f"Unknown service type: {service}")

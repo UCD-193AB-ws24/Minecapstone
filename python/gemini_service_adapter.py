@@ -10,7 +10,7 @@ class GeminiServiceAdapter(LLMService):
     """Adapter for Google's Gemini API with vision support"""
     
     def __init__(self, model="gemini-2.0-flash", config_path: Optional[str] = None):
-        super().__init__(model, config_path)
+        super().__init__("gemini", model, config_path)
         
         # Initialize the Gemini client with explicit API key
         print(f"Configuring Gemini with API key")

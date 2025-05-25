@@ -66,7 +66,6 @@ class WebSocketServer:
         )
         
         print(f"WebSocket server started on {self.host}:{self.port}")
-        print(f"Using LLM service from config: {self.config_path}")
         
         # Keep the server running
         await server.wait_closed()

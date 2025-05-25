@@ -9,9 +9,10 @@ from prompts import SYSTEM_PROMPT, USER_PREPROMPT
 class LLMService(ABC):
     """Abstract base class for models to be used in the LLM service"""
 
-    def __init__(self, model, config_path: Optional[str] = ''):
+    def __init__(self, service, model, config_path: Optional[str] = ''):
         global SYSTEM_PROMPT, USER_PREPROMPT
         """Initialize the OpenAI service adapter"""
+        self.service = service
         self.model = model
 
         # Get API key from environment
@@ -54,9 +55,19 @@ class LLMService(ABC):
 
     def load_config(self, config_path: str) -> dict:
         with open(config_path, 'r') as f:
-            config = json.load(f)
+            llm_config = json.load(f)
+
+        services = llm_config.get("available_services", None)
+
+        specific_config = {}
+        if services:
+            models = services[self.service]['models']
+
+            # Find the configuration for the specified model
+            specific_config = next((model for model in models if model['name'] == self.model), None)
+
         print(f"Configuration loaded from {config_path}")
-        return config
+        return specific_config
 
     def load_api_keys(self) -> dict:
         """
