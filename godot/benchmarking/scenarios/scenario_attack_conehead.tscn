@@ -73,6 +73,7 @@ transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("7_g0e3n")
+scenario_type = 2
 scenario_duration_seconds = 30.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

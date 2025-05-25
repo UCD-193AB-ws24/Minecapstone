@@ -41,17 +41,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 1, -5)
 goal = "Say \"Hello, I am excited to play Minecapstone\""
 scenario_goal = ""
-prompt_allowance = 1
 
 [node name="Player" parent="." instance=ExtResource("5_w14ly")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 0)
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("6_tj8vs")
-
-[node name="Timer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
+scenario_type = 1
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

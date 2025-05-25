@@ -54,5 +54,6 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("10_lhsek")
+scenario_type = 1
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]

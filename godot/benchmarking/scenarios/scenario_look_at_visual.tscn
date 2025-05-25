@@ -7,3 +7,6 @@
 [node name="Agent" parent="." index="5"]
 goal = "Without moving, look at the entity on the left."
 visual_mode = true
+
+[node name="ScenarioManager" parent="." index="8"]
+scenario_type = 2

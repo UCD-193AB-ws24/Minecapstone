@@ -43,14 +43,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.18661, 23.8613, -0.866516)
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1, 10)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
-prompt_allowance = 1
 attack_damage = 100.0
 _speed = 8.0
 
 [node name="Zombie" parent="." instance=ExtResource("10_eg4dg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
-wander_range = 10.0
-wander_change_time = 10.0
 move_disabled = true
 _speed = 2.0
 
@@ -64,10 +61,6 @@ transform = Transform3D(0.0376204, 0, 0.999292, 0, 1, 0, -0.999292, 0, 0.0376204
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("7_mtvs4")
-
-[node name="Timer" type="Timer" parent="ScenarioManager"]
-wait_time = 15.0
-autostart = true
+scenario_type = 1
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/Timer" to="ScenarioManager" method="spawn_scene"]

@@ -10,6 +10,14 @@ var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 2
 
+enum ScenarioType {
+	NONE,
+	ENVIRONMENTAL_INTERACTION,
+	VISUAL_UNDERSTANDING,
+	SEQUENTIAL_REASONING,
+}
+@export var scenario_type: ScenarioType = ScenarioType.NONE
+
 
 var timeout_timer:Timer
 @export var scenario_duration_seconds: float = 10.0

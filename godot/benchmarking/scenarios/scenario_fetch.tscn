@@ -75,10 +75,7 @@ attack_disabled = true
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_wmjf1")
+scenario_type = 3
 scenario_duration_seconds = 30
 
-[node name="ScenarioTimer" type="Timer" parent="ScenarioManager"]
-autostart = true
-
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/ScenarioTimer" to="ScenarioManager" method="spawn_scene"]
