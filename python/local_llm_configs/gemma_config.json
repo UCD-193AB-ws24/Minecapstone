@@ -11,5 +11,6 @@
 			"max_tokens": 1024
 		}
 	},
-	"response_field": "response"
+	"response_field": "response",
+	"image_field": "images"
 }

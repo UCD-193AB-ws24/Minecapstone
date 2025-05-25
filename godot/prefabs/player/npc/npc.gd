@@ -389,7 +389,8 @@ func  _get_all_detected_entities():
 			if entity_inventory != null:
 				inventory_data = entity_inventory.GetInventoryData()
 			# print(entity.name + "'s inventory: ", inventory_data)	
-			context += """- %s
+			context += """
+	- %s
 		- Health: %s
 		- Distance To: %s units
 		- Coordinates: (%s, %s)

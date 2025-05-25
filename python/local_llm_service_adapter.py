@@ -113,8 +113,8 @@ class LocalLLMServiceAdapter(LLMService):
         
         # Add image if supported
         if image_data and self.supports_vision:
-            image_field = self.config.get("image_field", "image")
-            payload[image_field] = image_data
+            image_field = self.config.get("image_field", "images")
+            payload[image_field] = [image_data]
         
         # Apply type-specific settings
         if request_type == "code" and "code_settings" in self.config:
@@ -128,6 +128,8 @@ class LocalLLMServiceAdapter(LLMService):
         headers = {"Content-Type": "application/json"}
         if "headers" in self.config:
             headers.update(self.config["headers"])
+
+        print(payload)
         
         response = requests.post(
             self.api_endpoint,
