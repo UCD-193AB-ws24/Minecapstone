@@ -25,6 +25,10 @@
 					"name": "gemma3",
 					"config_path": "local_llm_configs/gemma_config.json"
 				},
+								{
+					"name": "gemma3:12b",
+					"config_path": "local_llm_configs/local_llm_config.json"
+				},
 				{
 					"name": "example",
 					"config_path": "local_llm_configs/local_llm_config.json"
