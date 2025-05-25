@@ -11,9 +11,6 @@ class LocalLLMServiceAdapter(LLMService):
     def __init__(self, model="example", config_path: Optional[str] = None):
         super().__init__("local", model, config_path)
 
-        config = self.config
-
-
         # TODO: fix this
     
         # Get basic configuration
@@ -25,10 +22,21 @@ class LocalLLMServiceAdapter(LLMService):
         if self.model_name:
             print(f"Using model: {self.model_name}")
 
+    def load_config(self, config_path: str) -> dict:
+        config_path = super().load_config(config_path)["config_path"]
+        config_path = "./python/" + config_path
+        local_llm_config = {}
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                local_llm_config = json.load(f)
+        else:
+            print(f"Local LLM config file not found: {config_path}")
+        return local_llm_config
+
     @property
     def supports_vision(self) -> bool:
         """Check if model supports vision"""
-        return self.config.get("support_vision", False)
+        return self.config.get("supports_vision", False)
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using local LLM with optional image data"""
