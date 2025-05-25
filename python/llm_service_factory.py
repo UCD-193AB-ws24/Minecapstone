@@ -31,7 +31,7 @@ class LLMServiceFactory:
             return OpenAIServiceAdapter(model, config_path)
         elif service_type == "gemini":
             return GeminiServiceAdapter(model, config_path)
-        elif service_type == "local_llm":
+        elif service_type == "local":
             return LocalLLMServiceAdapter(model, config_path)
         else:
             raise ValueError(f"Unknown service type: {service_type}")

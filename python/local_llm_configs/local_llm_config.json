@@ -1,15 +1,15 @@
 {
-  "api_endpoint": "http://localhost:11434/api/generate",
-  "model": "gemma3:12b",
-  "supports_vision": true,
-  "request_format": {
-    "model": "{model}",
-    "prompt": "{prompt}",
-    "stream": false,
-    "options": {
-      "temperature": 0.7,
-      "max_tokens": 1024
-    }
-  },
-  "response_field": "response"
+	"api_endpoint": "http://localhost:11434/api/generate",
+	"model": "gemma3:12b",
+	"supports_vision": true,
+	"request_format": {
+		"model": "{model}",
+		"prompt": "{prompt}",
+		"stream": false,
+		"options": {
+			"temperature": 0.7,
+			"max_tokens": 1024
+		}
+	},
+	"response_field": "response"
 }

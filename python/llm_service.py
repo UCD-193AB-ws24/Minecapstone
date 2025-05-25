@@ -16,6 +16,7 @@ class LLMService(ABC):
 
         # Get API key from environment
         api_keys = self.load_api_keys()
+        api_key = None
         if "gpt" in model:
             api_key = api_keys["openai"]
             if not api_key:
