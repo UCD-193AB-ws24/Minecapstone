@@ -21,7 +21,9 @@ class WebSocketServer:
             async for message in websocket:
                 # Parse the JSON message
                 message_obj = json.loads(message)
-                message = message_obj.get("prompt", "")
+                prompt = message_obj.get("prompt", "")
+                prompt_type = message_obj.get("type", "").upper()
+                key = message_obj.get("key", None)
                 image_data = message_obj.get("image_data", None)
 
                 # Check if image is provided but not supported
@@ -30,15 +32,22 @@ class WebSocketServer:
                 
                 # Send the prompt to the LLM and get the response
                 try:
-                    if message_obj.get("type") == "GOAL":
-                        goal = await self.llm_service.generate_goal(message, image_data)
-                        await websocket.send(goal)
-                    elif message_obj.get("type") == "SCRIPT":
-                        script = await self.llm_service.generate_script(message, image_data)
-                        await websocket.send(script)
-                    else:
-                        response = "Error: Unknown message type"
-                        await websocket.send(response)
+                    payload = {"contents": "Unexpected prompt type."}
+                    if prompt_type == "GOAL":
+                        goal = await self.llm_service.generate_goal(prompt, image_data)
+                        payload = {
+                            "key": key,
+                            "type": "GOAL",
+                            "contents": goal,
+                        }
+                    elif prompt_type == "SCRIPT":
+                        script = await self.llm_service.generate_script(prompt, image_data)
+                        payload = {
+                            "key": key,
+                            "type": "SCRIPT",
+                            "contents": script,
+                        }
+                    await websocket.send(json.dumps(payload))
                 except Exception as e:
                     print(f"Error generating response: {e}")
                     response = f"Error: {str(e)}"

@@ -55,12 +55,14 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 	var payload
 	if image_data != "":
 		payload = JSON.stringify({
+			"key": key,
 			"type": type,
 			"prompt": prompt,
 			"image_data": image_data
 		})
 	else:
 		payload = JSON.stringify({
+			"key": key,
 			"type": type,
 			"prompt": prompt
 		})
@@ -69,10 +71,30 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 
 	# Wait for a non-empty response.
 	var response_string = ""
+	var response_type = ""
+	var response_key = -1
 	while response_string == "":
 		await response_received
 		response_string = socket.get_packet().get_string_from_utf8()
-		if response_string != "":
+
+		if response_string == "":
+			continue
+
+		# Parse the JSON response, ensuring that the response matches the expected type.
+		var json = JSON.new()
+		var parse_result = json.parse(response_string)
+
+		if parse_result != OK:
+			print("JSON Parse Error: ", json.get_error_message(), " in ", response_string, " at line ", json.get_error_line())
+			continue
+		response_key = json.data["key"]
+		response_string = json.data["contents"]
+		response_type = json.data["type"]
+
+		# print("Received response of type '%s' with contents: %s" % [response_type, response_string])
+
+		# Emit the response signal with the key and response string.
+		if response_string != "" and response_key == key and response_type == type:
 			response.emit(key, response_string)
 		# TODO: add timeout?
 
