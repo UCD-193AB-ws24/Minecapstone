@@ -355,7 +355,6 @@ func pick_up_item(item_name: String):
 # Attacks specificaly the current target
 func _attack():
 	var hit = raycast.is_colliding() and raycast.get_collider() == current_target
-	print(hit)
 
 	if hit:
 		current_target.damage(attack_damage)

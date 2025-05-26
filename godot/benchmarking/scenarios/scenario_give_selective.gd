@@ -20,7 +20,6 @@ func _ready() -> void:
 func _on_item_added(item):
 	"""Function checks if the item added is the required item and if so, log success. Otherwisem log failure. 
 	Regardless, reset the scenario."""
-	print("Item received: " + item.Name)
 	
 	#check if the item is the required item
 	if item.Name == required_item:

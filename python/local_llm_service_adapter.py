@@ -43,9 +43,7 @@ class LocalLLMServiceAdapter(LLMService):
         full_prompt = f"{self.system_prompt}\n\n{prompt}\n\n{self.user_preprompt}"
 
         try:
-            import asyncio
-            response_text = await asyncio.to_thread(
-                self._make_api_request,
+            response_text = self._make_api_request(
                 full_prompt,
                 image_data,
                 "code"  # Specify request_type for script generation
@@ -95,7 +93,7 @@ class LocalLLMServiceAdapter(LLMService):
         """Make a request to the local LLM API"""
         # Get request format from config, or use default
         request_format = self.config.get("request_format", {"prompt": "{prompt}"})
-        
+
         # Create a copy of the request format
         payload = {}
         for key, value in request_format.items():
@@ -108,12 +106,12 @@ class LocalLLMServiceAdapter(LLMService):
             else:
                 # Copy other values as is
                 payload[key] = value
-        
-        # Add image if supported
+
+        # Add image if supported and provided
         if image_data and self.supports_vision:
             image_field = self.config.get("image_field", "images")
             payload[image_field] = [image_data]
-        
+
         # Apply type-specific settings
         if request_type == "code" and "code_settings" in self.config:
             for key, value in self.config["code_settings"].items():
@@ -127,6 +125,7 @@ class LocalLLMServiceAdapter(LLMService):
         if "headers" in self.config:
             headers.update(self.config["headers"])
 
+        # print("Payload:", json.dumps(payload, indent=2))
         response = requests.post(
             self.api_endpoint,
             json=payload,
