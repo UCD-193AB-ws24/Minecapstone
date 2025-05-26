@@ -4,9 +4,29 @@
 
 [node name="World" instance=ExtResource("1_hg1hm")]
 
+[node name="SpawnPoint" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.76048, 2.8613, -0.56535)
+
+[node name="Player" parent="." index="4"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 2, 0)
+
 [node name="Agent" parent="." index="5"]
-goal = "Without moving, look at the entity on the left."
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1, 1, 1)
+goal = ""
+scenario_goal = "Look at the entity on the left, without moving."
 visual_mode = true
+
+[node name="NPCZombie" parent="." index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 3.5)
+
+[node name="Label3D2" parent="NPCZombie" index="8"]
+visible = false
+
+[node name="Animal" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, -1.5)
+
+[node name="Label3D2" parent="Animal" index="8"]
+visible = false
 
 [node name="ScenarioManager" parent="." index="8"]
 scenario_type = 2

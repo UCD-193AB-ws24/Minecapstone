@@ -40,17 +40,17 @@ size = Vector3(100, 1, 100)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
 
 [node name="Agent" parent="." instance=ExtResource("7_bo8po")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 5, 5)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5, 1, 5)
 goal = "Satisfy the Scenario Goal"
 scenario_goal = "Give ScenarioBox one dirt"
-_speed = 8.0
+_speed = 3.0
 
 [node name="ScenarioBox" parent="." instance=ExtResource("10_cnvaf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -2)
 script = null
 
 [node name="Player" parent="." instance=ExtResource("8_xhjvb")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 1)
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("10_lhsek")

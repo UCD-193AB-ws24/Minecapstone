@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://e62feh5lmdxr"]
+[gd_scene load_steps=4 format=3 uid="uid://e62feh5lmdxr"]
 
 [ext_resource type="Script" uid="uid://becer5tyhbd6" path="res://benchmarking/benchmarker.gd" id="1_e8rto"]
 [ext_resource type="PackedScene" uid="uid://c8qpd4twf2vpq" path="res://benchmarking/scenarios/scenario_give_selective.tscn" id="2_iwud5"]
