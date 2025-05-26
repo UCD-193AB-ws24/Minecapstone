@@ -37,7 +37,7 @@ func _on_touch_platform(_body: Node3D, platform_name: String) -> void:
 		door.use_collision = false
 		
 		# Update the navigation mesh, the door is now open
-		for i in range(16):	await get_tree().physics_frame
+		for i in range(16): await get_tree().physics_frame
 		navmesher.BakeNavmesh()
 
 
@@ -53,9 +53,11 @@ func _on_touch_platform_exit(_body: Node3D, platform_name: String) -> void:
 		# print("Green platform exited")
 
 
-func reset():
+func _restore_initial_state():
 	await super()
+
 	reset_connections()
+
 	door_unlocked = false
 	door.visible = true
 	door.use_collision = true
@@ -63,9 +65,7 @@ func reset():
 	blue_touched = false
 	num_agents_on_green = 0
 
-	for i in range(16):	await get_tree().physics_frame
 	navmesher.BakeNavmesh()
-
 
 func reset_connections():
 	var red_platform = get_parent().find_child("RedPlatform").get_node("Area3D")
