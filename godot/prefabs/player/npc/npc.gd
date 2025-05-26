@@ -168,7 +168,7 @@ func give_to(agent_name: String, item_name:String, amount:int):
 		#Agent not found. Maybe it is not an agent the npc wants
 		#from the world node, get node with the name agent_name
 		ref = get_parent().get_node(agent_name)
-	await move_to_position(ref.global_position.x, ref.global_position.z, 5.5)
+	await move_to_position(ref.global_position.x, ref.global_position.z, 2.5)
 
 	await set_look_position(ref.global_position + Vector3(0, 0.5, 0)) # look at the agent's head
 	await inventory_manager.DropItem(item_name, amount)
@@ -234,12 +234,13 @@ func move_to_position(x: float, y: float, distance_away: float = 2):
 	return true
 
 
-func move_to_target(target_name: String, distance_away:float=2.0):
+func move_to_target(target_name: String, distance_away: float):
 	for entity in detected_entities:
 		if entity.name == target_name:
 			var target_pos = entity.global_position
 			await move_to_position(target_pos.x, target_pos.z, distance_away)
 			return true
+	await get_tree().physics_frame
 	# print("Target '%s' not found in detected entities." % target_name)
 	return false
 
@@ -316,7 +317,7 @@ func attack_target(target_name: String, num_attacks: int = 1):
 	while attacks < num_attacks:
 		if current_target == null: 
 			return
-		await move_to_target(target_name)
+		await move_to_target(target_name, 1.25)
 		look_at_target_by_name(target_name)
 		await get_tree().create_timer(attack_cooldown / 2).timeout
 		await _attack()

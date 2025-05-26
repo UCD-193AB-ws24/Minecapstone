@@ -16,7 +16,7 @@ class LocalLLMServiceAdapter(LLMService):
         # Get basic configuration
         self.api_endpoint = self.config.get("api_endpoint", "http://localhost:11434/api/generate")
         self.model_name = model or self.config.get("model", "")
-        self.timeout = self.config.get("timeout", 60)  # seconds
+        self.timeout = self.config.get("timeout", 120)  # seconds
         
         print(f"Initialized Local LLM service with endpoint: {self.api_endpoint}")
         if self.model_name:

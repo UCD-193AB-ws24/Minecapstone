@@ -14,7 +14,6 @@ class WebSocketServer:
         self.host = host
         self.port = port
         self.llm_service = None
-    
     async def handle_client(self, websocket):
         """Handle a client connection"""
         try:
@@ -69,8 +68,8 @@ class WebSocketServer:
             self.handle_client, 
             self.host, 
             self.port, 
-            ping_interval=30, 
-            ping_timeout=10, 
+            ping_interval=120,
+            ping_timeout=120,
             max_size=1024*1024
         )
         

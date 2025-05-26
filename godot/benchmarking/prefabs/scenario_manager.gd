@@ -9,8 +9,6 @@ var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
 var MAX_ITERATIONS: int = 30
-# TODO: automate setting of this based on if locally-run LLM is used or not
-var extra_time: bool = true
 
 
 enum ScenarioType {
@@ -27,9 +25,6 @@ var timeout_timer:Timer
 
 
 func _ready() -> void:
-	if extra_time:
-		scenario_duration_seconds *= 7.0
-
 	_capture_initial_state()
 	timeout_timer = Timer.new()
 	timeout_timer.one_shot = true
@@ -176,4 +171,4 @@ func _restore_initial_state():
 				continue
 			new_object.set(i, node_data[i])
 
-	for i in range(48): await get_tree().physics_frame
+	for i in range(16): await get_tree().physics_frame

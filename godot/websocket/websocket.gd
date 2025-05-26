@@ -96,7 +96,6 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 		# Emit the response signal with the key and response string.
 		if response_string != "" and response_key == key and response_type == type:
 			response.emit(key, response_string)
-		# TODO: add timeout?
 
 
 func _physics_process(_delta):
@@ -119,6 +118,9 @@ func _physics_process(_delta):
 		WebSocketPeer.STATE_CLOSED:
 			# The code will be -1 if the disconnection was not properly notified by the remote peer.
 			var code = socket.get_close_code()
-			print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
+			var reason = socket.get_close_reason()
+			print("WebSocket closed with code: %d, reason: %s. Clean: %s" % [code, reason, code != -1])
+			
+			# Attempt to reconnect after a short delay
 			set_process(false) # Stop processing.
 			set_physics_process(false) # Stop physics processing.

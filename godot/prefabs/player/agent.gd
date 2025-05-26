@@ -37,11 +37,9 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	# Move towards the zombie.
-	var zombie_name = "Zombie"
-	await move_to_target(zombie_name)
-	# Attack the zombie.
-	await attack_target(zombie_name, 1) # Attack once to kill the zombie.
+	await move_to_target("ScenarioBox")
+	await give_to("ScenarioBox", "Dirt", 1)
+
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()

@@ -30,8 +30,6 @@ func _on_item_added(item):
 
 func _restore_initial_state():
 	await super()
-
-
 	
 	reset_inventory()
 
