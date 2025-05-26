@@ -44,13 +44,12 @@ goal = "Satisfy the Scenario Goal"
 scenario_goal = "Kill the zombie"
 prompt_allowance = 0
 attack_damage = 100.0
-_speed = 10.0
+_speed = 4.0
 
 [node name="Zombie" parent="." instance=ExtResource("9_lflxy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
 move_disabled = true
 attack_disabled = true
-_speed = 2.0
 
 [node name="Player" parent="." instance=ExtResource("8_ecm1x")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1, 0)

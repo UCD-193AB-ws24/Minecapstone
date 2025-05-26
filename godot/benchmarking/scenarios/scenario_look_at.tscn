@@ -50,9 +50,7 @@ scenario_goal = ""
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, 2.5)
 collision_layer = 9
 collision_mask = 9
-chase_speed = 0.0
-_speed = 0.0
-_acceleration = 0.0
+move_disabled = true
 
 [node name="Label3D2" type="Label3D" parent="NPCZombie"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
@@ -64,9 +62,7 @@ outline_size = 48
 
 [node name="Animal" parent="." instance=ExtResource("7_by4s5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1.5, -2.5)
-chase_speed = 0.0
-_speed = 0.0
-_acceleration = 0.0
+move_disabled = true
 
 [node name="Label3D2" type="Label3D" parent="Animal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)

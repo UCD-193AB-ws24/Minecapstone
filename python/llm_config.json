@@ -1,6 +1,6 @@
 {
 	"service": "local",
-	"model": "gemma3",
+	"model": "gemma3:12b",
 
 	"available_services": {
 		"openai": {
