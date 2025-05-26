@@ -2,7 +2,7 @@
 extends Node
 
 class AgentEntry:
-	var agent_ref: Node3D
+	var agent_ref: Agent
 	var agent_hash_id: int
 
 	func get_ref():
@@ -41,7 +41,7 @@ func register_agent(agent: Agent) -> void:
 	agent_entry.agent_ref = agent
 	agent_entry.agent_hash_id = agent.hash_id
 	agent_dict[agent.name] = agent_entry
-	print("AgentManager: Registered agent " + agent.name + " with ID " + str(agent.hash_id))
+	# print("AgentManager: Registered agent " + agent.name + " with ID " + str(agent.hash_id))
 
 func get_agent(agent_name:String):
 	if agent_dict.has(agent_name):
@@ -49,6 +49,17 @@ func get_agent(agent_name:String):
 	else:
 		#name not found in agent_dict
 		return null
+
+# darroll: added to get all agents for memory provision
+func get_agents():
+	return agent_dict.values()
+
+func give_all_agents_memory(memory: Memory):
+	"""Give a memory to all agents."""
+	for agent_entry in agent_dict.values():
+		var agent = agent_entry.get_ref()
+		if agent:
+			agent.memories.add_memory(memory)
 
 func get_agent_name(agent_id:int):
 	"""Get an agent by its ID."""

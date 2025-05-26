@@ -17,21 +17,20 @@ func _on_item_added(item):
 	"""function is triggered by the item_added signal of the scenario box inventory.
 	Checks if the item added is the required item and if so, log success. Otherwise, log failure.
 	Then reset the scenario."""
-	timeout_timer.stop()
+
 	if item.Name == "Wood Pickaxe" and correct_zombie_dead:
 		track_success()
 	else:
 		track_failure()
 
-	for i in range(10):
-		await get_tree().physics_frame
-
-	reset_connections()
-
 
 func _on_died(deadName: String):
 	"""Triggered by has_died signal. If Zombie2 dies, set correct_zombie_dead flag true. 
 	If anything else dies, log failure and reset the scenario. """
+
+	var memory: Memory = Memory.new(deadName + " was killed.")
+	AgentManager.give_all_agents_memory(memory)
+
 	if deadName == zombie2.name:
 		correct_zombie_dead = true
 	else:
