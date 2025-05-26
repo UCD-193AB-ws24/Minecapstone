@@ -24,7 +24,7 @@ class LocalLLMServiceAdapter(LLMService):
 
     def load_config(self, config_path: str) -> dict:
         config_path = super().load_config(config_path)["config_path"]
-        config_path = "./python/" + config_path
+        config_path =  config_path
         local_llm_config = {}
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:

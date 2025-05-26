@@ -86,7 +86,7 @@ class WebSocketServer:
 async def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description="LLM WebSocket Server")
-    parser.add_argument("--config", default="./python/llm_config.json", help="Path to the configuration file")
+    parser.add_argument("--config", default="./lm_config.json", help="Path to the configuration file")
     parser.add_argument("--host", default="localhost", help="Host to bind the server to")
     parser.add_argument("--port", type=int, default=5000, help="Port to bind the server to")
     args = parser.parse_args()
