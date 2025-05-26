@@ -1,6 +1,6 @@
 {
-	"service": "openai",
-	"model": "gpt-4o",
+	"service": "local",
+	"model": "gemma3",
 
 	"available_services": {
 		"openai": {

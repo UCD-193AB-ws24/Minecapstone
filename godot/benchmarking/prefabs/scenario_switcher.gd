@@ -41,7 +41,6 @@ func next_scene() -> void:
 			if current_scene.can_instantiate():
 				get_tree().change_scene_to_packed(current_scene)
 				await get_tree().scene_changed
-				#var sm = get_tree().current_scene.get_node("ScenarioManager")
 				await get_tree().physics_frame
 		else:
 			enabled = false

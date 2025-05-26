@@ -16,7 +16,7 @@ class LocalLLMServiceAdapter(LLMService):
         # Get basic configuration
         self.api_endpoint = self.config.get("api_endpoint", "http://localhost:11434/api/generate")
         self.model_name = model or self.config.get("model", "")
-        self.timeout = self.config.get("timeout", 30)  # seconds
+        self.timeout = self.config.get("timeout", 60)  # seconds
         
         print(f"Initialized Local LLM service with endpoint: {self.api_endpoint}")
         if self.model_name:
@@ -76,9 +76,7 @@ class LocalLLMServiceAdapter(LLMService):
     """
         
         try:
-            import asyncio
-            response_text = await asyncio.to_thread(
-                self._make_api_request,
+            response_text = self._make_api_request(
                 full_prompt,
                 image_data,
                 "goal"  # Specify request_type for goal generation
@@ -129,8 +127,6 @@ class LocalLLMServiceAdapter(LLMService):
         if "headers" in self.config:
             headers.update(self.config["headers"])
 
-        print(payload)
-        
         response = requests.post(
             self.api_endpoint,
             json=payload,

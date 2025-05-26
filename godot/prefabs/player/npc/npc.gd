@@ -12,7 +12,7 @@ extends Player
 @onready var detected_interactables: Array = [] # holds interactables detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
-@export var attack_cooldown: float = 2.0
+@export var attack_cooldown: float = 1.0
 @export var chase_speed: float = 2.0		# TODO: why is this a member of NPC when not all NPCs chase
 @export var move_disabled: bool = false
 @export var attack_disabled: bool = false
@@ -307,6 +307,8 @@ func attack_target(target_name: String, num_attacks: int = 1):
 			
 	if target_entity == null:
 		# TODO: Add to memories that it failed
+		print("done")
+
 		return false
 
 	current_target = target_entity
@@ -316,10 +318,12 @@ func attack_target(target_name: String, num_attacks: int = 1):
 			return
 		await move_to_target(target_name)
 		look_at_target_by_name(target_name)
+		await get_tree().create_timer(attack_cooldown / 2).timeout
 		await _attack()
 		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
 		attacks += 1
+
 
 	current_target = null
 	return true
@@ -351,6 +355,7 @@ func pick_up_item(item_name: String):
 # Attacks specificaly the current target
 func _attack():
 	var hit = raycast.is_colliding() and raycast.get_collider() == current_target
+	print(hit)
 
 	if hit:
 		current_target.damage(attack_damage)

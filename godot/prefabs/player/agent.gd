@@ -34,21 +34,14 @@ func _ready() -> void:
 func _input(_event):
 	# Override the default input function to prevent the NPC from being controlled by the player
 	if _event is InputEventKey and _event.pressed:
-		if _event.keycode == KEY_V and name == "Agent2":
+		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	# My current goal is to follow Agent1's instructions, which are to kill Zombie2 and give the item drops to Agent1.
-	# First, I will move towards Zombie2 to prepare for an attack.
-	await move_to_target("Zombie2")
-	
-	# Once I am close to Zombie2, I will attack it until it is defeated.
-	await attack_target("Zombie2", 5)
-	
-	# After defeating Zombie2, I will pick up the item it drops, which is a Wood Pickaxe.
-	await pick_up_item("Wood Pickaxe")
-
-	# Finally, I will give the Wood Pickaxe to Agent1 as instructed.
-	await give_to("Agent1", "Wood Pickaxe", 1)
+	# Move towards the zombie.
+	var zombie_name = "Zombie"
+	await move_to_target(zombie_name)
+	# Attack the zombie.
+	await attack_target(zombie_name, 1) # Attack once to kill the zombie.
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
@@ -197,6 +190,7 @@ func build_prompt_context() -> String:
 	context += "Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
 	context += "Your name is " + self.name + "\n"
 	context += "Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "You do " + str(self.attack_damage) + " damage per attack.\n"
 	context += "Current Time: " + str(Time.get_ticks_msec() / 1000.0) + "\n"
 	context += "- All detected entities:" + _get_all_detected_entities() + "\n"
 	context += "- All detected items:\n" + _get_all_detected_items() + "\n"
