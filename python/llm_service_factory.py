@@ -1,11 +1,15 @@
 import json
 from llm_service import LLMService
+from openai_service_adapter import OpenAIServiceAdapter
+from gemini_service_adapter import GeminiServiceAdapter
+from local_llm_service_adapter import LocalLLMServiceAdapter
+
 
 class LLMServiceFactory:
     """Factory for creating model instances"""
     
     @staticmethod
-    def get_service(config_path="config.json") -> LLMService:
+    def get_service(config_path) -> LLMService:
         """Create an LLM service based on the provided configuration file"""
         
         # Load the configuration
@@ -16,42 +20,18 @@ class LLMServiceFactory:
             print(f"Config file {config_path} not found. Using default OpenAI configuration.")
             config = {
                 "service": "openai",
-                "model": "gpt-4o"
+                "model": "gpt-4o-mini"
             }
         
-        service_type = config.get("service", "openai").lower()
-        model = config.get("model", "")
-        settings = config.get("settings", {})
+        service = config['service'].lower()
+        model = config['model']
         
         # Create the appropriate service
-        if service_type == "openai":
-            from openai_service_adapter import OpenAIServiceAdapter
-            return OpenAIServiceAdapter(model=model, settings=settings)
-        elif service_type == "gemini":
-            from gemini_service_adapter import GeminiServiceAdapter
-            return GeminiServiceAdapter(model=model, settings=settings)
-        elif service_type == "local_llm":
-            from local_llm_service_adapter import LocalLLMServiceAdapter
-            return LocalLLMServiceAdapter(model=model, settings=settings)
+        if service == "openai":
+            return OpenAIServiceAdapter(model, config_path)
+        elif service == "gemini":
+            return GeminiServiceAdapter(model, config_path)
+        elif service == "local":
+            return LocalLLMServiceAdapter(model, config_path)
         else:
-            raise ValueError(f"Unknown service type: {service_type}")
-    
-    @staticmethod
-    def create_from_config(config_data) -> LLMService:
-        """Create an LLM service directly from a config dictionary"""
-        service_type = config_data.get("service", "openai").lower()
-        model = config_data.get("model", "")
-        settings = config_data.get("settings", {})
-        
-        # Create the appropriate service
-        if service_type == "openai":
-            from openai_service_adapter import OpenAIServiceAdapter
-            return OpenAIServiceAdapter(model=model, settings=settings)
-        elif service_type == "gemini":
-            from gemini_service_adapter import GeminiServiceAdapter
-            return GeminiServiceAdapter(model=model, settings=settings)
-        elif service_type == "local_llm":
-            from local_llm_service_adapter import LocalLLMServiceAdapter
-            return LocalLLMServiceAdapter(model=model, settings=settings)
-        else:
-            raise ValueError(f"Unknown service type: {service_type}")
+            raise ValueError(f"Unknown service type: {service}")

@@ -189,7 +189,7 @@ func build_prompt_context() -> String:
 	context += "Your name is " + self.name + "\n"
 	context += "Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
 	context += "Current Time: " + str(Time.get_ticks_msec() / 1000.0) + "\n"
-	context += "- All detected entities:\n" + _get_all_detected_entities()
+	context += "- All detected entities:" + _get_all_detected_entities()
 	context += "- All detected items:\n" + _get_all_detected_items()
 	context += "- All detected interactables:\n" + _get_all_detected_interactables() + "\n"
 	context += "- Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
