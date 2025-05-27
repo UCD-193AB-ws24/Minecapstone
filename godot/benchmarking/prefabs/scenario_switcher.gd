@@ -34,6 +34,7 @@ func save_results(success_count, failure_count, error_count, scenario_type = 0) 
 func next_scene() -> void:
 	await get_tree().physics_frame
 	if enabled:
+		# If there are still scenes to process, switch to the next one
 		if scene_list.size() > 0:
 			var current_scene = scene_list.pop_front()
 			_current_scene_name = current_scene.resource_path.get_file()
@@ -42,6 +43,7 @@ func next_scene() -> void:
 				get_tree().change_scene_to_packed(current_scene)
 				await get_tree().scene_changed
 				await get_tree().physics_frame
+		# If there are no more scenes to process, finalize the benchmarking
 		else:
 			enabled = false
 			print("===============Benchmark Results===============")
