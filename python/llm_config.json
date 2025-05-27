@@ -1,6 +1,6 @@
 {
-	"service": "openai",
-	"model": "gpt-4.1",
+	"service": "local",
+	"model": "llava:latest",
 
 	"available_services": {
 		"openai": {
@@ -29,6 +29,10 @@
 				{
 					"name": "gemma3:12b",
 					"config_path": "local_llm_configs/gemma_config.json"
+				},
+				{
+					"name": "llava:latest",
+					"config_path": "local_llm_configs/llava_config.json"
 				},
 				{
 					"name": "example",
