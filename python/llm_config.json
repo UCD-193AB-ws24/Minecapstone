@@ -30,6 +30,10 @@
 					"config_path": "local_llm_configs/gemma_config.json"
 				},
 				{
+					"name": "llava:latest",
+					"config_path": "local_llm_configs/llava_config.json"
+				},
+				{
 					"name": "example",
 					"config_path": "local_llm_configs/local_llm_config.json"
 				}

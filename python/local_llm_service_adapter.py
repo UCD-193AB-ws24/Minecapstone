@@ -129,7 +129,7 @@ class LocalLLMServiceAdapter(LLMService):
         if "headers" in self.config:
             headers.update(self.config["headers"])
 
-        print(payload)
+        #print(payload)
         
         response = requests.post(
             self.api_endpoint,
