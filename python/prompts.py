@@ -48,6 +48,9 @@ Be careful with the usage of Vector3 and Vector2.
 You could get Parser Error: No constructor of "Vector3" matches the signature "Vector3(int, int)
 if you do not supply the correct number of arguments.
 
+When provided an image, be sure to examine the image and extract relevant information from it.
+
+Do not use loops (while, for). Conditionals are okay.
 """
 
 USER_PREPROMPT = "Write comments before your code to explain your next actions to accomplish goals, if you're writing a script."
