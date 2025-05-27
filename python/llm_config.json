@@ -1,6 +1,6 @@
 {
-	"service": "local",
-	"model": "gemma3:12b",
+	"service": "openai",
+	"model": "gpt-4.1",
 
 	"available_services": {
 		"openai": {
