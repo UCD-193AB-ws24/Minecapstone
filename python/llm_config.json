@@ -6,7 +6,8 @@
 		"openai": {
 			"models": [
 				{ "name": "gpt-4o", "supports_vision": true },
-				{ "name": "gpt-4o-mini", "supports_vision": true }
+				{ "name": "gpt-4o-mini", "supports_vision": true },
+				{ "name": "gpt-4.1", "supports_vision": true }
 			]
 		},
 		"gemini": {
