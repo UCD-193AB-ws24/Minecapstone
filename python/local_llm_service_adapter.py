@@ -90,7 +90,6 @@ class LocalLLMServiceAdapter(LLMService):
             return "Failed to generate goal"  # Add a default return value for error case
 
     def _make_api_request(self, prompt: str, image_data: Optional[str] = None, request_type: str = "general") -> str:
-        """Make a request to the local LLM API"""
         # Get request format from config, or use default
         request_format = self.config.get("request_format", {"prompt": "{prompt}"})
 
@@ -109,8 +108,24 @@ class LocalLLMServiceAdapter(LLMService):
 
         # Add image if supported and provided
         if image_data and self.supports_vision:
+            # More detailed debug
+            print(f"Processing image data of length: {len(image_data)}")
+            print(f"Image data type: {type(image_data)}")
+            
             image_field = self.config.get("image_field", "images")
-            payload[image_field] = [image_data]
+            
+            # Process image data based on model requirements
+            if "data:image" in image_data:
+                # Remove any potential prefixes like "data:image/jpeg;base64,"
+                image_data = image_data.split(",", 1)[-1]
+                print("Formatted image data (removed prefix)")
+            
+            # For Ollama's LLava: we'll use array format since that's what worked before
+            payload[image_field] = [image_data]  # Array format
+            print(f"Using array format for image field: {image_field}")
+                
+            # Debug output to verify image is included
+            print(f"Added image data to '{image_field}' field (length: {len(image_data) if image_data else 0})")
 
         # Apply type-specific settings
         if request_type == "code" and "code_settings" in self.config:
