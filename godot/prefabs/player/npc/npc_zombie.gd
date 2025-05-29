@@ -2,11 +2,6 @@ class_name NPC_Zombie
 extends NPC_Wanderer
 
 
-#@export var detection_range: float = 10.0
-#@export var attack_range: float = 2.0
-#@export var attack_damage: float = 25.0 # current 4 shots player
-#@export var attack_cooldown: float = 2.0 
-#@export var chase_speed: float = 2.0
 enum ZombieState { WANDERING, CHASING, ATTACKING }
 var current_state: ZombieState = ZombieState.WANDERING
 var last_known_position: Vector3

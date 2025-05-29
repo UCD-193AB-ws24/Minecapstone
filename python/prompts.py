@@ -41,9 +41,19 @@ e.g.
         Remember to define variables using "var" and use "await" for functions that require it.
         Do not use "yield()" as it is deprecated in Godot 4.3.
         Do not EVER initialize Vector2 or Vector3 variables. Just use any desired values directly. Use # for comments, not '//'.
+
+Play close attention to the memories, which logs key events and what you or other agents have said.
+
+Be careful with the usage of Vector3 and Vector2.
+You could get Parser Error: No constructor of "Vector3" matches the signature "Vector3(int, int)
+if you do not supply the correct number of arguments.
+
+When provided an image, be sure to examine the image and extract relevant information from it.
+
+Do not use loops (while, for). Conditionals are okay.
 """
 
-USER_PREPROMPT = ""
+USER_PREPROMPT = "Write comments before your code to explain your next actions to accomplish goals, if you're writing a script."
 
 # USER_PREPROMPT = """
 # List the Godot 4.3 functions you will call to achieve your current goal. 

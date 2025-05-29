@@ -27,6 +27,12 @@ func _on_animal_died(deadName):
 		reset_connections()
 
 
+func _restore_initial_state():
+	await super()
+
+	reset_connections()
+
+
 func reset_connections():
 	"""Function is to reset the connections of the signals."""
 	# zombie.has_died.disconnect(_on_zombie_died)
