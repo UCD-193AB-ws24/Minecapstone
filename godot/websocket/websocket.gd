@@ -3,7 +3,7 @@ extends Node
 
 
 # The URL we will connect to.
-@export var websocket_url = "ws://localhost:5000"
+@export var websocket_url = "ws://localhost"
 @export var enabled = true
 
 
@@ -22,8 +22,27 @@ func _ready():
 		return
 	
 	# Initiate connection to the given URL.
+	
+	var port = 5000
+	
+	if OS.get_cmdline_args().size() > 0:
+		var dash_p = OS.get_cmdline_args().find("-p")
+		var dash_dash_port = OS.get_cmdline_args().find("--port")
+		if dash_p != -1 and OS.get_cmdline_args()[dash_p + 1].is_valid_int():
+			port = OS.get_cmdline_args()[dash_p + 1].to_int()
+			print(port)
+		elif dash_dash_port != -1 and OS.get_cmdline_args()[dash_dash_port + 1].is_valid_int():
+			port = OS.get_cmdline_args()[dash_dash_port + 1].to_int()
+			print(port)
+	
+	websocket_url = websocket_url + ":" + str(port) 
+	
+	print(websocket_url)
+	
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
+	
+	print(error_string(err))
 	
 	if err != OK:
 		print("Websocket peer failed to open a connection to port 5000, is the port being used?")
@@ -35,7 +54,8 @@ func _ready():
 		socket.set_inbound_buffer_size(1024 * 1024) # 1MB
 		socket.set_outbound_buffer_size(1024 * 1024) # 1MB
 
-		print("Websocket peer connected to port 5000")
+		print("Websocket peer connected to port " + str(port))
+		print(OS.get_cmdline_args())
 		connected.emit()
 
 
