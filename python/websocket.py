@@ -3,7 +3,7 @@ import websockets
 import json
 import os
 import argparse
-from llm_service_factory import LLMServiceFactory
+from python.api_adapters.llm_service_factory import LLMServiceFactory
 
 class WebSocketServer:
     """WebSocket server for handling LLM requests with visual support"""
