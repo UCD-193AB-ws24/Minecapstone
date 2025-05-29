@@ -30,19 +30,13 @@ func _ready():
 		var dash_dash_port = OS.get_cmdline_args().find("--port")
 		if dash_p != -1 and OS.get_cmdline_args()[dash_p + 1].is_valid_int():
 			port = OS.get_cmdline_args()[dash_p + 1].to_int()
-			print(port)
 		elif dash_dash_port != -1 and OS.get_cmdline_args()[dash_dash_port + 1].is_valid_int():
 			port = OS.get_cmdline_args()[dash_dash_port + 1].to_int()
-			print(port)
 	
 	websocket_url = websocket_url + ":" + str(port) 
 	
-	print(websocket_url)
-	
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
-	
-	print(error_string(err))
 	
 	if err != OK:
 		print("Websocket peer failed to open a connection to port 5000, is the port being used?")
@@ -55,7 +49,6 @@ func _ready():
 		socket.set_outbound_buffer_size(1024 * 1024) # 1MB
 
 		print("Websocket peer connected to port " + str(port))
-		print(OS.get_cmdline_args())
 		connected.emit()
 
 
