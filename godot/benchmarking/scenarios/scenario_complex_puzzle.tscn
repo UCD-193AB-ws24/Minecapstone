@@ -91,13 +91,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
 [node name="Agent1" parent="." instance=ExtResource("4_us0x5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, 5)
 goal = "Satisfy the scenario goal."
-scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. The door opens permanently if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
+scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. 
+The green platform is inaccessible until the door opens. The door opens if someone is on the red and blue platform at the same time, as in there must be one person on both platforms for the door to open. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
 infinite_decisions = true
 
 [node name="Agent2" parent="." instance=ExtResource("4_us0x5")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5, 1, -5)
 goal = "Satisfy the scenario goal."
-scenario_goal = "Get to the green platform which is locked behind an impassable door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. The door opens permanently if someone is on the red and blue platform at the same time. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
+scenario_goal = "Get to the green platform past the door. The red platform is at (-15, 7.5). The blue platform is at (-15, -7.5). If you fail to get to the green platform, it means the door is likely still closed. 
+The green platform is inaccessible until the door opens. The door opens if someone is on the red and blue platform at the same time, as in there must be one person on both platforms for the door to open. The green platform is at (-37.5, 0). Wait on the green platform if you made it."
 infinite_decisions = true
 
 [node name="RedPlatform" type="CSGCylinder3D" parent="."]

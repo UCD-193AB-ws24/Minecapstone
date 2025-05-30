@@ -47,15 +47,12 @@ scenario_goal = "Say to Agent2 to kill the zombie left of the animal and give yo
 prompt_allowance = 5
 visual_mode = true
 
-
 [node name="Agent2" parent="." instance=ExtResource("3_5gkwf")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5.00872, 1.21307, 5)
 goal = ""
 scenario_goal = "Do what Agent1 tells you to do. Zombies drop Wood Pickaxe."
 prompt_allowance = 5
 attack_damage = 100.0
-_speed = 4.0
-
 
 [node name="Player" parent="." instance=ExtResource("5_fhyri")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)

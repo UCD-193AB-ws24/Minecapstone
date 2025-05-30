@@ -61,6 +61,7 @@ func reset():
 	#Clear data from global classes
 	MessageBroker.clear_agents()
 	AgentManager.clear_agents()
+	API.clear_context()
 	# Restore the environment to its original state
 	print("Environment reset. Successes:", success_count, ", Failures:", failure_count, ", Errors:", error_count)
 	await _restore_initial_state()
@@ -86,9 +87,9 @@ func get_results(debug = false):
 
 
 func next_iteration():
-	if current_iteration < MAX_ITERATIONS:
-		await reset()
-	else:
+	await reset()
+
+	if current_iteration >= MAX_ITERATIONS:
 		var results = get_results(true)
 		var success = results[0]
 		var failure = results[1]

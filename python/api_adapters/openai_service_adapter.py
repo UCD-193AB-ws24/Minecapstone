@@ -28,36 +28,32 @@ class OpenAIServiceAdapter(LLMService):
         # Default check for known models
         return self.model in ["gpt-4o", "gpt-4o-mini", "gpt-4-vision", "gpt-4.1"]
     
-    async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
+    async def generate_script(self, prompt, image_data: Optional[str] = None) -> str:
         """Generate a script using OpenAI with optional image data"""
         
         # Format the messages based on whether we have image data
         if image_data and self.supports_vision:
-            messages = [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": [
-                    {"type": "text", "text": f"{prompt}\n{self.user_preprompt}"},
+            user_prompt = prompt.pop()["content"]
+            prompt.append({
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": f"{user_prompt}"},
                     {
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/png;base64,{image_data}",
                         }
                     }
-                ]}
-            ]
-        else:
-            messages = [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt + "\n" + self.user_preprompt},
-            ]
+                ]
+            })
         
         # Get temperature from config
         temperature = self.config.get("code_temperature", self.config.get("temperature", 0.7))
-        
+
         # Call the API
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
-            messages=messages,
+            messages=prompt,
             response_format=LinesOfCodeWithinFunction,
             temperature=temperature,
         )
@@ -72,28 +68,24 @@ class OpenAIServiceAdapter(LLMService):
         formatted_code = "\n\t" + "\n\t".join(code_lines)
         return formatted_code
     
-    async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
+    async def generate_goal(self, context, image_data: Optional[str] = None) -> str:
         """Generate a goal using OpenAI with optional image data"""
         
         # Format the messages based on whether we have image data
         if image_data and self.supports_vision:
-            messages = [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": [
-                    {"type": "text", "text": context},
+            user_prompt = context.pop()["content"]
+            context.append({
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": f"{user_prompt}"},
                     {
                         "type": "image_url",
                         "image_url": {
                             "url": f"data:image/png;base64,{image_data}",
                         }
                     }
-                ]}
-            ]
-        else:
-            messages = [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": context},
-            ]
+                ]
+            })
         
         # Get temperature from config
         temperature = self.config.get("goal_temperature", self.config.get("temperature", 0.7))
@@ -101,12 +93,12 @@ class OpenAIServiceAdapter(LLMService):
         # Call the API
         completion = self.client.beta.chat.completions.parse(
             model=self.model,
-            messages=messages,
+            messages=context,
             response_format=Goal,
             temperature=temperature,
         )
         
         response = json.loads(completion.choices[0].message.content)
         goal = response["plaintext_goal"]
-        print(f"OpenAI generated goal: {goal}")
+        # print(f"OpenAI generated goal: {goal}")
         return goal

@@ -1,8 +1,8 @@
 import json
 from llm_service import LLMService
-from openai_service_adapter import OpenAIServiceAdapter
-from gemini_service_adapter import GeminiServiceAdapter
-from local_llm_service_adapter import LocalLLMServiceAdapter
+from api_adapters.openai_service_adapter import OpenAIServiceAdapter
+from api_adapters.gemini_service_adapter import GeminiServiceAdapter
+from api_adapters.local_llm_service_adapter import LocalLLMServiceAdapter
 
 
 class LLMServiceFactory:

@@ -31,13 +31,14 @@ func execute(_agent: Agent):
 		CommandType.GENERATE_GOAL:
 			"""Will call _LLM_set_goal when response is received"""
 			var context = agent.build_prompt_context()
+			var full_prompt = "Write a goal for your next action.\n" + context
 
 			# Generate goal using LLM, passing context and image data if visual mode is enabled
 			if agent.visual_mode:
 				var image_data = await agent.get_camera_view()
-				API.generate_goal(context, agent.hash_id, image_data)
+				API.generate_goal(full_prompt, agent.hash_id, image_data)
 			else:
-				API.generate_goal(context, agent.hash_id)
+				API.generate_goal(full_prompt, agent.hash_id)
 		CommandType.GENERATE_SCRIPT:
 			"""Will call _LLM_execute_script when response is received"""
 			var context = agent.build_prompt_context()

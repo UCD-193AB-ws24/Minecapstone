@@ -3,14 +3,12 @@ from typing import Optional
 import json
 import os
 from dotenv import load_dotenv
-from prompts import SYSTEM_PROMPT, USER_PREPROMPT
 
 
 class LLMService(ABC):
     """Abstract base class for models to be used in the LLM service"""
 
     def __init__(self, service, model, config_path: Optional[str] = ''):
-        global SYSTEM_PROMPT, USER_PREPROMPT
         """Initialize the OpenAI service adapter"""
         self.service = service
         self.model = model
@@ -28,12 +26,6 @@ class LLMService(ABC):
                 raise ValueError("Gemini API key not found! Please set it in .env.development.local.")
         self.api_key = api_key
 
-        # System prompt
-        self.system_prompt = SYSTEM_PROMPT
-        
-        # User preprompt for script generation
-        self.user_preprompt = USER_PREPROMPT
-
         if config_path:
             self.config = self.load_config(config_path)
 
@@ -44,12 +36,12 @@ class LLMService(ABC):
         pass
 
     @abstractmethod
-    async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
+    async def generate_script(self, prompt, image_data: Optional[str] = None) -> str:
         """Generate a script based on the prompt and optional image data"""
         pass
 
     @abstractmethod
-    async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
+    async def generate_goal(self, context, image_data: Optional[str] = None) -> str:
         """Generate a goal based on the context and optional image data"""
         pass
 

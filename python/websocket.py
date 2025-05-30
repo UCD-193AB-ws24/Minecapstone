@@ -3,7 +3,25 @@ import websockets
 import json
 import os
 import argparse
-from python.api_adapters.llm_service_factory import LLMServiceFactory
+from api_adapters.llm_service_factory import LLMServiceFactory
+from prompts import SYSTEM_PROMPT, USER_PREPROMPT
+import copy
+
+messages = {}
+
+# hash_id and key are used interchangeably
+def add_to_context(messages, hash_id, message_type: str = "user", message: str = ""):
+    """Add a message to the context history"""
+    if hash_id not in messages:
+        messages[hash_id] = [{
+            "role": "system", \
+            "content": SYSTEM_PROMPT
+        }]
+
+    messages[hash_id].append({
+        "role": message_type,
+        "content": message
+    })
 
 class WebSocketServer:
     """WebSocket server for handling LLM requests with visual support"""
@@ -15,6 +33,7 @@ class WebSocketServer:
         self.port = port
         self.llm_service = None
     async def handle_client(self, websocket):
+        global messages
         """Handle a client connection"""
         try:
             async for message in websocket:
@@ -28,25 +47,47 @@ class WebSocketServer:
                 # Check if image is provided but not supported
                 if (image_data and not self.llm_service.supports_vision):
                     print("Warning: Image provided but current LLM service doesn't support vision. Ignoring image.")
-                
+
                 # Send the prompt to the LLM and get the response
                 try:
                     payload = {"contents": "Unexpected prompt type."}
+
+                    temp_messages = copy.deepcopy(messages)
+                    add_to_context(temp_messages, key, "user", f"{USER_PREPROMPT}\n\n{prompt}")
+
+                    first_key = list(temp_messages.keys())[0] if temp_messages else None
+                    if first_key:
+                        print("\n\n=========================================================")
+                        for i in temp_messages[first_key]:
+                            print(json.dumps(i, indent=2))
+                        print("=========================================================\n\n")
+                        
+
                     if prompt_type == "GOAL":
-                        goal = await self.llm_service.generate_goal(prompt, image_data)
+                        goal = await self.llm_service.generate_goal(temp_messages[key], image_data)
+                        add_to_context(messages, key, "system", "You set your goal to: " + goal)
+                        
                         payload = {
                             "key": key,
                             "type": "GOAL",
                             "contents": goal,
                         }
+                        await websocket.send(json.dumps(payload))
+
                     elif prompt_type == "SCRIPT":
-                        script = await self.llm_service.generate_script(prompt, image_data)
+                        script = await self.llm_service.generate_script(temp_messages[key], image_data)
+                        add_to_context(messages, key, "assistant", script)
+
                         payload = {
                             "key": key,
                             "type": "SCRIPT",
                             "contents": script,
                         }
-                    await websocket.send(json.dumps(payload))
+
+                        await websocket.send(json.dumps(payload))
+                        
+                    elif prompt_type == "CLEAR":
+                        messages.clear()
                 except Exception as e:
                     print(f"Error generating response: {e}")
                     response = f"Error: {str(e)}"

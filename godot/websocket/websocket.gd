@@ -36,7 +36,20 @@ func _ready():
 		socket.set_outbound_buffer_size(1024 * 1024) # 1MB
 
 		print("Websocket peer connected to port 5000")
+
+		clear_context()
+
 		connected.emit()
+
+
+func clear_context():
+	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+		await connected
+
+	socket.send_text(JSON.stringify({
+		"key": -1,
+		"type": "CLEAR"
+	}))
 
 
 func generate_script(prompt: String, key: int, image_data: String = ""):
@@ -87,6 +100,7 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 		if parse_result != OK:
 			print("JSON Parse Error: ", json.get_error_message(), " in ", response_string, " at line ", json.get_error_line())
 			continue
+			
 		response_key = json.data["key"]
 		response_string = json.data["contents"]
 		response_type = json.data["type"]
