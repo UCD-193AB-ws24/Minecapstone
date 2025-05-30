@@ -17,6 +17,8 @@ var command_type: CommandType
 var command_status: CommandStatus
 var command_input: String
 
+# TODO: find a way to just get the string from agent_controller.gd, using FileAccess returns null and using the object.get_script is broken on packaged builds
+var agent_controller_str = "class_name AgentController\nextends Node\nvar agent: Agent\nvar position: Vector3\nvar label: Label3D\nvar message_broker = MessageBroker\nfunc setup(target_agent: Agent):\n\tself.agent = target_agent\n\tself.position = target_agent.position\n\tself.label = agent.get_node(\"Label3D\")\n\treturn self\nfunc get_position() -> Vector3:\n\treturn agent.global_position\nfunc move_to_position(x: float, y: float):\n\tlabel.text = \"Moving to position: \" + str(x) + \", \" + str(y)\n\tvar result = await agent.move_to_position(x, y, 2)\n\tif result == true:\n\t\tvar memory = Memory.new(\"You moved to position \" + str(x) + \", \" + str(y))\n\t\tagent.memories.add_memory(memory)\n\telse:\n\t\tvar memory = Memory.new(\"You failed to move to position \" + str(x) + \", \" + str(y))\n\t\tagent.memories.add_memory(memory)\n\treturn result\nfunc move_to_target(target_name: String, distance_away: float = 2.0):\n\tlabel.text = \"Moving to target: \" + target_name\n\tvar result = await agent.move_to_target(target_name, distance_away)\n\tif result == true:\n\t\tvar memory = Memory.new(\"You moved to the target \" + target_name)\n\t\tagent.memories.add_memory(memory)\n\telse:\n\t\tvar memory = Memory.new(\"You failed to move to the target \" + target_name)\n\t\tagent.memories.add_memory(memory)\n\treturn result\nfunc look_at_target(target_name: String):\n\tlabel.text = \"Looking at target: \" + target_name\n\tagent.look_at_target_by_name(target_name)\nfunc attack_target(target_name: String, num_attacks: int = 1):\n\tlabel.text = \"Attacking entity \" + target_name + \" \" + str(num_attacks) + \" times.\"\n\treturn await agent.attack_target(target_name, num_attacks)\nfunc discard(itemName: String, amount: int):\n\tlabel.text = \"Discarding item: \" + itemName + \", amount: \" + str(amount)\n\tagent.discard_item(itemName, amount)\nfunc give_to(agent_name: String, item_name: String, amount: int = 1):\n\tlabel.text = \"Giving \" + str(amount) + \" \" + item_name + \" to \" + agent_name\n\tagent.give_to(agent_name, item_name, amount)\nfunc wait(time: float):\n\tlabel.text = \"Waiting for \" + str(time) + \" seconds.\"\n\tawait agent.wait(time)\nfunc say(msg: String) -> void:\n\tmessage_broker.send_message(msg, agent.hash_id)\n\tvar message_memory = MessageMemory.new(msg, \"You\")\n\tagent.memories.add_memory(message_memory)\nfunc say_to(msg: String, target_agent: String) -> void:\n\tvar target_id = AgentManager.get_agent(target_agent).agent_hash_id\n\tmessage_broker.send_message(msg, agent.hash_id, target_id)\n\tvar message_memory = MessageMemory.new(msg, \"You\", target_agent)\n\tagent.memories.add_memory(message_memory)\nfunc pick_up_item(item_name: String):\n\tlabel.text = \"Picking up item: \" + item_name\n\tagent.pick_up_item(item_name)\nfunc break_block(coordinates: Vector3i):\n\tlabel.text = \"Breaking block at: \" + str(coordinates)\n\tagent.break_block(coordinates)\nfunc place_block(coordinates: Vector3i):\n\tlabel.text = \"Placing block at: \" + str(coordinates)\n\tagent.place_block(coordinates)\nfunc eat_food(food_name: String = \"\") -> void:\n\tfor i in range(16):\n\t\tawait agent.get_tree().physics_frame\n\tagent.call_deferred(\"eat_food\", food_name)\n\nfunc eval():\n\treturn true"
 
 func execute(_agent: Agent):
 	"""This function is called by the agent to execute the command.
@@ -131,13 +133,18 @@ func run_script(input: String):
 	"""
 	# TODO: replace RefCounted replacement with something that extends AgentController,
 	# so that the debugger works properly on AgentController
-	var source = agent.agent_controller.get_script().get_source_code().replace(
+	# This line has an issue not sure how to fix :/
+	
+	#var agent_file = FileAccess.open("res://globals/agent_controller.gd", FileAccess.READ)
+	var source = agent_controller_str.replace(
+	#var source = agent.agent_controller.get_script().get_source_code().replace(
 		"class_name AgentController\nextends Node",
 		"extends RefCounted").replace(
 		"func eval():\n\treturn true",
 		"func eval():\n%s\n\treturn true" % input)
 
 	print_rich("Debug: [color=#%s][Agent %s][/color] performing [color=cornflower_blue]%s[/color]" % [agent.debug_color, agent.debug_id, input])
+	#print("Has source " + str(agent.agent_controller.get_script().has_source_code()))
 
 	# Dangerously created script
 	var script = GDScript.new()
