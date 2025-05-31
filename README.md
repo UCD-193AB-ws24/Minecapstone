@@ -128,8 +128,9 @@ Older or new versions may or may not work.
 | 2. **Item interaction functionality**           | Picking up item drops, Dropping items             |
 | 3. **Scenario dev**                             | Complex multiprompt + multiagent                  |
 | 4. **Interactables**                            |                                                   |
-| 5. **Signal adapter**                           | For C#-GDScript signal communication (deprecated) |
-| 6. **Bug fixes**                                |                                                   |
+| 5. **Agent Manager**                            | Identifying agents from by their IDs              |
+| 6. **Signal adapter**                           | For C#-GDScript signal communication (deprecated) |
+| 7. **Bug fixes**                                |                                                   |
 ### Ryan
 | **Role/Contribution**                | Description                                                                  |
 | ------------------------------------ | ---------------------------------------------------------------------------- |
