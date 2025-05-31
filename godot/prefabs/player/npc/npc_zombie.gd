@@ -78,7 +78,7 @@ func _physics_process(delta):
 func _target_nearest_player_or_agent():
 	var nearest_distance = INF
 	for entity in detected_entities:
-		if entity.name == "Player" or entity.name == "Agent":
+		if entity.name.begins_with("Player") or entity.name.begins_with("Agent"):
 			var distance = global_position.distance_to(entity.global_position)
 			if distance < nearest_distance:
 				nearest_distance = distance
