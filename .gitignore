@@ -1,5 +1,5 @@
 *.tmp
-.vscode/*
+.vscode/settings.json
 *.old*
 *.local
 .env

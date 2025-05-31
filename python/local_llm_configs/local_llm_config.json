@@ -1,6 +1,6 @@
 {
 	"api_endpoint": "http://localhost:11434/api/generate",
-	"model": "gemma3:12b",
+	"model": "llava:latest",
 	"supports_vision": true,
 	"request_format": {
 		"model": "{model}",
@@ -11,6 +11,5 @@
 			"max_tokens": 4096
 		}
 	},
-	"response_field": "response",
-	"image_field": "images"
+	"response_field": "response"
 }

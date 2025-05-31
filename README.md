@@ -3,16 +3,16 @@ The Simulated Profiling Environment for Embodied Intelligence (SPEEN) is an open
 
 We provide both structured **quantitative benchmarking** through diverse scenarios, and an open-world sandbox for **qualitative assessment** of decision-making behaviors.
 
-These environments are designed to test the capabilities of single-to-multi **embodied agent** systems, the LLMs that control them, and the prompting architectures that drive decision-making.
+These simulated environments are designed to test the capabilities of single-to-multi **embodied agent** systems, the LLMs that control them, and the prompting architectures that drive decision-making.
 
 Our system provides researchers a tool to test various embodied LLM implementations in a flexible simulated environment and contribute to the development of robust evaluative measures for Trustworthy AI.
 
-**Check out the other documentation files ([``./python/README.md``](./python/README.md) and [``./godot/README.md``](./godot/README.md)) for more information on how to modify or add new scenarios!**
-
-# Running Release Build
-TODO
+**Check out the other documentation files ([``./python/README.md``](./python/README.md) and [``./godot/README.md``](./godot/README.md))** for more information on how to modify or add new scenarios!
 
 # Overview
+## Packaged Solution
+TBD
+
 ## Functionality
 ### Basic Benchmarking
 Runs a set of scenarios and records quantitative measurements (time, success rate) of the agent.
@@ -21,7 +21,7 @@ Runs a set of scenarios and records quantitative measurements (time, success rat
 3. Observe the agent's behavior, and wait for the agent to finish all scenarios.
 4. Observe the success, failure, and hallucination rate output.
 
-### Infinite Decision-Making
+### Infinite Decision-Making Sandbox
 This sandbox environment allows the agents to make decisions in an infinite loop, allowing them to think and act without any time constraints. This is useful for testing the agent's ability to think and act in a complex environment.
 1. Open the Godot project in the Godot editor.
 2. In the scenarios folder, open the world/world.tscn scene.
@@ -72,7 +72,8 @@ Older or new versions may or may not work.
   * Development branches should be named ``dev-<your_name>-<feature_name>`` and pull requests should be made with at least one reviewer before merging into main.
   * Commit frequently, and use descriptive commit messages. Precede commit messages with ``fix:``, ``feat:``, or ``chore:`` to indicate the type of change.
 ## Future Work/Not in current sample
-* TBD
+* In future work, SPEEN can be extended to more complex and/or more realistic scenarios that match real-world tasks (e.g. home automation, manual labor, defense systems, etc.).
+* While the current prompting architecture is functional, it can be improved to handle the storage of previous agent actions and decisions, allowing for more complex decision-making.
 
 # Troubleshooting
 
@@ -96,59 +97,62 @@ Older or new versions may or may not work.
 
 # Credits
 ### Iemontine
-| Role/Contribution                 | Description                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------- |
-| 1. Project manager and director   | Repository maintenance, project coordination                                           |
-| 2. World generation               | Chunk system, procedural generation, voxel optimization                                |
-| 3. Prompting architecture         | Generating goals, scripts                                                              |
-| 4. AI integration                 | Agent executing generated code                                                         |
-| 5. Agent navigation               | Navlogic, runtime navmesh generation                                                   |
-| 6. Chain-of-thought mode          | Infinite thinking                                                                      |
-| 7. Base player/NPC functionality  | Movement, camera, raycasting                                                           |
-| 8. Scenario Manager               | Base scenario class, tracking successes and failures, then resetting to original state |
-| 9. Benchmarker                    | Sequential running of scenarios + getting metrics                                      |
-| 10. World shaders                 | Water, sky, biome                                                                      |
-| 11. Block system                  | Block types, textures                                                                  |
-| 12. Structure generation          | Trees as interactable objects                                                          |
-| 13. Debugging tools               | Agent labels, debug UI, debug for script/goal gen                                      |
-| 14. Agent self-fixing             | Catching and tracking errors and allowing agent recovery                               |
-| 15. Day/night cycle + shaders     |                                                                                        |
-| 16. Prompt engineering            |                                                                                        |
-| 17. Support for visual modal LLMs | Sending camera data to backend as image                                                |
-| 18. Quality Control               |                                                                                        |
-| 19. Bug fixes                     |                                                                                        |
-| 20. Refactoring                   |                                                                                        |
+| **Role/Contribution**                | Description                                                                                       |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| 1. **Project manager and director**  | Repository maintenance, project coordination                                                      |
+| 2. **World generation**              | Chunk system, procedural generation, voxel optimization                                           |
+| 3. **Prompting architecture**        | Generating goals, scripts                                                                         |
+| 4. **AI integration**                | Agent executing generated code                                                                    |
+| 5. **Agent navigation**              | Navlogic, runtime navmesh generation                                                              |
+| 6. **Chain-of-thought mode**         | Infinite thinking                                                                                 |
+| 7. **Base player/NPC functionality** | Movement, camera, raycasting                                                                      |
+| 8. **Scenario dev**                  | Complex puzzle, move_to, move_to_visual                                                           |
+| 9. **Scenario Manager**              | Base scenario class, tracking successes & failures, resetting to original state                   |
+| 10. **Benchmarker**                  | Sequential running of scenarios + getting metrics                                                 |
+| 11. **Context preservation**         | Saving additional context about previous goals and actions per agent for improved decision-making |
+| 12. **Visual modality**              | Support for vision-enabled LLMs processing camera input                                           |
+| 13. **World shaders**                | Water, sky, biome                                                                                 |
+| 14. **Block system**                 | Block types, textures, breaking and placing blocks                                                |
+| 15. **Structure generation**         | Trees as interactable objects                                                                     |
+| 16. **Debugging tools**              | Agent labels, debug UI, debug for script/goal gen                                                 |
+| 17. **Agent self-fixing**            | Catching and tracking errors and allowing agent recovery                                          |
+| 18. **Day/night cycle + shaders**    |                                                                                                   |
+| 19. **Prompt engineering**           |                                                                                                   |
+| 20. **Quality Control**              | Ensuring clean PRs and issue tracking                                                             |
+| 21. **Bug fixes**                    | Fixing issues in environments, agent management, prompting architecture, etc.                     |
+| 22. **Refactoring**                  | Refactoring broken, unoptimal, or dirty code                                                      |
 ### Keshfer
-| Role/Contribution                           | Description                           |
-| ------------------------------------------- | ------------------------------------- |
-| 1. Item system, inventory management system | Design & implementation               |
-| 2. Item interaction functionality           | Picking up item drops, Dropping items |
-| 3. Scenario dev                             | Complex multiprompt + multiagent      |
-| 4. Interactables                            |                                       |
-| 5. Signal adapter                           | For C#-GDScript signal communication  |
-| 6. Bug fixes                                |                                       |
+| **Role/Contribution**                           | Description                                       |
+| ----------------------------------------------- | ------------------------------------------------- |
+| 1. **Item system, inventory management system** | Design & implementation                           |
+| 2. **Item interaction functionality**           | Picking up item drops, Dropping items             |
+| 3. **Scenario dev**                             | Complex multiprompt + multiagent                  |
+| 4. **Interactables**                            |                                                   |
+| 5. **Agent Manager**                            | Identifying agents from by their IDs              |
+| 6. **Signal adapter**                           | For C#-GDScript signal communication (deprecated) |
+| 7. **Bug fixes**                                |                                                   |
 ### Ryan
-| Role/Contribution                | Description                                                                  |
-| -------------------------------- | ---------------------------------------------------------------------------- |
-| 1. LLM-swapping user config tool | LLM service adapter to support local LLMs and various APIs, parsing resposes |
-| 2. Base memory management system | Adding memory context to prompt                                              |
-| 3. Messaging system              | MessageBroker to manage inter-agent communication                            |
-| 4. Zombie AI Behaviors           | Attack, chasing, wandering                                                   |
-| 5. Scenario dev                  | eat, say                                                                     |
-| 6. Needs                         | Health, hunger, food                                                         |
-| 7. Sprinting                     |                                                                              |
+| **Role/Contribution**                | Description                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------- |
+| 1. **LLM-swapping user config tool** | LLM service adapter to support local LLMs and various APIs, parsing resposes |
+| 2. **Base memory management system** | Adding memory context to prompt                                              |
+| 3. **Messaging system**              | MessageBroker to manage inter-agent communication                            |
+| 4. **Zombie AI Behaviors**           | Attack, chasing, wandering                                                   |
+| 5. **Scenario dev**                  | eat, say                                                                     |
+| 6. **Needs**                         | Health, hunger, food                                                         |
+| 7. **Sprinting**                     |                                                                              |
 ### Matt
-| Role/Contribution                  | Description                 |
-| ---------------------------------- | --------------------------- |
-| 1. Block breaking system           | Taking time to break blocks |
-| 2. Ore generation system           | With different ore types    |
-| 3. Tool use and tool proficiencies |                             |
-| 4. Entity targeting and combat     |                             |
-| 5. Bug fixes                       |                             |
+| **Role/Contribution**                  | Description                               |
+| -------------------------------------- | ----------------------------------------- |
+| 1. **Block breaking system**           | Taking time to break blocks               |
+| 2. **Ore generation system**           | With different ore types                  |
+| 3. **Tool use and tool proficiencies** | Integrated with the block breaking system |
+| 4. **Entity targeting and combat**     |                                           |
+| 5. **Bug fixes**                       |                                           |
 ### Jon
-| Role/Contribution                         | Description |
-| ----------------------------------------- | ----------- |
-| 1. Chunk caching and loading              |             |
-| 2. Animal AI behavior                     |             |
-| 3. Entity detection and targeting systems |             |
-| 4. Scenario dev                           | look_at     |
+| **Role/Contribution**                         | Description |
+| --------------------------------------------- | ----------- |
+| 1. **Chunk caching and loading**              |             |
+| 2. **Animal AI behavior**                     |             |
+| 3. **Entity detection and targeting systems** |             |
+| 4. **Scenario dev**                           | look_at     |

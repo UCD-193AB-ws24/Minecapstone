@@ -55,12 +55,14 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 	var payload
 	if image_data != "":
 		payload = JSON.stringify({
+			"key": key,
 			"type": type,
 			"prompt": prompt,
 			"image_data": image_data
 		})
 	else:
 		payload = JSON.stringify({
+			"key": key,
 			"type": type,
 			"prompt": prompt
 		})
@@ -69,12 +71,31 @@ func _prompt_LLM(prompt: String, key: int, type: String, image_data: String = ""
 
 	# Wait for a non-empty response.
 	var response_string = ""
+	var response_type = ""
+	var response_key = -1
 	while response_string == "":
 		await response_received
 		response_string = socket.get_packet().get_string_from_utf8()
-		if response_string != "":
+
+		if response_string == "":
+			continue
+
+		# Parse the JSON response, ensuring that the response matches the expected type.
+		var json = JSON.new()
+		var parse_result = json.parse(response_string)
+
+		if parse_result != OK:
+			print("JSON Parse Error: ", json.get_error_message(), " in ", response_string, " at line ", json.get_error_line())
+			continue
+		response_key = json.data["key"]
+		response_string = json.data["contents"]
+		response_type = json.data["type"]
+
+		# print("Received response of type '%s' with contents: %s" % [response_type, response_string])
+
+		# Emit the response signal with the key and response string.
+		if response_string != "" and response_key == key and response_type == type:
 			response.emit(key, response_string)
-		# TODO: add timeout?
 
 
 func _physics_process(_delta):
@@ -97,6 +118,9 @@ func _physics_process(_delta):
 		WebSocketPeer.STATE_CLOSED:
 			# The code will be -1 if the disconnection was not properly notified by the remote peer.
 			var code = socket.get_close_code()
-			print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
+			var reason = socket.get_close_reason()
+			print("WebSocket closed with code: %d, reason: %s. Clean: %s" % [code, reason, code != -1])
+			
+			# Attempt to reconnect after a short delay
 			set_process(false) # Stop processing.
 			set_physics_process(false) # Stop physics processing.

@@ -12,7 +12,7 @@ extends Player
 @onready var detected_interactables: Array = [] # holds interactables detected by the detection sphere
 @export var detection_range: float = 50.0 # detection radius for the DetectionSphere area3d
 @export var attack_damage: float = 25.0 # current 4 shots player
-@export var attack_cooldown: float = 2.0
+@export var attack_cooldown: float = 1.0
 @export var chase_speed: float = 2.0		# TODO: why is this a member of NPC when not all NPCs chase
 @export var move_disabled: bool = false
 @export var attack_disabled: bool = false
@@ -168,10 +168,12 @@ func give_to(agent_name: String, item_name:String, amount:int):
 		#Agent not found. Maybe it is not an agent the npc wants
 		#from the world node, get node with the name agent_name
 		ref = get_parent().get_node(agent_name)
-	await move_to_position(ref.global_position.x, ref.global_position.z, 3)
+	await move_to_position(ref.global_position.x, ref.global_position.z, 2.5)
 
-	set_look_position(ref.global_position)
-	inventory_manager.DropItem(item_name, amount)
+	await set_look_position(ref.global_position + Vector3(0, 0.5, 0)) # look at the agent's head
+	await inventory_manager.DropItem(item_name, amount)
+
+	return true
 
 	# # Standard head angle for dropping item towards receiving agent who is [-1, 1] block level
 	# var look_pos = Vector3(ref.global_position.x, ref.global_position.y + 2, ref.global_position.z)
@@ -211,7 +213,9 @@ func move_to_position(x: float, y: float, distance_away: float = 2):
 	add_child(timer)
 	timer.start(10)
 
-	timer.timeout.connect(func(): timed_out = true)
+	timer.timeout.connect(func(): 
+		timed_out = true
+	)
 
 	# if navigation_agent.is_target_reachable():
 	# 	return false
@@ -230,13 +234,14 @@ func move_to_position(x: float, y: float, distance_away: float = 2):
 	return true
 
 
-func move_to_target(target_name: String, distance_away:float=2.0):
+func move_to_target(target_name: String, distance_away: float):
 	for entity in detected_entities:
 		if entity.name == target_name:
 			var target_pos = entity.global_position
 			await move_to_position(target_pos.x, target_pos.z, distance_away)
 			return true
-	print("Target '%s' not found in detected entities." % target_name)
+	await get_tree().physics_frame
+	# print("Target '%s' not found in detected entities." % target_name)
 	return false
 
 
@@ -303,20 +308,23 @@ func attack_target(target_name: String, num_attacks: int = 1):
 			
 	if target_entity == null:
 		# TODO: Add to memories that it failed
+		print("done")
+
 		return false
 
 	current_target = target_entity
-	var successful_attacks = 0
-	while successful_attacks < num_attacks:
+	var attacks = 0
+	while attacks < num_attacks:
 		if current_target == null: 
 			return
-		await move_to_target(target_name)
+		await move_to_target(target_name, 1.25)
 		look_at_target_by_name(target_name)
-		var hit = await _attack()
-		if hit: successful_attacks += 1
-		
+		await get_tree().create_timer(attack_cooldown / 2).timeout
+		await _attack()
 		# print(str(current_target.health) + " health left")
 		await get_tree().create_timer(attack_cooldown).timeout
+		attacks += 1
+
 
 	current_target = null
 	return true
@@ -325,17 +333,24 @@ func attack_target(target_name: String, num_attacks: int = 1):
 func pick_up_item(item_name: String):
 	# Find item by name
 	var item = null
+	var coordinates = Vector2.ZERO
 	for detected_item in detected_items:
 		if detected_item.get_meta("ItemName") == item_name:
 			item = detected_item
+			coordinates = Vector2(detected_item.global_position.x, detected_item.global_position.z)
 			break
 			
 	if item == null:
 		print("Item '%s' not found in detected items." % item_name)
+		return false
+	else:
+		print("Moving to item: ", item_name, " at coordinates: ", coordinates)
+		while detected_items.has(item):
+			await move_to_position(item.global_position.x, item.global_position.z, 1.25)
+
+	return true
 	#TODO: after moving to item, check if the item is still in the world to verify it has been picked up. Keep moving to item if the item still exists in the world
 	
-	while detected_items.has(item):
-		return await move_to_position(item.global_position.x, item.global_position.z, 1.25)
 
 
 # Attacks specificaly the current target
@@ -389,7 +404,8 @@ func  _get_all_detected_entities():
 			if entity_inventory != null:
 				inventory_data = entity_inventory.GetInventoryData()
 			# print(entity.name + "'s inventory: ", inventory_data)	
-			context += """- %s
+			context += """
+	- %s
 		- Health: %s
 		- Distance To: %s units
 		- Coordinates: (%s, %s)
@@ -463,7 +479,7 @@ func save():
 	save_dict["chase_speed"] = chase_speed
 	save_dict["move_disabled"] = move_disabled
 	save_dict["attack_disabled"] = attack_disabled
-	save_dict["has_died"] = has_died
+	# save_dict["has_died"] = has_died
 	save_dict["detected_entities_added"] = detected_entities_added
 	
 	return save_dict

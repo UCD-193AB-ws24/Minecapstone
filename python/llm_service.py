@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+import json
 import os
 from dotenv import load_dotenv
 from prompts import SYSTEM_PROMPT, USER_PREPROMPT
@@ -8,25 +9,23 @@ from prompts import SYSTEM_PROMPT, USER_PREPROMPT
 class LLMService(ABC):
     """Abstract base class for models to be used in the LLM service"""
 
-    def __init__(self, model, settings=None):
+    def __init__(self, service, model, config_path: Optional[str] = ''):
         global SYSTEM_PROMPT, USER_PREPROMPT
         """Initialize the OpenAI service adapter"""
-        self.settings = settings or {}
+        self.service = service
         self.model = model
 
-        # Get API key from settings or environment
-        api_key = settings.get("api_key")
-        if not api_key:
-            api_keys = self.load_api_keys()
-
-            if "gpt" in model:
-                api_key = api_keys["openai"]
-                if not api_key:
-                    raise ValueError("OpenAI API key not found! Please set it in the .env.development.local file or provide it in the settings.")
-            elif "gemini" in model:
-                api_key = api_keys["gemini"]
-                if not api_key:
-                    raise ValueError("Gemini API key not found! Please set it in the .env.development.local file or provide it in the settings.")
+        # Get API key from environment
+        api_keys = self.load_api_keys()
+        api_key = None
+        if "gpt" in model:
+            api_key = api_keys["openai"]
+            if not api_key:
+                raise ValueError("OpenAI API key not found! Please set it in .env.development.local.")
+        elif "gemini" in model:
+            api_key = api_keys["gemini"]
+            if not api_key:
+                raise ValueError("Gemini API key not found! Please set it in .env.development.local.")
         self.api_key = api_key
 
         # System prompt
@@ -34,6 +33,9 @@ class LLMService(ABC):
         
         # User preprompt for script generation
         self.user_preprompt = USER_PREPROMPT
+
+        if config_path:
+            self.config = self.load_config(config_path)
 
     @property
     @abstractmethod
@@ -50,6 +52,22 @@ class LLMService(ABC):
     async def generate_goal(self, context: str, image_data: Optional[str] = None) -> str:
         """Generate a goal based on the context and optional image data"""
         pass
+
+    def load_config(self, config_path: str) -> dict:
+        with open(config_path, 'r') as f:
+            llm_config = json.load(f)
+
+        services = llm_config.get("available_services", None)
+
+        specific_config = {}
+        if services:
+            models = services[self.service]['models']
+
+            # Find the configuration for the specified model
+            specific_config = next((model for model in models if model['name'] == self.model), None)
+
+        print(f"Configuration loaded from {config_path}")
+        return specific_config
 
     def load_api_keys(self) -> dict:
         """

@@ -11,15 +11,15 @@ func _ready() -> void:
 	_find_agent()
 
 
+func _restore_initial_state():
+	await super()
+	_find_agent()
+	
+
 func _find_agent():
 	agent = get_parent().get_node("Agent")
 	if agent:
 		raycast = agent.get_node("Head/Camera3D/RayCast3D")
-
-
-func reset():
-	await super()
-	_find_agent()
 
 
 # currently broken, still trying to figure out how to get raycast after a reset

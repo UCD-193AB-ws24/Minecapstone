@@ -8,52 +8,42 @@ import os
 class LocalLLMServiceAdapter(LLMService):
     """Adapter for any locally run LLM"""
 
-    def __init__(self, model="default", settings = None):
-        super().__init__(model=model, settings=settings)
-    
-        # Load local config if specified
-        self.config = settings or {}
-        local_config = {}
-        
-        local_config_path = self.config.get("config_path", "./local_llm_config.json")
-        
-        if local_config_path.startswith("python/"):
-            local_config_path = local_config_path[7:]
-        
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        resolved_path = os.path.join(script_dir, local_config_path)
-        
-        try:
-            with open(resolved_path, 'r') as f:
-                local_config = json.load(f)
-                print(f"Loaded local LLM configuration from {resolved_path}")
-        except FileNotFoundError:
-            print(f"No local LLM config found at {resolved_path}, using defaults")
+    def __init__(self, model="example", config_path: Optional[str] = None):
+        super().__init__("local", model, config_path)
 
-        self.config = {**local_config, **settings}
-        
+        # TODO: fix this
+    
         # Get basic configuration
-        self.api_endpoint = self.config.get("api_endpoint", "http://localhost:8000/api/generate")
+        self.api_endpoint = self.config.get("api_endpoint", "http://localhost:11434/api/generate")
         self.model_name = model or self.config.get("model", "")
-        self.timeout = self.config.get("timeout", 30)  # seconds
+        self.timeout = self.config.get("timeout", 120)  # seconds
         
         print(f"Initialized Local LLM service with endpoint: {self.api_endpoint}")
         if self.model_name:
             print(f"Using model: {self.model_name}")
 
+    def load_config(self, config_path: str) -> dict:
+        config_path = super().load_config(config_path)["config_path"]
+        config_path = "./python/" + config_path
+        local_llm_config = {}
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                local_llm_config = json.load(f)
+        else:
+            print(f"Local LLM config file not found: {config_path}")
+        return local_llm_config
+
     @property
     def supports_vision(self) -> bool:
         """Check if model supports vision"""
-        return self.settings.get("support_vision", False)
+        return self.config.get("supports_vision", False)
     
     async def generate_script(self, prompt: str, image_data: Optional[str] = None) -> str:
         """Generate a script using local LLM with optional image data"""
         full_prompt = f"{self.system_prompt}\n\n{prompt}\n\n{self.user_preprompt}"
 
         try:
-            import asyncio
-            response_text = await asyncio.to_thread(
-                self._make_api_request,
+            response_text = self._make_api_request(
                 full_prompt,
                 image_data,
                 "code"  # Specify request_type for script generation
@@ -84,9 +74,7 @@ class LocalLLMServiceAdapter(LLMService):
     """
         
         try:
-            import asyncio
-            response_text = await asyncio.to_thread(
-                self._make_api_request,
+            response_text = self._make_api_request(
                 full_prompt,
                 image_data,
                 "goal"  # Specify request_type for goal generation
@@ -102,10 +90,9 @@ class LocalLLMServiceAdapter(LLMService):
             return "Failed to generate goal"  # Add a default return value for error case
 
     def _make_api_request(self, prompt: str, image_data: Optional[str] = None, request_type: str = "general") -> str:
-        """Make a request to the local LLM API"""
         # Get request format from config, or use default
         request_format = self.config.get("request_format", {"prompt": "{prompt}"})
-        
+
         # Create a copy of the request format
         payload = {}
         for key, value in request_format.items():
@@ -118,12 +105,28 @@ class LocalLLMServiceAdapter(LLMService):
             else:
                 # Copy other values as is
                 payload[key] = value
-        
-        # Add image if supported
+
+        # Add image if supported and provided
         if image_data and self.supports_vision:
-            image_field = self.config.get("image_field", "image")
-            payload[image_field] = image_data
-        
+            # More detailed debug
+            print(f"Processing image data of length: {len(image_data)}")
+            print(f"Image data type: {type(image_data)}")
+            
+            image_field = self.config.get("image_field", "images")
+            
+            # Process image data based on model requirements
+            if "data:image" in image_data:
+                # Remove any potential prefixes like "data:image/jpeg;base64,"
+                image_data = image_data.split(",", 1)[-1]
+                print("Formatted image data (removed prefix)")
+            
+            # For Ollama's LLava: we'll use array format since that's what worked before
+            payload[image_field] = [image_data]  # Array format
+            print(f"Using array format for image field: {image_field}")
+                
+            # Debug output to verify image is included
+            print(f"Added image data to '{image_field}' field (length: {len(image_data) if image_data else 0})")
+
         # Apply type-specific settings
         if request_type == "code" and "code_settings" in self.config:
             for key, value in self.config["code_settings"].items():
@@ -136,7 +139,8 @@ class LocalLLMServiceAdapter(LLMService):
         headers = {"Content-Type": "application/json"}
         if "headers" in self.config:
             headers.update(self.config["headers"])
-        
+
+        # print("Payload:", json.dumps(payload, indent=2))
         response = requests.post(
             self.api_endpoint,
             json=payload,

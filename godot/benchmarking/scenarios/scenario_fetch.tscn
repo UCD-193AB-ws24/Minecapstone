@@ -42,18 +42,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7216, 6, 2.24452)
 
 [node name="Agent1" parent="." instance=ExtResource("3_5gkwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.78495, 2.03032, 4.89785)
-goal = "Satisfy the Scenario Goal"
-scenario_goal = "Say to Agent2 to kill the zombie left of the animal and give you the item drops. Make sure to specify the zombie's name to Agent2."
+goal = ""
+scenario_goal = "Say to Agent2 to kill the zombie left of the animal and give you the item drops. Make sure to specify the zombie's name to Agent2. After speaking once, don't say anything else, just pass. Read your memories to ensure you don't ever speak again, once in this state you need not write comments."
 prompt_allowance = 5
 visual_mode = true
 
+
 [node name="Agent2" parent="." instance=ExtResource("3_5gkwf")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 5.00872, 1.21307, 5)
-goal = "Do what Agent1 tells you to do."
-scenario_goal = ""
+goal = ""
+scenario_goal = "Do what Agent1 tells you to do. Zombies drop Wood Pickaxe."
 prompt_allowance = 5
 attack_damage = 100.0
 _speed = 4.0
+
 
 [node name="Player" parent="." instance=ExtResource("5_fhyri")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6, 0)
@@ -65,20 +67,19 @@ attack_disabled = true
 
 [node name="Zombie1" parent="." instance=ExtResource("6_53nu6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.16051, 0.519879, -2.89983)
+detection_range = 2.0
 move_disabled = true
 attack_disabled = true
 
 [node name="Zombie2" parent="." instance=ExtResource("6_53nu6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.18463, 0.519879, -1.90397)
+detection_range = 20.0
 move_disabled = true
 attack_disabled = true
 
 [node name="ScenarioManager" type="Node" parent="."]
 script = ExtResource("5_wmjf1")
-scenario_duration_seconds = 30
-
-[node name="ScenarioTimer" type="Timer" parent="ScenarioManager"]
-autostart = true
+scenario_type = 3
+scenario_duration_seconds = 60.0
 
 [connection signal="bake_finished" from="NavigationMesher" to="NavigationMesher" method="OnBakeFinished"]
-[connection signal="timeout" from="ScenarioManager/ScenarioTimer" to="ScenarioManager" method="spawn_scene"]
