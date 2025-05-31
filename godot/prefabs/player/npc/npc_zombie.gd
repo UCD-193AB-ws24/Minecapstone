@@ -16,7 +16,7 @@ func _init() -> void:
 func _ready():
 	super()
 	detected_entities_added.connect(_check_added_entity)
-	inventory_manager.AddItem(ItemDictionary.Get("Meat"), 1)
+	inventory_manager.AddItem(ItemDictionary.Get("RottenMeat"), 1)
 	#inventory_manager.AddItem(ItemDictionary.Get("Grass"), 64)
 	#inventory_manager.AddItem(ItemDictionary.Get("Dirt"), 64)
 
