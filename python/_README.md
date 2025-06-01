@@ -13,7 +13,7 @@ Create an adapter file in Python and have it inherit from this class. The templa
 - [`python/llm_config.json`](.\python\llm_config.json) main config
 
 llm_config.json is the main config file that holds a list of available llms and dictates which one will load.
-First thing you need to do here is create an entry under the key "available_services".
+First thing you need to do here is create an entry under the key "available_services". 
 with the template:
 ```
 "name-of-organization-that-owns-the-llm": {
@@ -179,10 +179,38 @@ You can adjust these settings based on your experience:
 - Lower code_settings temperature even further (try 0.05)
 - Consider switching to DeepSeek for better coding performance
 
+#Setting the active LLM
+
+Go to the [`python/llm_config.json`](.\python\llm_config.json) and set these two keys:
+```
+	"service": "available_services-options",
+	"model": "exact name of LLM model"
+```
+in order to set the active LLM for the program. If you want to use a local LLM, set service to "local".
+Here are a few examples to help your understanding:
+```
+	"service": "local",
+	"model": "llava:latest"
+
+	"service": "openai",
+	"model": "gpt-40-mini"
+
+	"service": "gemini",
+	"model": "gemini-2.0-flash"
+```
+
 #Running your LLM
 
 Activate the python websocket by running this command from your root folder:
 ```
 python python/websocket.py
 ```
+If successful, your output should look like this:
+```
+Initialized Local LLM service with endpoint: http://localhost:11434/api/generate
+Using model: llava:latest
+LLM service supports vision/images
+WebSocket server started on localhost:5000
+```
+
 
