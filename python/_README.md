@@ -210,6 +210,6 @@ If successful, your output should look like this:
 Initialized Local LLM service with endpoint: http://localhost:11434/api/generate
 Using model: llava:latest
 LLM service supports vision/images
-
+WebSocket server started on localhost:5000
 ```
 
