@@ -99,25 +99,25 @@ Older or new versions may or may not work.
 ### Iemontine
 | **Role/Contribution**                | Description                                                                                       |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| 1. **Project manager and director**  | Repository maintenance, project coordination                                                      |
-| 2. **World generation**              | Chunk system, procedural generation, voxel optimization                                           |
+| 1. **Project manager**               | Repository maintenance, project direction and coordination                                        |
+| 2. **World generation**              | For sandbox: Chunk system, procedural generation, voxel optimization                              |
 | 3. **Prompting architecture**        | Generating goals, scripts                                                                         |
-| 4. **AI integration**                | Agent executing generated code                                                                    |
-| 5. **Agent navigation**              | Navlogic, runtime navmesh generation                                                              |
-| 6. **Chain-of-thought mode**         | Infinite thinking                                                                                 |
-| 7. **Base player/NPC functionality** | Movement, camera, raycasting                                                                      |
-| 8. **Scenario dev**                  | Complex puzzle, move_to, move_to_visual                                                           |
-| 9. **Scenario Manager**              | Base scenario class, tracking successes & failures, resetting to original state                   |
-| 10. **Benchmarker**                  | Sequential running of scenarios + getting metrics                                                 |
-| 11. **Context preservation**         | Saving additional context about previous goals and actions per agent for improved decision-making |
+| 4. **Context preservation**          | Saving additional context about previous goals and actions per agent for improved decision-making |
+| 5. **AI integration**                | Agent executing generated code                                                                    |
+| 6. **Agent navigation**              | Navlogic, runtime navmesh generation                                                              |
+| 7. **Chain-of-thought mode**         | Infinite thinking                                                                                 |
+| 8. **Base player/NPC functionality** | Movement, camera, raycasting                                                                      |
+| 9. **Scenario dev**                  | Complex puzzle, move_to, move_to_visual                                                           |
+| 10. **Scenario Manager**             | Base scenario class, tracking successes & failures, resetting to original state                   |
+| 11. **Benchmarker**                  | Sequential running of scenarios + getting metrics                                                 |
 | 12. **Visual modality**              | Support for vision-enabled LLMs processing camera input                                           |
 | 13. **World shaders**                | Water, sky, biome                                                                                 |
 | 14. **Block system**                 | Block types, textures, breaking and placing blocks                                                |
 | 15. **Structure generation**         | Trees as interactable objects                                                                     |
 | 16. **Debugging tools**              | Agent labels, debug UI, debug for script/goal gen                                                 |
 | 17. **Agent self-fixing**            | Catching and tracking errors and allowing agent recovery                                          |
-| 18. **Day/night cycle + shaders**    |                                                                                                   |
-| 19. **Prompt engineering**           |                                                                                                   |
+| 18. **Day/night cycle**              | In sandbox                                                                                        |
+| 19. **Prompt engineering**           | Iteratively designing standardized prompt                                                         |
 | 20. **Quality Control**              | Ensuring clean PRs and issue tracking                                                             |
 | 21. **Bug fixes**                    | Fixing issues in environments, agent management, prompting architecture, etc.                     |
 | 22. **Refactoring**                  | Refactoring broken, unoptimal, or dirty code                                                      |
