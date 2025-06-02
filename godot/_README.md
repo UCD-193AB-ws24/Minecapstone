@@ -71,8 +71,14 @@ A deeper dive into the scenario manager is to accomplish a couple goals
 - Ensure the reset behavior properly resets each node and reconnects the success and failure signals properly
 
 ### Goal definition
+Can be defined within the scenario manager itself or be additional nodes with zones. This is very dependent on what the scenario’s goal is and how you want to indicate its success. However, the main guideline for designing and implementing your goal criteria is that your custom scenario manager has function(s) that call track_success or track_failure. To trigger these functions, connect them to the relevant nodes’ signals. The signals can be 
+- An entity’s death
+- An item collected by an entity 
+- An entity entering a certain area
+You can also create your own signals if none of our provided signals in various nodes don’t meet your requirements.
+You can also refer to our [scenarios](./benchmarking/scenarios) for reference and inspiration on how these functions are designed for their scenario. Each scenario in the folder is a custom scene manager, child of the scene_manager.gd, specialized for their named scenario.
+A good understanding of how [Godot’s signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) work is recommended when creating or connecting signals so do read their documentation.
 
-Can be defined within the scenario manager itself or be additional nodes with zones. This is very dependents on the
 
 ### Any additional nodes needed for the desired scenario
 
@@ -98,10 +104,3 @@ Within the `python/` folder are different LLM configurations and ability to use 
 
 [LLM USER GUIDE](./python/README.md)
 
-## Multiple LLMS
-
-TODO
-
-## Chunks and World Generation
-
-TODO

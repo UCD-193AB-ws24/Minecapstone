@@ -8,7 +8,7 @@ class_name Agent extends NPC
 @export var prompt_allowance: int = -1 #negative numbers mean infinite allowance
 @export var visual_mode:bool = false
 @export var self_fix_mode:bool = false
-@onready var hash_id : int = hash(self)
+@onready var hash_id : int = hash(str(self) + str(Time.get_ticks_msec()))
 @onready var agent_controller = $AgentController
 @onready var memories: MemoryManager = MemoryManager.new(max_memories)
 @onready var _command_queue: Array[Command] = []
@@ -37,9 +37,9 @@ func _input(_event):
 		if _event.keycode == KEY_V:
 			_command_queue.clear()
 			add_command(Command.CommandType.SCRIPT, """
-	var reached = await move_to_target("Zombie")
-	if reached:
-		await attack_target("Zombie", 1)
+	await move_to_target("ScenarioBox")
+	await give_to("ScenarioBox", "Dirt", 1)
+
 			""")
 			# select_nearest_target("Player")
 			# get_closest_point_target()
@@ -159,8 +159,8 @@ func _on_message_received(msg: String, from_id: int, to_id: int):
 			to_agent = self
 
 		# Convert from_id to a color
-		var from_color = Color.from_hsv(float(from_id) / 100000.0, 0.8, 1).to_html(false)
-		print_rich("Debug: [color=#%s][Agent %s][/color] Received message from [color=#%s][Agent %s][/color]: %s" % [debug_color, to_agent.debug_id, from_color, from_agent.debug_id, msg])
+		var from_color = Color.from_hsv(float(from_id) / 1000.0, 0.8, 1).to_html(false)
+		print_rich("Debug: [color=#%s][Agent %s][/color] said to [color=#%s][Agent %s][/color]: %s" % [from_color, from_agent.debug_id, debug_color, to_agent.debug_id, msg])
 
 		# Included this message in the agent's memory
 		var message_memory
@@ -188,9 +188,10 @@ func build_prompt_context() -> String:
 	context += "Items in your inventory: " + inventory_manager.GetInventoryData() + "\n"
 	context += "Your name is " + self.name + "\n"
 	context += "Current Position: (" + str(snapped(global_position.x, 0.1)) + ", " + str(snapped(global_position.y, 0.1)) + ")\n"
+	context += "You do " + str(self.attack_damage) + " damage per attack.\n"
 	context += "Current Time: " + str(Time.get_ticks_msec() / 1000.0) + "\n"
-	context += "- All detected entities:" + _get_all_detected_entities()
-	context += "- All detected items:\n" + _get_all_detected_items()
+	context += "- All detected entities:" + _get_all_detected_entities() + "\n"
+	context += "- All detected items:\n" + _get_all_detected_items() + "\n"
 	context += "- All detected interactables:\n" + _get_all_detected_interactables() + "\n"
 	context += "- Recent memories: " + memories.format_recent_for_prompt(10) + "\n"
 

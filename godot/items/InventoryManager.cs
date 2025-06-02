@@ -86,11 +86,11 @@ public partial class InventoryManager : Node
 	public bool AddItem(Item item, int amount) 
 	{
 		bool added = TryAddToExistingStack(item, amount) || TryAddToNewSlot(item, amount);
-		
+
 		if (added)
 		{
-			Item[] items = [item];
-			EmitSignal(nameof(ItemAdded), nameof(ItemAdded), items);
+			// Item[] items = [item];
+			EmitSignal("ItemAdded", item);
 		}
 		
 		return added;

@@ -32,8 +32,9 @@ func _on_food_eaten(food_name: String, _id:int):
 		track_failure()
 
 
-func reset():
+func _restore_initial_state():
 	await super()
+
 	reset_connections()
 
 
