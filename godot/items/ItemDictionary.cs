@@ -28,6 +28,8 @@ public partial class ItemDictionary : Node
 		{"Gold Ore", new Block("Gold Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/gold_ore.png"),  HarvestLevel: 3, Proficency: Proficency.STONE)},
 		{"Diamond Ore", new Block("Diamond Ore", Placeholder, 64, false, (Texture2D)GD.Load("res://assets/diamond_ore.png"),  HarvestLevel: 3, Proficency: Proficency.STONE)},
 		{"Meat", new Food("Meat", Placeholder, 64, true, 10)},
+		{"RottenMeat", new Food("Meat", Placeholder, 64, true, 5)},
+
 	};
 	
 	
