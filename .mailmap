@@ -1,0 +1,18 @@
+# .mailmap file to consolidate author identities
+# Format: Canonical Name <canonical@email> Commit Name <commit@email>
+
+# Consolidate darroll variations to lemontine
+lemontine <computereality@gmail.com> darroll <95956143+Iemontine@users.noreply.github.com>
+lemontine <computereality@gmail.com> Darroll <computereality@gmail.com>
+lemontine <computereality@gmail.com> darrolls <95956143+Iemontine@users.noreply.github.com>
+
+# Consolidate Matthew Fulde variations to mpfulde
+mpfulde <mpfulde@ucdavis.edu> Matthew Fulde <97477788+mpfulde@users.noreply.github.com>
+mpfulde <mpfulde@ucdavis.edu> Matthew Fulde <mpfulde@ucdavis.edu>
+mpfulde <mpfulde@ucdavis.edu> Matt F <mpfulde@ucdavis.edu>
+
+# Consolidate Jon Lagasca variations to JonLagasca
+JonLagasca <jonrlagasca@gmail.com> Jon Lagasca <jonrlagasca@gmail.com>
+
+# Consolidate Kesh variations to Keshfer
+Keshfer <Keshfur@gmail.com> Kesh <36428002+Keshfer@users.noreply.github.com>

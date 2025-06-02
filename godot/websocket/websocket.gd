@@ -3,7 +3,7 @@ extends Node
 
 
 # The URL we will connect to.
-@export var websocket_url = "ws://localhost:5000"
+@export var websocket_url = "ws://localhost"
 @export var enabled = true
 
 
@@ -22,6 +22,20 @@ func _ready():
 		return
 	
 	# Initiate connection to the given URL.
+	
+	var port = 5000
+	var cmdline_args = OS.get_cmdline_args()
+	
+	if cmdline_args.size() > 0:
+		var dash_p = cmdline_args.find("-p")
+		var dash_dash_port = cmdline_args.find("--port")
+		if dash_p != -1 and dash_p + 1 < cmdline_args.size() and cmdline_args[dash_p + 1].is_valid_int():
+			port = cmdline_args[dash_p + 1].to_int()
+		elif dash_dash_port != -1 and dash_dash_port + 1 < cmdline_args.size() and cmdline_args[dash_dash_port + 1].is_valid_int():
+			port = cmdline_args[dash_dash_port + 1].to_int()
+	
+	websocket_url = websocket_url + ":" + str(port) 
+	
 	var err = socket.connect_to_url(websocket_url)
 	connect("connected", Callable(self, "_on_connected"))
 	
@@ -35,10 +49,7 @@ func _ready():
 		socket.set_inbound_buffer_size(1024 * 1024) # 1MB
 		socket.set_outbound_buffer_size(1024 * 1024) # 1MB
 
-		print("Websocket peer connected to port 5000")
-
-		clear_context()
-
+		print("Websocket peer connected to port " + str(port))
 		connected.emit()
 
 
