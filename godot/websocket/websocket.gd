@@ -29,9 +29,9 @@ func _ready():
 	if cmdline_args.size() > 0:
 		var dash_p = cmdline_args.find("-p")
 		var dash_dash_port = cmdline_args.find("--port")
-		if dash_p != -1 and cmdline_args[dash_p + 1].is_valid_int():
+		if dash_p != -1 and dash_p + 1 < cmdline_args.size() and cmdline_args[dash_p + 1].is_valid_int():
 			port = cmdline_args[dash_p + 1].to_int()
-		elif dash_dash_port != -1 and cmdline_args[dash_dash_port + 1].is_valid_int():
+		elif dash_dash_port != -1 and dash_dash_port + 1 < cmdline_args.size() and cmdline_args[dash_dash_port + 1].is_valid_int():
 			port = cmdline_args[dash_dash_port + 1].to_int()
 	
 	websocket_url = websocket_url + ":" + str(port) 
