@@ -24,14 +24,15 @@ func _ready():
 	# Initiate connection to the given URL.
 	
 	var port = 5000
+	var cmdline_args = OS.get_cmdline_args()
 	
-	if OS.get_cmdline_args().size() > 0:
-		var dash_p = OS.get_cmdline_args().find("-p")
-		var dash_dash_port = OS.get_cmdline_args().find("--port")
-		if dash_p != -1 and OS.get_cmdline_args()[dash_p + 1].is_valid_int():
-			port = OS.get_cmdline_args()[dash_p + 1].to_int()
-		elif dash_dash_port != -1 and OS.get_cmdline_args()[dash_dash_port + 1].is_valid_int():
-			port = OS.get_cmdline_args()[dash_dash_port + 1].to_int()
+	if cmdline_args.size() > 0:
+		var dash_p = cmdline_args.find("-p")
+		var dash_dash_port = cmdline_args.find("--port")
+		if dash_p != -1 and cmdline_args[dash_p + 1].is_valid_int():
+			port = cmdline_args[dash_p + 1].to_int()
+		elif dash_dash_port != -1 and cmdline_args[dash_dash_port + 1].is_valid_int():
+			port = cmdline_args[dash_dash_port + 1].to_int()
 	
 	websocket_url = websocket_url + ":" + str(port) 
 	
