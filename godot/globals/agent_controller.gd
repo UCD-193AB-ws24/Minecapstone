@@ -61,12 +61,12 @@ func attack_target(target_name: String, num_attacks: int = 1):
 
 func discard(itemName: String, amount: int):
 	label.text = "Discarding item: " + itemName + ", amount: " + str(amount)
-	agent.discard_item(itemName, amount)
+	await agent.discard_item(itemName, amount)
 
 
 func give_to(agent_name: String, item_name: String, amount: int = 1):
 	label.text = "Giving " + str(amount) + " " + item_name + " to " + agent_name
-	agent.give_to(agent_name, item_name, amount)
+	await agent.give_to(agent_name, item_name, amount)
 
 
 func wait(time: float):
@@ -91,7 +91,7 @@ func say_to(msg: String, target_agent: String) -> void:
 
 func pick_up_item(item_name: String):
 	label.text = "Picking up item: " + item_name
-	agent.pick_up_item(item_name)
+	await agent.pick_up_item(item_name)
 
 
 func break_block(coordinates: Vector3i):

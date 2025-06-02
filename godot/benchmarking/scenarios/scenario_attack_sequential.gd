@@ -31,9 +31,9 @@ func _on_animal_died(deadName):
 			await track_failure()
 
 
-func reset():
-	#Clear data from global classes
+func _restore_initial_state():
 	await super()
+
 	zombie_killed = false
 	reset_connections()
 

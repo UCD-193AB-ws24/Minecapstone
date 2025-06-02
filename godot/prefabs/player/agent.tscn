@@ -13,7 +13,7 @@ infinite_decisions = false
 prompt_allowance = 1
 visual_mode = false
 self_fix_mode = false
-_speed = 2.0
+_speed = 4.0
 
 [node name="AgentController" type="Node" parent="." index="0"]
 process_mode = 4

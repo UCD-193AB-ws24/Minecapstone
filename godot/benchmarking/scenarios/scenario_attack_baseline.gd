@@ -13,7 +13,12 @@ func _on_zombie_died(deadName):
 	Function checks if zombie died and if so, log success and reset the scenario"""
 	if deadName == "Zombie":
 		await track_success()
-		reset_connections()
+
+
+func _restore_initial_state():
+	await super()
+	
+	reset_connections()
 
 
 func reset_connections():

@@ -14,4 +14,4 @@ func pick_up_cooldown() -> void:
 	#timer.wait_time = 1.0
 	timer.one_shot = true
 	timer.timeout.connect(_on_timer_timeout)
-	timer.start(1.0)
+	timer.start(0.5)

@@ -3,7 +3,7 @@ import websockets
 import json
 import os
 import argparse
-from llm_service_factory import LLMServiceFactory
+from api_adapters.llm_service_factory import LLMServiceFactory
 
 class WebSocketServer:
     """WebSocket server for handling LLM requests with visual support"""
@@ -14,14 +14,15 @@ class WebSocketServer:
         self.host = host
         self.port = port
         self.llm_service = None
-    
     async def handle_client(self, websocket):
         """Handle a client connection"""
         try:
             async for message in websocket:
                 # Parse the JSON message
                 message_obj = json.loads(message)
-                message = message_obj.get("prompt", "")
+                prompt = message_obj.get("prompt", "")
+                prompt_type = message_obj.get("type", "").upper()
+                key = message_obj.get("key", None)
                 image_data = message_obj.get("image_data", None)
 
                 # Check if image is provided but not supported
@@ -30,15 +31,22 @@ class WebSocketServer:
                 
                 # Send the prompt to the LLM and get the response
                 try:
-                    if message_obj.get("type") == "GOAL":
-                        goal = await self.llm_service.generate_goal(message, image_data)
-                        await websocket.send(goal)
-                    elif message_obj.get("type") == "SCRIPT":
-                        script = await self.llm_service.generate_script(message, image_data)
-                        await websocket.send(script)
-                    else:
-                        response = "Error: Unknown message type"
-                        await websocket.send(response)
+                    payload = {"contents": "Unexpected prompt type."}
+                    if prompt_type == "GOAL":
+                        goal = await self.llm_service.generate_goal(prompt, image_data)
+                        payload = {
+                            "key": key,
+                            "type": "GOAL",
+                            "contents": goal,
+                        }
+                    elif prompt_type == "SCRIPT":
+                        script = await self.llm_service.generate_script(prompt, image_data)
+                        payload = {
+                            "key": key,
+                            "type": "SCRIPT",
+                            "contents": script,
+                        }
+                    await websocket.send(json.dumps(payload))
                 except Exception as e:
                     print(f"Error generating response: {e}")
                     response = f"Error: {str(e)}"
@@ -60,8 +68,8 @@ class WebSocketServer:
             self.handle_client, 
             self.host, 
             self.port, 
-            ping_interval=30, 
-            ping_timeout=10, 
+            ping_interval=120,
+            ping_timeout=120,
             max_size=1024*1024
         )
         

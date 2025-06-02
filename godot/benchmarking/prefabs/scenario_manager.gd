@@ -8,7 +8,16 @@ var failure_count: int = 0
 var error_count: int = 0
 var save_data : String = ""
 var current_iteration: int = 0
-var MAX_ITERATIONS: int = 2
+var MAX_ITERATIONS: int = 30
+
+
+enum ScenarioType {
+	NONE,
+	ENVIRONMENTAL_INTERACTION,
+	VISUAL_UNDERSTANDING,
+	SEQUENTIAL_REASONING,
+}
+@export var scenario_type: ScenarioType = ScenarioType.NONE
 
 
 var timeout_timer:Timer
@@ -84,7 +93,7 @@ func next_iteration():
 		var success = results[0]
 		var failure = results[1]
 		var error = results[2]
-		ScenarioSwitcher.save_results(success, failure, error)
+		ScenarioSwitcher.save_results(success, failure, error, scenario_type)
 		ScenarioSwitcher.next_scene()
 	
 
@@ -129,7 +138,7 @@ func _restore_initial_state():
 	if not get_tree():
 		return
 		
-	for i in range(16):	await get_tree().physics_frame
+	for i in range(16): await get_tree().physics_frame
 
 	for json_string in save_data.split("\n"):
 		if json_string.strip_edges() == "":
@@ -153,10 +162,13 @@ func _restore_initial_state():
 			get_node(node_data["parent"]).add_child(new_object)
 			
 		new_object.position = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
+		new_object.rotation_degrees = Vector3(node_data["rot_x"], node_data["rot_y"], node_data["rot_z"])
 		new_object.name = node_data["name"]
 		
 		# Now we set the remaining variables.
 		for i in node_data.keys():
-			if i == "filename" or i == "parent" or i == "pos_x" or i == "pos_y":
+			if i in ["filename", "parent", "pos_x", "pos_y", "pos_z", "rot_x", "rot_y", "rot_z", "name"]:
 				continue
 			new_object.set(i, node_data[i])
+
+	for i in range(16): await get_tree().physics_frame
