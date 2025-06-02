@@ -114,7 +114,7 @@ This sandbox environment allows the agents to make decisions in an infinite loop
 
 # Credits
 
-### Iemontine
+### Darroll
 
 | **Role/Contribution**                | Description                                                                                         |
 | ------------------------------------ | --------------------------------------------------------------------------------------------------- |
@@ -141,7 +141,7 @@ This sandbox environment allows the agents to make decisions in an infinite loop
 | 21. **Bug fixes**                    | Fixing issues in environments, agent management, prompting architecture, LLM service adapters, etc. |
 | 22. **Refactoring**                  | Refactoring dirty code                                                                              |
 
-### Keshfer
+### Ken
 
 | **Role/Contribution**                           | Description                                                |
 | ----------------------------------------------- | ---------------------------------------------------------- |
@@ -167,7 +167,7 @@ This sandbox environment allows the agents to make decisions in an infinite loop
 | 7. **Needs**                         | Health, hunger, food                                                         |
 | 8. **Sprinting**                     |                                                                              |
 
-### Matt
+### Matthew
 
 | **Role/Contribution**                  | Description                                         |
 | -------------------------------------- | --------------------------------------------------- |
